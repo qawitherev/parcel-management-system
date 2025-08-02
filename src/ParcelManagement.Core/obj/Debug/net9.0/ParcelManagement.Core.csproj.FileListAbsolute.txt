@@ -1,0 +1,11 @@
+C:\Users\User\Desktop\.net projects\parcel-management-system\src\ParcelManagement.Core\bin\Debug\net9.0\ParcelManagement.Core.deps.json
+C:\Users\User\Desktop\.net projects\parcel-management-system\src\ParcelManagement.Core\bin\Debug\net9.0\ParcelManagement.Core.dll
+C:\Users\User\Desktop\.net projects\parcel-management-system\src\ParcelManagement.Core\bin\Debug\net9.0\ParcelManagement.Core.pdb
+C:\Users\User\Desktop\.net projects\parcel-management-system\src\ParcelManagement.Core\obj\Debug\net9.0\ParcelManagement.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\User\Desktop\.net projects\parcel-management-system\src\ParcelManagement.Core\obj\Debug\net9.0\ParcelManagement.Core.AssemblyInfoInputs.cache
+C:\Users\User\Desktop\.net projects\parcel-management-system\src\ParcelManagement.Core\obj\Debug\net9.0\ParcelManagement.Core.AssemblyInfo.cs
+C:\Users\User\Desktop\.net projects\parcel-management-system\src\ParcelManagement.Core\obj\Debug\net9.0\ParcelManagement.Core.csproj.CoreCompileInputs.cache
+C:\Users\User\Desktop\.net projects\parcel-management-system\src\ParcelManagement.Core\obj\Debug\net9.0\ParcelManagement.Core.dll
+C:\Users\User\Desktop\.net projects\parcel-management-system\src\ParcelManagement.Core\obj\Debug\net9.0\refint\ParcelManagement.Core.dll
+C:\Users\User\Desktop\.net projects\parcel-management-system\src\ParcelManagement.Core\obj\Debug\net9.0\ParcelManagement.Core.pdb
+C:\Users\User\Desktop\.net projects\parcel-management-system\src\ParcelManagement.Core\obj\Debug\net9.0\ref\ParcelManagement.Core.dll

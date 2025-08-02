@@ -1,0 +1,52 @@
+using System.ComponentModel.DataAnnotations;
+using FluentAssertions;
+using ParcelManagement.Core.Entities;
+using Xunit;
+
+namespace ParcelManagement.Test.Entities
+{
+    public class ParcelTest
+    {
+        [Fact]
+        public void ParcelValidProperties()
+        {
+            // Given
+            var parcel = new Parcel
+            {
+                Id = Guid.NewGuid(),
+                TrackingNumber = "TN001",
+                ResidentUnit = "RU001",
+                EntryDate = DateTimeOffset.UtcNow,
+                Status = ParcelStatus.AwaitingPickup,
+                Weight = 2,
+                Dimensions = "1x1x1"
+            };
+
+
+            parcel.Id.Should().NotBeEmpty();
+            parcel.TrackingNumber.Should().Be("TN001");
+            parcel.ResidentUnit.Should().Be("RU001");
+            parcel.Status.Should().Be(ParcelStatus.AwaitingPickup);
+            parcel.Weight.Should().Be(2);
+            parcel.Dimensions.Should().Be("1x1x1");
+        }
+
+        [Fact]
+        public void ParcelPropertiesShouldException()
+        {
+            var parcel = new Parcel
+            {
+                Id = Guid.NewGuid(),
+                TrackingNumber = new string('A', 51), // since length.max is 50
+                ResidentUnit = "RU002",
+                EntryDate = DateTimeOffset.UtcNow,
+                Weight = 2,
+                Dimensions = "1x1x1"
+            };
+
+            Func<object> act = () => parcel.TrackingNumber;
+
+            act.Should().Throw<ValidationException>();
+        }
+    }
+}

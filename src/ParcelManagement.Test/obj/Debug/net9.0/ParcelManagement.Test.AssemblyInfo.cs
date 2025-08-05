@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ParcelManagement.Test")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bc6efb62a972c758a4cd851935e040ac611636f9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0fa21fd1ef339685d02ed64bedc2b269699e9977")]
 [assembly: System.Reflection.AssemblyProductAttribute("ParcelManagement.Test")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ParcelManagement.Test")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -30,6 +30,19 @@ namespace ParcelManagement.Test.Repository
             mockContext.Verify(m => m.SaveChangesAsync(default), Times.Once);
         }
 
+        [Fact]
+        public async Task GetAllParcelShouldReturnAllParcels()
+        {
+            //setup parcels list
+            var parcelList = new List<Parcel>
+            {
+                new() { Id = Guid.NewGuid(), TrackingNumber = "TN001", ResidentUnit = "RU001"},
+                new() { Id = Guid.NewGuid(), TrackingNumber = "TN002", ResidentUnit = "RU002"},
+                new() { Id = Guid.NewGuid(), TrackingNumber = "TN003", ResidentUnit = "RU003"}
+            };
+
+            
+        }
         
     }
 }

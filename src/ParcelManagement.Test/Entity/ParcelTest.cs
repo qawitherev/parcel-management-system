@@ -1,6 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using ParcelManagement.Core.Entities;
+using ParcelManagement.Infrastructure.Database;
 using Xunit;
 
 namespace ParcelManagement.Test.Entities
@@ -10,6 +12,8 @@ namespace ParcelManagement.Test.Entities
         [Fact]
         public void ParcelValidProperties()
         {
+
+
             // Given
             var parcel = new Parcel
             {
@@ -32,7 +36,7 @@ namespace ParcelManagement.Test.Entities
         }
 
         [Fact]
-        public void ParcelPropertiesShouldException()
+        public void ParcelPropertiesShouldThrowExceptionForInvalidLength()
         {
             var parcel = new Parcel
             {
@@ -44,7 +48,7 @@ namespace ParcelManagement.Test.Entities
                 Dimensions = "1x1x1"
             };
 
-            Func<object> act = () => parcel.TrackingNumber;
+            Action act = () => Validator.ValidateObject(parcel, new ValidationContext(parcel), true);
 
             act.Should().Throw<ValidationException>();
         }

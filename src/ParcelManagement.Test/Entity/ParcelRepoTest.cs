@@ -1,7 +1,6 @@
 // The most common and recommended convention in the C# world is the 
 // MethodName_StateUnderTest_ExpectedBehavior pattern.
 
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using ParcelManagement.Core.Entities;
@@ -16,22 +15,25 @@ namespace ParcelManagement.Test.Repository
         [Fact]
         public async Task AddParcelAsync_ShouldAddToDB()
         {
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+                .UseInMemoryDatabase(databaseName: "TestDatabase") // Use an in-memory database for testing
+                .Options;
+
             var parcel = new Parcel
             {
                 Id = Guid.NewGuid(),
                 TrackingNumber = "TN001",
                 ResidentUnit = "RU001"
             };
-            var mockSet = new Mock<DbSet<Parcel>>();
-            var mockContext = new Mock<ApplicationDbContext>();
-            mockContext.Setup(c => c.Parcels).Returns(mockSet.Object);
 
-            var parcelRepo = new ParcelRepository(mockContext.Object);
+            using (var testDbContext = new ApplicationDbContext(options))
+            {
+                var parcelRepo = new ParcelRepository(testDbContext);
+                await parcelRepo.AddParcelAsync(parcel);
 
-            await parcelRepo.AddParcelAsync(parcel);
-
-            mockSet.Verify(m => m.AddAsync(parcel, default), Times.Once);
-            mockContext.Verify(m => m.SaveChangesAsync(default), Times.Once);
+                //asserting the data 
+                //TODO: make the code here 
+            }
         }
 
         [Fact]

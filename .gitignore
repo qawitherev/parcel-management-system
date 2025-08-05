@@ -1,0 +1,26 @@
+# Build results
+[Dd]ebug/
+[Rr]elease/
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio user specific files
+.vs/
+*.suo
+*.user
+
+# NuGet and dependency-related files
+*.nupkg
+*.nuspec
+packages/
+**/packages/*
+*.csproj.nuget.*
+*.g.props
+*.g.targets
+*.DotSettings.user
+
+# Rider
+.idea/
+
+# Other
+Thumbs.db

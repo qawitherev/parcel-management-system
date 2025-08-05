@@ -41,7 +41,21 @@ namespace ParcelManagement.Test.Repository
                 new() { Id = Guid.NewGuid(), TrackingNumber = "TN003", ResidentUnit = "RU003"}
             };
 
-            
+            var mockSet = new Mock<DbSet<Parcel>>();
+            mockSet.As<IQueryable<Parcel>>().Setup(m => m.Expression).Returns(parcelList.AsQueryable().Expression);
+            mockSet.As<IQueryable<Parcel>>().Setup(m => m.Provider).Returns(parcelList.AsQueryable().Provider);
+            mockSet.As<IQueryable<Parcel>>().Setup(m => m.ElementType).Returns(parcelList.AsQueryable().ElementType);
+
+            var mockContext = new Mock<ApplicationDbContext>();
+            mockContext.Setup(c => c.Parcels).Returns(mockSet.Object);
+
+            var parcelRepo = new ParcelRepository(mockContext.Object);
+
+            var result = await parcelRepo.GetAllParcelsAsync();
+
+            Assert.NotNull(result);
+            Assert.Equal(parcelList.Count, result.Count);
+
         }
         
     }

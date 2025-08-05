@@ -1,3 +1,7 @@
+// The most common and recommended convention in the C# world is the 
+// MethodName_StateUnderTest_ExpectedBehavior pattern.
+
+using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using ParcelManagement.Core.Entities;
@@ -10,7 +14,7 @@ namespace ParcelManagement.Test.Repository
     public class ParcelRepositoryTests
     {
         [Fact]
-        public async Task AddParcelAsyncShouldAddToDB()
+        public async Task AddParcelAsync_ShouldAddToDB()
         {
             var parcel = new Parcel
             {
@@ -31,7 +35,7 @@ namespace ParcelManagement.Test.Repository
         }
 
         [Fact]
-        public async Task GetAllParcelShouldReturnAllParcels()
+        public async Task GetAllParcelAsync_NonNull_ShouldReturnAllParcels()
         {
             //setup parcels list
             var parcelList = new List<Parcel>
@@ -57,6 +61,28 @@ namespace ParcelManagement.Test.Repository
             Assert.Equal(parcelList.Count, result.Count);
 
         }
-        
+
+        [Fact]
+        public async Task GetParcelByIdAsync_NotNull_ShouldReturnParcel()
+        {
+            var theId = Guid.NewGuid();
+            var parcel = new Parcel
+            {
+                Id = theId,
+                TrackingNumber = "TN001",
+                ResidentUnit = "RU001"
+            };
+
+            var mockSet = new Mock<DbSet<Parcel>>();
+            var mockContext = new Mock<ApplicationDbContext>();
+            mockContext.Setup(m => m.Parcels).Returns(mockSet.Object);
+
+            var parcelRepo = new ParcelRepository(mockContext.Object);
+
+            var result = await parcelRepo.GetParcelByIdAsync(theId);
+
+            Assert.Equal("TN001", parcel.TrackingNumber);
+        }
+
     }
 }

@@ -18,6 +18,8 @@ namespace ParcelManagement.Core.Services
         Task<IReadOnlyList<Parcel?>> GetAwaitingPickupParcelsAsync();
 
         Task<Parcel?> GetParcelByTrackingNumberAsync(string trackingNumber);
+
+        Task<IReadOnlyList<Parcel?>> GetParcelByResidentUnitAsync(string residentUnit);
         
     }
 
@@ -55,13 +57,19 @@ namespace ParcelManagement.Core.Services
         public async Task<IReadOnlyList<Parcel?>> GetAwaitingPickupParcelsAsync()
         {
             var specification = new ParcelsAwaitingPickupSpecification();
-            return await _parcelRepo.FindBySpecificationAsync(specification); 
+            return await _parcelRepo.FindBySpecificationAsync(specification);
         }
 
         public async Task<Parcel?> GetParcelByIdAsync(Guid id)
         {
 
             return await _parcelRepo.GetParcelByIdAsync(id);
+        }
+
+        public async Task<IReadOnlyList<Parcel?>> GetParcelByResidentUnitAsync(string residentUnit)
+        {
+            var parcelByResidentUnitSpec = new ParcelsByResidentUnitSpecification(residentUnit);
+            return await _parcelRepo.FindBySpecificationAsync(parcelByResidentUnitSpec);
         }
 
         public async Task<Parcel?> GetParcelByTrackingNumberAsync(string trackingNumber)

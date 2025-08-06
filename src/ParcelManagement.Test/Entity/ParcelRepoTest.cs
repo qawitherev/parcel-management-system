@@ -1,6 +1,7 @@
 // The most common and recommended convention in the C# world is the 
 // MethodName_StateUnderTest_ExpectedBehavior pattern.
 
+using System.Runtime.InteropServices;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using ParcelManagement.Core.Entities;
@@ -109,19 +110,52 @@ namespace ParcelManagement.Test.Repository
                 .Select(num => new Parcel
                 {
                     Id = Guid.NewGuid(),
-                    TrackingNumber = $"TN{(num < 10 ? $"00{num}" : num)}",
-                    ResidentUnit = $"RU{(num < 10 ? $"00{num}" : num)}"
+                    TrackingNumber = $"TN{(num < 10 ? $"00{num}" : $"0{num}")}",
+                    ResidentUnit = $"RU{(num < 10 ? $"00{num}" : $"0{num}")}"
                 }).ToList();
             var options = new DbContextOptionsBuilder<ApplicationDbContext>().UseInMemoryDatabase(databaseName: "testDatabase").Options;
             using (var testDbContext = new ApplicationDbContext(options))
             {
                 var parcelRepo = new ParcelRepository(testDbContext);
                 await testDbContext.Parcels.AddRangeAsync(parcelList);
+                await testDbContext.SaveChangesAsync();
                 var spec = new ParcelByTrackingNumberSpecification("TN001");
                 var result = await parcelRepo.FindBySpecificationAsync(spec);
                 Assert.NotNull(result);
                 foreach (var parcel in result)
-                Assert.Contains(result, r => r!.TrackingNumber == "TN001");
+                    Assert.Contains(result, r => r!.TrackingNumber == "TN001");
+            }
+        }
+
+        [Fact]
+        public async Task FindBySpecification_ByResidentUnit_ShouldReturnParcels()
+        {
+            var residentParcels = Enumerable.Range(1, 10)
+                .Select(num => new Parcel
+                {
+                    Id = Guid.NewGuid(),
+                    TrackingNumber = $"TN{(num < 10 ? $"00{num}" : $"0{num}")}",
+                    ResidentUnit = "TN001"
+                }).ToList();
+
+            var dbOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()).Options;
+
+            using (var testDbContext = new ApplicationDbContext(dbOptions))
+            {
+                var parcelRepo = new ParcelRepository(testDbContext);
+                await testDbContext.Parcels.AddRangeAsync(residentParcels);
+                await testDbContext.SaveChangesAsync();
+
+                var spec = new ParcelsByResidentUnitSpecification("TN001");
+                var result = await parcelRepo.FindBySpecificationAsync(spec);
+
+                Assert.NotNull(result);
+                Assert.Equal(residentParcels.Count, result.Count);
+                foreach (var parcel in result)
+                {
+                    Assert.Equal("TN001", parcel!.ResidentUnit);
+                }
             }
         }
 

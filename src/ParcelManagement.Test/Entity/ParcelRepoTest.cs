@@ -29,10 +29,12 @@ namespace ParcelManagement.Test.Repository
             using (var testDbContext = new ApplicationDbContext(options))
             {
                 var parcelRepo = new ParcelRepository(testDbContext);
-                await parcelRepo.AddParcelAsync(parcel);
+                var result = await parcelRepo.AddParcelAsync(parcel);
 
-                //asserting the data 
-                //TODO: make the code here 
+                //asserting the data
+                Assert.NotNull(result);
+                Assert.Equal(parcel.TrackingNumber, result.TrackingNumber);
+                Assert.Equal(parcel.ResidentUnit, result.ResidentUnit);
             }
         }
 
@@ -47,20 +49,23 @@ namespace ParcelManagement.Test.Repository
                 new() { Id = Guid.NewGuid(), TrackingNumber = "TN003", ResidentUnit = "RU003"}
             };
 
-            var mockSet = new Mock<DbSet<Parcel>>();
-            mockSet.As<IQueryable<Parcel>>().Setup(m => m.Expression).Returns(parcelList.AsQueryable().Expression);
-            mockSet.As<IQueryable<Parcel>>().Setup(m => m.Provider).Returns(parcelList.AsQueryable().Provider);
-            mockSet.As<IQueryable<Parcel>>().Setup(m => m.ElementType).Returns(parcelList.AsQueryable().ElementType);
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+                    .UseInMemoryDatabase(databaseName: "TestDatabase")
+                    .Options;
 
-            var mockContext = new Mock<ApplicationDbContext>();
-            mockContext.Setup(c => c.Parcels).Returns(mockSet.Object);
+            using (var testDbContext = new ApplicationDbContext(options))
+            {
+                var parcelRepo = new ParcelRepository(testDbContext);
+                var result = await parcelRepo.GetAllParcelsAsync();
 
-            var parcelRepo = new ParcelRepository(mockContext.Object);
-
-            var result = await parcelRepo.GetAllParcelsAsync();
-
-            Assert.NotNull(result);
-            Assert.Equal(parcelList.Count, result.Count);
+                Assert.NotNull(result);
+                Assert.Equal(parcelList.Count, result.Count);
+                foreach (var parcel in parcelList)
+                {
+                    // ! because result is nullable 
+                    Assert.Contains(result, r => r!.TrackingNumber == parcel.TrackingNumber);
+                }
+            }
 
         }
 
@@ -75,15 +80,16 @@ namespace ParcelManagement.Test.Repository
                 ResidentUnit = "RU001"
             };
 
-            var mockSet = new Mock<DbSet<Parcel>>();
-            var mockContext = new Mock<ApplicationDbContext>();
-            mockContext.Setup(m => m.Parcels).Returns(mockSet.Object);
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+                .UseInMemoryDatabase(databaseName: "testDatabase").Options;
 
-            var parcelRepo = new ParcelRepository(mockContext.Object);
+            using (var testDbContext = new ApplicationDbContext(options))
+            {
+                var parcelRepo = new ParcelRepository(testDbContext);
+                var result = await parcelRepo.GetParcelByIdAsync(theId);
 
-            var result = await parcelRepo.GetParcelByIdAsync(theId);
-
-            Assert.Equal("TN001", parcel.TrackingNumber);
+                Assert.Equal(theId, result!.Id);
+            }
         }
 
     }

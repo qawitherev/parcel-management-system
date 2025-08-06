@@ -11,8 +11,8 @@ namespace ParcelManagement.Infrastructure.Database
         }
 
         //the tables 
-        public DbSet<Parcel> Parcels { get; set; }
-        public DbSet<User> Users { get; set; }
+        public virtual DbSet<Parcel> Parcels { get; set; }
+        public virtual DbSet<User> Users { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

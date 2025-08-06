@@ -56,6 +56,12 @@ namespace ParcelManagement.Test.Repository
             using (var testDbContext = new ApplicationDbContext(options))
             {
                 var parcelRepo = new ParcelRepository(testDbContext);
+                foreach (var p in parcelList)
+                {
+                    await parcelRepo.AddParcelAsync(p);
+                }
+                
+
                 var result = await parcelRepo.GetAllParcelsAsync();
 
                 Assert.NotNull(result);
@@ -86,6 +92,9 @@ namespace ParcelManagement.Test.Repository
             using (var testDbContext = new ApplicationDbContext(options))
             {
                 var parcelRepo = new ParcelRepository(testDbContext);
+
+                await parcelRepo.AddParcelAsync(parcel);
+
                 var result = await parcelRepo.GetParcelByIdAsync(theId);
 
                 Assert.Equal(theId, result!.Id);

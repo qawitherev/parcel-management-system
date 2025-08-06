@@ -4,6 +4,7 @@
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using ParcelManagement.Core.Entities;
+using ParcelManagement.Core.Specifications;
 using ParcelManagement.Infrastructure.Database;
 using ParcelManagement.Infrastructure.Repository;
 using Xunit;
@@ -60,7 +61,7 @@ namespace ParcelManagement.Test.Repository
                 {
                     await parcelRepo.AddParcelAsync(p);
                 }
-                
+
 
                 var result = await parcelRepo.GetAllParcelsAsync();
 
@@ -98,6 +99,29 @@ namespace ParcelManagement.Test.Repository
                 var result = await parcelRepo.GetParcelByIdAsync(theId);
 
                 Assert.Equal(theId, result!.Id);
+            }
+        }
+
+        [Fact]
+        public async Task FindBySpecificationAsync_ByTrackingNumber_ShouldReturnParcel()
+        {
+            var parcelList = Enumerable.Range(1, 10)
+                .Select(num => new Parcel
+                {
+                    Id = Guid.NewGuid(),
+                    TrackingNumber = $"TN{(num < 10 ? $"00{num}" : num)}",
+                    ResidentUnit = $"RU{(num < 10 ? $"00{num}" : num)}"
+                }).ToList();
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>().UseInMemoryDatabase(databaseName: "testDatabase").Options;
+            using (var testDbContext = new ApplicationDbContext(options))
+            {
+                var parcelRepo = new ParcelRepository(testDbContext);
+                await testDbContext.Parcels.AddRangeAsync(parcelList);
+                var spec = new ParcelByTrackingNumberSpecification("TN001");
+                var result = await parcelRepo.FindBySpecificationAsync(spec);
+                Assert.NotNull(result);
+                foreach (var parcel in result)
+                Assert.Contains(result, r => r!.TrackingNumber == "TN001");
             }
         }
 

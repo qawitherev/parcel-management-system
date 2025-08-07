@@ -7,6 +7,7 @@ using ParcelManagement.Infrastructure.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// tell the DI container that we have controller
 builder.Services.AddControllers();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -21,5 +22,11 @@ builder.Services.AddScoped<IParcelRepository, ParcelRepository>();
 builder.Services.AddScoped<IParcelService, ParcelService>();
 
 var app = builder.Build();
+
+// match the incoming url with implemented route 
+app.UseRouting();
+
+// map the url to relevant method 
+app.MapControllers();
 
 app.Run(); 

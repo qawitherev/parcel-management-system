@@ -7,9 +7,11 @@ namespace ParcelManagement.Core.Services
     public interface IParcelService
     {
         // check in, claim, getByTrackingNumber, getAll (to be implemented later: getByResidentUnit)
-        Task<Parcel> CheckInParcelAsync(Parcel parcel);
+        Task<Parcel> CheckInParcelAsync(string trackingNumber, string residentUnit,
+            decimal? weight,
+            string? dimensions);
 
-        Task ClaimParcelAsync(Parcel parcel);
+        Task ClaimParcelAsync(string trackingNumber);
 
         Task<Parcel?> GetParcelByIdAsync(Guid id);
 
@@ -20,6 +22,8 @@ namespace ParcelManagement.Core.Services
         Task<Parcel?> GetParcelByTrackingNumberAsync(string trackingNumber);
 
         Task<IReadOnlyList<Parcel?>> GetParcelByResidentUnitAsync(string residentUnit);
+
+        Task<IReadOnlyList<Parcel?>> GetParcelsAwaitingPickup();
         
     }
 
@@ -32,16 +36,31 @@ namespace ParcelManagement.Core.Services
             _parcelRepo = parcelRepo;
         }
 
-        public async Task<Parcel> CheckInParcelAsync(Parcel newParcel)
+        public async Task<Parcel> CheckInParcelAsync(string trackingNumber, string residentUnit,
+            decimal? weight,
+            string? dimensions)
         {
+            var newParcel = new Parcel
+            {
+                Id = Guid.NewGuid(),
+                TrackingNumber = trackingNumber,
+                ResidentUnit = residentUnit,
+                Status = ParcelStatus.AwaitingPickup,
+                Weight = weight ?? 0,
+                Dimensions = dimensions ?? ""
+            };
             return await _parcelRepo.AddParcelAsync(newParcel);
         }
 
-        public async Task ClaimParcelAsync(Parcel parcel)
+        public async Task ClaimParcelAsync(string trackingNumber)
         {
-            parcel.ExitDate = DateTimeOffset.UtcNow;
-            parcel.Status = ParcelStatus.Claimed;
-            await _parcelRepo.UpdateParcelAsync(parcel);
+            var spec = new ParcelByTrackingNumberSpecification(trackingNumber);
+            var toBeClaimedParcel = await _parcelRepo.FindOneBySpecificationAsync(spec) ??
+                throw new InvalidOperationException($"Parcel with tracking number '{trackingNumber}' not found.");
+
+            toBeClaimedParcel.Status = ParcelStatus.Claimed;
+            toBeClaimedParcel.ExitDate = DateTime.UtcNow;
+            await _parcelRepo.UpdateParcelAsync(toBeClaimedParcel);
         }
 
         // why we use nullable here is because this isnt the place to handle it
@@ -73,6 +92,12 @@ namespace ParcelManagement.Core.Services
         {
             var specification = new ParcelByTrackingNumberSpecification(trackingNumber);
             return await _parcelRepo.FindOneBySpecificationAsync(specification);
+        }
+
+        public async Task<IReadOnlyList<Parcel?>> GetParcelsAwaitingPickup()
+        {
+            var spec = new ParcelsAwaitingPickupSpecification();
+            return await _parcelRepo.FindBySpecificationAsync(spec);
         }
     }
 }

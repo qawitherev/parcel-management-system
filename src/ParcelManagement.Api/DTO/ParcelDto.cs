@@ -8,6 +8,6 @@ namespace ParcelManagement.Api.DTO
 
         public decimal? Weight { get; set; }
 
-        public decimal? Dimensions { get; set; }
+        public string? Dimensions { get; set; }
     }
 }

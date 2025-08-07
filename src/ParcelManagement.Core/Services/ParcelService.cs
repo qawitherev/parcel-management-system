@@ -34,9 +34,6 @@ namespace ParcelManagement.Core.Services
 
         public async Task<Parcel> CheckInParcelAsync(Parcel newParcel)
         {
-            newParcel.Id = Guid.NewGuid();
-            newParcel.EntryDate = DateTimeOffset.UtcNow;
-            newParcel.Status = ParcelStatus.AwaitingPickup;
             return await _parcelRepo.AddParcelAsync(newParcel);
         }
 

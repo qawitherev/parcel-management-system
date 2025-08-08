@@ -49,6 +49,14 @@ namespace ParcelManagement.Core.Services
                 Weight = weight ?? 0,
                 Dimensions = dimensions ?? ""
             };
+
+            //check for parcel with the same tracking number 
+            var spec = new ParcelByTrackingNumberSpecification(newParcel.TrackingNumber);
+            var sameParcel = await _parcelRepo.FindOneBySpecificationAsync(spec);
+            if (sameParcel != null)
+            {
+                throw new InvalidOperationException($"A parcel with tracking number '{trackingNumber}' already exists.");
+            }
             return await _parcelRepo.AddParcelAsync(newParcel);
         }
 
@@ -77,8 +85,8 @@ namespace ParcelManagement.Core.Services
 
         public async Task<Parcel?> GetParcelByIdAsync(Guid id)
         {
-
-            return await _parcelRepo.GetParcelByIdAsync(id);
+            var parcel = await _parcelRepo.GetParcelByIdAsync(id) ?? throw new KeyNotFoundException($"Parcel with id {id} is not found");
+            return parcel;
         }
 
         public async Task<IReadOnlyList<Parcel?>> GetParcelByResidentUnitAsync(string residentUnit)
@@ -90,7 +98,8 @@ namespace ParcelManagement.Core.Services
         public async Task<Parcel?> GetParcelByTrackingNumberAsync(string trackingNumber)
         {
             var specification = new ParcelByTrackingNumberSpecification(trackingNumber);
-            return await _parcelRepo.FindOneBySpecificationAsync(specification);
+            var parcel = await _parcelRepo.FindOneBySpecificationAsync(specification) ?? throw new KeyNotFoundException($"Parcel with tracking number {trackingNumber} not found");
+            return parcel;
         }
 
         public async Task<IReadOnlyList<Parcel?>> GetParcelsAwaitingPickup()

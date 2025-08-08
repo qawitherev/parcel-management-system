@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using ParcelManagement.Api.Middleware;
 using ParcelManagement.Core.Repositories;
 using ParcelManagement.Core.Services;
 using ParcelManagement.Infrastructure.Database;
@@ -14,6 +15,8 @@ if (builder.Environment.IsDevelopment())
 
 // tell the DI container that we have controller
 builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 var serverVersion = ServerVersion.AutoDetect(connectionString);
@@ -33,5 +36,14 @@ app.UseRouting();
 
 // map the url to relevant method 
 app.MapControllers();
+
+//for swagger - only available in dev 
+if (builder.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseMiddleware<ApiExceptionMiddelware>();
 
 app.Run(); 

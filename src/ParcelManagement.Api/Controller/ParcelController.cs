@@ -11,24 +11,21 @@ public class ParcelController(IParcelService parcelService) : ControllerBase
     // since we wont expose this endpoint publicly, we won't follow 
     // url pattern to give way to 
     // {"{trackingNumber}"}
-    [HttpGet("GetParcelById{id}")]
+    [HttpGet("GetParcelById/{id}")]
     public async Task<IActionResult> GetParcelById(Guid id)
     {
-        //TODO: to check if id is null
-        var parcelResult = await parcelService.GetParcelByIdAsync(id);
-        return Ok(parcelResult);
+        var parcel = await parcelService.GetParcelByIdAsync(id);
+        return Ok(parcel);
     }
 
     [HttpPost("checkIn")]
     public async Task<IActionResult> CheckInParcel([FromBody] CheckInParcelDto dto)
     {
-        //checking if there's parcel with the same tracking number 
-        var existingSameParcel = await parcelService.GetParcelByTrackingNumberAsync(dto.TrackingNumber);
-        if (existingSameParcel != null)
+        if (!ModelState.IsValid)
         {
-            return Conflict($"Same parcel with tracking number [{dto.TrackingNumber}] has already checked in");
+            return BadRequest(ModelState);
         }
-        
+
         var newParcel = await parcelService.CheckInParcelAsync(dto.TrackingNumber, dto.ResidentUnit, dto.Weight, dto.Dimensions);
         var newParcelDto = new ParcelResponseDto
         {
@@ -38,7 +35,9 @@ public class ParcelController(IParcelService parcelService) : ControllerBase
             Weight = newParcel.Weight ?? 0,
             Dimensions = newParcel.Dimensions ?? ""
         };
-        return CreatedAtAction(nameof(GetParcelById), new { id = newParcelDto.Id }, newParcelDto); }
+        return CreatedAtAction(nameof(GetParcelById), new { id = newParcelDto.Id }, newParcelDto);
+    }
+
 
     [HttpPost("{trackingNumber}/claim")]
     public async Task<IActionResult> ClaimParcel(string trackingNumber)
@@ -76,5 +75,5 @@ public class ParcelController(IParcelService parcelService) : ControllerBase
         });
         return Ok(parcelAwaitingPickupDto);
     }
-    
+
 }

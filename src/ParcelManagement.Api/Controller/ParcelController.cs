@@ -22,7 +22,13 @@ public class ParcelController(IParcelService parcelService) : ControllerBase
     [HttpPost("checkIn")]
     public async Task<IActionResult> CheckInParcel([FromBody] CheckInParcelDto dto)
     {
-
+        //checking if there's parcel with the same tracking number 
+        var existingSameParcel = await parcelService.GetParcelByTrackingNumberAsync(dto.TrackingNumber);
+        if (existingSameParcel != null)
+        {
+            return Conflict($"Same parcel with tracking number [{dto.TrackingNumber}] has already checked in");
+        }
+        
         var newParcel = await parcelService.CheckInParcelAsync(dto.TrackingNumber, dto.ResidentUnit, dto.Weight, dto.Dimensions);
         var newParcelDto = new ParcelResponseDto
         {

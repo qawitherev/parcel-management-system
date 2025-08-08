@@ -24,8 +24,15 @@ public class ParcelController(IParcelService parcelService) : ControllerBase
     {
 
         var newParcel = await parcelService.CheckInParcelAsync(dto.TrackingNumber, dto.ResidentUnit, dto.Weight, dto.Dimensions);
-        return CreatedAtAction(nameof(GetParcelById), new { id = newParcel.Id }, newParcel);
-    }
+        var newParcelDto = new ParcelResponseDto
+        {
+            Id = newParcel.Id,
+            TrackingNumber = newParcel.TrackingNumber,
+            ResidentUnit = newParcel.ResidentUnit,
+            Weight = newParcel.Weight ?? 0,
+            Dimensions = newParcel.Dimensions ?? ""
+        };
+        return CreatedAtAction(nameof(GetParcelById), new { id = newParcelDto.Id }, newParcelDto); }
 
     [HttpPost("{trackingNumber}/claim")]
     public async Task<IActionResult> ClaimParcel(string trackingNumber)
@@ -38,7 +45,15 @@ public class ParcelController(IParcelService parcelService) : ControllerBase
     public async Task<IActionResult> GetParcelByTrackingNumber(string trackingNumber)
     {
         var resultParcel = await parcelService.GetParcelByTrackingNumberAsync(trackingNumber);
-        return Ok(resultParcel);
+        var resultParcelDto = new ParcelResponseDto
+        {
+            Id = resultParcel!.Id,
+            TrackingNumber = resultParcel!.TrackingNumber,
+            ResidentUnit = resultParcel!.ResidentUnit,
+            Weight = resultParcel!.Weight ?? 0,
+            Dimensions = resultParcel!.Dimensions ?? ""
+        };
+        return Ok(resultParcelDto);
     }
 
     [HttpGet("awaitingPickup")]

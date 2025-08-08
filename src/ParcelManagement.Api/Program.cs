@@ -7,6 +7,11 @@ using ParcelManagement.Infrastructure.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
+if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddUserSecrets<Program>();
+}
+
 // tell the DI container that we have controller
 builder.Services.AddControllers();
 

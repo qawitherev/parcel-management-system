@@ -1,9 +1,13 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace ParcelManagement.Api.DTO
 {
     public class CheckInParcelDto
     {
+        [Required]
         public required string TrackingNumber { get; set; }
 
+        [Required]
         public required string ResidentUnit { get; set; }
 
         public decimal? Weight { get; set; }

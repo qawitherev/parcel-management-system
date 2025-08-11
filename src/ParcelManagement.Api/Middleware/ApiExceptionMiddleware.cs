@@ -9,7 +9,7 @@ namespace ParcelManagement.Api.Middleware
         private readonly RequestDelegate _next = next;
         private readonly ILogger<ApiExceptionMiddelware> _logger = logger;
 
-        public async Task DoController(HttpContext httpContext)
+        public async Task InvokeAsync(HttpContext httpContext)
         {
             try
             {

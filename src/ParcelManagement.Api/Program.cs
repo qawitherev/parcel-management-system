@@ -18,14 +18,17 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-var serverVersion = ServerVersion.AutoDetect(connectionString);
+
 
 // Dependency Injection 
 // THE HOLY GRAIL OF ASP.NET CORE
-builder.Services.AddDbContext<ApplicationDbContext>(options => 
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    var serverVersion = ServerVersion.AutoDetect(connectionString);
+        builder.Services.AddDbContext<ApplicationDbContext>(options => 
     options.UseMySql(connectionString, serverVersion));
-
+}
 builder.Services.AddScoped<IParcelRepository, ParcelRepository>();
 builder.Services.AddScoped<IParcelService, ParcelService>();
 
@@ -46,4 +49,9 @@ if (builder.Environment.IsDevelopment())
 
 app.UseMiddleware<ApiExceptionMiddelware>();
 
-app.Run(); 
+app.Run();
+
+namespace ParcelManagement.Api
+{
+    public partial class Program { }
+}

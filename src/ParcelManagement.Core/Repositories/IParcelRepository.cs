@@ -10,7 +10,7 @@ namespace ParcelManagement.Core.Repositories
         Task<Parcel> AddParcelAsync(Parcel parcel);
         Task UpdateParcelAsync(Parcel parcel);
         Task DeleteParcelAsync(Guid id);
-        Task<IReadOnlyList<Parcel?>> FindBySpecificationAsync(ISpecification<Parcel> specification);
-        Task<Parcel?> FindOneBySpecificationAsync(ISpecification<Parcel> specification);
+        Task<IReadOnlyList<Parcel?>> GetParcelsBySpecificationAsync(ISpecification<Parcel> specification);
+        Task<Parcel?> GetOneParcelBySpecificationAsync(ISpecification<Parcel> specification);
     }
 }

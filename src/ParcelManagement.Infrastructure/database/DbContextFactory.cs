@@ -1,3 +1,5 @@
+// this file is used during db-migration in design time
+
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;

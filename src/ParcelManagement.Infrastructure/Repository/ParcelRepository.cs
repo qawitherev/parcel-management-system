@@ -55,12 +55,12 @@ namespace ParcelManagement.Infrastructure.Repository
 
         // SPECIFICATION PATTERN 
         // this is good stuff 
-        public async Task<IReadOnlyList<Parcel?>> FindBySpecificationAsync(ISpecification<Parcel> specification)
+        public async Task<IReadOnlyList<Parcel?>> GetParcelsBySpecificationAsync(ISpecification<Parcel> specification)
         {
             return await _dbContext.Parcels.Where(specification.ToExpression()).ToListAsync();
         }
 
-        public async Task<Parcel?> FindOneBySpecificationAsync(ISpecification<Parcel> specification)
+        public async Task<Parcel?> GetOneParcelBySpecificationAsync(ISpecification<Parcel> specification)
         {
             return await _dbContext.Parcels.Where(specification.ToExpression()).FirstOrDefaultAsync();
         }

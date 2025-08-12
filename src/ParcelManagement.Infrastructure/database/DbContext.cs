@@ -32,9 +32,14 @@ namespace ParcelManagement.Infrastructure.Database
                 .Property(p => p.Weight)
                 .HasPrecision(18, 2);
 
-            // add unique constraint on tracking number 
+            // add unique constraint on tracking number and index it
             modelBuilder.Entity<Parcel>()
                 .HasIndex(p => p.TrackingNumber)
+                .IsUnique();
+
+            // add unique constraint to user.username and index it
+            modelBuilder.Entity<User>()
+                .HasIndex(user => user.Username)
                 .IsUnique();
         }
     }

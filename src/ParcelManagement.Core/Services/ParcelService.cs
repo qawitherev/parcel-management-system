@@ -52,7 +52,7 @@ namespace ParcelManagement.Core.Services
 
             //check for parcel with the same tracking number 
             var spec = new ParcelByTrackingNumberSpecification(newParcel.TrackingNumber);
-            var sameParcel = await _parcelRepo.FindOneBySpecificationAsync(spec);
+            var sameParcel = await _parcelRepo.GetOneParcelBySpecificationAsync(spec);
             if (sameParcel != null)
             {
                 throw new InvalidOperationException($"A parcel with tracking number '{trackingNumber}' already exists.");
@@ -63,7 +63,7 @@ namespace ParcelManagement.Core.Services
         public async Task ClaimParcelAsync(string trackingNumber)
         {
             var spec = new ParcelByTrackingNumberSpecification(trackingNumber);
-            var toBeClaimedParcel = await _parcelRepo.FindOneBySpecificationAsync(spec) ??
+            var toBeClaimedParcel = await _parcelRepo.GetOneParcelBySpecificationAsync(spec) ??
                 throw new InvalidOperationException($"Parcel with tracking number '{trackingNumber}' not found.");
             toBeClaimedParcel.Status = ParcelStatus.Claimed;
             toBeClaimedParcel.ExitDate = DateTime.UtcNow;
@@ -80,7 +80,7 @@ namespace ParcelManagement.Core.Services
         public async Task<IReadOnlyList<Parcel?>> GetAwaitingPickupParcelsAsync()
         {
             var specification = new ParcelsAwaitingPickupSpecification();
-            return await _parcelRepo.FindBySpecificationAsync(specification);
+            return await _parcelRepo.GetParcelsBySpecificationAsync(specification);
         }
 
         public async Task<Parcel?> GetParcelByIdAsync(Guid id)
@@ -92,20 +92,20 @@ namespace ParcelManagement.Core.Services
         public async Task<IReadOnlyList<Parcel?>> GetParcelByResidentUnitAsync(string residentUnit)
         {
             var parcelByResidentUnitSpec = new ParcelsByResidentUnitSpecification(residentUnit);
-            return await _parcelRepo.FindBySpecificationAsync(parcelByResidentUnitSpec);
+            return await _parcelRepo.GetParcelsBySpecificationAsync(parcelByResidentUnitSpec);
         }
 
         public async Task<Parcel?> GetParcelByTrackingNumberAsync(string trackingNumber)
         {
             var specification = new ParcelByTrackingNumberSpecification(trackingNumber);
-            var parcel = await _parcelRepo.FindOneBySpecificationAsync(specification) ?? throw new KeyNotFoundException($"Parcel with tracking number {trackingNumber} not found");
+            var parcel = await _parcelRepo.GetOneParcelBySpecificationAsync(specification) ?? throw new KeyNotFoundException($"Parcel with tracking number {trackingNumber} not found");
             return parcel;
         }
 
         public async Task<IReadOnlyList<Parcel?>> GetParcelsAwaitingPickup()
         {
             var spec = new ParcelsAwaitingPickupSpecification();
-            return await _parcelRepo.FindBySpecificationAsync(spec);
+            return await _parcelRepo.GetParcelsBySpecificationAsync(spec);
         }
     }
 }

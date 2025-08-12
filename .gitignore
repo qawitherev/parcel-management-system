@@ -3,6 +3,8 @@
 [Rr]elease/
 [Bb]in/
 [Oo]bj/
+**/bin/
+**/obj/
 
 # Visual Studio user specific files
 .vs/

@@ -1,5 +1,6 @@
 // this file is used during db-migration in design time
 
+
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
@@ -7,6 +8,11 @@ using Microsoft.Extensions.Configuration;
 
 namespace ParcelManagement.Infrastructure.Database
 {
+    // *DEPRECATED* //
+    // Now, we will only use command in src to generate migration file
+    // dotnet ef migrations add <MigrationName> --project "ParcelManagement.Infrastructure" --startup-project "ParcelManagement.Api"
+    // it will use .api to resolve deps and create DbContext from there 
+    // so this one is not used 🥲
     public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
     {
         public ApplicationDbContext CreateDbContext(string[] args)
@@ -18,7 +24,7 @@ namespace ParcelManagement.Infrastructure.Database
             var configBuilder = new ConfigurationBuilder()
                 .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "../ParcelManagement.Api"))
                 .AddJsonFile("appsettings.json")
-                .AddUserSecrets(apiAssembly, optional:true);
+                .AddUserSecrets(apiAssembly, optional: true);
 
 
             var config = configBuilder.Build();

@@ -33,6 +33,9 @@ namespace ParcelManagement.Test.Repository
                 var parcelRepo = new ParcelRepository(testDbContext);
                 var result = await parcelRepo.AddParcelAsync(parcel);
 
+                //TODO 
+                // to correct this one to use dbContext.Parcels.findAsync(id)
+                
                 //asserting the data
                 Assert.NotNull(result);
                 Assert.Equal(parcel.TrackingNumber, result.TrackingNumber);
@@ -120,7 +123,7 @@ namespace ParcelManagement.Test.Repository
                 await testDbContext.Parcels.AddRangeAsync(parcelList);
                 await testDbContext.SaveChangesAsync();
                 var spec = new ParcelByTrackingNumberSpecification("TN001");
-                var result = await parcelRepo.FindBySpecificationAsync(spec);
+                var result = await parcelRepo.GetParcelsBySpecificationAsync(spec);
                 Assert.NotNull(result);
                 foreach (var parcel in result)
                     Assert.Contains(result, r => r!.TrackingNumber == "TN001");
@@ -148,7 +151,7 @@ namespace ParcelManagement.Test.Repository
                 await testDbContext.SaveChangesAsync();
 
                 var spec = new ParcelsByResidentUnitSpecification("TN001");
-                var result = await parcelRepo.FindBySpecificationAsync(spec);
+                var result = await parcelRepo.GetParcelsBySpecificationAsync(spec);
 
                 Assert.NotNull(result);
                 Assert.Equal(residentParcels.Count, result.Count);

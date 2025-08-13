@@ -1,5 +1,6 @@
 using System.Net.Http.Headers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
 using ParcelManagement.Core.Entities;
 using ParcelManagement.Core.Repositories;
@@ -12,31 +13,34 @@ namespace ParcelManagement.Test.Repository
 {
     public class UserRepositoryTest
     {
-        [Fact]
-        public async Task CreateUserAsync_ExceededMaxLength_ShouldError()
-        {
-            var newInvalidUser = new User
-            {
-                Id = Guid.NewGuid(),
-                Username = new string('a', 101),
-                Email = "this@email.com",
-                ResidentUnit = "RU001",
-                PasswordHash = "####",
-                PasswordSalt = "salt",
-            };
-            var testDbContextOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase(databaseName: "testDB").Options;
 
-            using (var dbContext = new ApplicationDbContext(testDbContextOptions))
-            {
-                var userRepo = new UserRepository(dbContext);
-                await Assert.ThrowsAsync<DbUpdateException>(async () =>
-                {
-                    await userRepo.CreateUserAsync(newInvalidUser);
-                });
+        // COMMENTED OUT BECAUSE IN MEMORY DATABASE DOES NOT ENFORCE 
+        // DATA ANNOTATION
+        // [Fact]
+        // public async Task CreateUserAsync_ExceededMaxLength_ShouldError()
+        // {
+        //     var newInvalidUser = new User
+        //     {
+        //         Id = Guid.NewGuid(),
+        //         Username = new string('a', 101),
+        //         Email = "this@email.com",
+        //         ResidentUnit = "RU001",
+        //         PasswordHash = "####",
+        //         PasswordSalt = "salt",
+        //     };
+        //     var testDbContextOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
+        //         .UseInMemoryDatabase(databaseName: "testDB").Options;
 
-            }
-        }
+        //     using (var dbContext = new ApplicationDbContext(testDbContextOptions))
+        //     {
+        //         var userRepo = new UserRepository(dbContext);
+        //         await Assert.ThrowsAsync<DbUpdateException>(async () =>
+        //         {
+        //             await userRepo.CreateUserAsync(newInvalidUser);
+        //         });
+
+        //     }
+        // }
 
         [Fact]
         public async Task CreateUserAsync_ValidUser_ShouldCreateUser()
@@ -86,6 +90,7 @@ namespace ParcelManagement.Test.Repository
             {
                 var userRepo = new UserRepository(dbContext);
                 await dbContext.Users.AddAsync(newUser);
+                await dbContext.SaveChangesAsync();
                 var result = await userRepo.GetUserByIdAsync(theId);
                 Assert.NotNull(result);
                 Assert.Equal(theId, result.Id);
@@ -127,6 +132,7 @@ namespace ParcelManagement.Test.Repository
             using (var dbContext = new ApplicationDbContext(dbContextOptions))
             {
                 await dbContext.Users.AddAsync(newUser);
+                await dbContext.SaveChangesAsync();
                 var userRepo = new UserRepository(dbContext);
                 var userByUsernameSpecification = new UserByUsernameSpecification(newUser.Username);
                 var result = await userRepo.GetOneUserBySpecification(userByUsernameSpecification);

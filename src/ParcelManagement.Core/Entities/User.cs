@@ -23,6 +23,11 @@ namespace ParcelManagement.Core.Entities
         [MaxLength(100)]
         public required string Email { get; set; }
 
+        //TODO - to add migration for this new column 
+        [Required]
+        [MaxLength(50)]
+        public required string ResidentUnit { get; set; }
+
         [Required]
         [MinLength(6)]
         public required string PasswordHash { get; set; }

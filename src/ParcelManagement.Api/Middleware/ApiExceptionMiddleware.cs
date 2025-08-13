@@ -1,4 +1,5 @@
 using System.Net;
+using System.Security.Authentication;
 using System.Text.Json;
 using ParcelManagement.Core.Exceptions;
 
@@ -24,6 +25,7 @@ namespace ParcelManagement.Api.Middleware
                     ApiException e => e.StatusCode,
                     KeyNotFoundException => (int)HttpStatusCode.NotFound,
                     InvalidOperationException => (int)HttpStatusCode.Conflict,
+                    InvalidCredentialException => (int)HttpStatusCode.Unauthorized,
                     _ => (int)HttpStatusCode.InternalServerError
                 };
 

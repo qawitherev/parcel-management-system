@@ -1,4 +1,5 @@
 using ParcelManagement.Core.Entities;
+using ParcelManagement.Core.Specifications;
 
 namespace ParcelManagement.Core.Repositories
 {
@@ -9,5 +10,9 @@ namespace ParcelManagement.Core.Repositories
         Task<User?> GetUserByIdAsync(Guid id);
 
         Task<User> CreateUserAsync(User newUser);
+
+        Task<IReadOnlyList<User?>> GetUsersBySpecificationAsync(ISpecification<User> spec);
+
+        Task<User?> GetOneUserBySpecification(ISpecification<User> spec);
     }
 }

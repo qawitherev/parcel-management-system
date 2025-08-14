@@ -19,7 +19,7 @@ namespace ParcelManagement.Core.Services
         public async Task<string?> UserLoginAsync(string username, string password)
         {
             var userByUsernameSpec = new UserByUsernameSpecification(username);
-            var possibleUser = await _userRepository.GetOneUserBySpecification(userByUsernameSpec) ?? throw new InvalidCredentialException($"Invalid login credential");
+            var possibleUser = await _userRepository.GetOneUserBySpecification(userByUsernameSpec) ?? throw new InvalidCredentialException($"Invalid login credential - username");
             var isCredentialValid = PasswordService.VerifyPassword(possibleUser, possibleUser.PasswordHash, password);
             if (!isCredentialValid)
             {

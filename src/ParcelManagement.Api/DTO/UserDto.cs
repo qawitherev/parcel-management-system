@@ -1,0 +1,31 @@
+using System.ComponentModel.DataAnnotations;
+using ParcelManagement.Core.Specifications;
+
+namespace ParcelManagement.Api.DTO
+{
+    public class LoginDto
+    {
+        [Required]
+        public required string Username { get; set; }
+        [Required]
+        public required string PlainPassword { get; set; }
+    }
+
+    public class RegisterResidentDto
+    {
+        [Required]
+        public required string Username { get; set; }
+        [Required]
+        public required string Email { get; set; }
+        [Required]
+        public required string ResidentUnit { get; set; }
+        [Required]
+        public required string PlainPassword { get; set; }
+    }
+
+    public class UserResponseDto
+    {
+        public required Guid Id { get; set; }
+        public required string Username { get; set; }
+    }
+}

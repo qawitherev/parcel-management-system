@@ -11,6 +11,8 @@ namespace ParcelManagement.Core.Services
         Task<User> UserRegisterAsync(string username, string password, string email, string residentUnit);
 
         Task<string?> UserLoginAsync(string username, string password);
+
+        Task<User?> GetUserById(Guid id);
     }
 
     public class UserService(IUserRepository userRepository) : IUserService
@@ -59,6 +61,11 @@ namespace ParcelManagement.Core.Services
 
             return await _userRepository.CreateUserAsync(newUser);
 
+        }
+
+        public async Task<User?> GetUserById(Guid id)
+        {
+            return await _userRepository.GetUserByIdAsync(id) ?? throw new KeyNotFoundException($"User with id {id} is not found");
         }
     }
 }

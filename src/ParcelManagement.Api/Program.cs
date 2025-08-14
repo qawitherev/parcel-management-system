@@ -30,15 +30,24 @@ options.UseMySql(connectionString, serverVersion));
 }
 
 // config jwt to builder.service
-// var jwtSettings = new JWTSettings();
-// builder.Configuration.GetSection("JWTSettings").Bind(jwtSettings);
-// builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(option =>
-// {
-//     JwtBearerConfiguration.JwtBearerOptionsConfig(option, jwtSettings);
-// });
+var jwtSettings = new JWTSettings();
+builder.Configuration.GetSection("JWTSettings").Bind(jwtSettings);
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(option =>
+{
+    JwtBearerConfiguration.JwtBearerOptionsConfig(option, jwtSettings);
+    
+});
 
 builder.Services.AddScoped<IParcelRepository, ParcelRepository>();
 builder.Services.AddScoped<IParcelService, ParcelService>();
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
+
+builder.Services.Configure<JWTSettings>(
+    builder.Configuration.GetSection("JWTSettings")
+);
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 
 

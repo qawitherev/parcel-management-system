@@ -57,8 +57,6 @@ namespace ParcelManagement.Core.Services
             var hashedPassword = PasswordService.HashPassword(newUser, password);
             newUser.PasswordHash = hashedPassword;
 
-            // make sure email is valid 
-
             return await _userRepository.CreateUserAsync(newUser);
 
         }

@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using ParcelManagement.Api.AuthenticationAndAuthorization;
 using ParcelManagement.Api.DTO;
 using ParcelManagement.Core.Entities;
 using ParcelManagement.Core.Services;
@@ -9,9 +10,10 @@ namespace ParcelManagement.Api.Controller
 
     [ApiController]
     [Route("api/[controller]")]
-    public class UserController(IUserService userService) : ControllerBase
+    public class UserController(IUserService userService, ITokenService tokenService) : ControllerBase
     {
         private readonly IUserService _userService = userService;
+        private readonly ITokenService _tokenService = tokenService;
 
         [HttpGet("GetUserById/{id}")]
         public async Task<IActionResult> GetUserById(Guid id)
@@ -35,9 +37,9 @@ namespace ParcelManagement.Api.Controller
         [HttpPost("login")]
         public async Task<IActionResult> UserLogin([FromBody] LoginDto dto)
         {
-            await _userService.UserLoginAsync(dto.Username, dto.PlainPassword);
-            // for now just return Ok - will do jwt thing later 
-            return Ok(new string("hello world"));
+            var userId = await _userService.UserLoginAsync(dto.Username, dto.PlainPassword);
+            var jwt = _tokenService.GenerateToken(userId!, dto.Username);
+            return Ok(new { Token = jwt });
         }
     }
 }

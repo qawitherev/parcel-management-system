@@ -6,5 +6,7 @@ namespace ParcelManagement.Api.AuthenticationAndAuthorization {
         public string? Issuer { get; set; }
 
         public string? Audience { get; set; }
+
+        public int? ExpirationMinutes { get; set; }
     }
 }

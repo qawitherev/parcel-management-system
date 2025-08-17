@@ -1,10 +1,13 @@
 using System.Net.Http.Json;
 using System.Text;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using ParcelManagement.Api.DTO;
 using ParcelManagement.Core.Entities;
+using ParcelManagement.Core.Misc;
 using ParcelManagement.Infrastructure.Database;
+using ParcelManagement.Test.Integration.Misc;
 
 namespace ParcelManagement.Test.Integration
 {
@@ -63,6 +66,85 @@ namespace ParcelManagement.Test.Integration
             Assert.Equal(System.Net.HttpStatusCode.Created, res.StatusCode);
             Assert.NotNull(res);
             Assert.Equal(newUser.Username, deserialized!.Username);
+        }
+
+        [Fact]
+        public async Task UserLogin_UsernameNotFound_ShouldNotLogin()
+        {
+            var toBeLogin = new LoginDto
+            {
+                Username = "username_1",
+                PlainPassword = "password_123"
+            };
+            var json = JsonConvert.SerializeObject(toBeLogin);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var res = await _client.PostAsync("api/user/login", content);
+            Assert.Equal(System.Net.HttpStatusCode.Conflict, res.StatusCode);
+        }
+
+        [Fact]
+        public async Task UserLogin_InvalidCredential_ShouldNotLogin()
+        {
+            var theUsername = "username_01";
+            var user = new User
+            {
+                Id = Guid.NewGuid(),
+                Username = theUsername,
+                Email = "this@email.com",
+                ResidentUnit = "RU001",
+                PasswordHash = "####",
+                PasswordSalt = "####",
+                Role = UserRole.Resident
+            };
+            user.PasswordHash = PasswordService.HashPassword(user, user.PasswordHash);
+            using (var scope = factory.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider
+                    .GetRequiredService<ApplicationDbContext>();
+                await dbContext.AddAsync(user);
+                await dbContext.SaveChangesAsync();
+            }
+            var loginDto = new LoginDto
+            {
+                Username = theUsername,
+                PlainPassword = "Password111"
+            };
+            var json = JsonConvert.SerializeObject(loginDto);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var res = await _client.PostAsync("api/user/login", content);
+            Assert.Equal(System.Net.HttpStatusCode.Conflict, res.StatusCode);
+        }
+
+        [Fact]
+        public async Task UserLogin_CorrectCredentials_ShouldLogin()
+        {
+            var theUsername = "username";
+            var thePassword = "Password123";
+            var user = new User
+            {
+                Id = Guid.NewGuid(),
+                Username = theUsername,
+                Email = "email@email.com",
+                ResidentUnit = "RU001",
+                PasswordHash = "####",
+                PasswordSalt = "####"
+            };
+            user.PasswordHash = PasswordService.HashPassword(user, thePassword);
+            using (var scope = factory.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                await dbContext.Users.AddAsync(user);
+                await dbContext.SaveChangesAsync();
+            }
+            var dto = new LoginDto
+            {
+                Username = theUsername,
+                PlainPassword = thePassword
+            };
+            var content = IntegrationMisc.ConvertToStringContent(dto);
+            var result = await _client.PostAsync("api/user/login", content);
+            Assert.Equal(System.Net.HttpStatusCode.OK, result.StatusCode);
+            Assert.NotNull(result.Content);
         }
      }
 }

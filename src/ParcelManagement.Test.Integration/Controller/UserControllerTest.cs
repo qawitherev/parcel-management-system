@@ -1,3 +1,4 @@
+using System.Net.Http.Json;
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -43,6 +44,25 @@ namespace ParcelManagement.Test.Integration
             var content = new StringContent(inJson, Encoding.UTF8, "application/json");
             var res = await _client.PostAsync("api/user/register/resident", content);
             Assert.Equal(System.Net.HttpStatusCode.Conflict, res.StatusCode);
+        }
+
+        [Fact]
+        public async Task RegisterResident_UsernameNotExist_ShouldRegister()
+        {
+            var newUser = new RegisterResidentDto
+            {
+                Username = "user_1",
+                Email = "this.email@email",
+                PlainPassword = "Password_123",
+                ResidentUnit = "RU001"
+            };
+            var json = JsonConvert.SerializeObject(newUser);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var res = await _client.PostAsync("api/user/register/resident", content);
+            var deserialized = await res.Content.ReadFromJsonAsync<UserResponseDto>();
+            Assert.Equal(System.Net.HttpStatusCode.Created, res.StatusCode);
+            Assert.NotNull(res);
+            Assert.Equal(newUser.Username, deserialized!.Username);
         }
      }
 }

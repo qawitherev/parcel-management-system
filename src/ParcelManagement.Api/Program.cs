@@ -9,6 +9,9 @@ using ParcelManagement.Infrastructure.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// while we can do if (... || builder.Environment.IsEnvironment("Testing"))
+// we shouldn't do that because testing should have their own config 
+// so we init the settings in factory
 if (builder.Environment.IsDevelopment())
 {
     builder.Configuration.AddUserSecrets<Program>();
@@ -32,6 +35,10 @@ options.UseMySql(connectionString, serverVersion));
 // config jwt to builder.service
 var jwtSettings = new JWTSettings();
 builder.Configuration.GetSection("JWTSettings").Bind(jwtSettings);
+if (jwtSettings.SecretKey == null && !builder.Environment.IsEnvironment("Testing"))
+{
+    throw new InvalidOperationException("Failed to bind JWTSettings from configuration. Please check your appsettings.json or environment variables.");
+}
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(option =>
 {
     JwtBearerConfiguration.JwtBearerOptionsConfig(option, jwtSettings);
@@ -56,8 +63,14 @@ var app = builder.Build();
 // search all route defined 
 app.UseRouting();
 
+// authentication to populate HttpContext.User
+app.UseAuthentication();
+// check if populated HttpContext.User is legit 
+app.UseAuthorization();
+
 // map the received route with the controller and execute it 
 app.MapControllers();
+
 
 //for swagger - only available in dev 
 if (builder.Environment.IsDevelopment())

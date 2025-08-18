@@ -38,9 +38,10 @@ namespace ParcelManagement.Api.Controller
         [HttpPost("login")]
         public async Task<IActionResult> UserLogin([FromBody] LoginDto dto)
         {
-            var userId = await _userService.UserLoginAsync(dto.Username, dto.PlainPassword);
-            Console.WriteLine($"user id is {userId!}");
-            var jwt = _tokenService.GenerateToken(userId!, dto.Username);
+            // for now we will just make one user = one role
+            // no keperluan for multiple roles for now 
+            var loginRes = await _userService.UserLoginAsync(dto.Username, dto.PlainPassword);
+            var jwt = _tokenService.GenerateToken(loginRes[0], dto.Username, loginRes[1]);
             return Ok(new { Token = jwt });
         }
     }

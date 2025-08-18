@@ -1,13 +1,14 @@
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ParcelManagement.Api.DTO;
-using ParcelManagement.Core.Entities;
 using ParcelManagement.Core.Services;
 
 namespace ParcelManagement.Api.Controller
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Consumes("application/json")]
     public class ParcelController(IParcelService parcelService) : ControllerBase
     {
         // since we wont expose this endpoint publicly, we won't follow 
@@ -21,6 +22,7 @@ namespace ParcelManagement.Api.Controller
         }
 
         [HttpPost("checkIn")]
+        [Authorize(Roles = "ParcelRoomManager")]
         public async Task<IActionResult> CheckInParcel([FromBody] CheckInParcelDto dto)
         {
             if (!ModelState.IsValid)
@@ -33,7 +35,7 @@ namespace ParcelManagement.Api.Controller
             {
                 Id = newParcel.Id,
                 TrackingNumber = newParcel.TrackingNumber,
-                ResidentUnit = newParcel.ResidentUnit,
+                ResidentUnit = newParcel.ResidentUnitDeprecated,
                 Weight = newParcel.Weight ?? 0,
                 Dimensions = newParcel.Dimensions ?? ""
             };
@@ -42,6 +44,7 @@ namespace ParcelManagement.Api.Controller
 
 
         [HttpPost("{trackingNumber}/claim")]
+        [Authorize(Roles = "ParcelRoomManager")]
         public async Task<IActionResult> ClaimParcel(string trackingNumber)
         {
             await parcelService.ClaimParcelAsync(trackingNumber);
@@ -49,6 +52,7 @@ namespace ParcelManagement.Api.Controller
         }
 
         [HttpGet("{trackingNumber}")]
+        [Authorize(Roles = "ParcelRoomManager")]
         public async Task<IActionResult> GetParcelByTrackingNumber(string trackingNumber)
         {
             var resultParcel = await parcelService.GetParcelByTrackingNumberAsync(trackingNumber);
@@ -56,7 +60,7 @@ namespace ParcelManagement.Api.Controller
             {
                 Id = resultParcel!.Id,
                 TrackingNumber = resultParcel!.TrackingNumber,
-                ResidentUnit = resultParcel!.ResidentUnit,
+                ResidentUnit = resultParcel!.ResidentUnitDeprecated,
                 Weight = resultParcel!.Weight ?? 0,
                 Dimensions = resultParcel!.Dimensions ?? ""
             };
@@ -64,6 +68,7 @@ namespace ParcelManagement.Api.Controller
         }
 
         [HttpGet("awaitingPickup")]
+        [Authorize(Roles = "Admin, ParcelRoomManager")]
         public async Task<IActionResult> GetParcelAwaitingPickup()
         {
             var parcelsAwaitingPickup = await parcelService.GetParcelsAwaitingPickup();
@@ -71,12 +76,11 @@ namespace ParcelManagement.Api.Controller
             {
                 Id = entity!.Id,
                 TrackingNumber = entity.TrackingNumber,
-                ResidentUnit = entity.ResidentUnit,
+                ResidentUnit = entity.ResidentUnitDeprecated,
                 Weight = entity?.Weight,
                 Dimensions = entity?.Dimensions
             });
             return Ok(parcelAwaitingPickupDto);
         }
-
     }
 }

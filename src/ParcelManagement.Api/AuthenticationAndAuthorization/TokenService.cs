@@ -10,13 +10,13 @@ namespace ParcelManagement.Api.AuthenticationAndAuthorization
     {
         //TODO
         // To include role for authorization
-        string GenerateToken(string id, string username);
+        string GenerateToken(string id, string username, string role);
     }
 
     public class TokenService(IOptions<JWTSettings> jwtSettings_iOptions) : ITokenService
     {
         private readonly JWTSettings jwtSettings = jwtSettings_iOptions.Value;
-        public string GenerateToken(string id, string username)
+        public string GenerateToken(string id, string username, string role)
         {
             if (jwtSettings.SecretKey == null)
             {
@@ -26,7 +26,8 @@ namespace ParcelManagement.Api.AuthenticationAndAuthorization
             var claims = new List<Claim>
             {
                 new(ClaimTypes.NameIdentifier, id),
-                new(ClaimTypes.Name, username)
+                new(ClaimTypes.Name, username),
+                new(ClaimTypes.Role, role)
             };
             var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey!));
             var signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);

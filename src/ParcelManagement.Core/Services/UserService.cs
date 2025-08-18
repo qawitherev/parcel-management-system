@@ -10,7 +10,7 @@ namespace ParcelManagement.Core.Services
     {
         Task<User> UserRegisterAsync(string username, string password, string email, string residentUnit);
 
-        Task<string?> UserLoginAsync(string username, string password);
+        Task<List<string>> UserLoginAsync(string username, string password);
 
         Task<User?> GetUserById(Guid id);
     }
@@ -18,7 +18,7 @@ namespace ParcelManagement.Core.Services
     public class UserService(IUserRepository userRepository) : IUserService
     {
         private readonly IUserRepository _userRepository = userRepository;
-        public async Task<string?> UserLoginAsync(string username, string password)
+        public async Task<List<string>> UserLoginAsync(string username, string password)
         {
             var userByUsernameSpec = new UserByUsernameSpecification(username);
             var possibleUser = await _userRepository.GetOneUserBySpecification(userByUsernameSpec) ?? throw new InvalidCredentialException($"Invalid login credential - username");
@@ -27,7 +27,8 @@ namespace ParcelManagement.Core.Services
             {
                 throw new InvalidCredentialException("Invalid login credentials");
             }
-            return possibleUser.Id.ToString();
+            var userRole = possibleUser.Role;
+            return [possibleUser!.Id.ToString(), userRole.ToString()];
         }
 
         // this service is only to register resident 

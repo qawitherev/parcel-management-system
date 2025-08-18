@@ -44,7 +44,7 @@ namespace ParcelManagement.Core.Services
             {
                 Id = Guid.NewGuid(),
                 TrackingNumber = trackingNumber,
-                ResidentUnit = residentUnit,
+                ResidentUnitDeprecated = residentUnit,
                 Status = ParcelStatus.AwaitingPickup,
                 Weight = weight ?? 0,
                 Dimensions = dimensions ?? ""

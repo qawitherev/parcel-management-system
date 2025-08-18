@@ -19,7 +19,7 @@ namespace ParcelManagement.Test.Entities
             {
                 Id = Guid.NewGuid(),
                 TrackingNumber = "TN001",
-                ResidentUnit = "RU001",
+                ResidentUnitDeprecated = "RU001",
                 EntryDate = DateTimeOffset.UtcNow,
                 Status = ParcelStatus.AwaitingPickup,
                 Weight = 2,
@@ -29,7 +29,7 @@ namespace ParcelManagement.Test.Entities
 
             parcel.Id.Should().NotBeEmpty();
             parcel.TrackingNumber.Should().Be("TN001");
-            parcel.ResidentUnit.Should().Be("RU001");
+            parcel.ResidentUnitDeprecated.Should().Be("RU001");
             parcel.Status.Should().Be(ParcelStatus.AwaitingPickup);
             parcel.Weight.Should().Be(2);
             parcel.Dimensions.Should().Be("1x1x1");
@@ -42,7 +42,7 @@ namespace ParcelManagement.Test.Entities
             {
                 Id = Guid.NewGuid(),
                 TrackingNumber = new string('A', 51), // since length.max is 50
-                ResidentUnit = "RU002",
+                ResidentUnitDeprecated = "RU002",
                 EntryDate = DateTimeOffset.UtcNow,
                 Weight = 2,
                 Dimensions = "1x1x1"

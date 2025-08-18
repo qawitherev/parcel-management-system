@@ -41,6 +41,12 @@ namespace ParcelManagement.Infrastructure.Database
             modelBuilder.Entity<User>()
                 .HasIndex(user => user.Username)
                 .IsUnique();
+
+            // it is a best practice to start from the dependent entity—the one with the foreign key.
+            modelBuilder.Entity<Parcel>()
+                .HasOne(p => p.ResidentUnit)
+                .WithMany(ru => ru.Parcels)
+                .HasForeignKey(p => p.ResidentUnitId);
         }
     }
 }

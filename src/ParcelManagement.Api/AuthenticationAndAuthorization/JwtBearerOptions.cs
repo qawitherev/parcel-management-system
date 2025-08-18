@@ -15,7 +15,7 @@ namespace ParcelManagement.Api.AuthenticationAndAuthorization
                 ValidateAudience = false,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey!))
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("hello-world"))
             };
         }
     }

@@ -10,22 +10,25 @@ namespace ParcelManagement.Core.Services
     {
         Task<User> UserRegisterAsync(string username, string password, string email, string residentUnit);
 
-        Task<string?> UserLoginAsync(string username, string password);
+        Task<List<string>> UserLoginAsync(string username, string password);
+
+        Task<User?> GetUserById(Guid id);
     }
 
     public class UserService(IUserRepository userRepository) : IUserService
     {
         private readonly IUserRepository _userRepository = userRepository;
-        public async Task<string?> UserLoginAsync(string username, string password)
+        public async Task<List<string>> UserLoginAsync(string username, string password)
         {
             var userByUsernameSpec = new UserByUsernameSpecification(username);
-            var possibleUser = await _userRepository.GetOneUserBySpecification(userByUsernameSpec) ?? throw new InvalidCredentialException($"Invalid login credential");
+            var possibleUser = await _userRepository.GetOneUserBySpecification(userByUsernameSpec) ?? throw new InvalidCredentialException($"Invalid login credential - username");
             var isCredentialValid = PasswordService.VerifyPassword(possibleUser, possibleUser.PasswordHash, password);
             if (!isCredentialValid)
             {
                 throw new InvalidCredentialException("Invalid login credentials");
             }
-            return possibleUser.Id.ToString();
+            var userRole = possibleUser.Role;
+            return [possibleUser!.Id.ToString(), userRole.ToString()];
         }
 
         // this service is only to register resident 
@@ -55,10 +58,13 @@ namespace ParcelManagement.Core.Services
             var hashedPassword = PasswordService.HashPassword(newUser, password);
             newUser.PasswordHash = hashedPassword;
 
-            // make sure email is valid 
-
             return await _userRepository.CreateUserAsync(newUser);
 
+        }
+
+        public async Task<User?> GetUserById(Guid id)
+        {
+            return await _userRepository.GetUserByIdAsync(id) ?? throw new KeyNotFoundException($"User with id {id} is not found");
         }
     }
 }

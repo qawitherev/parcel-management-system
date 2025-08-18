@@ -20,7 +20,9 @@ namespace ParcelManagement.Core.Entities
 
         [Required]
         [MaxLength(10)]
-        public required string ResidentUnit { get; set; }
+        public required string ResidentUnitDeprecated { get; set; }
+
+        public Guid ResidentUnitId { get; set; }
 
         public DateTimeOffset EntryDate { get; set; }
         public DateTimeOffset? ExitDate { get; set; } // Nullable if not yet claimed
@@ -29,6 +31,8 @@ namespace ParcelManagement.Core.Entities
 
         public decimal? Weight { get; set; } // Nullable
         public string? Dimensions { get; set; } // Nullable
-        
+
+        // navigation property 
+        public ResidentUnit? ResidentUnit { get; set; }
     }
 }

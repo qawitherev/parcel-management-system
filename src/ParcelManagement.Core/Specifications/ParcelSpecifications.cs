@@ -25,7 +25,7 @@ namespace ParcelManagement.Core.Specifications
         {
             _residentUnit = residentUnit;
         }
-        public Expression<Func<Parcel, bool>> ToExpression() => p => p.ResidentUnit == _residentUnit;
+        public Expression<Func<Parcel, bool>> ToExpression() => p => p.ResidentUnitDeprecated == _residentUnit;
     }
 
 }

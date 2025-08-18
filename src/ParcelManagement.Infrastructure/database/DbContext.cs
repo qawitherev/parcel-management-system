@@ -47,6 +47,20 @@ namespace ParcelManagement.Infrastructure.Database
                 .HasOne(p => p.ResidentUnit)
                 .WithMany(ru => ru.Parcels)
                 .HasForeignKey(p => p.ResidentUnitId);
+
+            // making composite primary key for bridge table 
+            modelBuilder.Entity<UserResidentUnit>()
+                .HasKey(uru => new { uru.UserId, uru.ResidentUnitId });
+
+            modelBuilder.Entity<UserResidentUnit>()
+                .HasOne(uru => uru.User)
+                .WithMany(u => u.UserResidentUnits)
+                .HasForeignKey(uru => uru.UserId);
+
+            modelBuilder.Entity<UserResidentUnit>()
+                .HasOne(uru => uru.ResidentUnit)
+                .WithMany(ru => ru.UserResidentUnits)
+                .HasForeignKey(uru => uru.ResidentUnitId);
         }
     }
 }

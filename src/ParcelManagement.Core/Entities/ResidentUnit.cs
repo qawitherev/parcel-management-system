@@ -18,5 +18,7 @@ namespace ParcelManagement.Core.Entities
 
         // navigation property 
         public ICollection<Parcel> Parcels { get; set; } = [];
+
+        public ICollection<UserResidentUnit> UserResidentUnits { get; set; } = [];
     }
 }

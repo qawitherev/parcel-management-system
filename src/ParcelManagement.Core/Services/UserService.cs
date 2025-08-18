@@ -48,7 +48,7 @@ namespace ParcelManagement.Core.Services
                 Id = Guid.NewGuid(),
                 Username = username,
                 Email = email,
-                ResidentUnit = residentUnit,
+                ResidentUnitDeprecated = residentUnit,
                 PasswordHash = "will do this later",
                 PasswordSalt = "will do this later",
                 Role = UserRole.Resident,

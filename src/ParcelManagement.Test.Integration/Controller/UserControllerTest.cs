@@ -91,7 +91,7 @@ namespace ParcelManagement.Test.Integration
                 Id = Guid.NewGuid(),
                 Username = theUsername,
                 Email = "this@email.com",
-                ResidentUnit = "RU001",
+                ResidentUnitDeprecated = "RU001",
                 PasswordHash = "####",
                 PasswordSalt = "####",
                 Role = UserRole.Resident
@@ -125,7 +125,7 @@ namespace ParcelManagement.Test.Integration
                 Id = Guid.NewGuid(),
                 Username = theUsername,
                 Email = "email@email.com",
-                ResidentUnit = "RU001",
+                ResidentUnitDeprecated = "RU001",
                 PasswordHash = "####",
                 PasswordSalt = "####"
             };

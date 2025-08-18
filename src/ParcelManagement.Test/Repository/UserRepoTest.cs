@@ -54,7 +54,7 @@ namespace ParcelManagement.Test.Repository
                 Id = theId,
                 Username = "username",
                 Email = "this@email.com",
-                ResidentUnit = "RU001",
+                ResidentUnitDeprecated = "RU001",
                 PasswordHash = "####",
                 PasswordSalt = "salt",
             };
@@ -81,7 +81,7 @@ namespace ParcelManagement.Test.Repository
                 Id = theId,
                 Username = "username",
                 Email = "this@email.com",
-                ResidentUnit = "RU001",
+                ResidentUnitDeprecated = "RU001",
                 PasswordHash = "####",
                 PasswordSalt = "salt",
             };
@@ -124,7 +124,7 @@ namespace ParcelManagement.Test.Repository
                 Id = Guid.NewGuid(),
                 Username = theUsername,
                 Email = "this@email.com",
-                ResidentUnit = "RU001",
+                ResidentUnitDeprecated = "RU001",
                 PasswordHash = "####",
                 PasswordSalt = "salt",
             };

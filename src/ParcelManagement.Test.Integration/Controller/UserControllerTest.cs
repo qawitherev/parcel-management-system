@@ -39,7 +39,7 @@ namespace ParcelManagement.Test.Integration
             {
                 Username = existingUsername,
                 Email = "email@email.com",
-                PlainPassword = "Password123",
+                Password = "Password123",
                 ResidentUnit = "RU001"
             };
 
@@ -56,7 +56,7 @@ namespace ParcelManagement.Test.Integration
             {
                 Username = "user_1",
                 Email = "this.email@email",
-                PlainPassword = "Password_123",
+                Password = "Password_123",
                 ResidentUnit = "RU001"
             };
             var json = JsonConvert.SerializeObject(newUser);
@@ -79,7 +79,7 @@ namespace ParcelManagement.Test.Integration
             var json = JsonConvert.SerializeObject(toBeLogin);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var res = await _client.PostAsync("api/user/login", content);
-            Assert.Equal(System.Net.HttpStatusCode.Conflict, res.StatusCode);
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, res.StatusCode);
         }
 
         [Fact]
@@ -112,7 +112,7 @@ namespace ParcelManagement.Test.Integration
             var json = JsonConvert.SerializeObject(loginDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var res = await _client.PostAsync("api/user/login", content);
-            Assert.Equal(System.Net.HttpStatusCode.Conflict, res.StatusCode);
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, res.StatusCode);
         }
 
         [Fact]

@@ -10,6 +10,7 @@ namespace ParcelManagement.Api.Controller
 
     [ApiController]
     [Route("api/[controller]")]
+    [Consumes("application/json")]
     public class UserController(IUserService userService, ITokenService tokenService) : ControllerBase
     {
         private readonly IUserService _userService = userService;
@@ -25,7 +26,7 @@ namespace ParcelManagement.Api.Controller
         [HttpPost("register/resident")]
         public async Task<IActionResult> RegisterResident([FromBody] RegisterResidentDto dto)
         {
-            var newUser = await _userService.UserRegisterAsync(dto.Username, dto.PlainPassword, dto.Email, dto.ResidentUnit);
+            var newUser = await _userService.UserRegisterAsync(dto.Username, dto.Password, dto.Email, dto.ResidentUnit);
             var newUserDto = new UserResponseDto
             {
                 Id = newUser.Id,
@@ -38,6 +39,7 @@ namespace ParcelManagement.Api.Controller
         public async Task<IActionResult> UserLogin([FromBody] LoginDto dto)
         {
             var userId = await _userService.UserLoginAsync(dto.Username, dto.PlainPassword);
+            Console.WriteLine($"user id is {userId!}");
             var jwt = _tokenService.GenerateToken(userId!, dto.Username);
             return Ok(new { Token = jwt });
         }

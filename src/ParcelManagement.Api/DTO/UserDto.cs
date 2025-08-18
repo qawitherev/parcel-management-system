@@ -20,7 +20,7 @@ namespace ParcelManagement.Api.DTO
         [Required]
         public required string ResidentUnit { get; set; }
         [Required]
-        public required string PlainPassword { get; set; }
+        public required string Password { get; set; }
     }
 
     public class UserResponseDto

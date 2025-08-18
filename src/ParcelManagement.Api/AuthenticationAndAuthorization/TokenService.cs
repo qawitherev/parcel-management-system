@@ -18,6 +18,10 @@ namespace ParcelManagement.Api.AuthenticationAndAuthorization
         private readonly JWTSettings jwtSettings = jwtSettings_iOptions.Value;
         public string GenerateToken(string id, string username)
         {
+            if (jwtSettings.SecretKey == null)
+            {
+                throw new NullReferenceException("Secret key is not exist");
+            }
             // make claim
             var claims = new List<Claim>
             {

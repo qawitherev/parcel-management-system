@@ -30,7 +30,7 @@ namespace ParcelManagement.Test.Integration
                 services.RemoveAll<JWTSettings>();
                 var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
                 {
-                    ["JWTSettings:SecretKey"] = "this-is-a-very-secret-key",
+                    ["JWTSettings:SecretKey"] = "this-is-a-very-very-very-very-long-secret-key-for-testing",
                     ["JWTSettings:Issuer"] = "test-issuer",
                     ["JWTSettings:Audience"] = "test-audience",
                     ["JWTSettings:ExpirationMinutes"] = "60"

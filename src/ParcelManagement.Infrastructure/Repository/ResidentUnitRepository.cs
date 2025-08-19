@@ -49,9 +49,7 @@ namespace ParcelManagement.Infrastructure.Repository
 
         public async Task UpdateResidenUnitAsync(ResidentUnit residentUnit)
         {
-            var existing = await _dbContext.ResidentUnits.FindAsync(residentUnit.Id) ??
-                throw new NullReferenceException($"Resident unit with ID {residentUnit.Id} does not exist");
-            _dbContext.Entry(existing).CurrentValues.SetValues(residentUnit);
+            _dbContext.Entry(residentUnit).CurrentValues.SetValues(residentUnit);
             await _dbContext.SaveChangesAsync();
         }
     }

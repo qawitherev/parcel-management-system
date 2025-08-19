@@ -63,6 +63,9 @@ namespace ParcelManagement.Infrastructure.Database
                 .HasOne(uru => uru.ResidentUnit)
                 .WithMany(ru => ru.UserResidentUnits)
                 .HasForeignKey(uru => uru.ResidentUnitId);
+
+            modelBuilder.Entity<ResidentUnit>()
+                .HasIndex(ru => ru.UnitName).IsUnique();
         }
     }
 }

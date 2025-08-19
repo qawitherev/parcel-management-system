@@ -4,6 +4,7 @@ namespace ParcelManagement.Core.Entities
 {
     public class ResidentUnit
     {
+        [Required]
         public Guid Id { set; get; }
 
         [Required]

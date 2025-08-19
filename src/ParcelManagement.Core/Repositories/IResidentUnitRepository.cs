@@ -15,7 +15,7 @@ namespace ParcelManagement.Core.Repositories
 
         Task DeleteResidentUnitAsync(Guid id);
 
-        // my conscience state that here we better to use 
+        // my conscience says that here we better to use 
         // IReadOnlyCollection<T> because of many functionality e.g., 
         // indexer i.e., res[0] --> to access first element 
         Task<IReadOnlyList<ResidentUnit?>> GetResidentUnitsBySpecificationAsync(ISpecification<ResidentUnit> specification);

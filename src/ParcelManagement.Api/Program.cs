@@ -56,6 +56,9 @@ builder.Services.Configure<JWTSettings>(
 );
 builder.Services.AddScoped<ITokenService, TokenService>();
 
+builder.Services.AddScoped<IResidentUnitRepository, ResidentUnitRepository>();
+builder.Services.AddScoped<IResidentUnitService, ResidentUnitService>();
+
 
 
 var app = builder.Build();

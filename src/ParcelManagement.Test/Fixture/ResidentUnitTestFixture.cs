@@ -27,5 +27,10 @@ namespace ParcelManagement.Test.Fixture
             ResidentUnitService = new ResidentUnitService(ResidentUnitRepository);
             return Task.CompletedTask;
         }
+
+        public async Task ResetDb()
+        {
+            await DbContext.Database.EnsureDeletedAsync();   
+        }
     }
 }

@@ -31,7 +31,7 @@ In this project:
    - Repositories
    - Services
 3. Proper disposal of DbContext through `Dispose()`
-4. Test classes implement `IClassFixture<T>`
+4. Test classes implement `<T>`
 5. Setup occurs once per test class
 6. Cleanup happens at class completion
 
@@ -41,3 +41,8 @@ In this project:
 - Future documentation will cover the new approach
 
 > Note: This pattern works well for isolated resources but requires careful consideration with shared resources like databases.
+
+
+----------------------------------------------
+
+this section will discuss how asyn 

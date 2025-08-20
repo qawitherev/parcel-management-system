@@ -39,9 +39,9 @@ namespace ParcelManagement.Test.Fixture
     }
 
     // Second fixture that uses IAsyncLifetime for an isolated testing 
-    // InitializeAsync will run before every test
-    // DisposeAsync will run after every test
-    // Pros: Isolated testing, Cons: Slower performance (setup and teardown for every testing)
+    // InitializeAsync will before each test class 
+    // DisposeAsync is run at the end of the test class 
+    // Still a shared dbContext but this one is async dispose 
     public class UserTestAsyncLifetimeFixture : IAsyncLifetime
     {
         public ApplicationDbContext DbContext { get; private set; } = null!;

@@ -16,6 +16,8 @@ namespace ParcelManagement.Infrastructure.Database
 
         public virtual DbSet<ResidentUnit> ResidentUnits { get; set; }
 
+        public virtual DbSet<UserResidentUnit> UserResidentUnits { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

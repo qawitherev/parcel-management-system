@@ -16,5 +16,13 @@ namespace ParcelManagement.Core.Repositories
         Task<IReadOnlyCollection<UserResidentUnit?>> GetUserResidentUnitsBySpecification(ISpecification<UserResidentUnit> specification);
 
         Task<UserResidentUnit?> GetOneResidentUnitBySpecification(ISpecification<UserResidentUnit> specification);
+
+        // combination means combination of 
+        // userId and residentUnitId
+        Task<UserResidentUnit?> GetResidentUnitByCombination(Guid userId, Guid residentUnitId);
+
+        Task<IReadOnlyCollection<User?>> GetUsersByResidentUnit(Guid residentUnitId);
+
+        Task<IReadOnlyCollection<ResidentUnit?>> GetResidentUnitsByUser(Guid userId);
     }
 }

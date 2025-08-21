@@ -4,7 +4,7 @@ using ParcelManagement.Core.Specifications;
 
 namespace ParcelManagement.Core.Services
 {
-    public interface IUserResidentUnit
+    public interface IUserResidentUnitService
     {
         Task<UserResidentUnit> CreateUserResidentUnit(UserResidentUnit userResidentUnit, Guid creator);
 
@@ -15,7 +15,7 @@ namespace ParcelManagement.Core.Services
         Task<IReadOnlyCollection<ResidentUnit?>> GetResidentsUnitByUser(Guid userId);
     }
 
-    public class UserResidentUnitService(IUserResidentUnitRepository repository) : IUserResidentUnit
+    public class UserResidentUnitService(IUserResidentUnitRepository repository) : IUserResidentUnitService
     {
         private readonly IUserResidentUnitRepository _repository = repository;
         public async Task<UserResidentUnit> CreateUserResidentUnit(UserResidentUnit userResidentUnit, Guid creator)

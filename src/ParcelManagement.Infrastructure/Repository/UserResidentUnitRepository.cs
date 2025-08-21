@@ -19,6 +19,8 @@ namespace ParcelManagement.Infrastructure.Repository
             return userResidentUnit;
         }
 
+        // dont think we'll ever use this one because 
+        // for bridge table, use softDelete
         public async Task DeleteUserResidentUnit(Guid Id)
         {
             var uru = await _dbContext.UserResidentUnits.FindAsync(Id);

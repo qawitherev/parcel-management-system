@@ -1,3 +1,4 @@
+using System.Data.Common;
 using Microsoft.EntityFrameworkCore;
 using ParcelManagement.Core.Services;
 using ParcelManagement.Infrastructure.Database;
@@ -17,8 +18,10 @@ namespace ParcelManagement.Test.Fixture
             var dbContextOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()).Options;
             DbContext = new ApplicationDbContext(dbContextOptions);
+
+            var residentUnitRepo = new ResidentUnitRepository(DbContext);
             ParcelRepo = new ParcelRepository(DbContext);
-            ParcelService = new ParcelService(ParcelRepo);
+            ParcelService = new ParcelService(ParcelRepo, residentUnitRepo);
             return Task.CompletedTask;
         }
 

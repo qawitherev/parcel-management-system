@@ -25,7 +25,8 @@ namespace ParcelManagement.Test.Repository
             {
                 Id = Guid.NewGuid(),
                 TrackingNumber = "TN001",
-                ResidentUnitDeprecated = "RU001"
+                ResidentUnitDeprecated = "RU001",
+                ResidentUnitId = Guid.NewGuid()
             };
 
             using (var testDbContext = new ApplicationDbContext(options))
@@ -49,9 +50,9 @@ namespace ParcelManagement.Test.Repository
             //setup parcels list
             var parcelList = new List<Parcel>
             {
-                new() { Id = Guid.NewGuid(), TrackingNumber = "TN001", ResidentUnitDeprecated = "RU001"},
-                new() { Id = Guid.NewGuid(), TrackingNumber = "TN002", ResidentUnitDeprecated = "RU002"},
-                new() { Id = Guid.NewGuid(), TrackingNumber = "TN003", ResidentUnitDeprecated = "RU003"}
+                new() { Id = Guid.NewGuid(), TrackingNumber = "TN001", ResidentUnitDeprecated = "RU001", ResidentUnitId = Guid.NewGuid()},
+                new() { Id = Guid.NewGuid(), TrackingNumber = "TN002", ResidentUnitDeprecated = "RU002", ResidentUnitId = Guid.NewGuid()},
+                new() { Id = Guid.NewGuid(), TrackingNumber = "TN003", ResidentUnitDeprecated = "RU003", ResidentUnitId = Guid.NewGuid()}
             };
 
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -88,7 +89,8 @@ namespace ParcelManagement.Test.Repository
             {
                 Id = theId,
                 TrackingNumber = "TN001",
-                ResidentUnitDeprecated = "RU001"
+                ResidentUnitDeprecated = "RU001",
+                ResidentUnitId = Guid.NewGuid()
             };
 
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -114,7 +116,8 @@ namespace ParcelManagement.Test.Repository
                 {
                     Id = Guid.NewGuid(),
                     TrackingNumber = $"TN{(num < 10 ? $"00{num}" : $"0{num}")}",
-                    ResidentUnitDeprecated = $"RU{(num < 10 ? $"00{num}" : $"0{num}")}"
+                    ResidentUnitDeprecated = $"RU{(num < 10 ? $"00{num}" : $"0{num}")}",
+                    ResidentUnitId = Guid.NewGuid()
                 }).ToList();
             var options = new DbContextOptionsBuilder<ApplicationDbContext>().UseInMemoryDatabase(databaseName: "testDatabase").Options;
             using (var testDbContext = new ApplicationDbContext(options))
@@ -138,7 +141,8 @@ namespace ParcelManagement.Test.Repository
                 {
                     Id = Guid.NewGuid(),
                     TrackingNumber = $"TN{(num < 10 ? $"00{num}" : $"0{num}")}",
-                    ResidentUnitDeprecated = "TN001"
+                    ResidentUnitDeprecated = "TN001",
+                    ResidentUnitId = Guid.NewGuid()
                 }).ToList();
 
             var dbOptions = new DbContextOptionsBuilder<ApplicationDbContext>()

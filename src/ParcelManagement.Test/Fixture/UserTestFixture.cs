@@ -1,3 +1,4 @@
+using System.Data.Common;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using ParcelManagement.Core.Repositories;
@@ -27,8 +28,10 @@ namespace ParcelManagement.Test.Fixture
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()).Options;
             DbContext = new ApplicationDbContext(dbContextOptions);
 
+            var userResidentUnitRepo = new UserResidentUnitRepository(DbContext);
+            var residentUnitRepo = new ResidentUnitRepository(DbContext);
             UserRepo = new UserRepository(DbContext);
-            UserService = new UserService(UserRepo);
+            UserService = new UserService(UserRepo, userResidentUnitRepo, residentUnitRepo);
         }
         public void Dispose()
         {
@@ -53,8 +56,11 @@ namespace ParcelManagement.Test.Fixture
             var dbContextOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()).Options;
             DbContext = new ApplicationDbContext(dbContextOptions);
+
+            var userResidentUnitRepo = new UserResidentUnitRepository(DbContext);
+            var residentUnitRepo = new ResidentUnitRepository(DbContext);
             UserRepo = new UserRepository(DbContext);
-            UserService = new UserService(UserRepo);
+            UserService = new UserService(UserRepo, userResidentUnitRepo, residentUnitRepo);
             return Task.CompletedTask;
         }
 

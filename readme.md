@@ -1,130 +1,79 @@
-# Parcel Management System
+# 📦 Parcel Management System
 
-A robust parcel management web application built with **ASP.NET Core** and **Entity Framework Core** to showcase modern .NET backend development and architectural best practices.
+A modern .NET-based parcel management system showcasing best practices in software architecture and development.
 
----
+## 🏗️ Architecture
 
-## Table of Contents
+This project follows Clean Architecture principles with a clear separation of concerns across three layers:
 
-- [Overview](#overview)
-- [Tech Stack](#tech-stack)
-- [Architecture](#architecture)
-- [Best Practices](#best-practices)
-- [Features](#features)
-- [How to Run](#how-to-run)
-- [Contributing](#contributing)
+- **Api Layer** 🚪: Entry point for HTTP requests, controllers, and DTOs
+- **Core Layer** 🧠: Business logic and domain models
+- **Infrastructure Layer** 🏢: External concerns like database access
 
----
+```mermaid
+flowchart LR
+        Controller[Api Layer: Controller]
+        ServiceInterface[Core Layer: Service Interface]
+        Service[Core Layer: Service Implementation]
+        RepoInterface[Infrastructure: Repository Interface]
+        Repo[Infrastructure: Repository Implementation]
 
-## Overview
-
-This project is designed to demonstrate advanced .NET skills through the development of a scalable, secure, and maintainable parcel management API. It follows Clean Architecture principles and leverages patterns such as Repository and Specification to promote separation of concerns, testability, and flexibility.
-
----
-
-## Tech Stack
-
-- **Language:** C# (.NET 8+)
-- **Framework:** ASP.NET Core Web API
-- **ORM:** Entity Framework Core (MySQL)
-- **Authentication:** JWT Bearer Token
-- **Testing:** xUnit (integration-ready)
-- **API Documentation:** Swagger/OpenAPI
-
----
-
-## Architecture
-
-### Clean Architecture
-
-```
-src/
-├── ParcelManagement.Api          # Presentation Layer (Controllers, DTOs, Middleware)
-├── ParcelManagement.Core         # Domain Layer (Entities, Specifications, Services, Interfaces)
-├── ParcelManagement.Infrastructure # Infrastructure Layer (EF Core DbContext, Migrations, Repositories)
+        Controller --> ServiceInterface
+        ServiceInterface --> Service
+        Service --> RepoInterface
+        RepoInterface --> Repo
 ```
 
-- **API Layer:** Handles HTTP requests, routing, and authentication/authorization.
-- **Core Layer:** Contains business/domain logic, service interfaces, entities, and specifications.
-- **Infrastructure Layer:** Implements repositories, database context, and migrations.
+## 💡 Design Patterns
 
-### Key Patterns
+- **Repository Pattern**: Abstracts data access logic
+- **Dependency Injection**: Leverages ASP.NET Core's built-in DI container
+- **Specification Pattern**: Used for querying data with complex business rules
+- **Factory Pattern**: Utilized for database context creation
+- **Service Pattern**: Encapsulates business logic in dedicated service classes
 
-- **Repository Pattern:** Abstracts data access and enables easy mocking for tests.
-- **Specification Pattern:** Encapsulates query logic for complex filtering and business rules.
-- **DTO Pattern:** Decouples internal models from API contracts.
-- **Dependency Injection:** Ensures loose coupling and testability.
-- **Middleware:** Centralized error handling and API exception management.
+## 🔒 Authentication & Security
 
----
+- **JWT-based Authentication**: Secure token-based auth system
+- **Password Hashing**: Uses ASP.NET Core Identity's password hasher
+- **Role-based Authorization**: Supports multiple user roles (Admin, Resident, ParcelRoomManager)
+- **Token Service**: Custom implementation for JWT generation and validation
 
-## Best Practices Implemented
+## 💾 Data Access & ORM
 
-- **Separation of Concerns:** Layers for API, domain, and data access.
-- **SOLID Principles:** Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion.
-- **Async/Await:** All I/O operations are asynchronous for scalability.
-- **Unit of Work (via EF Core):** Ensures transactional integrity.
-- **Automated Migrations:** Database schema managed via code.
-- **Strong Validation:** Data annotations and specification-based checks.
-- **Security:** JWT authentication, password hashing, role-based access.
-- **Environment-Based Configuration:** Secure secrets and connection strings.
+- **ORM**: Entity Framework Core
+- **Database**: MySQL with Pomelo.EntityFrameworkCore.MySql provider
+- **Features**:
+  - Code-first migrations
+  - Fluent API for entity configuration
+  - Strong typing with proper column definitions
+  - Unique constraints and indexing
+  - Precision handling for decimal values
 
----
+## 🎯 Industry Best Practices
 
-## Features
+- **Clean Architecture**: Clear separation of concerns
+- **SOLID Principles**: Followed throughout the codebase
+- **Async/Await**: Asynchronous programming patterns
+- **Error Handling**: Proper exception handling and custom exceptions
+- **Configuration Management**: Uses ASP.NET Core's configuration system
+- **Testing**: Supports both unit and integration testing
+- **Code Organization**: Well-structured project layout with clear responsibilities
 
-- User registration and authentication (secure password hashing)
-- JWT-based authorization
-- Resident unit and parcel CRUD operations
-- Parcel tracking and status management
-- API documentation with Swagger
-- Centralized error handling
-- Ready for integration and unit testing
+## 🚀 Technical Showcase
 
----
+This project demonstrates proficiency in:
 
-## How to Run
+- ✨ Modern .NET development
+- 🏛️ Clean Architecture implementation
+- 🔐 Security best practices
+- 🗃️ Database design and ORM usage
+- 📝 Code-first approach
+- 🧪 Testing strategies
+- 🛠️ API design and implementation
 
-1. **Clone the repo**
-   ```sh
-   git clone https://github.com/qawitherev/parcel-management-system.git
-   ```
+## 🛡️ Environment Support
 
-2. **Set up the database**
-   - Default is MySQL; configure your connection string in `appsettings.json`.
-
-3. **Apply migrations**
-   ```sh
-   dotnet ef database update
-   ```
-
-4. **Run the API**
-   ```sh
-   dotnet run --project src/ParcelManagement.Api
-   ```
-
-5. **Access Swagger UI**
-   - Navigate to `http://localhost:5000/swagger` (default port may vary).
-
----
-
-## Contributing
-
-PRs are welcome! This project is intended as a learning showcase—feel free to fork and adapt for your own .NET studies or portfolio.
-
----
-
-## Why This Project?
-
-This repository is built to **showcase proficiency in modern .NET development**, including:
-- Scalable architecture
-- Enterprise design patterns
-- Security best practices
-- Testability and maintainability
-- Real-world business logic and API design
-
----
-
-## License
-
-MIT
+- Development environment with user secrets
+- Testing environment with separate configuration
+- Production-ready setup

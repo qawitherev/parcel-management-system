@@ -42,7 +42,15 @@ namespace ParcelManagement.Core.Services
             // check if residentUnit exist 
             var specByUnitName = new ResidentUnitByUnitNameSpecification(residentUnit);
             var realResidentUnit = await _residentUnitRepo.GetOneResidentUnitBySpecificationAsync(specByUnitName) ??
-                throw new ($"Resident unit {residentUnit} not found");
+                throw new NullReferenceException($"Resident unit {residentUnit} not found");
+
+            //check for parcel with the same tracking number 
+            var spec = new ParcelByTrackingNumberSpecification(trackingNumber);
+            var sameParcel = await _parcelRepo.GetOneParcelBySpecificationAsync(spec);
+            if (sameParcel != null)
+            {
+                throw new InvalidOperationException($"A parcel with tracking number '{trackingNumber}' already exists.");
+            }
             var newParcel = new Parcel
             {
                 Id = Guid.NewGuid(),
@@ -54,13 +62,6 @@ namespace ParcelManagement.Core.Services
                 Dimensions = dimensions ?? ""
             };
 
-            //check for parcel with the same tracking number 
-            var spec = new ParcelByTrackingNumberSpecification(newParcel.TrackingNumber);
-            var sameParcel = await _parcelRepo.GetOneParcelBySpecificationAsync(spec);
-            if (sameParcel != null)
-            {
-                throw new InvalidOperationException($"A parcel with tracking number '{trackingNumber}' already exists.");
-            }
             return await _parcelRepo.AddParcelAsync(newParcel);
         }
 

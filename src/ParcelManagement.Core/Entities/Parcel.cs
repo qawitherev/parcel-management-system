@@ -23,7 +23,7 @@ namespace ParcelManagement.Core.Entities
         public required string ResidentUnitDeprecated { get; set; }
 
         [Required]
-        public required Guid ResidentUnitId { get; set; }
+        public  Guid ResidentUnitId { get; set; }
 
         public DateTimeOffset EntryDate { get; set; }
         public DateTimeOffset? ExitDate { get; set; } // Nullable if not yet claimed

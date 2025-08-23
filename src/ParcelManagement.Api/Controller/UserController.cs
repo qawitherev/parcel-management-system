@@ -44,5 +44,7 @@ namespace ParcelManagement.Api.Controller
             var jwt = _tokenService.GenerateToken(loginRes[0], dto.Username, loginRes[1]);
             return Ok(new { Token = jwt });
         }
+
+        
     }
 }

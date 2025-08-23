@@ -1,4 +1,5 @@
 using System.Security.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using ParcelManagement.Core.Entities;
 using ParcelManagement.Core.Misc;
 using ParcelManagement.Core.Repositories;
@@ -13,17 +14,21 @@ namespace ParcelManagement.Core.Services
         Task<List<string>> UserLoginAsync(string username, string password);
 
         Task<User?> GetUserById(Guid id);
+
+        Task<IReadOnlyList<Parcel?>> GetParcelsByUserAsync(Guid userId, ParcelStatus? parcelStatus);
     }
 
     public class UserService(
-        IUserRepository userRepository, 
-        IUserResidentUnitRepository userResidentUnitRepo, 
-        IResidentUnitRepository residentUnitRepo
+        IUserRepository userRepository,
+        IUserResidentUnitRepository userResidentUnitRepo,
+        IResidentUnitRepository residentUnitRepo, 
+        IParcelRepository parcelRepo
         ) : IUserService
     {
         private readonly IUserRepository _userRepository = userRepository;
         private readonly IUserResidentUnitRepository _userResidentUnitRepo = userResidentUnitRepo;
         private readonly IResidentUnitRepository _residentUnitRepo = residentUnitRepo;
+        private readonly IParcelRepository _parcelRepo = parcelRepo;
         public async Task<List<string>> UserLoginAsync(string username, string password)
         {
             var userByUsernameSpec = new UserByUsernameSpecification(username);
@@ -75,12 +80,16 @@ namespace ParcelManagement.Core.Services
                 }
             );
             return await _userRepository.CreateUserAsync(newUser);
-
         }
 
         public async Task<User?> GetUserById(Guid id)
         {
             return await _userRepository.GetUserByIdAsync(id) ?? throw new KeyNotFoundException($"User with id {id} is not found");
+        }
+
+        public Task<IReadOnlyList<Parcel?>> GetParcelsByUserAsync(Guid userId, ParcelStatus? parcelStatus)
+        {
+            throw new NotImplementedException();
         }
     }
 }

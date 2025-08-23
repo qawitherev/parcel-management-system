@@ -30,8 +30,9 @@ namespace ParcelManagement.Test.Fixture
 
             var userResidentUnitRepo = new UserResidentUnitRepository(DbContext);
             var residentUnitRepo = new ResidentUnitRepository(DbContext);
+            var parcelRepo = new ParcelRepository(DbContext);
             UserRepo = new UserRepository(DbContext);
-            UserService = new UserService(UserRepo, userResidentUnitRepo, residentUnitRepo);
+            UserService = new UserService(UserRepo, userResidentUnitRepo, residentUnitRepo, parcelRepo);
         }
         public void Dispose()
         {
@@ -59,8 +60,9 @@ namespace ParcelManagement.Test.Fixture
 
             var userResidentUnitRepo = new UserResidentUnitRepository(DbContext);
             var residentUnitRepo = new ResidentUnitRepository(DbContext);
+            var parcelRepo = new ParcelRepository(DbContext);
             UserRepo = new UserRepository(DbContext);
-            UserService = new UserService(UserRepo, userResidentUnitRepo, residentUnitRepo);
+            UserService = new UserService(UserRepo, userResidentUnitRepo, residentUnitRepo, parcelRepo);
             return Task.CompletedTask;
         }
 

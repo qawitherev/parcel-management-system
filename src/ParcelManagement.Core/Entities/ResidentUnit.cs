@@ -4,6 +4,7 @@ namespace ParcelManagement.Core.Entities
 {
     public class ResidentUnit
     {
+        [Required]
         public Guid Id { set; get; }
 
         [Required]
@@ -18,5 +19,7 @@ namespace ParcelManagement.Core.Entities
 
         // navigation property 
         public ICollection<Parcel> Parcels { get; set; } = [];
+
+        public ICollection<UserResidentUnit> UserResidentUnits { get; set; } = [];
     }
 }

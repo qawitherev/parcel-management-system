@@ -21,7 +21,7 @@ namespace ParcelManagement.Test.Service
                 Id = Guid.NewGuid(),
                 Username = theUsername,
                 Email = "this@email.com",
-                ResidentUnit = "RU001",
+                ResidentUnitDeprecated = "RU001",
                 PasswordHash = "####",
                 PasswordSalt = "salt",
             };
@@ -33,7 +33,7 @@ namespace ParcelManagement.Test.Service
                 Id = Guid.NewGuid(),
                 Username = theUsername,
                 Email = "this_2@email.com",
-                ResidentUnit = "RU001",
+                ResidentUnitDeprecated = "RU001",
                 PasswordHash = "####",
                 PasswordSalt = "salt",
             };
@@ -53,7 +53,7 @@ namespace ParcelManagement.Test.Service
                 Id = Guid.NewGuid(),
                 Username = theUsername,
                 Email = "this@email.com",
-                ResidentUnit = "RU001",
+                ResidentUnitDeprecated = "RU001",
                 PasswordHash = "####",
                 PasswordSalt = "salt",
             };
@@ -77,7 +77,7 @@ namespace ParcelManagement.Test.Service
                 Id = Guid.NewGuid(),
                 Username = theUsername,
                 Email = "this@email.com",
-                ResidentUnit = "RU001",
+                ResidentUnitDeprecated = "RU001",
                 PasswordHash = "####",
                 PasswordSalt = "salt",
             };
@@ -100,7 +100,7 @@ namespace ParcelManagement.Test.Service
                 Id = Guid.NewGuid(),
                 Username = theUsername,
                 Email = "this@email.com",
-                ResidentUnit = "RU001",
+                ResidentUnitDeprecated = "RU001",
                 PasswordHash = "####",
                 PasswordSalt = "salt",
             };

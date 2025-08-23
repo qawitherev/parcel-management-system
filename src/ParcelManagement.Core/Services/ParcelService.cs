@@ -27,36 +27,41 @@ namespace ParcelManagement.Core.Services
         
     }
 
-    public class ParcelService : IParcelService
+    public class ParcelService(
+        IParcelRepository parcelRepo,
+        IResidentUnitRepository residentUnitRepo
+        ) : IParcelService
     {
-        private readonly IParcelRepository _parcelRepo;
-
-        public ParcelService(IParcelRepository parcelRepo)
-        {
-            _parcelRepo = parcelRepo;
-        }
+        private readonly IParcelRepository _parcelRepo = parcelRepo;
+        private readonly IResidentUnitRepository _residentUnitRepo = residentUnitRepo;
 
         public async Task<Parcel> CheckInParcelAsync(string trackingNumber, string residentUnit,
             decimal? weight,
             string? dimensions)
         {
-            var newParcel = new Parcel
-            {
-                Id = Guid.NewGuid(),
-                TrackingNumber = trackingNumber,
-                ResidentUnitDeprecated = residentUnit,
-                Status = ParcelStatus.AwaitingPickup,
-                Weight = weight ?? 0,
-                Dimensions = dimensions ?? ""
-            };
+            // check if residentUnit exist 
+            var specByUnitName = new ResidentUnitByUnitNameSpecification(residentUnit);
+            var realResidentUnit = await _residentUnitRepo.GetOneResidentUnitBySpecificationAsync(specByUnitName) ??
+                throw new NullReferenceException($"Resident unit {residentUnit} not found");
 
             //check for parcel with the same tracking number 
-            var spec = new ParcelByTrackingNumberSpecification(newParcel.TrackingNumber);
+            var spec = new ParcelByTrackingNumberSpecification(trackingNumber);
             var sameParcel = await _parcelRepo.GetOneParcelBySpecificationAsync(spec);
             if (sameParcel != null)
             {
                 throw new InvalidOperationException($"A parcel with tracking number '{trackingNumber}' already exists.");
             }
+            var newParcel = new Parcel
+            {
+                Id = Guid.NewGuid(),
+                TrackingNumber = trackingNumber,
+                ResidentUnitDeprecated = residentUnit,
+                ResidentUnitId = realResidentUnit.Id,
+                Status = ParcelStatus.AwaitingPickup,
+                Weight = weight ?? 0,
+                Dimensions = dimensions ?? ""
+            };
+
             return await _parcelRepo.AddParcelAsync(newParcel);
         }
 

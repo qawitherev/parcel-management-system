@@ -64,5 +64,20 @@ namespace ParcelManagement.Infrastructure.Repository
         {
             return await _dbContext.Parcels.Where(specification.ToExpression()).FirstOrDefaultAsync();
         }
+
+        public async Task<IReadOnlyCollection<Parcel>> GetParcelsByUserAsync(Guid userId)
+        {
+            var parcels = await _dbContext.Parcels
+                            .Include(p => p.ResidentUnit)
+                            .ThenInclude(ru => ru!.UserResidentUnits)
+                            .ThenInclude(uru => uru.User)
+                            .Where(
+                                p => p.ResidentUnit != null &&
+                                    p.ResidentUnit.UserResidentUnits.Any(uru => uru.UserId == userId)
+                            )
+                            .ToListAsync();
+
+            return parcels;
+        }
     }
 }

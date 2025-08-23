@@ -25,7 +25,7 @@ namespace ParcelManagement.Core.Entities
 
         //TODO - to add migration for this new column 
         [MaxLength(50)]
-        public string? ResidentUnit { get; set; }
+        public string? ResidentUnitDeprecated { get; set; }
 
         [Required]
         [MinLength(6)]
@@ -37,5 +37,8 @@ namespace ParcelManagement.Core.Entities
         public UserRole Role { get; set; } // Enum for user roles
 
         public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow; // Default to current time
+
+        // navigation property
+        public ICollection<UserResidentUnit> UserResidentUnits { get; set; } = [];
     }
 }

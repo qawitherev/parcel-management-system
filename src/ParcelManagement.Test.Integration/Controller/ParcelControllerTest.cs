@@ -22,7 +22,9 @@ namespace ParcelManagement.Test.Integration
                 {
                     Id = theId,
                     TrackingNumber = "TN001",
-                    ResidentUnitDeprecated = "RU001"
+                    ResidentUnitDeprecated = "RU001",
+                    ResidentUnitId = Guid.NewGuid()
+                    
                 };
                 await dbContextUsingScope.Parcels.AddAsync(parcel);
                 await dbContextUsingScope.SaveChangesAsync();

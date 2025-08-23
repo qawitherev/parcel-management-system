@@ -1,3 +1,4 @@
+using System.Data.Common;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using ParcelManagement.Core.Repositories;
@@ -27,8 +28,11 @@ namespace ParcelManagement.Test.Fixture
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()).Options;
             DbContext = new ApplicationDbContext(dbContextOptions);
 
+            var userResidentUnitRepo = new UserResidentUnitRepository(DbContext);
+            var residentUnitRepo = new ResidentUnitRepository(DbContext);
+            var parcelRepo = new ParcelRepository(DbContext);
             UserRepo = new UserRepository(DbContext);
-            UserService = new UserService(UserRepo);
+            UserService = new UserService(UserRepo, userResidentUnitRepo, residentUnitRepo, parcelRepo);
         }
         public void Dispose()
         {
@@ -39,9 +43,9 @@ namespace ParcelManagement.Test.Fixture
     }
 
     // Second fixture that uses IAsyncLifetime for an isolated testing 
-    // InitializeAsync will run before every test
-    // DisposeAsync will run after every test
-    // Pros: Isolated testing, Cons: Slower performance (setup and teardown for every testing)
+    // InitializeAsync will before each test class 
+    // DisposeAsync is run at the end of the test class 
+    // Still a shared dbContext but this one is async dispose 
     public class UserTestAsyncLifetimeFixture : IAsyncLifetime
     {
         public ApplicationDbContext DbContext { get; private set; } = null!;
@@ -53,8 +57,12 @@ namespace ParcelManagement.Test.Fixture
             var dbContextOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()).Options;
             DbContext = new ApplicationDbContext(dbContextOptions);
+
+            var userResidentUnitRepo = new UserResidentUnitRepository(DbContext);
+            var residentUnitRepo = new ResidentUnitRepository(DbContext);
+            var parcelRepo = new ParcelRepository(DbContext);
             UserRepo = new UserRepository(DbContext);
-            UserService = new UserService(UserRepo);
+            UserService = new UserService(UserRepo, userResidentUnitRepo, residentUnitRepo, parcelRepo);
             return Task.CompletedTask;
         }
 

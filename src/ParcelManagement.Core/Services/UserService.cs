@@ -1,4 +1,5 @@
 using System.Security.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using ParcelManagement.Core.Entities;
 using ParcelManagement.Core.Misc;
 using ParcelManagement.Core.Repositories;
@@ -8,16 +9,26 @@ namespace ParcelManagement.Core.Services
 {
     public interface IUserService
     {
-        Task<User> UserRegisterAsync(string username, string password, string email, string residentUnit);
+        Task<User> UserRegisterAsync(string username, string password, string email, string unitName);
 
         Task<List<string>> UserLoginAsync(string username, string password);
 
         Task<User?> GetUserById(Guid id);
+
+        Task<IReadOnlyList<Parcel?>> GetParcelsByUserAsync(Guid userId, ParcelStatus? parcelStatus);
     }
 
-    public class UserService(IUserRepository userRepository) : IUserService
+    public class UserService(
+        IUserRepository userRepository,
+        IUserResidentUnitRepository userResidentUnitRepo,
+        IResidentUnitRepository residentUnitRepo, 
+        IParcelRepository parcelRepo
+        ) : IUserService
     {
         private readonly IUserRepository _userRepository = userRepository;
+        private readonly IUserResidentUnitRepository _userResidentUnitRepo = userResidentUnitRepo;
+        private readonly IResidentUnitRepository _residentUnitRepo = residentUnitRepo;
+        private readonly IParcelRepository _parcelRepo = parcelRepo;
         public async Task<List<string>> UserLoginAsync(string username, string password)
         {
             var userByUsernameSpec = new UserByUsernameSpecification(username);
@@ -32,10 +43,11 @@ namespace ParcelManagement.Core.Services
         }
 
         // this service is only to register resident 
-        public async Task<User> UserRegisterAsync(string username, string password, string email, string residentUnit)
+        public async Task<User> UserRegisterAsync(string username, string password, string email, string unitName)
         {
-            // TODO 
-            // make sure username dont conflict --> do migration as well as manual checking 
+            var specByResidentUnit = new ResidentUnitByUnitNameSpecification(unitName);
+            var realResidentUnit = await _residentUnitRepo.GetOneResidentUnitBySpecificationAsync(specByResidentUnit) ??
+                throw new NullReferenceException($"Resident unit {unitName} not found");
             var userByUsernameSpec = new UserByUsernameSpecification(username);
             var existingUser = await _userRepository.GetOneUserBySpecification(userByUsernameSpec);
             if (existingUser != null)
@@ -48,7 +60,7 @@ namespace ParcelManagement.Core.Services
                 Id = Guid.NewGuid(),
                 Username = username,
                 Email = email,
-                ResidentUnit = residentUnit,
+                ResidentUnitDeprecated = "",
                 PasswordHash = "will do this later",
                 PasswordSalt = "will do this later",
                 Role = UserRole.Resident,
@@ -57,14 +69,27 @@ namespace ParcelManagement.Core.Services
 
             var hashedPassword = PasswordService.HashPassword(newUser, password);
             newUser.PasswordHash = hashedPassword;
-
+            await _userResidentUnitRepo.CreateUserResidentUnitAsync(
+                new UserResidentUnit
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = newUser.Id,
+                    ResidentUnitId = realResidentUnit.Id,
+                    IsActive = true,
+                    CreatedAt = DateTimeOffset.UtcNow
+                }
+            );
             return await _userRepository.CreateUserAsync(newUser);
-
         }
 
         public async Task<User?> GetUserById(Guid id)
         {
             return await _userRepository.GetUserByIdAsync(id) ?? throw new KeyNotFoundException($"User with id {id} is not found");
+        }
+
+        public Task<IReadOnlyList<Parcel?>> GetParcelsByUserAsync(Guid userId, ParcelStatus? parcelStatus)
+        {
+            throw new NotImplementedException();
         }
     }
 }

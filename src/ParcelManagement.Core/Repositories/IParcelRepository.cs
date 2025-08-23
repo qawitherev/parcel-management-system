@@ -12,5 +12,7 @@ namespace ParcelManagement.Core.Repositories
         Task DeleteParcelAsync(Guid id);
         Task<IReadOnlyList<Parcel?>> GetParcelsBySpecificationAsync(ISpecification<Parcel> specification);
         Task<Parcel?> GetOneParcelBySpecificationAsync(ISpecification<Parcel> specification);
+
+        Task<IReadOnlyCollection<Parcel>> GetParcelsByUserAsync(Guid userId);
     }
 }

@@ -14,6 +14,10 @@ namespace ParcelManagement.Infrastructure.Database
         public virtual DbSet<Parcel> Parcels { get; set; }
         public virtual DbSet<User> Users { get; set; }
 
+        public virtual DbSet<ResidentUnit> ResidentUnits { get; set; }
+
+        public virtual DbSet<UserResidentUnit> UserResidentUnits { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -47,6 +51,23 @@ namespace ParcelManagement.Infrastructure.Database
                 .HasOne(p => p.ResidentUnit)
                 .WithMany(ru => ru.Parcels)
                 .HasForeignKey(p => p.ResidentUnitId);
+
+            // making composite primary key for bridge table 
+            modelBuilder.Entity<UserResidentUnit>()
+                .HasKey(uru => new { uru.UserId, uru.ResidentUnitId });
+
+            modelBuilder.Entity<UserResidentUnit>()
+                .HasOne(uru => uru.User)
+                .WithMany(u => u.UserResidentUnits)
+                .HasForeignKey(uru => uru.UserId);
+
+            modelBuilder.Entity<UserResidentUnit>()
+                .HasOne(uru => uru.ResidentUnit)
+                .WithMany(ru => ru.UserResidentUnits)
+                .HasForeignKey(uru => uru.ResidentUnitId);
+
+            modelBuilder.Entity<ResidentUnit>()
+                .HasIndex(ru => ru.UnitName).IsUnique();
         }
     }
 }

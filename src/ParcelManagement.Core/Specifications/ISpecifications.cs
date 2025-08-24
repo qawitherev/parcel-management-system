@@ -19,5 +19,9 @@ namespace ParcelManagement.Core.Specifications
     {
         Expression<Func<T, bool>> ToExpression();
         List<IncludeExpression<T>> IncludeExpressions { get; }
+
+        int? Skip { get; }
+
+        int? Take { get; }
     }
 }

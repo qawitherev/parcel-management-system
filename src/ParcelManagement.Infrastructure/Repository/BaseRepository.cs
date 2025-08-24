@@ -28,8 +28,10 @@ namespace ParcelManagement.Infrastructure.Repository
             );
 
             query = query.Where(specification.ToExpression());
+            if (specification.Skip.HasValue) query = query.Skip(specification.Skip.Value);
+            if (specification.Take.HasValue) query = query.Take(specification.Take.Value);
 
-            return  await query.ToListAsync();
+            return await query.ToListAsync();
         }
 
         public async Task<T?> GetOneBySpecificationAsync(ISpecification<T> specification)

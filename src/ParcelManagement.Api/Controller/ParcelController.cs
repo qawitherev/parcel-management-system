@@ -82,5 +82,13 @@ namespace ParcelManagement.Api.Controller
             });
             return Ok(parcelAwaitingPickupDto);
         }
+
+        [HttpGet("myParcels")]
+        [Authorize]
+        public async Task<IActionResult> GetParcelByUser()
+        {
+            return Ok("Not yet implemented");
+
+        }
     }
 }

@@ -31,8 +31,7 @@ namespace ParcelManagement.Core.Entities
         [MinLength(6)]
         public required string PasswordHash { get; set; }
 
-        [Required]
-        public required string PasswordSalt { get; set; }
+        public string? PasswordSalt { get; set; }
 
         public UserRole Role { get; set; } // Enum for user roles
 

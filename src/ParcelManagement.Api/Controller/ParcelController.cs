@@ -35,7 +35,7 @@ namespace ParcelManagement.Api.Controller
             {
                 Id = newParcel.Id,
                 TrackingNumber = newParcel.TrackingNumber,
-                ResidentUnit = newParcel.ResidentUnitDeprecated,
+                ResidentUnit = newParcel.ResidentUnitDeprecated!,
                 Weight = newParcel.Weight ?? 0,
                 Dimensions = newParcel.Dimensions ?? ""
             };
@@ -60,7 +60,7 @@ namespace ParcelManagement.Api.Controller
             {
                 Id = resultParcel!.Id,
                 TrackingNumber = resultParcel!.TrackingNumber,
-                ResidentUnit = resultParcel!.ResidentUnitDeprecated,
+                ResidentUnit = resultParcel!.ResidentUnitDeprecated!,
                 Weight = resultParcel!.Weight ?? 0,
                 Dimensions = resultParcel!.Dimensions ?? ""
             };
@@ -76,19 +76,19 @@ namespace ParcelManagement.Api.Controller
             {
                 Id = entity!.Id,
                 TrackingNumber = entity.TrackingNumber,
-                ResidentUnit = entity.ResidentUnitDeprecated,
+                ResidentUnit = entity.ResidentUnitDeprecated!,
                 Weight = entity?.Weight,
                 Dimensions = entity?.Dimensions
             });
             return Ok(parcelAwaitingPickupDto);
         }
 
-        [HttpGet("myParcels")]
-        [Authorize]
-        public async Task<IActionResult> GetParcelByUser()
-        {
-            return Ok("Not yet implemented");
+        // [HttpGet("myParcels")]
+        // [Authorize]
+        // public async Task<IActionResult> GetParcelByUser()
+        // {
+        //     return Ok("Not yet implemented");
 
-        }
+        // }
     }
 }

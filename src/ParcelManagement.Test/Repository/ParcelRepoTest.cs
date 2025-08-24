@@ -8,12 +8,19 @@ using ParcelManagement.Core.Entities;
 using ParcelManagement.Core.Specifications;
 using ParcelManagement.Infrastructure.Database;
 using ParcelManagement.Infrastructure.Repository;
+using ParcelManagement.Test.Fixture;
 using Xunit;
 
 namespace ParcelManagement.Test.Repository
 {
-    public class ParcelRepositoryTests
+    public class ParcelRepositoryTests : IClassFixture<ParcelTestFixture>
     {
+        private readonly ParcelTestFixture _fixture;
+        public ParcelRepositoryTests(ParcelTestFixture fixture)
+        {
+            _fixture = fixture;
+        }
+
         [Fact]
         public async Task AddParcelAsync_ShouldAddToDB()
         {
@@ -166,5 +173,72 @@ namespace ParcelManagement.Test.Repository
             }
         }
 
+        [Fact]
+        public async Task GetParcelBySpecification_ParcelByUser_ShouldReturnParcels()
+        {
+            var targetResidentUnitId = Guid.NewGuid();
+            var targetUser = Guid.NewGuid();
+            var parcels = new List<Parcel>
+            {
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    TrackingNumber = "TN001",
+                    ResidentUnitId = targetResidentUnitId
+                },
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    TrackingNumber = "TN002",
+                    ResidentUnitId = targetResidentUnitId
+                },
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    TrackingNumber = "TN003",
+                    ResidentUnitId = Guid.NewGuid() // Different ResidentUnitId
+                }
+            };
+
+            var residentUnits = new List<ResidentUnit>
+            {
+                new() {
+                    Id = targetResidentUnitId,
+                    UnitName = "RU001"
+                },
+                new() {
+                    Id = Guid.NewGuid(),
+                    UnitName = "RU002"
+                }
+            };
+
+            var userResidentUnits = new List<UserResidentUnit>
+            {
+                new() {
+                    UserId = targetUser,
+                    ResidentUnitId = targetResidentUnitId
+                }
+            };
+
+            var user = new User
+            {
+                Id = targetUser,
+                Username = "hello",
+                PasswordHash = "####",
+                Email = "email.email"
+            };
+
+            var dbContext = _fixture.DbContext;
+            await dbContext.Parcels.AddRangeAsync(parcels);
+            await dbContext.ResidentUnits.AddRangeAsync(residentUnits);
+            await dbContext.Users.AddAsync(user);
+            await dbContext.UserResidentUnits.AddRangeAsync(userResidentUnits);
+            await dbContext.SaveChangesAsync();
+
+            var spec = new ParcelByUserSpecification(targetUser);
+            var res = await _fixture.ParcelRepo.GetParcelsBySpecificationAsync(spec);
+            Assert.NotEmpty(res);
+
+        }
     }
 }

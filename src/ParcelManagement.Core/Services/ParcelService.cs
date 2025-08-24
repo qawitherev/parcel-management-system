@@ -23,17 +23,21 @@ namespace ParcelManagement.Core.Services
 
         Task<IReadOnlyList<Parcel?>> GetParcelByResidentUnitAsync(string residentUnit);
 
+        Task<IReadOnlyList<Parcel?>> GetParcelByUser(Guid userId);
+
         Task<IReadOnlyList<Parcel?>> GetParcelsAwaitingPickup();
         
     }
 
     public class ParcelService(
         IParcelRepository parcelRepo,
-        IResidentUnitRepository residentUnitRepo
+        IResidentUnitRepository residentUnitRepo, 
+        IUserRepository userRepo
         ) : IParcelService
     {
         private readonly IParcelRepository _parcelRepo = parcelRepo;
         private readonly IResidentUnitRepository _residentUnitRepo = residentUnitRepo;
+        private readonly IUserRepository _userRepo = userRepo;
 
         public async Task<Parcel> CheckInParcelAsync(string trackingNumber, string residentUnit,
             decimal? weight,
@@ -105,6 +109,14 @@ namespace ParcelManagement.Core.Services
             var specification = new ParcelByTrackingNumberSpecification(trackingNumber);
             var parcel = await _parcelRepo.GetOneParcelBySpecificationAsync(specification) ?? throw new KeyNotFoundException($"Parcel with tracking number {trackingNumber} not found");
             return parcel;
+        }
+
+        public async Task<IReadOnlyList<Parcel?>> GetParcelByUser(Guid userId)
+        {
+            var user = await _userRepo.GetUserByIdAsync(userId) ??
+                throw new KeyNotFoundException($"User not found");
+            var spec = new ParcelByUserSpecification(userId);
+            return await _parcelRepo.GetParcelsBySpecificationAsync(spec);
         }
 
         public async Task<IReadOnlyList<Parcel?>> GetParcelsAwaitingPickup()

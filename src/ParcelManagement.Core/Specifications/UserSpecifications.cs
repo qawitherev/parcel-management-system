@@ -5,6 +5,8 @@ namespace ParcelManagement.Core.Specifications
 {
     public class UserByUsernameSpecification(string receivedUsername) : ISpecification<User>
     {
+        public List<IncludeExpression<User>> IncludeExpressions => throw new NotImplementedException();
+
         public Expression<Func<User, bool>> ToExpression() => user => user.Username == receivedUsername;
     }
 }

@@ -18,9 +18,8 @@ namespace ParcelManagement.Core.Entities
         [MaxLength(50)]
         public required string TrackingNumber { get; set; }
 
-        [Required]
         [MaxLength(10)]
-        public required string ResidentUnitDeprecated { get; set; }
+        public string? ResidentUnitDeprecated { get; set; }
 
         [Required]
         public  Guid ResidentUnitId { get; set; }

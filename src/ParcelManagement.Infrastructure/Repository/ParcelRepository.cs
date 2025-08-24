@@ -8,11 +8,11 @@ using ParcelManagement.Infrastructure.Database;
 
 namespace ParcelManagement.Infrastructure.Repository
 {
-    public class ParcelRepository : IParcelRepository
+    public class ParcelRepository : BaseRepository<Parcel>, IParcelRepository
     {
         private readonly ApplicationDbContext _dbContext;
 
-        public ParcelRepository(ApplicationDbContext dbContext)
+        public ParcelRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
             _dbContext = dbContext;
         }
@@ -57,27 +57,12 @@ namespace ParcelManagement.Infrastructure.Repository
         // this is good stuff 
         public async Task<IReadOnlyList<Parcel?>> GetParcelsBySpecificationAsync(ISpecification<Parcel> specification)
         {
-            return await _dbContext.Parcels.Where(specification.ToExpression()).ToListAsync();
+            return await GetBySpecificationAsync(specification);
         }
 
         public async Task<Parcel?> GetOneParcelBySpecificationAsync(ISpecification<Parcel> specification)
         {
             return await _dbContext.Parcels.Where(specification.ToExpression()).FirstOrDefaultAsync();
-        }
-
-        public async Task<IReadOnlyCollection<Parcel>> GetParcelsByUserAsync(Guid userId)
-        {
-            var parcels = await _dbContext.Parcels
-                            .Include(p => p.ResidentUnit)
-                            .ThenInclude(ru => ru!.UserResidentUnits)
-                            .ThenInclude(uru => uru.User)
-                            .Where(
-                                p => p.ResidentUnit != null &&
-                                    p.ResidentUnit.UserResidentUnits.Any(uru => uru.UserId == userId)
-                            )
-                            .ToListAsync();
-
-            return parcels;
         }
     }
 }

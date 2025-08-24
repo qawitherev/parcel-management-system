@@ -20,7 +20,6 @@ namespace ParcelManagement.Api.DTO
         public required Guid Id { set; get; }
         public required string TrackingNumber { get; set; }
 
-        public required string ResidentUnit { get; set; }
 
         public decimal? Weight { get; set; }
 

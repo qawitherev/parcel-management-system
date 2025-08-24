@@ -1,4 +1,5 @@
 
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ParcelManagement.Api.DTO;
@@ -11,13 +12,15 @@ namespace ParcelManagement.Api.Controller
     [Consumes("application/json")]
     public class ParcelController(IParcelService parcelService) : ControllerBase
     {
+        private readonly IParcelService _parcelService = parcelService;
+
         // since we wont expose this endpoint publicly, we won't follow 
         // url pattern to give way to 
         // {"{trackingNumber}"}
         [HttpGet("GetParcelById/{id}")]
         public async Task<IActionResult> GetParcelById(Guid id)
         {
-            var parcel = await parcelService.GetParcelByIdAsync(id);
+            var parcel = await _parcelService.GetParcelByIdAsync(id);
             return Ok(parcel);
         }
 
@@ -30,12 +33,11 @@ namespace ParcelManagement.Api.Controller
                 return BadRequest(ModelState);
             }
 
-            var newParcel = await parcelService.CheckInParcelAsync(dto.TrackingNumber, dto.ResidentUnit, dto.Weight, dto.Dimensions);
+            var newParcel = await _parcelService.CheckInParcelAsync(dto.TrackingNumber, dto.ResidentUnit, dto.Weight, dto.Dimensions);
             var newParcelDto = new ParcelResponseDto
             {
                 Id = newParcel.Id,
                 TrackingNumber = newParcel.TrackingNumber,
-                ResidentUnit = newParcel.ResidentUnitDeprecated!,
                 Weight = newParcel.Weight ?? 0,
                 Dimensions = newParcel.Dimensions ?? ""
             };
@@ -47,7 +49,7 @@ namespace ParcelManagement.Api.Controller
         [Authorize(Roles = "ParcelRoomManager")]
         public async Task<IActionResult> ClaimParcel(string trackingNumber)
         {
-            await parcelService.ClaimParcelAsync(trackingNumber);
+            await _parcelService.ClaimParcelAsync(trackingNumber);
             return NoContent(); // 204
         }
 
@@ -55,12 +57,11 @@ namespace ParcelManagement.Api.Controller
         [Authorize(Roles = "ParcelRoomManager")]
         public async Task<IActionResult> GetParcelByTrackingNumber(string trackingNumber)
         {
-            var resultParcel = await parcelService.GetParcelByTrackingNumberAsync(trackingNumber);
+            var resultParcel = await _parcelService.GetParcelByTrackingNumberAsync(trackingNumber);
             var resultParcelDto = new ParcelResponseDto
             {
                 Id = resultParcel!.Id,
                 TrackingNumber = resultParcel!.TrackingNumber,
-                ResidentUnit = resultParcel!.ResidentUnitDeprecated!,
                 Weight = resultParcel!.Weight ?? 0,
                 Dimensions = resultParcel!.Dimensions ?? ""
             };
@@ -71,24 +72,40 @@ namespace ParcelManagement.Api.Controller
         [Authorize(Roles = "Admin, ParcelRoomManager")]
         public async Task<IActionResult> GetParcelAwaitingPickup()
         {
-            var parcelsAwaitingPickup = await parcelService.GetParcelsAwaitingPickup();
+            var parcelsAwaitingPickup = await _parcelService.GetParcelsAwaitingPickup();
             var parcelAwaitingPickupDto = parcelsAwaitingPickup.Select(entity => new ParcelResponseDto
             {
                 Id = entity!.Id,
                 TrackingNumber = entity.TrackingNumber,
-                ResidentUnit = entity.ResidentUnitDeprecated!,
                 Weight = entity?.Weight,
                 Dimensions = entity?.Dimensions
             });
             return Ok(parcelAwaitingPickupDto);
         }
 
-        // [HttpGet("myParcels")]
-        // [Authorize]
-        // public async Task<IActionResult> GetParcelByUser()
-        // {
-        //     return Ok("Not yet implemented");
-
-        // }
+        [HttpGet("myParcels")]
+        [Authorize]
+        public async Task<IActionResult> GetParcelByUser()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ??
+                throw new UnauthorizedAccessException("User id is missing");
+            if (!Guid.TryParse(userIdClaim, out Guid userId))
+            {
+                throw new UnauthorizedAccessException("Invalid user id format");
+            }
+            var res = await _parcelService.GetParcelByUser(userId);
+            var responseDtos = new List<ParcelResponseDto>();
+            foreach (var parcel in res)
+            {
+                responseDtos.Add(new()
+                {
+                    Id = parcel!.Id,
+                    TrackingNumber = parcel!.TrackingNumber,
+                    Weight = parcel?.Weight ?? 0,
+                    Dimensions = parcel?.Dimensions ?? "0"
+                });
+            }
+            return Ok(responseDtos);
+        }
     }
 }

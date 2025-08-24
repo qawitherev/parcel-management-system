@@ -31,11 +31,13 @@ namespace ParcelManagement.Core.Services
 
     public class ParcelService(
         IParcelRepository parcelRepo,
-        IResidentUnitRepository residentUnitRepo
+        IResidentUnitRepository residentUnitRepo, 
+        IUserRepository userRepo
         ) : IParcelService
     {
         private readonly IParcelRepository _parcelRepo = parcelRepo;
         private readonly IResidentUnitRepository _residentUnitRepo = residentUnitRepo;
+        private readonly IUserRepository _userRepo = userRepo;
 
         public async Task<Parcel> CheckInParcelAsync(string trackingNumber, string residentUnit,
             decimal? weight,
@@ -111,6 +113,8 @@ namespace ParcelManagement.Core.Services
 
         public async Task<IReadOnlyList<Parcel?>> GetParcelByUser(Guid userId)
         {
+            var user = await _userRepo.GetUserByIdAsync(userId) ??
+                throw new KeyNotFoundException($"User not found");
             var spec = new ParcelByUserSpecification(userId);
             return await _parcelRepo.GetParcelsBySpecificationAsync(spec);
         }

@@ -1,4 +1,6 @@
 using System.Runtime.CompilerServices;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.EntityFrameworkCore;
 using ParcelManagement.Core.Entities;
 using ParcelManagement.Test.Fixture;
@@ -101,7 +103,79 @@ namespace ParcelManagement.Test.Service
         [Fact]
         public async Task ClaimParcelAsync_ParcelNumberExist_ShouldThrowError()
         {
-            throw new NotImplementedException("havent implemented");
+            var theTrackingNumber = "TN001";
+            var existingParcel = new Parcel
+            {
+                Id = Guid.NewGuid(),
+                TrackingNumber = theTrackingNumber
+            };
+            await _parcelFixture.DbContext.Parcels.AddAsync(existingParcel);
+            await _parcelFixture.DbContext.SaveChangesAsync();
+
+            await Assert.ThrowsAsync<NullReferenceException>(async () =>
+            {
+                await _parcelFixture.ParcelService.CheckInParcelAsync(theTrackingNumber,
+                "RU001", null, null, Guid.NewGuid()
+            );
+            });
+            await _parcelFixture.ResetDb();
+        }
+
+        [Fact]
+        public async Task ClaimParcelAsync_ResidentUnitDoesnt_Exist()
+        {
+            var existingParcel = new Parcel
+            {
+                Id = Guid.NewGuid(),
+                TrackingNumber = "TN001"
+            };
+            await _parcelFixture.DbContext.Parcels.AddAsync(existingParcel);
+            await _parcelFixture.DbContext.SaveChangesAsync();
+
+            await Assert.ThrowsAsync<NullReferenceException>(async () =>
+            {
+                await _parcelFixture.ParcelService.CheckInParcelAsync("TN001",
+                "RU001", null, null, Guid.NewGuid());
+            });
+            await _parcelFixture.ResetDb();
+        }
+
+        [Fact]
+        public async Task ClaimParcelAsync_ValidClaim_ShouldClaim()
+        {
+            var dbContext = _parcelFixture.DbContext;
+            var theUnitName = "RU001";
+            var theTrackingNumber = "TN001";
+            var residentUnit = new ResidentUnit
+            {
+                Id = Guid.NewGuid(),
+                UnitName = theUnitName
+            };
+            await dbContext.ResidentUnits.AddAsync(residentUnit);
+            var checkedInParcel = new Parcel
+            {
+                Id = Guid.NewGuid(),
+                TrackingNumber = theTrackingNumber,
+                ResidentUnitId = residentUnit.Id,
+                Status = ParcelStatus.AwaitingPickup
+            };
+            await dbContext.Parcels.AddAsync(checkedInParcel);
+            await dbContext.SaveChangesAsync();
+            await _parcelFixture.ParcelService.ClaimParcelAsync(
+                theTrackingNumber, Guid.NewGuid()
+            );
+
+            var res = await dbContext.Parcels.FindAsync(checkedInParcel.Id);
+            Assert.NotNull(res);
+            // check for status == claimed
+            Assert.Equal(ParcelStatus.Claimed, res.Status);
+
+            // check for tracking event 
+            var te = await dbContext.TrackingEvents
+                .Where(e => e.ParcelId == checkedInParcel.Id).FirstOrDefaultAsync();
+            Assert.NotNull(te);
+            Assert.Equal(TrackingEventType.Claim, te.TrackingEventType);
+            await _parcelFixture.ResetDb();
         }
     }
 }

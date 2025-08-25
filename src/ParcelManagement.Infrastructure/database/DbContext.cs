@@ -68,6 +68,8 @@ namespace ParcelManagement.Infrastructure.Database
 
             modelBuilder.Entity<ResidentUnit>()
                 .HasIndex(ru => ru.UnitName).IsUnique();
+
+            
         }
     }
 }

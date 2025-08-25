@@ -17,6 +17,8 @@ namespace ParcelManagement.Infrastructure.Database
         public virtual DbSet<ResidentUnit> ResidentUnits { get; set; }
 
         public virtual DbSet<UserResidentUnit> UserResidentUnits { get; set; }
+        
+        public virtual DbSet<TrackingEvent> TrackingEvents { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -69,7 +71,8 @@ namespace ParcelManagement.Infrastructure.Database
             modelBuilder.Entity<ResidentUnit>()
                 .HasIndex(ru => ru.UnitName).IsUnique();
 
-            
+            modelBuilder.ApplyConfiguration(new TrackingEventEntityConfiguration());
+
         }
     }
 }

@@ -62,6 +62,8 @@ builder.Services.AddScoped<IResidentUnitService, ResidentUnitService>();
 builder.Services.AddScoped<IUserResidentUnitRepository, UserResidentUnitRepository>();
 builder.Services.AddScoped<IUserResidentUnitService, UserResidentUnitService>();
 
+builder.Services.AddScoped<ITrackingEventRepository, TrackingEventRepository>();
+
 
 
 var app = builder.Build();

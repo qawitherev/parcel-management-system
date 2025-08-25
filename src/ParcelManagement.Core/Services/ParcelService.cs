@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using ParcelManagement.Core.Entities;
 using ParcelManagement.Core.Repositories;
 using ParcelManagement.Core.Specifications;
@@ -9,7 +10,7 @@ namespace ParcelManagement.Core.Services
         // check in, claim, getByTrackingNumber, getAll (to be implemented later: getByResidentUnit)
         Task<Parcel> CheckInParcelAsync(string trackingNumber, string residentUnit,
             decimal? weight,
-            string? dimensions);
+            string? dimensions, Guid performedByUser);
 
         Task ClaimParcelAsync(string trackingNumber);
 
@@ -32,16 +33,21 @@ namespace ParcelManagement.Core.Services
     public class ParcelService(
         IParcelRepository parcelRepo,
         IResidentUnitRepository residentUnitRepo, 
-        IUserRepository userRepo
+        IUserRepository userRepo, 
+        ITrackingEventRepository trackingEventRepo
         ) : IParcelService
     {
         private readonly IParcelRepository _parcelRepo = parcelRepo;
         private readonly IResidentUnitRepository _residentUnitRepo = residentUnitRepo;
         private readonly IUserRepository _userRepo = userRepo;
 
+        private readonly ITrackingEventRepository _trackingEventRepo = trackingEventRepo;
+
         public async Task<Parcel> CheckInParcelAsync(string trackingNumber, string residentUnit,
             decimal? weight,
-            string? dimensions)
+            string? dimensions,
+            Guid performedByUser
+            )
         {
             // check if residentUnit exist 
             var specByUnitName = new ResidentUnitByUnitNameSpecification(residentUnit);
@@ -66,7 +72,16 @@ namespace ParcelManagement.Core.Services
                 Dimensions = dimensions ?? ""
             };
 
-            return await _parcelRepo.AddParcelAsync(newParcel);
+            await _parcelRepo.AddParcelAsync(newParcel);
+            await _trackingEventRepo.CreateAsync(new TrackingEvent
+            {
+                Id = Guid.NewGuid(),
+                ParcelId = newParcel.Id,
+                TrackingEventType = TrackingEventType.CheckIn,
+                EventTime = DateTimeOffset.UtcNow,
+                PerformedByUser = performedByUser
+            });
+            return newParcel;
         }
 
         public async Task ClaimParcelAsync(string trackingNumber)

@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration.UserSecrets;
 using ParcelManagement.Api.DTO;
 using ParcelManagement.Core.Services;
 
@@ -32,8 +33,13 @@ namespace ParcelManagement.Api.Controller
             {
                 return BadRequest(ModelState);
             }
-
-            var newParcel = await _parcelService.CheckInParcelAsync(dto.TrackingNumber, dto.ResidentUnit, dto.Weight, dto.Dimensions);
+            var userClaim = User.FindFirst(ClaimTypes.NameIdentifier) ??
+                throw new UnauthorizedAccessException("User id is missing");
+            if (!Guid.TryParse(userClaim.Value, out Guid userId))
+            {
+                throw new UnauthorizedAccessException("User is invalid");
+            }
+            var newParcel = await _parcelService.CheckInParcelAsync(dto.TrackingNumber, dto.ResidentUnit, dto.Weight, dto.Dimensions, userId);
             var newParcelDto = new ParcelResponseDto
             {
                 Id = newParcel.Id,

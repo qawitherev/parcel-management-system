@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+using Microsoft.EntityFrameworkCore;
 using ParcelManagement.Core.Entities;
 using ParcelManagement.Test.Fixture;
 using Xunit;
@@ -16,9 +18,11 @@ namespace ParcelManagement.Test.Service
             {
                 await _parcelFixture.ParcelService.CheckInParcelAsync(
                 trackingNumber: "TN001",
-                residentUnit: "RU001", weight: 1, dimensions: "1"
+                residentUnit: "RU001", weight: 1, dimensions: "1",
+                performedByUser: Guid.NewGuid()
             );
             });
+            await _parcelFixture.ResetDb();
         }
 
         [Fact]
@@ -52,9 +56,12 @@ namespace ParcelManagement.Test.Service
             await Assert.ThrowsAsync<InvalidOperationException>(async () =>
             {
                 await _parcelFixture.ParcelService.CheckInParcelAsync(
-                    trackingNumber, residentUnitName, null, null
+                    trackingNumber, residentUnitName, null, null,
+                performedByUser: Guid.NewGuid()
                 );
             });
+
+            await _parcelFixture.ResetDb();
         }
 
         [Fact]
@@ -73,11 +80,28 @@ namespace ParcelManagement.Test.Service
             await dbContext.SaveChangesAsync();
 
             var res = await _parcelFixture.ParcelService.CheckInParcelAsync(
-                trackingNumber, residentUnitName, null, null
+                trackingNumber, residentUnitName, null, null,
+                performedByUser: Guid.NewGuid()
             );
+
+            // checking for tracking here
+            var tracking = await dbContext.TrackingEvents
+                .Where(te => te.ParcelId == res.Id).FirstOrDefaultAsync();
+
             Assert.NotNull(res);
             Assert.Equal(existingResidentUnitId, res.ResidentUnitId);
             Assert.Equal("TN001", trackingNumber);
+
+            Assert.NotNull(tracking);
+            Assert.Equal(res.Id, tracking.ParcelId);
+
+            await _parcelFixture.ResetDb();
+        }
+
+        [Fact]
+        public async Task ClaimParcelAsync_ParcelNumberExist_ShouldThrowError()
+        {
+            throw new NotImplementedException("havent implemented");
         }
     }
 }

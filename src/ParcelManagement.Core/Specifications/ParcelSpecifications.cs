@@ -5,6 +5,10 @@ namespace ParcelManagement.Core.Specifications
 {
     public class ParcelsAwaitingPickupSpecification :  ISpecification<Parcel>
     {
+        public int? Skip => throw new NotImplementedException();
+
+        public int? Take => throw new NotImplementedException();
+
         List<IncludeExpression<Parcel>> ISpecification<Parcel>.IncludeExpressions => [];
 
         public Expression<Func<Parcel, bool>> ToExpression() => parcel => parcel.Status == ParcelStatus.AwaitingPickup;
@@ -18,6 +22,10 @@ namespace ParcelManagement.Core.Specifications
             _trackingNumber = trackingNumber;
         }
 
+        public int? Skip => throw new NotImplementedException();
+
+        public int? Take => throw new NotImplementedException();
+
         List<IncludeExpression<Parcel>> ISpecification<Parcel>.IncludeExpressions => [];
 
         public Expression<Func<Parcel, bool>> ToExpression() => p => p.TrackingNumber == _trackingNumber;
@@ -30,6 +38,10 @@ namespace ParcelManagement.Core.Specifications
         {
             _residentUnit = residentUnit;
         }
+
+        public int? Skip => throw new NotImplementedException();
+
+        public int? Take => throw new NotImplementedException();
 
         List<IncludeExpression<Parcel>> ISpecification<Parcel>.IncludeExpressions => [];
 
@@ -50,6 +62,10 @@ namespace ParcelManagement.Core.Specifications
         }
 
         public List<IncludeExpression<Parcel>> IncludeExpressions { get; }
+
+        public int? Skip => throw new NotImplementedException();
+
+        public int? Take => throw new NotImplementedException();
 
         public Expression<Func<Parcel, bool>> ToExpression()
         {

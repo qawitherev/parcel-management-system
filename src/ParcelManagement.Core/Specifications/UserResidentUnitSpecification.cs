@@ -7,6 +7,10 @@ namespace ParcelManagement.Core.Specifications
     {
         public List<IncludeExpression<UserResidentUnit>> IncludeExpressions => throw new NotImplementedException();
 
+        public int? Skip => throw new NotImplementedException();
+
+        public int? Take => throw new NotImplementedException();
+
         public Expression<Func<UserResidentUnit, bool>> ToExpression() => uru => uru.UserId == userId;
     }
 
@@ -14,6 +18,10 @@ namespace ParcelManagement.Core.Specifications
         ISpecification<UserResidentUnit>
     {
         public List<IncludeExpression<UserResidentUnit>> IncludeExpressions => throw new NotImplementedException();
+
+        public int? Skip => throw new NotImplementedException();
+
+        public int? Take => throw new NotImplementedException();
 
         public Expression<Func<UserResidentUnit, bool>> ToExpression()
         {

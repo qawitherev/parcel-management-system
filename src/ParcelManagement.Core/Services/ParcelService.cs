@@ -12,7 +12,7 @@ namespace ParcelManagement.Core.Services
             decimal? weight,
             string? dimensions, Guid performedByUser);
 
-        Task ClaimParcelAsync(string trackingNumber);
+        Task ClaimParcelAsync(string trackingNumber, Guid performedByUser);
 
         Task<Parcel?> GetParcelByIdAsync(Guid id);
 
@@ -84,14 +84,23 @@ namespace ParcelManagement.Core.Services
             return newParcel;
         }
 
-        public async Task ClaimParcelAsync(string trackingNumber)
+        public async Task ClaimParcelAsync(string trackingNumber, Guid performedByUser)
         {
             var spec = new ParcelByTrackingNumberSpecification(trackingNumber);
             var toBeClaimedParcel = await _parcelRepo.GetOneParcelBySpecificationAsync(spec) ??
                 throw new InvalidOperationException($"Parcel with tracking number '{trackingNumber}' not found.");
             toBeClaimedParcel.Status = ParcelStatus.Claimed;
             toBeClaimedParcel.ExitDate = DateTime.UtcNow;
+
             await _parcelRepo.UpdateParcelAsync(toBeClaimedParcel);
+            await _trackingEventRepo.CreateAsync(new TrackingEvent
+            {
+                Id = Guid.NewGuid(),
+                ParcelId = toBeClaimedParcel.Id,
+                TrackingEventType = TrackingEventType.Claim,
+                EventTime = DateTimeOffset.UtcNow, 
+                PerformedByUser = performedByUser
+            });
         }
 
         // why we use nullable here is because this isnt the place to handle it

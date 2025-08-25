@@ -55,7 +55,13 @@ namespace ParcelManagement.Api.Controller
         [Authorize(Roles = "ParcelRoomManager")]
         public async Task<IActionResult> ClaimParcel(string trackingNumber)
         {
-            await _parcelService.ClaimParcelAsync(trackingNumber);
+            var userCLaim = User.FindFirstValue(ClaimTypes.NameIdentifier) ??
+                throw new UnauthorizedAccessException("User id is not found");
+            if (!Guid.TryParse(userCLaim, out Guid userId))
+            {
+                throw new UnauthorizedAccessException("User id is invalid");
+            }
+            await _parcelService.ClaimParcelAsync(trackingNumber, userId);
             return NoContent(); // 204
         }
 

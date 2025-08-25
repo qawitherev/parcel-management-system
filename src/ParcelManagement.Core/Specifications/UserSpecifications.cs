@@ -7,6 +7,10 @@ namespace ParcelManagement.Core.Specifications
     {
         public List<IncludeExpression<User>> IncludeExpressions => throw new NotImplementedException();
 
+        public int? Skip => throw new NotImplementedException();
+
+        public int? Take => throw new NotImplementedException();
+
         public Expression<Func<User, bool>> ToExpression() => user => user.Username == receivedUsername;
     }
 }

@@ -12,6 +12,11 @@ namespace ParcelManagement.Infrastructure.Repository
             _dbContext = dbContext;
         }
 
+        public Task<ICollection<TrackingEvent>> GetParcelHistories(Guid parcelId)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task UpdateTrackingEventAsync(TrackingEvent trackingEvent)
         {
             var existingEvent = await _dbContext.TrackingEvents.FindAsync(trackingEvent.Id) ??

@@ -10,6 +10,7 @@ namespace ParcelManagement.Core.Services
         Task<(TrackingEvent, Parcel)> ManualEventTracking(string trackingNumber, Guid performedByUser,
             string customEvent
         );
+        Task<ICollection<TrackingEvent>> GetParcelHistories(string trackingNumber);
     }
 
     public class TrackingEventService : ITrackingEventService
@@ -24,6 +25,14 @@ namespace ParcelManagement.Core.Services
             _trackingEventRepo = trackingEventRepo;
             _parcelRepo = parcelRepo;
         }
+
+        public async Task<ICollection<TrackingEvent>> GetParcelHistories(string trackingNumber)
+        {
+            var p = await _parcelRepo.GetOneParcelBySpecificationAsync(new ParcelByTrackingNumberSpecification(trackingNumber)) ??
+                throw new KeyNotFoundException($"Parcel {trackingNumber} is not found");
+            return await _trackingEventRepo.GetParcelHistories(p.Id);
+        }
+
         public async Task<(TrackingEvent, Parcel)> ManualEventTracking(string trackingNumber, Guid performedByUser,
             string customEvent
         )

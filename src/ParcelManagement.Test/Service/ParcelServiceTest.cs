@@ -177,5 +177,11 @@ namespace ParcelManagement.Test.Service
             Assert.Equal(TrackingEventType.Claim, te.TrackingEventType);
             await _parcelFixture.ResetDb();
         }
+
+        [Fact]
+        public async Task GetParcelHistoriesAsync_NonExistParcel_ShouldThrowError()
+        {
+            
+        }
     }
 }

@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using ParcelManagement.Core.Entities;
 using ParcelManagement.Core.Repositories;
 using ParcelManagement.Infrastructure.Database;
@@ -10,11 +11,6 @@ namespace ParcelManagement.Infrastructure.Repository
         public TrackingEventRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
             _dbContext = dbContext;
-        }
-
-        public Task<ICollection<TrackingEvent>> GetParcelHistories(Guid parcelId)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task UpdateTrackingEventAsync(TrackingEvent trackingEvent)

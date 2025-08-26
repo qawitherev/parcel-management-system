@@ -27,13 +27,15 @@ namespace ParcelManagement.Core.Services
         Task<IReadOnlyList<Parcel?>> GetParcelByUser(Guid userId);
 
         Task<IReadOnlyList<Parcel?>> GetParcelsAwaitingPickup();
+
+        Task<Parcel> GetParcelHistoriesAsync(string trackingNumber);
         
     }
 
     public class ParcelService(
         IParcelRepository parcelRepo,
-        IResidentUnitRepository residentUnitRepo, 
-        IUserRepository userRepo, 
+        IResidentUnitRepository residentUnitRepo,
+        IUserRepository userRepo,
         ITrackingEventRepository trackingEventRepo
         ) : IParcelService
     {
@@ -98,7 +100,7 @@ namespace ParcelManagement.Core.Services
                 Id = Guid.NewGuid(),
                 ParcelId = toBeClaimedParcel.Id,
                 TrackingEventType = TrackingEventType.Claim,
-                EventTime = DateTimeOffset.UtcNow, 
+                EventTime = DateTimeOffset.UtcNow,
                 PerformedByUser = performedByUser
             });
         }
@@ -147,6 +149,15 @@ namespace ParcelManagement.Core.Services
         {
             var spec = new ParcelsAwaitingPickupSpecification();
             return await _parcelRepo.GetParcelsBySpecificationAsync(spec);
+        }
+
+        public async Task<Parcel> GetParcelHistoriesAsync(string trackingNumber)
+        {
+            var p = await _parcelRepo.GetOneParcelBySpecificationAsync(new ParcelByTrackingNumberSpecification(trackingNumber)) ??
+                throw new KeyNotFoundException($"Parcel {trackingNumber} is not found");
+            var spec = new ParcelHistoriesSpecification(p.Id);
+            return await _parcelRepo.GetOneParcelBySpecificationAsync(spec) ??
+                throw new NullReferenceException("Parcel has no histories");
         }
     }
 }

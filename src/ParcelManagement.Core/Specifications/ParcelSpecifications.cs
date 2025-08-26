@@ -3,7 +3,7 @@ using ParcelManagement.Core.Entities;
 
 namespace ParcelManagement.Core.Specifications
 {
-    public class ParcelsAwaitingPickupSpecification :  ISpecification<Parcel>
+    public class ParcelsAwaitingPickupSpecification : ISpecification<Parcel>
     {
         public int? Skip => throw new NotImplementedException();
 
@@ -73,4 +73,28 @@ namespace ParcelManagement.Core.Specifications
         }
     }
 
+    public class ParcelHistoriesSpecification : ISpecification<Parcel>
+    {
+        private readonly Guid _parcelId;
+
+        public ParcelHistoriesSpecification(Guid parcelId)
+        {
+            _parcelId = parcelId;
+            IncludeExpressions = new List<IncludeExpression<Parcel>>
+            {
+                new IncludeExpression<Parcel>(p => p.TrackingEvents)
+            };
+        }
+
+        public List<IncludeExpression<Parcel>> IncludeExpressions { get; }
+
+        public int? Skip => throw new NotImplementedException();
+
+        public int? Take => throw new NotImplementedException();
+
+        public Expression<Func<Parcel, bool>> ToExpression()
+        {
+            return p => p.TrackingEvents.Any(te => te.ParcelId == _parcelId);
+        }
+    }
 }

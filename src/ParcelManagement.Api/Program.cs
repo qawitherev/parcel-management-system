@@ -63,6 +63,7 @@ builder.Services.AddScoped<IUserResidentUnitRepository, UserResidentUnitReposito
 builder.Services.AddScoped<IUserResidentUnitService, UserResidentUnitService>();
 
 builder.Services.AddScoped<ITrackingEventRepository, TrackingEventRepository>();
+builder.Services.AddScoped<ITrackingEventService, TrackingEventService>();
 
 
 

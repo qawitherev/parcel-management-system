@@ -2,8 +2,8 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration.UserSecrets;
 using ParcelManagement.Api.DTO;
+using ParcelManagement.Api.Utility;
 using ParcelManagement.Core.Services;
 
 namespace ParcelManagement.Api.Controller
@@ -11,9 +11,14 @@ namespace ParcelManagement.Api.Controller
     [ApiController]
     [Route("api/[controller]")]
     [Consumes("application/json")]
-    public class ParcelController(IParcelService parcelService) : ControllerBase
+    public class ParcelController(IParcelService parcelService,
+        ITrackingEventService trackingEventService, 
+        IUserContextService userContextService
+    ) : ControllerBase
     {
         private readonly IParcelService _parcelService = parcelService;
+        private readonly ITrackingEventService _trackingEventService = trackingEventService;
+        private readonly IUserContextService _userContextService = userContextService;
 
         // since we wont expose this endpoint publicly, we won't follow 
         // url pattern to give way to 
@@ -99,12 +104,7 @@ namespace ParcelManagement.Api.Controller
         [Authorize]
         public async Task<IActionResult> GetParcelByUser()
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ??
-                throw new UnauthorizedAccessException("User id is missing");
-            if (!Guid.TryParse(userIdClaim, out Guid userId))
-            {
-                throw new UnauthorizedAccessException("Invalid user id format");
-            }
+            var userId = _userContextService.GetUserId();
             var res = await _parcelService.GetParcelByUser(userId);
             var responseDtos = new List<ParcelResponseDto>();
             foreach (var parcel in res)
@@ -118,6 +118,22 @@ namespace ParcelManagement.Api.Controller
                 });
             }
             return Ok(responseDtos);
+        }
+
+        [HttpPost("{trackingNumber}/events")]
+        [Authorize(Roles = "ParcelRoomManager")]
+        public async Task<IActionResult> CreateManualEvent([FromBody] ManualEventsDto dto, string trackingNumber)
+        {
+            var performedByUser = _userContextService.GetUserId();
+            var (te, p) = await _trackingEventService.ManualEventTracking(trackingNumber, performedByUser, dto.CustomEvent);
+            var returnedDto = new ManualEventsResponseDto
+            {
+                TrackingNumber = p.TrackingNumber,
+                TrackingEventType = te.TrackingEventType,
+                Event = te.CustomEvent ?? "",
+                EventTime = te.EventTime
+            };
+            return Ok(returnedDto);
         }
     }
 }

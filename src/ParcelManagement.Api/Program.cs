@@ -6,6 +6,7 @@ using ParcelManagement.Core.Repositories;
 using ParcelManagement.Core.Services;
 using ParcelManagement.Infrastructure.Database;
 using ParcelManagement.Infrastructure.Repository;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,12 @@ if (builder.Environment.IsDevelopment())
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddControllers().AddJsonOptions(
+    options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    }
+);
 
 // Dependency Injection 
 // THE HOLY GRAIL OF ASP.NET CORE
@@ -42,8 +49,9 @@ if (jwtSettings.SecretKey == null && !builder.Environment.IsEnvironment("Testing
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(option =>
 {
     JwtBearerConfiguration.JwtBearerOptionsConfig(option, jwtSettings);
-    
+
 });
+
 
 builder.Services.AddScoped<IParcelRepository, ParcelRepository>();
 builder.Services.AddScoped<IParcelService, ParcelService>();

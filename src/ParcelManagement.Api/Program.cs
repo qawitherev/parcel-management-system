@@ -7,6 +7,7 @@ using ParcelManagement.Core.Services;
 using ParcelManagement.Infrastructure.Database;
 using ParcelManagement.Infrastructure.Repository;
 using System.Text.Json.Serialization;
+using ParcelManagement.Api.Utility;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,6 +53,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 
 });
 
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<IParcelRepository, ParcelRepository>();
 builder.Services.AddScoped<IParcelService, ParcelService>();
@@ -73,7 +75,7 @@ builder.Services.AddScoped<IUserResidentUnitService, UserResidentUnitService>();
 builder.Services.AddScoped<ITrackingEventRepository, TrackingEventRepository>();
 builder.Services.AddScoped<ITrackingEventService, TrackingEventService>();
 
-
+builder.Services.AddScoped<IUserContextService, UserContextService>();
 
 var app = builder.Build();
 

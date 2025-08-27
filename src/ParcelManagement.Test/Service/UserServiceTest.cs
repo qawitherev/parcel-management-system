@@ -59,12 +59,12 @@ namespace ParcelManagement.Test.Service
             };
             await _fixture.DbContext.ResidentUnits.AddAsync(new ResidentUnit
             {
-                Id = Guid.NewGuid(), 
+                Id = Guid.NewGuid(),
                 UnitName = "RU001"
             });
             await _fixture.DbContext.SaveChangesAsync();
 
-            await _fixture.UserService.UserRegisterAsync(
+            var res = await _fixture.UserService.UserRegisterAsync(
                 newUser.Username, "plainPassword", newUser.Email, "RU001"
             );
             var usernameSpec = new UserByUsernameSpecification(theUsername);

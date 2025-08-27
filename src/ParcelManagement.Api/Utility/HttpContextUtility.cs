@@ -11,9 +11,9 @@ namespace ParcelManagement.Api.Utility
 
     public class UserContextService : IUserContextService
     {
-        private readonly HttpContextAccessor _httpContextAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UserContextService(HttpContextAccessor httpContextAccessor)
+        public UserContextService(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
         }

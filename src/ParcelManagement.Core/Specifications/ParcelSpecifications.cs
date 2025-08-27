@@ -5,9 +5,9 @@ namespace ParcelManagement.Core.Specifications
 {
     public class ParcelsAwaitingPickupSpecification : ISpecification<Parcel>
     {
-        public int? Skip => throw new NotImplementedException();
+        public int? Skip => null;
 
-        public int? Take => throw new NotImplementedException();
+        public int? Take => null;
 
         List<IncludeExpression<Parcel>> ISpecification<Parcel>.IncludeExpressions => [];
 
@@ -22,9 +22,9 @@ namespace ParcelManagement.Core.Specifications
             _trackingNumber = trackingNumber;
         }
 
-        public int? Skip => throw new NotImplementedException();
+        public int? Skip => null;
 
-        public int? Take => throw new NotImplementedException();
+        public int? Take => null;
 
         List<IncludeExpression<Parcel>> ISpecification<Parcel>.IncludeExpressions => [];
 
@@ -39,9 +39,9 @@ namespace ParcelManagement.Core.Specifications
             _residentUnit = residentUnit;
         }
 
-        public int? Skip => throw new NotImplementedException();
+        public int? Skip => null;
 
-        public int? Take => throw new NotImplementedException();
+        public int? Take => null;
 
         List<IncludeExpression<Parcel>> ISpecification<Parcel>.IncludeExpressions => [];
 
@@ -63,9 +63,9 @@ namespace ParcelManagement.Core.Specifications
 
         public List<IncludeExpression<Parcel>> IncludeExpressions { get; }
 
-        public int? Skip => throw new NotImplementedException();
+        public int? Skip => null;
 
-        public int? Take => throw new NotImplementedException();
+        public int? Take => null;
 
         public Expression<Func<Parcel, bool>> ToExpression()
         {
@@ -88,9 +88,9 @@ namespace ParcelManagement.Core.Specifications
 
         public List<IncludeExpression<Parcel>> IncludeExpressions { get; }
 
-        public int? Skip => throw new NotImplementedException();
+        public int? Skip => null;
 
-        public int? Take => throw new NotImplementedException();
+        public int? Take => null;
 
         public Expression<Func<Parcel, bool>> ToExpression()
         {

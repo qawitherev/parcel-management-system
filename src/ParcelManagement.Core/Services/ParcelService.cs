@@ -28,7 +28,7 @@ namespace ParcelManagement.Core.Services
 
         Task<IReadOnlyList<Parcel?>> GetParcelsAwaitingPickup();
 
-        Task<Parcel> GetParcelHistoriesAsync(string trackingNumber);
+        Task<Parcel> GetParcelHistoriesAsync(string trackingNumber, Guid inquiringUserId);
         
     }
 
@@ -151,8 +151,21 @@ namespace ParcelManagement.Core.Services
             return await _parcelRepo.GetParcelsBySpecificationAsync(spec);
         }
 
-        public async Task<Parcel> GetParcelHistoriesAsync(string trackingNumber)
+        public async Task<Parcel> GetParcelHistoriesAsync(string trackingNumber, Guid inquiringUserId)
         {
+            // check if the parcel belongs to the accessing user 
+            var user = await _userRepo.GetUserByIdAsync(inquiringUserId) ??
+                throw new KeyNotFoundException("User not found");
+            var parcelByUserSpec = new ParcelByUserSpecification(inquiringUserId);
+            var userParcels = await _parcelRepo.GetParcelsBySpecificationAsync(parcelByUserSpec);
+            if (!userParcels.Any())
+            {
+                throw new UnauthorizedAccessException("User has no parcels");
+            }
+            if (!userParcels.Any(up => up?.TrackingNumber == trackingNumber))
+            {
+                throw new UnauthorizedAccessException("Parcel does not belong to user");
+            }
             var p = await _parcelRepo.GetOneParcelBySpecificationAsync(new ParcelByTrackingNumberSpecification(trackingNumber)) ??
                 throw new KeyNotFoundException($"Parcel {trackingNumber} is not found");
             var spec = new ParcelHistoriesSpecification(p.Id);

@@ -57,6 +57,12 @@ namespace ParcelManagement.Test.Service
                 PasswordHash = "####",
                 PasswordSalt = "salt",
             };
+            await _fixture.DbContext.ResidentUnits.AddAsync(new ResidentUnit
+            {
+                Id = Guid.NewGuid(), 
+                UnitName = "RU001"
+            });
+            await _fixture.DbContext.SaveChangesAsync();
 
             await _fixture.UserService.UserRegisterAsync(
                 newUser.Username, "plainPassword", newUser.Email, "RU001"

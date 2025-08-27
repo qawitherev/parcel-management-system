@@ -1,6 +1,3 @@
-using System.Runtime.CompilerServices;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.EntityFrameworkCore;
 using ParcelManagement.Core.Entities;
 using ParcelManagement.Test.Fixture;
@@ -164,24 +161,105 @@ namespace ParcelManagement.Test.Service
             await _parcelFixture.ParcelService.ClaimParcelAsync(
                 theTrackingNumber, Guid.NewGuid()
             );
-
             var res = await dbContext.Parcels.FindAsync(checkedInParcel.Id);
+            await dbContext.Entry(res!).ReloadAsync();
             Assert.NotNull(res);
-            // check for status == claimed
             Assert.Equal(ParcelStatus.Claimed, res.Status);
 
             // check for tracking event 
             var te = await dbContext.TrackingEvents
                 .Where(e => e.ParcelId == checkedInParcel.Id).FirstOrDefaultAsync();
-            Assert.NotNull(te);
-            Assert.Equal(TrackingEventType.Claim, te.TrackingEventType);
+            // Assert.NotNull(te);
+            Assert.Equal(TrackingEventType.Claim, te!.TrackingEventType);
             await _parcelFixture.ResetDb();
         }
 
         [Fact]
         public async Task GetParcelHistoriesAsync_NonExistParcel_ShouldThrowError()
         {
-            
+            await Assert.ThrowsAsync<KeyNotFoundException>(async () =>
+            {
+                await _parcelFixture.ParcelService.GetParcelHistoriesAsync("TN001", Guid.NewGuid());
+            });
+            await _parcelFixture.ResetDb();
+        }
+
+        [Fact]
+        public async Task GetParcelHistoriesAsync_ValidData_ShouldReturnParcel()
+        {
+            var dbContext = _parcelFixture.DbContext;
+            var theTrackingNumber = "TN001";
+            var theUser = new User
+            {
+                Id = Guid.NewGuid(),
+                Username = "testUser",
+                Email = "email@email.com",
+                PasswordHash = "####"
+            };
+            var theResidentUnit = new ResidentUnit
+            {
+                Id = Guid.NewGuid(),
+                UnitName = "RU001"
+            };
+            var theUserResidentUnit = new UserResidentUnit
+            {
+                Id = Guid.NewGuid(),
+                UserId = theUser.Id,
+                ResidentUnitId = theResidentUnit.Id
+            };
+            await dbContext.Users.AddAsync(theUser);
+            await dbContext.ResidentUnits.AddAsync(theResidentUnit);
+            await dbContext.UserResidentUnits.AddAsync(theUserResidentUnit);
+            var parcel = new Parcel
+            {
+                Id = Guid.NewGuid(),
+                TrackingNumber = theTrackingNumber,
+                Status = ParcelStatus.AwaitingPickup,
+                ResidentUnitId = theResidentUnit.Id
+            };
+            var trackingEvents = new List<TrackingEvent>
+            {
+                new() {
+                    Id = Guid.NewGuid(),
+                    ParcelId = parcel.Id,
+                    TrackingEventType = TrackingEventType.Custom,
+                    CustomEvent = "History 1",
+                    EventTime = DateTimeOffset.UtcNow
+                },
+                new() {
+                    Id = Guid.NewGuid(),
+                    ParcelId = parcel.Id,
+                    TrackingEventType = TrackingEventType.Custom,
+                    CustomEvent = "History 2",
+                    EventTime = DateTimeOffset.UtcNow
+                },
+                new() {
+                    Id = Guid.NewGuid(),
+                    ParcelId = parcel.Id,
+                    TrackingEventType = TrackingEventType.Custom,
+                    CustomEvent = "History 3",
+                    EventTime = DateTimeOffset.UtcNow
+                },
+                new() {
+                    Id = Guid.NewGuid(),
+                    ParcelId = parcel.Id,
+                    TrackingEventType = TrackingEventType.Claim,
+                    EventTime = DateTimeOffset.UtcNow
+                },
+            };
+            await dbContext.AddAsync(parcel);
+            await dbContext.TrackingEvents.AddRangeAsync(trackingEvents);
+            await dbContext.SaveChangesAsync();
+
+            var res = await _parcelFixture.ParcelService.GetParcelHistoriesAsync(parcel.TrackingNumber,
+                theUser.Id
+            );
+            Assert.NotEmpty(res.TrackingEvents);
+            foreach (var te in trackingEvents)
+            {
+                Assert.Contains(res.TrackingEvents, t => t.ParcelId == te.ParcelId);
+            }
+            await _parcelFixture.ResetDb();
         }
     }
 }

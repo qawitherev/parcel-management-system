@@ -39,4 +39,18 @@ namespace ParcelManagement.Api.DTO
         public required string Event { get; set; }
         public required DateTimeOffset EventTime { get; set; }
     }
+
+    public class ParcelHistoriesDto
+    {
+        public required string TrackingNumber { get; set; }
+        public required List<ParcelHistoriesChild> History { get; set; }
+        
+    }
+
+    public class ParcelHistoriesChild
+    {
+        public required DateTimeOffset EventTime { get; set; }
+        public required string Event { get; set; }
+        public required string PerformedByUser { get; set; }
+    }
 }

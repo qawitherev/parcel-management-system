@@ -22,5 +22,6 @@ namespace ParcelManagement.Core.Entities
         public Guid? PerformedByUser { get; set; }
 
         public Parcel Parcel { get; set; } = null!;
+        public User User { get; set; } = null!;
     }
 }

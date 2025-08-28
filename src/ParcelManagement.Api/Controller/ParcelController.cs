@@ -12,7 +12,7 @@ namespace ParcelManagement.Api.Controller
     [Route("api/[controller]")]
     [Consumes("application/json")]
     public class ParcelController(IParcelService parcelService,
-        ITrackingEventService trackingEventService, 
+        ITrackingEventService trackingEventService,
         IUserContextService userContextService
     ) : ControllerBase
     {
@@ -134,6 +134,26 @@ namespace ParcelManagement.Api.Controller
                 EventTime = te.EventTime
             };
             return Ok(returnedDto);
+        }
+
+        [HttpGet("{trackingNumber}/history")]
+        [Authorize]
+        public async Task GetParcelHistory(string trackingNumber)
+        {
+            var res = await _parcelService.GetParcelHistoriesAsync(
+                trackingNumber,
+                _userContextService.GetUserId()
+                );
+            var parcelHistoriesDto = new ParcelHistoriesDto
+            {
+                TrackingNumber = res.TrackingNumber,
+                History = [.. res.TrackingEvents.Select(te => new ParcelHistoriesChild
+                {
+                    EventTime = te.EventTime,
+                    Event = te.CustomEvent ?? te.TrackingEventType.ToString(), 
+                    PerformedByUser = te.User.Username
+                })]
+            };
         }
     }
 }

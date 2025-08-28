@@ -24,6 +24,7 @@ namespace ParcelManagement.Api.Middleware
                 {
                     ApiException e => e.StatusCode,
                     KeyNotFoundException => (int)HttpStatusCode.NotFound,
+                    NullReferenceException => (int)HttpStatusCode.NotFound,
                     InvalidOperationException => (int)HttpStatusCode.Conflict,
                     InvalidCredentialException => (int)HttpStatusCode.Unauthorized,
                     _ => (int)HttpStatusCode.InternalServerError

@@ -8,6 +8,7 @@ namespace ParcelManagement.Api.Controller
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Consumes("application/json")]
     public class ResidentUnitController : ControllerBase
     {
         private readonly IResidentUnitService _residentUnitService;
@@ -23,22 +24,24 @@ namespace ParcelManagement.Api.Controller
         }
 
         [HttpGet("GetResidentUnitById/{id}")]
-        public async Task<IActionResult> GetResidentUnitById(Guid id) {
+        public async Task<IActionResult> GetResidentUnitById(Guid id)
+        {
             return Ok(await _residentUnitService.GetResidentUnitById(id));
         }
 
         [HttpPost("registerUnit")]
+        [Consumes("application/json")]
         public async Task<IActionResult> RegisterUnit([FromBody] RegisterUnitDto registerUnitDto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var userId = _userServiceContext.GetUserId();
+            // var userId = _userServiceContext.GetUserId();
             var unit = await _residentUnitService.CreateResidentUnitAsync(
-                registerUnitDto.UnitName, userId
+                registerUnitDto.UnitName, Guid.NewGuid()
             );
-            return CreatedAtAction(nameof(GetResidentUnitById), new { id = unit.Id });
+            return CreatedAtAction(nameof(GetResidentUnitById), new { id = unit.Id }, unit);
         }
     }
 }

@@ -69,6 +69,7 @@ namespace ParcelManagement.Core.Services
 
             var hashedPassword = PasswordService.HashPassword(newUser, password);
             newUser.PasswordHash = hashedPassword;
+            var theNewUser = await _userRepository.CreateUserAsync(newUser);
             await _userResidentUnitRepo.CreateUserResidentUnitAsync(
                 new UserResidentUnit
                 {
@@ -79,7 +80,7 @@ namespace ParcelManagement.Core.Services
                     CreatedAt = DateTimeOffset.UtcNow
                 }
             );
-            return await _userRepository.CreateUserAsync(newUser);
+            return theNewUser;
         }
 
         public async Task<User?> GetUserById(Guid id)

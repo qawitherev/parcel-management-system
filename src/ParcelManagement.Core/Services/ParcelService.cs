@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using ParcelManagement.Core.Entities;
 using ParcelManagement.Core.Repositories;
 using ParcelManagement.Core.Specifications;
@@ -9,9 +10,9 @@ namespace ParcelManagement.Core.Services
         // check in, claim, getByTrackingNumber, getAll (to be implemented later: getByResidentUnit)
         Task<Parcel> CheckInParcelAsync(string trackingNumber, string residentUnit,
             decimal? weight,
-            string? dimensions);
+            string? dimensions, Guid performedByUser);
 
-        Task ClaimParcelAsync(string trackingNumber);
+        Task ClaimParcelAsync(string trackingNumber, Guid performedByUser);
 
         Task<Parcel?> GetParcelByIdAsync(Guid id);
 
@@ -26,22 +27,29 @@ namespace ParcelManagement.Core.Services
         Task<IReadOnlyList<Parcel?>> GetParcelByUser(Guid userId);
 
         Task<IReadOnlyList<Parcel?>> GetParcelsAwaitingPickup();
+
+        Task<Parcel> GetParcelHistoriesAsync(string trackingNumber, Guid inquiringUserId);
         
     }
 
     public class ParcelService(
         IParcelRepository parcelRepo,
-        IResidentUnitRepository residentUnitRepo, 
-        IUserRepository userRepo
+        IResidentUnitRepository residentUnitRepo,
+        IUserRepository userRepo,
+        ITrackingEventRepository trackingEventRepo
         ) : IParcelService
     {
         private readonly IParcelRepository _parcelRepo = parcelRepo;
         private readonly IResidentUnitRepository _residentUnitRepo = residentUnitRepo;
         private readonly IUserRepository _userRepo = userRepo;
 
+        private readonly ITrackingEventRepository _trackingEventRepo = trackingEventRepo;
+
         public async Task<Parcel> CheckInParcelAsync(string trackingNumber, string residentUnit,
             decimal? weight,
-            string? dimensions)
+            string? dimensions,
+            Guid performedByUser
+            )
         {
             // check if residentUnit exist 
             var specByUnitName = new ResidentUnitByUnitNameSpecification(residentUnit);
@@ -66,17 +74,35 @@ namespace ParcelManagement.Core.Services
                 Dimensions = dimensions ?? ""
             };
 
-            return await _parcelRepo.AddParcelAsync(newParcel);
+            await _parcelRepo.AddParcelAsync(newParcel);
+            await _trackingEventRepo.CreateAsync(new TrackingEvent
+            {
+                Id = Guid.NewGuid(),
+                ParcelId = newParcel.Id,
+                TrackingEventType = TrackingEventType.CheckIn,
+                EventTime = DateTimeOffset.UtcNow,
+                PerformedByUser = performedByUser
+            });
+            return newParcel;
         }
 
-        public async Task ClaimParcelAsync(string trackingNumber)
+        public async Task ClaimParcelAsync(string trackingNumber, Guid performedByUser)
         {
             var spec = new ParcelByTrackingNumberSpecification(trackingNumber);
             var toBeClaimedParcel = await _parcelRepo.GetOneParcelBySpecificationAsync(spec) ??
                 throw new InvalidOperationException($"Parcel with tracking number '{trackingNumber}' not found.");
             toBeClaimedParcel.Status = ParcelStatus.Claimed;
             toBeClaimedParcel.ExitDate = DateTime.UtcNow;
+
             await _parcelRepo.UpdateParcelAsync(toBeClaimedParcel);
+            await _trackingEventRepo.CreateAsync(new TrackingEvent
+            {
+                Id = Guid.NewGuid(),
+                ParcelId = toBeClaimedParcel.Id,
+                TrackingEventType = TrackingEventType.Claim,
+                EventTime = DateTimeOffset.UtcNow,
+                PerformedByUser = performedByUser
+            });
         }
 
         // why we use nullable here is because this isnt the place to handle it
@@ -123,6 +149,28 @@ namespace ParcelManagement.Core.Services
         {
             var spec = new ParcelsAwaitingPickupSpecification();
             return await _parcelRepo.GetParcelsBySpecificationAsync(spec);
+        }
+
+        public async Task<Parcel> GetParcelHistoriesAsync(string trackingNumber, Guid inquiringUserId)
+        {
+            // check if the parcel belongs to the accessing user 
+            var user = await _userRepo.GetUserByIdAsync(inquiringUserId) ??
+                throw new KeyNotFoundException("User not found");
+            var parcelByUserSpec = new ParcelByUserSpecification(inquiringUserId);
+            var userParcels = await _parcelRepo.GetParcelsBySpecificationAsync(parcelByUserSpec);
+            if (!userParcels.Any())
+            {
+                throw new UnauthorizedAccessException("User has no parcels");
+            }
+            if (!userParcels.Any(up => up?.TrackingNumber == trackingNumber))
+            {
+                throw new UnauthorizedAccessException("Parcel does not belong to user");
+            }
+            var p = await _parcelRepo.GetOneParcelBySpecificationAsync(new ParcelByTrackingNumberSpecification(trackingNumber)) ??
+                throw new KeyNotFoundException($"Parcel {trackingNumber} is not found");
+            var spec = new ParcelHistoriesSpecification(p.Id);
+            return await _parcelRepo.GetOneParcelBySpecificationAsync(spec) ??
+                throw new NullReferenceException("Parcel has no histories");
         }
     }
 }

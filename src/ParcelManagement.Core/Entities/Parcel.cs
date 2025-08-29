@@ -22,7 +22,7 @@ namespace ParcelManagement.Core.Entities
         public string? ResidentUnitDeprecated { get; set; }
 
         [Required]
-        public  Guid ResidentUnitId { get; set; }
+        public Guid ResidentUnitId { get; set; }
 
         public DateTimeOffset EntryDate { get; set; }
         public DateTimeOffset? ExitDate { get; set; } // Nullable if not yet claimed
@@ -34,5 +34,7 @@ namespace ParcelManagement.Core.Entities
 
         // navigation property 
         public ResidentUnit? ResidentUnit { get; set; }
+
+        public ICollection<TrackingEvent> TrackingEvents { get; set; } = [];
     }
 }

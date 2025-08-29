@@ -21,8 +21,9 @@ namespace ParcelManagement.Test.Fixture
 
             var residentUnitRepo = new ResidentUnitRepository(DbContext);
             var userRepo = new UserRepository(DbContext);
+            var trackingEventRepo = new TrackingEventRepository(DbContext);
             ParcelRepo = new ParcelRepository(DbContext);
-            ParcelService = new ParcelService(ParcelRepo, residentUnitRepo, userRepo);
+            ParcelService = new ParcelService(ParcelRepo, residentUnitRepo, userRepo, trackingEventRepo);
             return Task.CompletedTask;
         }
 
@@ -30,6 +31,11 @@ namespace ParcelManagement.Test.Fixture
         {
             await DbContext.Database.EnsureDeletedAsync();
             await DbContext.DisposeAsync();
+        }
+
+        public async Task ResetDb()
+        {
+            await DbContext.Database.EnsureDeletedAsync();
         }
     }
 }

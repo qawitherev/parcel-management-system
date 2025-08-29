@@ -1,0 +1,4 @@
+namespace ParcelManagement.Core.Mapping
+{
+    
+}

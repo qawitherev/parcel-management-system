@@ -3,8 +3,12 @@ using ParcelManagement.Core.Entities;
 
 namespace ParcelManagement.Core.Specifications
 {
-    public class ParcelsAwaitingPickupSpecification :  ISpecification<Parcel>
+    public class ParcelsAwaitingPickupSpecification : ISpecification<Parcel>
     {
+        public int? Skip => null;
+
+        public int? Take => null;
+
         List<IncludeExpression<Parcel>> ISpecification<Parcel>.IncludeExpressions => [];
 
         public Expression<Func<Parcel, bool>> ToExpression() => parcel => parcel.Status == ParcelStatus.AwaitingPickup;
@@ -18,6 +22,10 @@ namespace ParcelManagement.Core.Specifications
             _trackingNumber = trackingNumber;
         }
 
+        public int? Skip => null;
+
+        public int? Take => null;
+
         List<IncludeExpression<Parcel>> ISpecification<Parcel>.IncludeExpressions => [];
 
         public Expression<Func<Parcel, bool>> ToExpression() => p => p.TrackingNumber == _trackingNumber;
@@ -30,6 +38,10 @@ namespace ParcelManagement.Core.Specifications
         {
             _residentUnit = residentUnit;
         }
+
+        public int? Skip => null;
+
+        public int? Take => null;
 
         List<IncludeExpression<Parcel>> ISpecification<Parcel>.IncludeExpressions => [];
 
@@ -51,10 +63,38 @@ namespace ParcelManagement.Core.Specifications
 
         public List<IncludeExpression<Parcel>> IncludeExpressions { get; }
 
+        public int? Skip => null;
+
+        public int? Take => null;
+
         public Expression<Func<Parcel, bool>> ToExpression()
         {
             return p => p.ResidentUnit!.UserResidentUnits.Any(uru => uru.UserId == _userId);
         }
     }
 
+    public class ParcelHistoriesSpecification : ISpecification<Parcel>
+    {
+        private readonly Guid _parcelId;
+
+        public ParcelHistoriesSpecification(Guid parcelId)
+        {
+            _parcelId = parcelId;
+            IncludeExpressions = new List<IncludeExpression<Parcel>>
+            {
+                new IncludeExpression<Parcel>(p => p.TrackingEvents)
+            };
+        }
+
+        public List<IncludeExpression<Parcel>> IncludeExpressions { get; }
+
+        public int? Skip => null;
+
+        public int? Take => null;
+
+        public Expression<Func<Parcel, bool>> ToExpression()
+        {
+            return p => p.TrackingEvents.Any(te => te.ParcelId == _parcelId);
+        }
+    }
 }

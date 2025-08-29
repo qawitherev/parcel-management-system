@@ -35,7 +35,7 @@ namespace ParcelManagement.Test.Service
 
             await Assert.ThrowsAsync<InvalidOperationException>(async () =>
             {
-                await _fixture.ResidentUnitService.CreateResidentUnitAsync(newResidentUnit);
+                await _fixture.ResidentUnitService.CreateResidentUnitAsync(newResidentUnit.UnitName, Guid.NewGuid());
             });
 
             await _fixture.ResetDb();
@@ -52,7 +52,7 @@ namespace ParcelManagement.Test.Service
                 CreatedAt = DateTimeOffset.UtcNow,
                 CreatedBy = Guid.NewGuid()
             };
-            await _fixture.ResidentUnitService.CreateResidentUnitAsync(newResidentUnit);
+            await _fixture.ResidentUnitService.CreateResidentUnitAsync(newResidentUnit.UnitName, Guid.NewGuid());
             var res = await _fixture.DbContext.ResidentUnits.FindAsync(theId);
             Assert.NotNull(res);
             Assert.Equal(theId, res.Id);

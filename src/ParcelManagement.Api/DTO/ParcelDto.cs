@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using ParcelManagement.Core.Entities;
 
 namespace ParcelManagement.Api.DTO
 {
@@ -24,5 +25,32 @@ namespace ParcelManagement.Api.DTO
         public decimal? Weight { get; set; }
 
         public string? Dimensions { get; set; }
+    }
+
+    public class ManualEventsDto
+    {
+        public required string CustomEvent { get; set; }
+    }
+
+    public class ManualEventsResponseDto
+    {
+        public required string TrackingNumber { get; set; }
+        public required TrackingEventType TrackingEventType { get; set; }
+        public required string Event { get; set; }
+        public required DateTimeOffset EventTime { get; set; }
+    }
+
+    public class ParcelHistoriesDto
+    {
+        public required string TrackingNumber { get; set; }
+        public required List<ParcelHistoriesChild> History { get; set; }
+        
+    }
+
+    public class ParcelHistoriesChild
+    {
+        public required DateTimeOffset EventTime { get; set; }
+        public required string Event { get; set; }
+        public required string PerformedByUser { get; set; }
     }
 }

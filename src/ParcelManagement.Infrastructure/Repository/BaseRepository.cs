@@ -1,16 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using ParcelManagement.Core.Repositories;
 using ParcelManagement.Core.Specifications;
 using ParcelManagement.Infrastructure.Database;
 
 namespace ParcelManagement.Infrastructure.Repository
 {
-    public interface IBaseRepository<T>
-    {
-        Task<T?> GetOneBySpecificationAsync(ISpecification<T> specification);
-
-        Task<IReadOnlyList<T>> GetBySpecificationAsync(ISpecification<T> specification);
-    }
-
     public class BaseRepository<T> : IBaseRepository<T> where T : class
     {
         private readonly ApplicationDbContext _dbContext;
@@ -47,6 +41,26 @@ namespace ParcelManagement.Infrastructure.Repository
 
             return await query.FirstOrDefaultAsync();
         }
+
+        public async Task<T> CreateAsync(T obj)
+        {
+            await _dbContext.Set<T>().AddAsync(obj);
+            await _dbContext.SaveChangesAsync();
+            return obj;
+        }
+
+        public async Task<T?> FindByIdAsync(Guid id)
+        {
+            return await _dbContext.Set<T>().FindAsync(id);
+        }
+
+        public async Task<ICollection<T>>? GetAllAsync()
+        {
+            return await _dbContext.Set<T>().ToListAsync();
+        }
+
+        // we dont do update here because we have entity that has composite key
+        // instad of ID 
     }
 
     // helper function so that we dont repeat ourself

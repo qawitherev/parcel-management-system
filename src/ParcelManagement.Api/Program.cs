@@ -6,6 +6,8 @@ using ParcelManagement.Core.Repositories;
 using ParcelManagement.Core.Services;
 using ParcelManagement.Infrastructure.Database;
 using ParcelManagement.Infrastructure.Repository;
+using System.Text.Json.Serialization;
+using ParcelManagement.Api.Utility;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,12 +23,19 @@ if (builder.Environment.IsDevelopment())
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddControllers().AddJsonOptions(
+    options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    }
+);
 
 // Dependency Injection 
 // THE HOLY GRAIL OF ASP.NET CORE
 if (!builder.Environment.IsEnvironment("Testing")) // --> if we're not doing integration testing, connect to real mySQL, else dbContext is created in CustomWebApplicationFactory.cs
 {
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? 
+        throw new InvalidOperationException("ConnectionString not found");
     var serverVersion = ServerVersion.AutoDetect(connectionString);
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseMySql(connectionString, serverVersion));
@@ -42,8 +51,10 @@ if (jwtSettings.SecretKey == null && !builder.Environment.IsEnvironment("Testing
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(option =>
 {
     JwtBearerConfiguration.JwtBearerOptionsConfig(option, jwtSettings);
-    
+
 });
+
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<IParcelRepository, ParcelRepository>();
 builder.Services.AddScoped<IParcelService, ParcelService>();
@@ -62,7 +73,10 @@ builder.Services.AddScoped<IResidentUnitService, ResidentUnitService>();
 builder.Services.AddScoped<IUserResidentUnitRepository, UserResidentUnitRepository>();
 builder.Services.AddScoped<IUserResidentUnitService, UserResidentUnitService>();
 
+builder.Services.AddScoped<ITrackingEventRepository, TrackingEventRepository>();
+builder.Services.AddScoped<ITrackingEventService, TrackingEventService>();
 
+builder.Services.AddScoped<IUserContextService, UserContextService>();
 
 var app = builder.Build();
 

@@ -32,6 +32,11 @@ namespace ParcelManagement.Test.Integration
                     PasswordHash = "####",
                     PasswordSalt = "####"
                 };
+                await dbContext.ResidentUnits.AddAsync(new ResidentUnit
+                {
+                    Id = Guid.NewGuid(),
+                    UnitName = "RU001"
+                });
                 await dbContext.Users.AddAsync(existingUser);
                 await dbContext.SaveChangesAsync();
             }
@@ -59,6 +64,16 @@ namespace ParcelManagement.Test.Integration
                 Password = "Password_123",
                 ResidentUnit = "RU001"
             };
+            using (var scope = factory.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                await dbContext.ResidentUnits.AddAsync(new ResidentUnit
+                {
+                    Id = Guid.NewGuid(),
+                    UnitName = newUser.ResidentUnit
+                });
+                await dbContext.SaveChangesAsync();
+            }
             var json = JsonConvert.SerializeObject(newUser);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var res = await _client.PostAsync("api/user/register/resident", content);

@@ -34,7 +34,8 @@ builder.Services.AddControllers().AddJsonOptions(
 // THE HOLY GRAIL OF ASP.NET CORE
 if (!builder.Environment.IsEnvironment("Testing")) // --> if we're not doing integration testing, connect to real mySQL, else dbContext is created in CustomWebApplicationFactory.cs
 {
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? 
+        throw new InvalidOperationException("ConnectionString not found");
     var serverVersion = ServerVersion.AutoDetect(connectionString);
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseMySql(connectionString, serverVersion));

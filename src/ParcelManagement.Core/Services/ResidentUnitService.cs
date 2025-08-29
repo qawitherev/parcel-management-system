@@ -6,7 +6,9 @@ namespace ParcelManagement.Core.Services
 {
     public interface IResidentUnitService
     {
-        Task<ResidentUnit> CreateResidentUnitAsync(ResidentUnit residentUnit);
+        Task<ResidentUnit> GetResidentUnitById(Guid residentUnitId);
+
+        Task<ResidentUnit> CreateResidentUnitAsync(string unitName, Guid userId);
 
         Task UpdateResidentUnitAsync(ResidentUnit residentUnit);
     }
@@ -15,12 +17,23 @@ namespace ParcelManagement.Core.Services
     {
         private readonly IResidentUnitRepository _residentUnitRepo = residentUnitRepository;
 
-        public async Task<ResidentUnit> CreateResidentUnitAsync(ResidentUnit residentUnit)
+        public async Task<ResidentUnit> GetResidentUnitById(Guid residentUnitId)
         {
-            var specByUnitName = new ResidentUnitByUnitNameSpecification(residentUnit.UnitName);
+            return await _residentUnitRepo.GetResidentUnitByIdAsync(residentUnitId) ??
+                throw new KeyNotFoundException($"Unit not found");
+        }
+        public async Task<ResidentUnit> CreateResidentUnitAsync(string unitName, Guid userId)
+        {
+            var specByUnitName = new ResidentUnitByUnitNameSpecification(unitName);
             var existing = await _residentUnitRepo.GetOneResidentUnitBySpecificationAsync(specByUnitName);
-            if (existing != null) { throw new InvalidOperationException($"Resident Unit {residentUnit.UnitName} has already exist"); }
-            return await _residentUnitRepo.CreateResidentUnitAsync(residentUnit);
+            if (existing != null) { throw new InvalidOperationException($"Resident Unit {unitName} has already exist"); }
+            return await _residentUnitRepo.CreateResidentUnitAsync(new ResidentUnit
+            {
+                Id = Guid.NewGuid(),
+                UnitName = unitName,
+                CreatedAt = DateTimeOffset.UtcNow,
+                CreatedBy = userId
+            });
         }
 
         public async Task UpdateResidentUnitAsync(ResidentUnit residentUnit)

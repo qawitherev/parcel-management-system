@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, ɵInternalFormsSharedModule } from '@angular/forms';
-import { RouterModule } from '@angular/router'; 
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, ɵInternalFormsSharedModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ɵInternalFormsSharedModule, ReactiveFormsModule, RouterModule],
+  imports: [ɵInternalFormsSharedModule, ReactiveFormsModule, RouterModule, NgClass],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
@@ -14,8 +15,8 @@ export class Login {
 
   constructor(private fb: FormBuilder) {
     this.form = this.fb.group({
-      emailUsername: [''], 
-      password: ['']
+      emailUsername: ['', [Validators.required]], 
+      password: ['', [Validators.required]]
     })
   }
 

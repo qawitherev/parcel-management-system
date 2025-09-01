@@ -13,6 +13,10 @@
         <label class="block text-gray-700">Username</label>
         <input formControlName="username" placeholder="Not more than 10 characters" type="text" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300" />
       </div>
+      <div class="mb-4">
+        <label class="block text-gray-700">Resident Unit</label>
+        <input formControlName="residentUnit" placeholder="Not more than 10 characters" type="text" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300" />
+      </div>
       <div class="mb-6">
         <label class="block text-gray-700">Password</label>
         <input formControlName="password" type="password" placeholder="Make sure to have at least 6 characters" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300" />
@@ -40,5 +44,17 @@
         </label>
     </div>
     </form>
+    <div *ngIf="registerResponse$ | async as response" >
+      @if (response.error) {
+        <div class="text-red-500 text-sm mt-2">{{ response.message }}</div>
+      } @else {
+        <div class="text-green-600 text-sm mt-2">
+          Registration successful!<br>
+          Username: {{ response.username }}<br>
+          User ID: {{ response.id }}
+        </div>
+      }
+    </div>
+    
   </div>
 </div>

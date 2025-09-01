@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
-import { NgClass } from '@angular/common';
+import { NgClass, AsyncPipe } from '@angular/common';
+import { Auth } from '../auth';
+import { Observable } from 'rxjs';
+import { NgIf } from '@angular/common';
 
 function passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
   const password = control.get('password')?.value
@@ -12,17 +15,19 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule, NgClass],
+  imports: [ReactiveFormsModule, NgClass, NgIf, AsyncPipe],
   templateUrl: './register.html',
   styleUrl: './register.css'
 })
 export class Register {
   form: FormGroup; 
+  registerResponse$?: Observable<any>
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private authService: Auth) {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      username: ['', [Validators.required, Validators.minLength(10)]],
+      username: ['', [Validators.required, Validators.maxLength(10)]],
+      residentUnit: ['RU001', [Validators.required, Validators.maxLength(10)]],
       password: ['', [Validators.required]],
       confirmPassword: ['', [Validators.required]], 
       agreeTerms: [false]
@@ -34,7 +39,13 @@ export class Register {
 
   onSubmit() {
     if (this.form.valid) {
-      console.log(this.form.value)
+      const registerRequest = {
+        Username: this.form.value.username,
+        Email: this.form.value.email, 
+        ResidentUnit: this.form.value.residentUnit,
+        Password: this.form.value.password
+      }
+      this.registerResponse$ = this.authService.register(registerRequest)
     } else {
       console.info('Register clicked!')
     }

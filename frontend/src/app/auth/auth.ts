@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { catchError, Observable, of } from 'rxjs';
 import { AuthEndpoints } from '../core/endpoints/auth-endpoints';
 
 
@@ -32,7 +32,14 @@ export class Auth {
   }
 
   register(registerPayload: RegisterRequest): Observable<any> {
-    return this.http.post(AuthEndpoints.register, registerPayload)
+    console.info(`Sending request: ${JSON.stringify(registerPayload)}`)
+    return this.http.post<RegisterResponse>('http://localhost:5163/api/user/register/resident', registerPayload)
+      .pipe(
+        catchError(err => {
+        console.error(err)
+        return of({ error: true, message: err.error.message || 'Unknown error' });
+      })
+      )
   } 
 
   login(loginPayload: LoginRequest) {

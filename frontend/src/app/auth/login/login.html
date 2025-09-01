@@ -29,5 +29,14 @@
       Don’t have an account?
       <a routerLink="/register" class="text-blue-500 hover:underline cursor-pointer">Register</a>
     </p>
+    <div *ngIf="loginResponse$ | async as response">
+        @if (response.error) {
+          <div class="text-red-500 text-sm mt-2">{{ response.message }}</div>
+        } @else {
+          <div class="text-green-600 text-sm mt-2">
+            <p>Login success. Token saved.</p>
+          </div>
+        }
+      </div>
   </div>
 </div>

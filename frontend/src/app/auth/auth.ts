@@ -33,7 +33,7 @@ export class Auth {
 
   register(registerPayload: RegisterRequest): Observable<any> {
     console.info(`Sending request: ${JSON.stringify(registerPayload)}`)
-    return this.http.post<RegisterResponse>('http://localhost:5163/api/user/register/resident', registerPayload)
+    return this.http.post<RegisterResponse>(AuthEndpoints.register, registerPayload)
       .pipe(
         catchError(err => {
         console.error(err)

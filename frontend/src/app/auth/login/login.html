@@ -1,1 +1,22 @@
-<p>login works!</p>
+<div class="flex min-h-screen items-center justify-center bg-gray-100">
+  <div class="w-full max-w-md bg-white p-8 rounded-2xl shadow">
+    <h2 class="text-2xl font-bold mb-6 text-center">Login</h2>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="mb-4">
+        <label class="block text-gray-700">Email or Username</label>
+        <input formControlName="emailUsername" type="text" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300" />
+      </div>
+      <div class="mb-6">
+        <label class="block text-gray-700">Password</label>
+        <input formControlName="password" type="password" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300" />
+      </div>
+      <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">
+        Login
+      </button>
+    </form>
+    <p class="mt-4 text-center">
+      Don’t have an account?
+      <a routerLink="/register" class="text-blue-500 hover:underline cursor-pointer">Register</a>
+    </p>
+  </div>
+</div>

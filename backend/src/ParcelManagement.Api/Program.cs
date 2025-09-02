@@ -30,11 +30,22 @@ builder.Services.AddControllers().AddJsonOptions(
     }
 );
 
+// CORS 
+builder.Services.AddCors(options =>
+{   
+    options.AddPolicy("Allow-Angular-FrontEnd", policy =>
+    {   // we'll change the origin later 
+        policy.WithOrigins("http://localhost:4200")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 // Dependency Injection 
 // THE HOLY GRAIL OF ASP.NET CORE
 if (!builder.Environment.IsEnvironment("Testing")) // --> if we're not doing integration testing, connect to real mySQL, else dbContext is created in CustomWebApplicationFactory.cs
 {
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? 
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
         throw new InvalidOperationException("ConnectionString not found");
     var serverVersion = ServerVersion.AutoDetect(connectionString);
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -82,6 +93,9 @@ var app = builder.Build();
 
 // search all route defined 
 app.UseRouting();
+
+// apply CORS
+app.UseCors("Allow-Angular-FrontEnd");
 
 // authentication to populate HttpContext.User
 app.UseAuthentication();

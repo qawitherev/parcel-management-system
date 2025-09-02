@@ -1,0 +1,42 @@
+<div class="flex min-h-screen items-center justify-center bg-gray-100">
+  <div class="w-full max-w-md bg-white p-8 rounded-2xl shadow">
+    <h2 class="text-2xl font-bold mb-6 text-center">Login</h2>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="mb-4">
+        <label class="block text-gray-700">Email or Username</label>
+        <input formControlName="emailUsername" type="text" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300" />
+        @if (form.get('emailUsername')?.invalid && form.get('emailUsername')?.touched) {
+          <div class="text-red-500 text-sm" >Please enter username or email</div>
+        }
+      </div>
+      <div class="mb-6">
+        <label class="block text-gray-700">Password</label>
+        <input formControlName="password" type="password" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300" />
+        @if (form.get('password')?.invalid && form.get('password')?.touched) {
+          <div class="text-red-500 text-sm" >Please enter password</div>
+        }
+      </div>
+      <button
+      [ngClass]="form.get('emailUsername')?.valid && form.get('password')?.valid
+      ? 'bg-blue-500 text-white hover:bg-blue-600'
+        : 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-50'
+      "
+      type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">
+        Login
+      </button>
+    </form>
+    <p class="mt-4 text-center">
+      Don’t have an account?
+      <a routerLink="/register" class="text-blue-500 hover:underline cursor-pointer">Register</a>
+    </p>
+    <div *ngIf="loginResponse$ | async as response">
+        @if (response.error) {
+          <div class="text-red-500 text-sm mt-2">{{ response.message }}</div>
+        } @else {
+          <div class="text-green-600 text-sm mt-2">
+            <p>Login success. Token saved.</p>
+          </div>
+        }
+      </div>
+  </div>
+</div>

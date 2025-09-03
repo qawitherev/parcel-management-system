@@ -1,12 +1,22 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Dashboard } from '../dashboard';
+import { AsyncPipe, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-awaiting-pickup',
   standalone: true,
-  imports: [],
+  imports: [NgIf, AsyncPipe],
   templateUrl: './awaiting-pickup.html',
   styleUrl: './awaiting-pickup.css'
 })
-export class AwaitingPickup {
+export class AwaitingPickup implements OnInit {
+  awaitingPickup$?: Observable<any>
+
+  constructor(private dashboardService: Dashboard) {}
+
+  ngOnInit(): void {
+    this.awaitingPickup$ = this.dashboardService.getAwaitingPickup()
+  }
 
 }

@@ -1,6 +1,6 @@
 <div class="w-full p-6 bg-white rounded-lg shadow-md">
     <h2 class="text-xl font-semibold text-gray-800 mb-2">Parcels Awaiting Pickup</h2>
-    <div class="text-3xl font-bold text-blue-600">
-        24
+    <div *ngIf="awaitingPickup$ | async as awaitingPickup"  class="text-3xl font-bold text-blue-600">
+        {{awaitingPickup.length}}
     </div>
 </div>

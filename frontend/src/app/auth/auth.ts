@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, Observable, of, tap } from 'rxjs';
 import { AuthEndpoints } from '../core/endpoints/auth-endpoints';
+import { AppConsole } from '../utils/app-console';
 
 interface RegisterRequest {
   Username: string, 
@@ -35,11 +36,11 @@ export class Auth {
   }
   // TODO: create a console utility (the one that we can turn on/off)
   register(registerPayload: RegisterRequest): Observable<any> {
-    console.info(`Sending request: ${JSON.stringify(registerPayload)}`)
+    AppConsole.log(`Sending request: ${JSON.stringify(registerPayload)}`)
     return this.http.post<RegisterResponse>(AuthEndpoints.register, registerPayload)
       .pipe(
         catchError(err => {
-        console.error(err)
+        AppConsole.error(err)
         return of({ error: true, message: err.error.message || 'Unknown error' });
       })
       )
@@ -53,7 +54,7 @@ export class Auth {
           this.saveToken(res.token)
         }),
         catchError(err => {
-          console.error(err)
+          AppConsole.error(err)
           return of({error: true, message: err.error.message || 'Unknown error'})
         })
       )

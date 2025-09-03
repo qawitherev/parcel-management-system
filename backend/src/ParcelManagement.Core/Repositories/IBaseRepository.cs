@@ -8,6 +8,8 @@ namespace ParcelManagement.Core.Repositories
 
         Task<IReadOnlyList<T>> GetBySpecificationAsync(ISpecification<T> specification);
 
+        Task<int> GetCountBySpecificationAsync(ISpecification<T> specification);
+
         Task<T> CreateAsync(T obj);
 
         Task<T?> FindByIdAsync(Guid id);

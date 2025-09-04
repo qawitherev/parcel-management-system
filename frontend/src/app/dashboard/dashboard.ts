@@ -29,4 +29,9 @@ export class Dashboard {
     AppConsole.log(`Fetching getAwaitingPickup`)
     return this.http.get<ParcelResponseDtoList>(parcelEndpoints.getAwaitingPickup)
   }
+
+  getRecentlyPickedUp(): Observable<any> {
+    AppConsole.log(`Fetching recentlyPickedUp`)
+    return this.http.get(parcelEndpoints.getRecentlyPickedUp)
+  }
 }

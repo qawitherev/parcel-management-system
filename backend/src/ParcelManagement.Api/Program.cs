@@ -89,6 +89,8 @@ builder.Services.AddScoped<ITrackingEventService, TrackingEventService>();
 
 builder.Services.AddScoped<IUserContextService, UserContextService>();
 
+builder.Services.AddScoped<AdminDataSeeder>();
+
 var app = builder.Build();
 
 // search all route defined 
@@ -114,6 +116,12 @@ if (builder.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<ApiExceptionMiddelware>();
+
+using (var scope = app.Services.CreateScope())
+{
+    var seeder = scope.ServiceProvider.GetRequiredService<AdminDataSeeder>();
+    await seeder.SeedAsync();
+}
 
 app.Run();
 

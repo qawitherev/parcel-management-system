@@ -144,7 +144,7 @@ namespace ParcelManagement.Api.Controller
 
         [HttpGet("{trackingNumber}/history")]
         [Authorize]
-        public async Task GetParcelHistory(string trackingNumber)
+        public async Task<IActionResult> GetParcelHistory(string trackingNumber)
         {
             var res = await _parcelService.GetParcelHistoriesAsync(
                 trackingNumber,
@@ -160,6 +160,25 @@ namespace ParcelManagement.Api.Controller
                     PerformedByUser = te.User.Username
                 })]
             };
+            return Ok(parcelHistoriesDto);
+        }
+
+        [HttpGet("recentlyPickedUp")]
+        [Authorize]
+        public async Task<IActionResult> GetRecentlyPickedUp()
+        {
+            var (parcels, count) = await _parcelService.GetRecentlyPickedUp();
+            var parcelResponseDtoList = new ParcelResponseDtoList
+            {
+                Count = count,
+                Parcels = [.. parcels.Select(p => new ParcelResponseDto {
+                    Id = p.Id,
+                    TrackingNumber = p.TrackingNumber,
+                    Weight = p.Weight ?? 0,
+                    Dimensions = p.Dimensions ?? ""
+                })]
+            };
+            return Ok(parcelResponseDtoList);
         }
     }
 }

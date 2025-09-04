@@ -27,7 +27,8 @@ namespace ParcelManagement.Core.Services
         Task<IReadOnlyList<Parcel?>> GetParcelByUser(Guid userId);
 
         Task<Parcel> GetParcelHistoriesAsync(string trackingNumber, Guid inquiringUserId);
-        
+
+        Task<(IReadOnlyCollection<Parcel>, int count)> GetRecentlyPickedUp(); 
     }
 
     public class ParcelService(
@@ -165,6 +166,14 @@ namespace ParcelManagement.Core.Services
             var spec = new ParcelHistoriesSpecification(p.Id);
             return await _parcelRepo.GetOneParcelBySpecificationAsync(spec) ??
                 throw new NullReferenceException("Parcel has no histories");
+        }
+
+        public async Task<(IReadOnlyCollection<Parcel>, int count)> GetRecentlyPickedUp()
+        {
+            var specification = new ParcelRecentlyPickedUpSpecification();
+            var parcels = await _parcelRepo.GetParcelsBySpecificationAsync(specification);
+            var count = await _parcelRepo.GetParcelCountBySpecification(specification);
+            return (parcels, count);
         }
     }
 }

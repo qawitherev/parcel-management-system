@@ -97,4 +97,20 @@ namespace ParcelManagement.Core.Specifications
             return p => p.TrackingEvents.Any(te => te.ParcelId == _parcelId);
         }
     }
+
+    public class ParcelRecentlyPickedUpSpecification : ISpecification<Parcel>
+    {
+        List<IncludeExpression<Parcel>> ISpecification<Parcel>.IncludeExpressions => [];
+
+        public int? Skip => null;
+
+        public int? Take => null;
+
+        public Expression<Func<Parcel, bool>> ToExpression()
+        {
+            var threeDaysAgo = DateTimeOffset.UtcNow.AddDays(-3);
+            return p =>
+                p.Status == ParcelStatus.Claimed && p.EntryDate >= threeDaysAgo;
+        }
+    }
 }

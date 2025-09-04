@@ -55,7 +55,7 @@ namespace ParcelManagement.Infrastructure.Repository
 
         // SPECIFICATION PATTERN 
         // this is good stuff 
-        public async Task<IReadOnlyList<Parcel?>> GetParcelsBySpecificationAsync(ISpecification<Parcel> specification)
+        public async Task<IReadOnlyList<Parcel>> GetParcelsBySpecificationAsync(ISpecification<Parcel> specification)
         {
             return await GetBySpecificationAsync(specification);
         }

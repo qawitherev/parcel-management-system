@@ -4,11 +4,16 @@ import { Observable } from 'rxjs';
 import { AppConsole } from '../utils/app-console';
 import { parcelEndpoints } from '../core/endpoints/parcel-endpoints';
 
-interface AwaitingPickupItem {
+interface ParcelResponseDto {
   Id: string, 
   TrackingNumber: string, 
   Weight: number, 
-  Dimension: string
+  Dimensions: string
+}
+
+interface ParcelResponseDtoList {
+  Parcels: ParcelResponseDto[], 
+  Count: number
 }
 
 @Injectable({
@@ -22,6 +27,6 @@ export class Dashboard {
 
   getAwaitingPickup(): Observable<any> {
     AppConsole.log(`Fetching getAwaitingPickup`)
-    return this.http.get<AwaitingPickupItem[]>(parcelEndpoints.getAwaitingPickup)
+    return this.http.get<ParcelResponseDtoList>(parcelEndpoints.getAwaitingPickup)
   }
 }

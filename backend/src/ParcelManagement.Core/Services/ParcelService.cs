@@ -18,15 +18,13 @@ namespace ParcelManagement.Core.Services
 
         Task<IReadOnlyList<Parcel?>> GetAllParcelAsync();
 
-        Task<IReadOnlyList<Parcel?>> GetAwaitingPickupParcelsAsync();
+        Task<(IReadOnlyList<Parcel?> Parcels, int Count)> GetAwaitingPickupParcelsAsync();
 
         Task<Parcel?> GetParcelByTrackingNumberAsync(string trackingNumber);
 
         Task<IReadOnlyList<Parcel?>> GetParcelByResidentUnitAsync(string residentUnit);
 
         Task<IReadOnlyList<Parcel?>> GetParcelByUser(Guid userId);
-
-        Task<IReadOnlyList<Parcel?>> GetParcelsAwaitingPickup();
 
         Task<Parcel> GetParcelHistoriesAsync(string trackingNumber, Guid inquiringUserId);
         
@@ -112,10 +110,12 @@ namespace ParcelManagement.Core.Services
             return await _parcelRepo.GetAllParcelsAsync();
         }
 
-        public async Task<IReadOnlyList<Parcel?>> GetAwaitingPickupParcelsAsync()
+        public async Task<(IReadOnlyList<Parcel?> Parcels, int Count)> GetAwaitingPickupParcelsAsync()
         {
             var specification = new ParcelsAwaitingPickupSpecification();
-            return await _parcelRepo.GetParcelsBySpecificationAsync(specification);
+            var parcels = await _parcelRepo.GetParcelsBySpecificationAsync(specification);
+            var count = await _parcelRepo.GetParcelCountBySpecification(specification);
+            return (parcels, count);
         }
 
         public async Task<Parcel?> GetParcelByIdAsync(Guid id)
@@ -142,12 +142,6 @@ namespace ParcelManagement.Core.Services
             var user = await _userRepo.GetUserByIdAsync(userId) ??
                 throw new KeyNotFoundException($"User not found");
             var spec = new ParcelByUserSpecification(userId);
-            return await _parcelRepo.GetParcelsBySpecificationAsync(spec);
-        }
-
-        public async Task<IReadOnlyList<Parcel?>> GetParcelsAwaitingPickup()
-        {
-            var spec = new ParcelsAwaitingPickupSpecification();
             return await _parcelRepo.GetParcelsBySpecificationAsync(spec);
         }
 

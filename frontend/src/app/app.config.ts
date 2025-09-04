@@ -2,7 +2,7 @@ import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessC
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
-import { HTTP_INTERCEPTORS, provideHttpClient } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { AttachTokenInterceptor } from './core/auth-interceptor';
 
 export const appConfig: ApplicationConfig = {
@@ -10,7 +10,11 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
     provideRouter(routes),
-    provideHttpClient(),
-    { provide: HTTP_INTERCEPTORS, useClass: AttachTokenInterceptor, multi: true}
+    provideHttpClient(
+      withInterceptors(
+        [AttachTokenInterceptor]
+      )
+    ),
+    // { provide: HTTP_INTERCEPTORS, useClass: AttachTokenInterceptor, multi: true}
   ]
 };

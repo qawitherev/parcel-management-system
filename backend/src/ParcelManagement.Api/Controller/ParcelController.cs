@@ -86,18 +86,24 @@ namespace ParcelManagement.Api.Controller
         }
 
         [HttpGet("awaitingPickup")]
-        [Authorize(Roles = "Admin, ParcelRoomManager")]
+        // [Authorize(Roles = "Admin, ParcelRoomManager")]
+        [Authorize]
         public async Task<IActionResult> GetParcelAwaitingPickup()
         {
-            var parcelsAwaitingPickup = await _parcelService.GetParcelsAwaitingPickup();
-            var parcelAwaitingPickupDto = parcelsAwaitingPickup.Select(entity => new ParcelResponseDto
+            var (parcels, count) = await _parcelService.GetAwaitingPickupParcelsAsync();
+            var parcelResponseDtoList = new ParcelResponseDtoList
             {
-                Id = entity!.Id,
-                TrackingNumber = entity.TrackingNumber,
-                Weight = entity?.Weight,
-                Dimensions = entity?.Dimensions
-            });
-            return Ok(parcelAwaitingPickupDto);
+                Parcels = [.. parcels
+                .Where(p => p != null)
+                .Select(p => new ParcelResponseDto
+                {
+                    Id = p!.Id,
+                    TrackingNumber = p.TrackingNumber,
+                    Dimensions = p.Dimensions ?? "", Weight = p.Weight ?? 0
+                })],
+                Count = count
+            };
+            return Ok(parcelResponseDtoList);
         }
 
         [HttpGet("myParcels")]
@@ -150,7 +156,7 @@ namespace ParcelManagement.Api.Controller
                 History = [.. res.TrackingEvents.Select(te => new ParcelHistoriesChild
                 {
                     EventTime = te.EventTime,
-                    Event = te.CustomEvent ?? te.TrackingEventType.ToString(), 
+                    Event = te.CustomEvent ?? te.TrackingEventType.ToString(),
                     PerformedByUser = te.User.Username
                 })]
             };

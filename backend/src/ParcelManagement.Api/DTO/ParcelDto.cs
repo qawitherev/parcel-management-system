@@ -27,6 +27,12 @@ namespace ParcelManagement.Api.DTO
         public string? Dimensions { get; set; }
     }
 
+    public class ParcelResponseDtoList
+    {
+        public required List<ParcelResponseDto> Parcels { get; set; }
+        public required int Count { get; set; }
+    }
+
     public class ManualEventsDto
     {
         public required string CustomEvent { get; set; }

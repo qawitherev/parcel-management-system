@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ParcelManagement.Api.AuthenticationAndAuthorization;
 using ParcelManagement.Api.DTO;
@@ -26,6 +27,10 @@ namespace ParcelManagement.Api.Controller
         [HttpPost("register/resident")]
         public async Task<IActionResult> RegisterResident([FromBody] RegisterResidentDto dto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var newUser = await _userService.UserRegisterAsync(dto.Username, dto.Password, dto.Email, dto.ResidentUnit);
             var newUserDto = new UserResponseDto
             {
@@ -38,6 +43,10 @@ namespace ParcelManagement.Api.Controller
         [HttpPost("login")]
         public async Task<IActionResult> UserLogin([FromBody] LoginDto dto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             // for now we will just make one user = one role
             // no keperluan for multiple roles for now 
             var loginRes = await _userService.UserLoginAsync(dto.Username, dto.PlainPassword);
@@ -45,6 +54,23 @@ namespace ParcelManagement.Api.Controller
             return Ok(new { Token = jwt });
         }
 
-        
+        [HttpPost("register/parcelRoomManager")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> RegisterParcelRoomAdmin([FromBody] RegisterParceRoomManagerDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var r = await _userService.ParcelRoomManagerRegisterAsync(
+                dto.Username, dto.Password, dto.Email
+            );
+            var newUserDto = new UserResponseDto
+            {
+                Id = r.Id,
+                Username = r.Username
+            };
+            return CreatedAtAction(nameof(GetUserById), new { id = newUserDto.Id }, newUserDto);
+        }
     }
 }

@@ -11,6 +11,8 @@ namespace ParcelManagement.Core.Services
     {
         Task<User> UserRegisterAsync(string username, string password, string email, string unitName);
 
+        Task<User> ParcelRoomManagerRegisterAsync(string username, string password, string email);
+
         Task<List<string>> UserLoginAsync(string username, string password);
 
         Task<User?> GetUserById(Guid id);
@@ -91,6 +93,28 @@ namespace ParcelManagement.Core.Services
         public Task<IReadOnlyList<Parcel?>> GetParcelsByUserAsync(Guid userId, ParcelStatus? parcelStatus)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<User> ParcelRoomManagerRegisterAsync(string username, string password, string email)
+        {
+            var usernameSpec = new UserByUsernameSpecification(username);
+            var existingUser = await _userRepository.GetOneUserBySpecification(usernameSpec);
+            if (existingUser != null)
+            {
+                throw new InvalidOperationException($"User with username {username} has alredy exist");
+            }
+            var registeringUser = new User
+            {
+                Id = Guid.NewGuid(),
+                Username = username,
+                Email = email,
+                PasswordHash = "####",
+                CreatedAt = DateTimeOffset.UtcNow, 
+                Role = UserRole.ParcelRoomManager
+            };
+            registeringUser.PasswordHash = PasswordService.HashPassword(registeringUser, password);
+            await _userRepository.CreateUserAsync(registeringUser);
+            return registeringUser;
         }
     }
 }

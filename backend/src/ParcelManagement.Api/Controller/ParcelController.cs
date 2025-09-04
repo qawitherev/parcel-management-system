@@ -86,8 +86,7 @@ namespace ParcelManagement.Api.Controller
         }
 
         [HttpGet("awaitingPickup")]
-        // [Authorize(Roles = "Admin, ParcelRoomManager")]
-        [Authorize]
+        [Authorize(Roles = "Admin, ParcelRoomManager")]
         public async Task<IActionResult> GetParcelAwaitingPickup()
         {
             var (parcels, count) = await _parcelService.GetAwaitingPickupParcelsAsync();
@@ -164,7 +163,7 @@ namespace ParcelManagement.Api.Controller
         }
 
         [HttpGet("recentlyPickedUp")]
-        [Authorize]
+        [Authorize(Roles = "Admin, ParcelRoomManager")]
         public async Task<IActionResult> GetRecentlyPickedUp()
         {
             var (parcels, count) = await _parcelService.GetRecentlyPickedUp();

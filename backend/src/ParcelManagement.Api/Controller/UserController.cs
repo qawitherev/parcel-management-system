@@ -24,6 +24,19 @@ namespace ParcelManagement.Api.Controller
             return Ok(user);
         }
 
+        [HttpGet("{id}")]
+        [Authorize]
+        public async Task<IActionResult> GetUserByIdAsync(Guid id)
+        {
+            var u = await _userService.GetUserById(id);
+            return Ok(new UserResponseDto
+            {
+                Id = u.Id,
+                Username = u.Username, 
+                Role = u.Role.ToString()
+            });
+        }
+
         [HttpPost("register/resident")]
         public async Task<IActionResult> RegisterResident([FromBody] RegisterResidentDto dto)
         {
@@ -35,7 +48,8 @@ namespace ParcelManagement.Api.Controller
             var newUserDto = new UserResponseDto
             {
                 Id = newUser.Id,
-                Username = newUser.Username
+                Username = newUser.Username,
+                Role = newUser.Role.ToString()
             };
             return CreatedAtAction(nameof(GetUserById), new { id = newUserDto.Id }, newUserDto);
         }
@@ -68,7 +82,8 @@ namespace ParcelManagement.Api.Controller
             var newUserDto = new UserResponseDto
             {
                 Id = r.Id,
-                Username = r.Username
+                Username = r.Username,
+                Role = r.Role.ToString()
             };
             return CreatedAtAction(nameof(GetUserById), new { id = newUserDto.Id }, newUserDto);
         }

@@ -1,3 +1,7 @@
+// TECH DEBT
+// TO REFACTOR THE TABLE CONFIG INTO INDIVIDUAL CLASS
+// SEE TRACKING EVENT TABLE CONFIG FOR EXAMPLE 
+
 using Microsoft.EntityFrameworkCore;
 using ParcelManagement.Core.Entities;
 
@@ -30,9 +34,16 @@ namespace ParcelManagement.Infrastructure.Database
                 .Property(p => p.Status)
                 .HasConversion<string>();
 
-            modelBuilder.Entity<User>()
-                .Property(u => u.Role)
-                .HasConversion<string>();
+            // TO BE REMOVED
+            // modelBuilder.Entity<User>()
+            //     .Property(u => u.Role)
+            //     .HasConversion<string>();
+
+            // TO BE REMOVED
+            // add unique constraint to user.username and index it
+            // modelBuilder.Entity<User>()
+            //     .HasIndex(user => user.Username)
+            //     .IsUnique();
 
             modelBuilder.Entity<Parcel>()
                 .Property(p => p.Weight)
@@ -41,11 +52,6 @@ namespace ParcelManagement.Infrastructure.Database
             // add unique constraint on tracking number and index it
             modelBuilder.Entity<Parcel>()
                 .HasIndex(p => p.TrackingNumber)
-                .IsUnique();
-
-            // add unique constraint to user.username and index it
-            modelBuilder.Entity<User>()
-                .HasIndex(user => user.Username)
                 .IsUnique();
 
             // it is a best practice to start from the dependent entity—the one with the foreign key.
@@ -72,6 +78,7 @@ namespace ParcelManagement.Infrastructure.Database
                 .HasIndex(ru => ru.UnitName).IsUnique();
 
             modelBuilder.ApplyConfiguration(new TrackingEventEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new UserEntityConfiguration());
 
         }
     }

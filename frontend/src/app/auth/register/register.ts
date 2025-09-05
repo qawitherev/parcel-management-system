@@ -4,6 +4,7 @@ import { NgClass, AsyncPipe } from '@angular/common';
 import { Auth } from '../auth';
 import { Observable } from 'rxjs';
 import { NgIf } from '@angular/common';
+import { AppConsole } from '../../utils/app-console';
 
 function passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
   const password = control.get('password')?.value
@@ -47,7 +48,7 @@ export class Register {
       }
       this.registerResponse$ = this.authService.register(registerRequest)
     } else {
-      console.info('Register clicked!')
+      AppConsole.log('Register clicked!')
     }
   }
 }

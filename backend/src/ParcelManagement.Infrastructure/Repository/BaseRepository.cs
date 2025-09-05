@@ -59,6 +59,15 @@ namespace ParcelManagement.Infrastructure.Repository
             return await _dbContext.Set<T>().ToListAsync();
         }
 
+        public async Task<int> GetCountBySpecificationAsync(ISpecification<T> specification)
+        {
+            IQueryable<T> query = _dbContext.Set<T>();
+            query = IncludeExpressionHelper.IncludeExpressionsHelper(specification, query);
+            query = query.Where(specification.ToExpression());
+
+            return await query.CountAsync();
+        }
+
         // we dont do update here because we have entity that has composite key
         // instad of ID 
     }

@@ -89,15 +89,20 @@ namespace ParcelManagement.Api.Controller
         [Authorize(Roles = "Admin, ParcelRoomManager")]
         public async Task<IActionResult> GetParcelAwaitingPickup()
         {
-            var parcelsAwaitingPickup = await _parcelService.GetParcelsAwaitingPickup();
-            var parcelAwaitingPickupDto = parcelsAwaitingPickup.Select(entity => new ParcelResponseDto
+            var (parcels, count) = await _parcelService.GetAwaitingPickupParcelsAsync();
+            var parcelResponseDtoList = new ParcelResponseDtoList
             {
-                Id = entity!.Id,
-                TrackingNumber = entity.TrackingNumber,
-                Weight = entity?.Weight,
-                Dimensions = entity?.Dimensions
-            });
-            return Ok(parcelAwaitingPickupDto);
+                Parcels = [.. parcels
+                .Where(p => p != null)
+                .Select(p => new ParcelResponseDto
+                {
+                    Id = p!.Id,
+                    TrackingNumber = p.TrackingNumber,
+                    Dimensions = p.Dimensions ?? "", Weight = p.Weight ?? 0
+                })],
+                Count = count
+            };
+            return Ok(parcelResponseDtoList);
         }
 
         [HttpGet("myParcels")]
@@ -138,7 +143,7 @@ namespace ParcelManagement.Api.Controller
 
         [HttpGet("{trackingNumber}/history")]
         [Authorize]
-        public async Task GetParcelHistory(string trackingNumber)
+        public async Task<IActionResult> GetParcelHistory(string trackingNumber)
         {
             var res = await _parcelService.GetParcelHistoriesAsync(
                 trackingNumber,
@@ -150,10 +155,29 @@ namespace ParcelManagement.Api.Controller
                 History = [.. res.TrackingEvents.Select(te => new ParcelHistoriesChild
                 {
                     EventTime = te.EventTime,
-                    Event = te.CustomEvent ?? te.TrackingEventType.ToString(), 
+                    Event = te.CustomEvent ?? te.TrackingEventType.ToString(),
                     PerformedByUser = te.User.Username
                 })]
             };
+            return Ok(parcelHistoriesDto);
+        }
+
+        [HttpGet("recentlyPickedUp")]
+        [Authorize(Roles = "Admin, ParcelRoomManager")]
+        public async Task<IActionResult> GetRecentlyPickedUp()
+        {
+            var (parcels, count) = await _parcelService.GetRecentlyPickedUp();
+            var parcelResponseDtoList = new ParcelResponseDtoList
+            {
+                Count = count,
+                Parcels = [.. parcels.Select(p => new ParcelResponseDto {
+                    Id = p.Id,
+                    TrackingNumber = p.TrackingNumber,
+                    Weight = p.Weight ?? 0,
+                    Dimensions = p.Dimensions ?? ""
+                })]
+            };
+            return Ok(parcelResponseDtoList);
         }
     }
 }

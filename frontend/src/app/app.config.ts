@@ -2,13 +2,19 @@ import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessC
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
-import { provideHttpClient } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptors } from '@angular/common/http';
+import { AttachTokenInterceptor } from './core/auth-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
-    provideRouter(routes), 
-    provideHttpClient()
+    provideRouter(routes),
+    provideHttpClient(
+      withInterceptors(
+        [AttachTokenInterceptor]
+      )
+    ),
+    // { provide: HTTP_INTERCEPTORS, useClass: AttachTokenInterceptor, multi: true}
   ]
 };

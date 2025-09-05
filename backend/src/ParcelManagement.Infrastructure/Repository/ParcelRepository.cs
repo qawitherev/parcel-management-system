@@ -55,7 +55,7 @@ namespace ParcelManagement.Infrastructure.Repository
 
         // SPECIFICATION PATTERN 
         // this is good stuff 
-        public async Task<IReadOnlyList<Parcel?>> GetParcelsBySpecificationAsync(ISpecification<Parcel> specification)
+        public async Task<IReadOnlyList<Parcel>> GetParcelsBySpecificationAsync(ISpecification<Parcel> specification)
         {
             return await GetBySpecificationAsync(specification);
         }
@@ -63,6 +63,11 @@ namespace ParcelManagement.Infrastructure.Repository
         public async Task<Parcel?> GetOneParcelBySpecificationAsync(ISpecification<Parcel> specification)
         {
             return await _dbContext.Parcels.Where(specification.ToExpression()).FirstOrDefaultAsync();
+        }
+
+        public async Task<int> GetParcelCountBySpecification(ISpecification<Parcel> specification)
+        {
+            return await GetCountBySpecificationAsync(specification);
         }
     }
 }

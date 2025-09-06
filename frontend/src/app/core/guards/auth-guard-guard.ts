@@ -20,7 +20,7 @@ export const isLoggedInGuard: CanActivateFn = (route, state) => {
 
 
 
-export const isRoleAuthorized: CanActivateFn = (route, state) => {
+export const isAdminAndManagerAuthed: CanActivateFn = (route, state) => {
   AppConsole.log(`isAuthorized guard accessed`)
   const guardService = inject(GuardsService)
   const router = inject(Router)

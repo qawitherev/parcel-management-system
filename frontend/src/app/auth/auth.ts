@@ -3,11 +3,18 @@ import { Injectable } from '@angular/core';
 import { catchError, Observable, of, tap } from 'rxjs';
 import { AuthEndpoints } from '../core/endpoints/auth-endpoints';
 import { AppConsole } from '../utils/app-console';
+import { Register } from './register/register';
 
-interface RegisterRequest {
+interface RegisterResidentRequest {
   Username: string, 
   Email: string, 
   ResidentUnit: string, 
+  Password: string
+}
+
+interface RegisterManagerRequest {
+  Username: string, 
+  Email: string, 
   Password: string
 }
 
@@ -35,7 +42,7 @@ export class Auth {
     // do nothing 
   }
   // TODO: create a console utility (the one that we can turn on/off)
-  register(registerPayload: RegisterRequest): Observable<any> {
+  register(registerPayload: RegisterResidentRequest): Observable<any> {
     AppConsole.log(`Sending request: ${JSON.stringify(registerPayload)}`)
     return this.http.post<RegisterResponse>(AuthEndpoints.register, registerPayload)
       .pipe(
@@ -47,7 +54,7 @@ export class Auth {
   } 
 
   login(loginPayload: LoginRequest): Observable<any> {
-    console.info(`Sending request: ${JSON.stringify(loginPayload)}`)
+    AppConsole.log(`Sending request: ${JSON.stringify(loginPayload)}`)
     return this.http.post<LoginResponse>(AuthEndpoints.login, loginPayload)
       .pipe(
         tap(res => {
@@ -56,6 +63,17 @@ export class Auth {
         catchError(err => {
           AppConsole.error(err)
           return of({error: true, message: err.error.message || 'Unknown error'})
+        })
+      )
+  }
+
+  registerManager(registerRequest: RegisterManagerRequest) : Observable<any>{
+    AppConsole.log(`Sending request register manager: ${JSON.stringify(registerRequest)}`)
+    return this.http.post(AuthEndpoints.registerManager, registerRequest)
+      .pipe(
+        catchError(err => {
+          AppConsole.log(err)
+          return of({ error: true, message: err.error.message})
         })
       )
   }

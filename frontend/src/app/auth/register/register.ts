@@ -5,13 +5,7 @@ import { Auth } from '../auth';
 import { Observable } from 'rxjs';
 import { NgIf } from '@angular/common';
 import { AppConsole } from '../../utils/app-console';
-
-function passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
-  const password = control.get('password')?.value
-  const confirmPassword = control.get('confirmPassword')?.value
-  return password === confirmPassword ? null : 
-    {passwordMismatch: true, errorString: 'Passwords do not match'}
-}
+import { passwordMatchValidator } from '../../utils/custom-validators';
 
 @Component({
   selector: 'app-register',

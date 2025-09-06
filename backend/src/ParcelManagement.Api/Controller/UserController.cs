@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ParcelManagement.Api.AuthenticationAndAuthorization;
 using ParcelManagement.Api.DTO;
+using ParcelManagement.Api.Utility;
 using ParcelManagement.Core.Entities;
 using ParcelManagement.Core.Services;
 
@@ -12,10 +13,13 @@ namespace ParcelManagement.Api.Controller
     [ApiController]
     [Route("api/[controller]")]
     [Consumes("application/json")]
-    public class UserController(IUserService userService, ITokenService tokenService) : ControllerBase
+    public class UserController(IUserService userService, ITokenService tokenService, 
+        IUserContextService userContextService
+    ) : ControllerBase
     {
         private readonly IUserService _userService = userService;
         private readonly ITokenService _tokenService = tokenService;
+        private readonly IUserContextService _userContextService = userContextService;
 
         [HttpGet("GetUserById/{id}")]
         public async Task<IActionResult> GetUserById(Guid id)
@@ -24,11 +28,12 @@ namespace ParcelManagement.Api.Controller
             return Ok(user);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("basic")]
         [Authorize]
-        public async Task<IActionResult> GetUserByIdAsync(Guid id)
+        public async Task<IActionResult> GetUserByIdAsync()
         {
-            var u = await _userService.GetUserById(id);
+            var userId = _userContextService.GetUserId();
+            var u = await _userService.GetUserById(userId);
             return Ok(new UserResponseDto
             {
                 Id = u.Id,

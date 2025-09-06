@@ -63,4 +63,6 @@ export class Auth {
   saveToken(token: string) {
     localStorage.setItem('parcel-management-system-token', token);
   }
+
+  
 }

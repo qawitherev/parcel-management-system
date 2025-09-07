@@ -5,26 +5,23 @@ import { Auth } from '../auth';
 import { Observable } from 'rxjs';
 import { NgIf } from '@angular/common';
 import { AppConsole } from '../../utils/app-console';
-
-function passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
-  const password = control.get('password')?.value
-  const confirmPassword = control.get('confirmPassword')?.value
-  return password === confirmPassword ? null : 
-    {passwordMismatch: true, errorString: 'Passwords do not match'}
-}
+import { passwordMatchValidator } from '../../utils/custom-validators';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule, NgClass, NgIf, AsyncPipe],
+  imports: [ReactiveFormsModule, NgClass, NgIf],
   templateUrl: './register.html',
   styleUrl: './register.css'
 })
 export class Register {
   form: FormGroup; 
-  registerResponse$?: Observable<any>
+  errorMessage: string | null = null
+  // registerResponse$?: Observable<any>
 
-  constructor(private fb: FormBuilder, private authService: Auth) {
+
+  constructor(private fb: FormBuilder, private authService: Auth, private router: Router) {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       username: ['', [Validators.required, Validators.maxLength(10)]],
@@ -46,7 +43,17 @@ export class Register {
         ResidentUnit: this.form.value.residentUnit,
         Password: this.form.value.password
       }
-      this.registerResponse$ = this.authService.register(registerRequest)
+      this.authService.register(registerRequest).subscribe(
+        {
+          next: (res) => {
+            if(res.error) {
+              this.errorMessage = res.message
+            } else {
+              this.router.navigateByUrl('/login')
+            }
+          }
+        }
+      )
     } else {
       AppConsole.log('Register clicked!')
     }

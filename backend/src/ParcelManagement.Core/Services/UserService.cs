@@ -15,9 +15,10 @@ namespace ParcelManagement.Core.Services
 
         Task<List<string>> UserLoginAsync(string username, string password);
 
-        Task<User?> GetUserById(Guid id);
+        Task<User> GetUserById(Guid id);
 
         Task<IReadOnlyList<Parcel?>> GetParcelsByUserAsync(Guid userId, ParcelStatus? parcelStatus);
+        Task<string> GetUserRole(Guid userId);
     }
 
     public class UserService(
@@ -85,7 +86,7 @@ namespace ParcelManagement.Core.Services
             return theNewUser;
         }
 
-        public async Task<User?> GetUserById(Guid id)
+        public async Task<User> GetUserById(Guid id)
         {
             return await _userRepository.GetUserByIdAsync(id) ?? throw new KeyNotFoundException($"User with id {id} is not found");
         }
@@ -115,6 +116,13 @@ namespace ParcelManagement.Core.Services
             registeringUser.PasswordHash = PasswordService.HashPassword(registeringUser, password);
             await _userRepository.CreateUserAsync(registeringUser);
             return registeringUser;
+        }
+
+        public async Task<string> GetUserRole(Guid userId)
+        {
+            var user = await _userRepository.GetUserByIdAsync(userId) ??
+                throw new KeyNotFoundException($"User not found");
+            return user.Role.ToString();
         }
     }
 }

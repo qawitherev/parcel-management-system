@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ParcelManagement.Api.AuthenticationAndAuthorization;
 using ParcelManagement.Api.DTO;
+using ParcelManagement.Api.Utility;
 using ParcelManagement.Core.Entities;
 using ParcelManagement.Core.Services;
 
@@ -12,16 +13,33 @@ namespace ParcelManagement.Api.Controller
     [ApiController]
     [Route("api/[controller]")]
     [Consumes("application/json")]
-    public class UserController(IUserService userService, ITokenService tokenService) : ControllerBase
+    public class UserController(IUserService userService, ITokenService tokenService, 
+        IUserContextService userContextService
+    ) : ControllerBase
     {
         private readonly IUserService _userService = userService;
         private readonly ITokenService _tokenService = tokenService;
+        private readonly IUserContextService _userContextService = userContextService;
 
         [HttpGet("GetUserById/{id}")]
         public async Task<IActionResult> GetUserById(Guid id)
         {
             var user = await _userService.GetUserById(id);
             return Ok(user);
+        }
+
+        [HttpGet("basic")]
+        [Authorize]
+        public async Task<IActionResult> GetUserByIdAsync()
+        {
+            var userId = _userContextService.GetUserId();
+            var u = await _userService.GetUserById(userId);
+            return Ok(new UserResponseDto
+            {
+                Id = u.Id,
+                Username = u.Username, 
+                Role = u.Role.ToString()
+            });
         }
 
         [HttpPost("register/resident")]
@@ -35,7 +53,8 @@ namespace ParcelManagement.Api.Controller
             var newUserDto = new UserResponseDto
             {
                 Id = newUser.Id,
-                Username = newUser.Username
+                Username = newUser.Username,
+                Role = newUser.Role.ToString()
             };
             return CreatedAtAction(nameof(GetUserById), new { id = newUserDto.Id }, newUserDto);
         }
@@ -68,7 +87,8 @@ namespace ParcelManagement.Api.Controller
             var newUserDto = new UserResponseDto
             {
                 Id = r.Id,
-                Username = r.Username
+                Username = r.Username,
+                Role = r.Role.ToString()
             };
             return CreatedAtAction(nameof(GetUserById), new { id = newUserDto.Id }, newUserDto);
         }

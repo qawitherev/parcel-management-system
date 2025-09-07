@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, Observable, of, tap } from 'rxjs';
-import { AuthEndpoints } from '../core/endpoints/auth-endpoints';
-import { AppConsole } from '../utils/app-console';
-import { Register } from './register/register';
+import { AuthEndpoints } from '../../core/endpoints/auth-endpoints';
+import { AppConsole } from '../../utils/app-console';
+import { Register } from './pages/register/register';
 import { Router } from '@angular/router';
 
 interface RegisterResidentRequest {

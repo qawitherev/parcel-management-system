@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { AppConsole } from '../utils/app-console';
-import { parcelEndpoints } from '../core/endpoints/parcel-endpoints';
+import { AppConsole } from '../../utils/app-console';
+import { parcelEndpoints } from '../../core/endpoints/parcel-endpoints';
 
 interface ParcelResponseDto {
   Id: string, 

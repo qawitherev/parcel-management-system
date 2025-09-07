@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { DashboardParent } from './dashboard-parent/dashboard-parent';
-import { isLoggedInGuard, isAdminAndManagerAuthed } from '../core/guards/auth-guard-guard';
+import { isLoggedInGuard, isAdminAndManagerAuthed } from '../../core/guards/auth-guard-guard';
 
 const routes: Routes = [
   { path: '', component: DashboardParent, canActivate:[isLoggedInGuard, isAdminAndManagerAuthed]}

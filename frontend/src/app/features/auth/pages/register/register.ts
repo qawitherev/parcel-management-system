@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { NgClass, AsyncPipe } from '@angular/common';
-import { Auth } from '../auth';
+import { Auth } from '../../auth';
 import { Observable } from 'rxjs';
 import { NgIf } from '@angular/common';
-import { AppConsole } from '../../utils/app-console';
-import { passwordMatchValidator } from '../../utils/custom-validators';
+import { AppConsole } from '../../../../utils/app-console';
+import { passwordMatchValidator } from '../../../../utils/custom-validators';
 import { Router } from '@angular/router';
 
 @Component({

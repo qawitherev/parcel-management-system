@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, ɵInternalForm
 import { RouterModule } from '@angular/router';
 import { NgClass, AsyncPipe } from '@angular/common';
 import { Observable } from 'rxjs';
-import { Auth } from '../auth';
+import { Auth } from '../../auth';
 import { NgIf } from '@angular/common';
 
 @Component({

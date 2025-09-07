@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ɵInternalFormsSharedModule } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { passwordMatchValidator } from '../../utils/custom-validators';
-import { Auth } from '../auth';
+import { passwordMatchValidator } from '../../../../utils/custom-validators';
+import { Auth } from '../../auth';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgIf, AsyncPipe, NgClass } from '@angular/common';
-import { AppConsole } from '../../utils/app-console';
+import { AppConsole } from '../../../../utils/app-console';
 import { Router } from '@angular/router';
 @Component({
   selector: 'app-register-manager',

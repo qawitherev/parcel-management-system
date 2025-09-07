@@ -8,5 +8,8 @@ export const routes: Routes = [
     },
     {path: 'unauthorized', loadChildren: () => import('./system-pages/system-pages-module')
         .then(m => m.SystemPagesModule)
+    },
+    {path: 'user/dashboard', loadChildren: () => import('./user-dashboard/user-dashboard-module')
+        .then(m => m.UserDashboardModule)
     }
 ];

@@ -44,7 +44,10 @@
         </label>
     </div>
     </form>
-    <div *ngIf="registerResponse$ | async as response" >
+    <div *ngIf="errorMessage" class="text-red-500 text-sm mt-2">
+      {{errorMessage}}
+    </div>
+    <!-- <div *ngIf="registerResponse$ | async as response" >
       @if (response.error) {
         <div class="text-red-500 text-sm mt-2">{{ response.message }}</div>
       } @else {
@@ -54,7 +57,7 @@
           User ID: {{ response.id }}
         </div>
       }
-    </div>
+    </div> -->
     
   </div>
 </div>

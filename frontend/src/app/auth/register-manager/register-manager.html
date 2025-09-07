@@ -31,17 +31,9 @@
             [ngClass]="formGroup.valid ? 'bg-blue-500 text-white hover:bg-blue-600'
             : 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-50' " 
             class="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition">Register As Manager</button>
-            <div *ngIf="registerResponse$ | async as res">
-                @if (res.error) {
-                    <div class="text-red-500 text-sm mt-2">{{res.message}}</div>
-                } @else {
-                    <div class="text-green-600 text-sm mt-2">
-                        Parcel Room Manager Registration Successful!<br>
-                        Username: {{res.username}}
-                        UserID: {{res.id}}
-                    </div>
-                }
-            </div>
+             <div *ngIf="errorMessage" class="text-red-500 text-sm mt-2">
+      {{errorMessage}}
+    </div>
         </form>
     </div>
 </div>

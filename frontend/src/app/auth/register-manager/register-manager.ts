@@ -6,6 +6,7 @@ import { Auth } from '../auth';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgIf, AsyncPipe, NgClass } from '@angular/common';
 import { AppConsole } from '../../utils/app-console';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-register-manager',
   imports: [ReactiveFormsModule, NgIf, AsyncPipe, NgClass],
@@ -14,9 +15,11 @@ import { AppConsole } from '../../utils/app-console';
 })
 export class RegisterManager {
   formGroup: FormGroup
-  registerResponse$?: Observable<any>
+  errorMessage: string | null = null
 
-  constructor(private fb: FormBuilder, private authService: Auth) {
+  constructor(private fb: FormBuilder, private authService: Auth, 
+    private router: Router
+  ) {
     this.formGroup = fb.group({
       username: ['', [Validators.required]], 
       email: ['', [Validators.required]], 
@@ -34,7 +37,15 @@ export class RegisterManager {
         Email: this.formGroup.value.email, 
         Password: this.formGroup.value.password
       }
-      this.registerResponse$ = this.authService.registerManager(payload)
+      this.authService.registerManager(payload).subscribe({
+        next: (res) => {
+          if(res.error) {
+            this.errorMessage = res.message
+          } else {
+            this.router.navigateByUrl('/login')
+          }
+        }
+      })
     }
   }
 }

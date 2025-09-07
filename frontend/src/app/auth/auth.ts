@@ -4,6 +4,7 @@ import { catchError, Observable, of, tap } from 'rxjs';
 import { AuthEndpoints } from '../core/endpoints/auth-endpoints';
 import { AppConsole } from '../utils/app-console';
 import { Register } from './register/register';
+import { Router } from '@angular/router';
 
 interface RegisterResidentRequest {
   Username: string, 
@@ -38,10 +39,8 @@ interface LoginResponse {
 export class Auth {
 
   
-  constructor(private http: HttpClient) {
-    // do nothing 
-  }
-  // TODO: create a console utility (the one that we can turn on/off)
+  constructor(private http: HttpClient, private router: Router) {}
+
   register(registerPayload: RegisterResidentRequest): Observable<any> {
     AppConsole.log(`Sending request: ${JSON.stringify(registerPayload)}`)
     return this.http.post<RegisterResponse>(AuthEndpoints.register, registerPayload)
@@ -74,6 +73,9 @@ export class Auth {
         catchError(err => {
           AppConsole.log(err)
           return of({ error: true, message: err.error.message})
+        }), 
+        tap(res => {
+          this.router.navigateByUrl('/login')
         })
       )
   }

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using ParcelManagement.Api.DTO;
 using ParcelManagement.Api.Utility;
 using ParcelManagement.Core.Services;
+using ParcelManagement.Core.Entities;
 
 namespace ParcelManagement.Api.Controller
 {
@@ -105,24 +106,23 @@ namespace ParcelManagement.Api.Controller
             return Ok(parcelResponseDtoList);
         }
 
-        [HttpGet("myParcels")]
+        [HttpGet("myParcels/{status?}")]
         [Authorize]
-        public async Task<IActionResult> GetParcelByUser()
+        public async Task<IActionResult> GetParcelByUser(ParcelStatus? status)
         {
             var userId = _userContextService.GetUserId();
-            var res = await _parcelService.GetParcelByUser(userId);
-            var responseDtos = new List<ParcelResponseDto>();
-            foreach (var parcel in res)
+            var (parcels, count) = await _parcelService.GetParcelByUser(userId, status);
+            var responseDto = new ParcelResponseDtoList
             {
-                responseDtos.Add(new()
-                {
-                    Id = parcel!.Id,
-                    TrackingNumber = parcel!.TrackingNumber,
-                    Weight = parcel?.Weight ?? 0,
-                    Dimensions = parcel?.Dimensions ?? "0"
-                });
-            }
-            return Ok(responseDtos);
+                Count = count,
+                Parcels = [.. parcels.Where(p => p != null).Select(p => new ParcelResponseDto {
+                    Id = p!.Id,
+                    TrackingNumber = p.TrackingNumber,
+                    Weight = p.Weight ?? 0, 
+                    Dimensions = p.Dimensions ?? ""
+                })]
+            };
+            return Ok(responseDto);
         }
 
         [HttpPost("{trackingNumber}/events")]

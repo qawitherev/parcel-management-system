@@ -24,7 +24,7 @@ namespace ParcelManagement.Core.Services
 
         Task<IReadOnlyList<Parcel?>> GetParcelByResidentUnitAsync(string residentUnit);
 
-        Task<IReadOnlyList<Parcel?>> GetParcelByUser(Guid userId);
+        Task<(IReadOnlyList<Parcel?>, int count)> GetParcelByUser(Guid userId, ParcelStatus? status = null);
 
         Task<Parcel> GetParcelHistoriesAsync(string trackingNumber, Guid inquiringUserId);
 
@@ -138,12 +138,14 @@ namespace ParcelManagement.Core.Services
             return parcel;
         }
 
-        public async Task<IReadOnlyList<Parcel?>> GetParcelByUser(Guid userId)
+        public async Task<(IReadOnlyList<Parcel?>, int count)> GetParcelByUser(Guid userId, ParcelStatus? status = null)
         {
             var user = await _userRepo.GetUserByIdAsync(userId) ??
                 throw new KeyNotFoundException($"User not found");
-            var spec = new ParcelByUserSpecification(userId);
-            return await _parcelRepo.GetParcelsBySpecificationAsync(spec);
+            var spec = new ParcelByUserSpecification(userId, status);
+            var parcels = await _parcelRepo.GetParcelsBySpecificationAsync(spec);
+            var count = await _parcelRepo.GetParcelCountBySpecification(spec);
+            return (parcels, count);
         }
 
         public async Task<Parcel> GetParcelHistoriesAsync(string trackingNumber, Guid inquiringUserId)

@@ -51,9 +51,11 @@ namespace ParcelManagement.Core.Specifications
     public class ParcelByUserSpecification : ISpecification<Parcel>
     {
         private readonly Guid _userId;
-        public ParcelByUserSpecification(Guid userId)
+        private readonly ParcelStatus? _status; 
+        public ParcelByUserSpecification(Guid userId, ParcelStatus? status = null)
         {
             _userId = userId;
+            _status = status;
             IncludeExpressions = new List<IncludeExpression<Parcel>>
             {
                 new IncludeExpression<Parcel>(p => p.ResidentUnit!)
@@ -69,7 +71,8 @@ namespace ParcelManagement.Core.Specifications
 
         public Expression<Func<Parcel, bool>> ToExpression()
         {
-            return p => p.ResidentUnit!.UserResidentUnits.Any(uru => uru.UserId == _userId);
+            return p => p.ResidentUnit!.UserResidentUnits.Any(uru => uru.UserId == _userId)
+                && (!_status.HasValue || p.Status == _status);
         }
     }
 

@@ -1,0 +1,23 @@
+<div class="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
+    <h1 class="text-4xl font-bold mb-8 text-gray-800">Search Parcel</h1>
+    <form 
+    [formGroup]="formGroup"
+    class="w-full max-w-xl" (ngSubmit)="onSubmit()">
+        <div class="flex items-center bg-white rounded-full shadow-md px-6 py-4">
+            <input
+                formControlName="searchKeyword"
+                type="text"
+                placeholder="Enter tracking number"
+                class="flex-grow outline-none bg-transparent text-lg text-gray-700"
+            />
+            <button
+                type="submit"
+                [ngClass]="formGroup.valid ? 'ml-4 bg-blue-600 text-white px-6 py-2 rounded-full font-semibold hover:bg-blue-700 transition'
+                : ' opacity-50 cursor-not-allowed' "
+                class="ml-4 bg-blue-600 text-white px-6 py-2 rounded-full font-semibold hover:bg-blue-700 transition"
+            >
+                Search
+            </button>
+        </div>
+    </form>
+</div>

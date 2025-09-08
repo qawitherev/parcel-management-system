@@ -145,9 +145,14 @@ namespace ParcelManagement.Api.Controller
         [Authorize]
         public async Task<IActionResult> GetParcelHistory(string trackingNumber)
         {
+            var claimedRole = _userContextService.GetUserRole();
+            if (!Enum.TryParse<UserRole>(claimedRole, out var userRole))
+            {
+                throw new InvalidOperationException($"{claimedRole} is not a valid role");
+            }
             var res = await _parcelService.GetParcelHistoriesAsync(
                 trackingNumber,
-                _userContextService.GetUserId()
+                _userContextService.GetUserId(), userRole
                 );
             var parcelHistoriesDto = new ParcelHistoriesDto
             {

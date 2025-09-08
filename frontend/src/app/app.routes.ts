@@ -12,5 +12,8 @@ export const routes: Routes = [
     { path: 'parcels/tracking', loadChildren: () => import('./features/parcels/tracking/tracking-module')
         .then(m => m.TrackingModule)
     },
+    { path: 'parcels/checkIn', loadChildren: () => import('./features/parcels/check-in/check-in-module')
+        .then(m => m.CheckInModule)
+    }
 
 ];

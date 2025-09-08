@@ -23,8 +23,7 @@ export class Tracking {
 
   onSubmit() {
     if(this.formGroup.valid) {
-      AppConsole.log(`search...`)
-      this.router.navigate(['searchResult'], { relativeTo: this.route })
+      this.router.navigate(['searchResult'], { relativeTo: this.route, queryParams: {keyword: this.formGroup.value.searchKeyword} })
     }
   }
 }

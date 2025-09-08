@@ -26,7 +26,7 @@ namespace ParcelManagement.Core.Services
 
         Task<(IReadOnlyList<Parcel?>, int count)> GetParcelByUser(Guid userId, ParcelStatus? status = null);
 
-        Task<Parcel> GetParcelHistoriesAsync(string trackingNumber, Guid inquiringUserId);
+        Task<Parcel> GetParcelHistoriesAsync(string trackingNumber, Guid inquiringUserId, UserRole role);
 
         Task<(IReadOnlyCollection<Parcel>, int count)> GetRecentlyPickedUp(); 
     }
@@ -148,7 +148,7 @@ namespace ParcelManagement.Core.Services
             return (parcels, count);
         }
 
-        public async Task<Parcel> GetParcelHistoriesAsync(string trackingNumber, Guid inquiringUserId)
+        public async Task<Parcel> GetParcelHistoriesAsync(string trackingNumber, Guid inquiringUserId, UserRole role)
         {
             // check if the parcel belongs to the accessing user 
             var user = await _userRepo.GetUserByIdAsync(inquiringUserId) ??

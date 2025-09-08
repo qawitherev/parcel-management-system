@@ -1,0 +1,6 @@
+<div class="w-full bg-white bg-opacity-60 backdrop-blur-md rounded-xl shadow-lg p-6 flex flex-col items-center transition transform duration-300 hover:scale-105 hover:shadow-2xl hover:bg-opacity-80">
+    <span class="text-lg font-semibold text-gray-800 mb-2">Parcel Awaiting Pickup</span>
+    <span 
+    *ngIf="parcelsAwaitingPickup$ | async as res"
+    class="text-4xl font-bold text-blue-600">{{res.count}}</span>
+</div>

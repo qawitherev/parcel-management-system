@@ -9,5 +9,8 @@ export const routes: Routes = [
     {path: 'unauthorized', loadChildren: () => import('./system-pages/system-pages-module')
         .then(m => m.SystemPagesModule)
     },
+    { path: 'parcels/tracking', loadChildren: () => import('./features/parcels/tracking/tracking-module')
+        .then(m => m.TrackingModule)
+    },
 
 ];

@@ -34,4 +34,8 @@ export class Dashboard {
     AppConsole.log(`Fetching recentlyPickedUp`)
     return this.http.get(parcelEndpoints.getRecentlyPickedUp)
   }
+
+  getUserAwaitingPickup(): Observable<any> {
+    return this.http.get(`${parcelEndpoints.getMyParcels}/awaitingPickup`)
+  }
 }

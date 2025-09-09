@@ -14,6 +14,7 @@ namespace ParcelManagement.Infrastructure.Database
             builder.Property(e => e.TrackingEventType).HasConversion<string>();
             builder.HasOne(te => te.Parcel).WithMany(p => p.TrackingEvents)
                 .HasForeignKey(te => te.ParcelId);
+            builder.HasOne(te => te.User).WithMany().HasForeignKey(te => te.PerformedByUser);
         }
     }
 

@@ -70,7 +70,8 @@ namespace ParcelManagement.Core.Services
                 ResidentUnitId = realResidentUnit.Id,
                 Status = ParcelStatus.AwaitingPickup,
                 Weight = weight ?? 0,
-                Dimensions = dimensions ?? ""
+                Dimensions = dimensions ?? "", 
+                EntryDate = DateTimeOffset.UtcNow
             };
 
             await _parcelRepo.AddParcelAsync(newParcel);

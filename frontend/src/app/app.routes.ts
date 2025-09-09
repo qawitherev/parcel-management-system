@@ -14,6 +14,9 @@ export const routes: Routes = [
     },
     { path: 'parcels/checkIn', loadChildren: () => import('./features/parcel/check-in/check-in-module')
         .then(m => m.CheckInModule)
+    }, 
+    { path: 'resident/userResidentUnit', loadChildren: () => import('./features/resident/user-resident-unit/user-resident-unit-module')
+        .then(m => m.UserResidentUnitModule)
     }
 
 ];

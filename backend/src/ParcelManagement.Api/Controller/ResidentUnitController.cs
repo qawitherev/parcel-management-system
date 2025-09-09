@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ParcelManagement.Api.DTO;
 using ParcelManagement.Api.Utility;
@@ -13,14 +14,17 @@ namespace ParcelManagement.Api.Controller
     {
         private readonly IResidentUnitService _residentUnitService;
         private readonly IUserContextService _userServiceContext;
+        private readonly IUserResidentUnitService _uruService;
 
         public ResidentUnitController(
             IResidentUnitService residentUnitService,
-            IUserContextService userServiceContext
+            IUserContextService userServiceContext,
+            IUserResidentUnitService uruService
             )
         {
             _residentUnitService = residentUnitService;
             _userServiceContext = userServiceContext;
+            _uruService = uruService;
         }
 
         [HttpGet("GetResidentUnitById/{id}")]
@@ -42,6 +46,17 @@ namespace ParcelManagement.Api.Controller
                 registerUnitDto.UnitName, Guid.NewGuid()
             );
             return CreatedAtAction(nameof(GetResidentUnitById), new { id = unit.Id }, unit);
+        }
+
+        [HttpPost("addUser")]
+        [Consumes("application/json")]
+        [Authorize(Roles = "ParcelRoomManager")]
+        public async Task<IActionResult> AddUserToResidentUnit([FromBody] AddUserToResidentUnitDto dto)
+        {
+            var creatorId = _userServiceContext.GetUserId();
+            await _uruService.CreateUserResidentUnit(creatorId, dto.UserId, dto.ResidentUnitId);
+            var residentUnit = await _residentUnitService.GetResidentUnitById(dto.ResidentUnitId);
+            return CreatedAtAction(nameof(GetResidentUnitById), new { id = dto.ResidentUnitId }, residentUnit);
         }
     }
 }

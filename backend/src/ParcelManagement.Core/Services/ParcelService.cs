@@ -91,6 +91,10 @@ namespace ParcelManagement.Core.Services
             var spec = new ParcelByTrackingNumberSpecification(trackingNumber);
             var toBeClaimedParcel = await _parcelRepo.GetOneParcelBySpecificationAsync(spec) ??
                 throw new InvalidOperationException($"Parcel with tracking number '{trackingNumber}' not found.");
+            if (toBeClaimedParcel.Status == ParcelStatus.Claimed)
+            {
+                throw new InvalidOperationException($"Parcel {trackingNumber} has been claimed!");
+            }
             toBeClaimedParcel.Status = ParcelStatus.Claimed;
             toBeClaimedParcel.ExitDate = DateTime.UtcNow;
 

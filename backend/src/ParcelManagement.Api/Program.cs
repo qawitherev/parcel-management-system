@@ -62,6 +62,7 @@ if (jwtSettings.SecretKey == null && !builder.Environment.IsEnvironment("Testing
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(option =>
 {
     JwtBearerConfiguration.JwtBearerOptionsConfig(option, jwtSettings);
+    option.Events = JwtBearerAccessEvent.UnauthorizedOrForbiddenAccessEvent();
 
 });
 

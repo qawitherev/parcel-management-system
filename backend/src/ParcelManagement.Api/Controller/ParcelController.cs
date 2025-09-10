@@ -58,21 +58,16 @@ namespace ParcelManagement.Api.Controller
 
 
         [HttpPost("{trackingNumber}/claim")]
-        [Authorize(Roles = "ParcelRoomManager")]
+        [Authorize(Roles = "Resident, ParcelRoomManager")]
         public async Task<IActionResult> ClaimParcel(string trackingNumber)
         {
-            var userCLaim = User.FindFirstValue(ClaimTypes.NameIdentifier) ??
-                throw new UnauthorizedAccessException("User id is not found");
-            if (!Guid.TryParse(userCLaim, out Guid userId))
-            {
-                throw new UnauthorizedAccessException("User id is invalid");
-            }
+            var userId = _userContextService.GetUserId();
             await _parcelService.ClaimParcelAsync(trackingNumber, userId);
             return NoContent(); // 204
         }
 
         [HttpGet("{trackingNumber}")]
-        [Authorize(Roles = "ParcelRoomManager")]
+        [Authorize(Roles = "Resident, ParcelRoomManager")]
         public async Task<IActionResult> GetParcelByTrackingNumber(string trackingNumber)
         {
             var resultParcel = await _parcelService.GetParcelByTrackingNumberAsync(trackingNumber);

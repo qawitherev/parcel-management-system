@@ -1,9 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { jwtDecode } from 'jwt-decode';
-import { environment } from '../../../environment/environment';
 import { map, Observable, of } from 'rxjs';
-import { AppConsole } from '../../utils/app-console';
 import { RoleService } from '../roles/role-service';
 
 interface JwtExp {

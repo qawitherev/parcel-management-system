@@ -5,5 +5,4 @@ export const parcelEndpoints = {
     getRecentlyPickedUp: `${environment.apiBaseUrl}/parcel/recentlyPickedUp`,
     getMyParcels: `${environment.apiBaseUrl}/parcel/myParcels`, 
     checkIn: `${environment.apiBaseUrl}/parcel/checkIn`
-    
 }

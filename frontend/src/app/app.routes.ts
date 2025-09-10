@@ -17,6 +17,9 @@ export const routes: Routes = [
     }, 
     { path: 'resident/userResidentUnit', loadChildren: () => import('./features/resident/user-resident-unit/user-resident-unit-module')
         .then(m => m.UserResidentUnitModule)
+    }, 
+    { path: 'parcels/claim', loadChildren: () => import('./features/parcel/claim/claim-module')
+        .then(m => m.ClaimModule)
     }
 
 ];

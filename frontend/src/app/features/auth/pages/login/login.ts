@@ -13,7 +13,7 @@ import { Auth } from '../../auth';
 import { NgIf } from '@angular/common';
 import { AppConsole } from '../../../../utils/app-console';
 import { httpResource } from '@angular/common/http';
-import { CachedRoleService, RoleService } from '../../../../core/roles/role-service';
+import { RoleService } from '../../../../core/roles/role-service';
 
 @Component({
   selector: 'app-login',
@@ -40,7 +40,6 @@ export class Login implements OnInit, OnDestroy {
     private authService: Auth,
     private route: ActivatedRoute,
     private router: Router,
-    private cachedRoleService: CachedRoleService,
     private roleService: RoleService
   ) {
     this.form = this.fb.group({

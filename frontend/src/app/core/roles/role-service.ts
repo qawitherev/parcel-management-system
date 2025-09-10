@@ -4,14 +4,18 @@ import { RoleStorage } from "../storage/role-storage"
 import { environment } from "../../../environment/environment"
 import { handleApiError } from "../error-handling/api-catch-error"
 import { AppConsole } from "../../utils/app-console"
+import { Injectable } from "@angular/core"
 
-export interface Role {
+export interface RoleWithExp {
     role: string, 
     expiredAt: number
 }
 
+@Injectable({
+  providedIn: 'root',
+})
 export class RoleService {
-    private _role: Role
+    private _role: RoleWithExp
     private _roleStorage: RoleStorage
     constructor(private http: HttpClient) {
         this._role = { role: "", expiredAt: 0}
@@ -25,7 +29,7 @@ export class RoleService {
         this._roleStorage.setStoredRole(this._role)
     }
 
-    getRole(): Observable<Role | null> {
+    getRole(): Observable<RoleWithExp | null> {
         var storedRole = this._roleStorage.getStoredRole()
         if (storedRole && this.isExpired(storedRole.expiredAt)) {
             this._role = storedRole
@@ -56,21 +60,5 @@ export class RoleService {
     
     private isExpired(expiredAt: number): boolean {
         return Date.now() > expiredAt
-    }
-}
-
-export class CachedRoleService {
-    private _cachedRole: string | null = null
-
-    getCachedRole() : string | null {
-        return this._cachedRole
-    }
-
-    setCachedRole(newRole: string) {
-        this._cachedRole = newRole
-    }
-
-    clearRole() {
-        this._cachedRole = null
     }
 }

@@ -28,33 +28,13 @@ export class GuardsService {
     return now <= decoded.exp; // -> so we compare if now bigger than exp
   }
 
-  isRoleAuthorized$(roles: string[]): Observable<any> {
-    // if (this._cachedRole) {
-    //   return of(roles.includes(this._cachedRole))
-    // }
-
-    // const storedRole = sessionStorage.getItem(`parcel-management-system-role`)
-    // if (storedRole && roles.includes(storedRole)) {
-    //   AppConsole.log(`Stored role is ${storedRole}`)
-    //   this._cachedRole = storedRole
-    //   this.cachedRoleService.setCachedRole(storedRole)
-    //   return of(roles.includes(this._cachedRole))
-    // }
-    // AppConsole.log(`Checking for cached failed, fallback api`)
-    // return this.http.get<UserRole>(`${environment.apiBaseUrl}/user/basic`).pipe(
-    //   map(res => {
-    //     AppConsole.log(`api/user/basic: ${JSON.stringify(res)}`)
-    //     this._cachedRole = res.role
-    //     this.cachedRoleService.setCachedRole(res.role)
-    //     sessionStorage.setItem(`parcel-management-system-role`, res.role)
-    //     return roles.includes(res.role)
-    //   })
-    // );
-
+  isRoleAuthorized$(roles: string[]): Observable<boolean> {
     return this.roleService.getRole().pipe(
       map((res) => {
-        if (!res) return of(false);
-        return of(roles.includes(res.role));
+        if (!res) {
+          return false
+        }
+        return roles.includes(res.role)
       })
     );
   }

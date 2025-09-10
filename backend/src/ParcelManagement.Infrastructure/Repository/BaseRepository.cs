@@ -80,14 +80,10 @@ namespace ParcelManagement.Infrastructure.Repository
             IQueryable<T> theQuery
             ) where T : class
         {
-            foreach (var include in specification.IncludeExpressions)
+            foreach (var include in specification.IncludeExpressionString)
             {
-                var queryWithInclude = theQuery.Include(include.Path);
+                theQuery = theQuery.Include(include.Path);
 
-                foreach (var thenInclude in include.ThenIncludePaths)
-                {
-                    queryWithInclude = queryWithInclude.ThenInclude(thenInclude);
-                }
             }
 
             return theQuery;

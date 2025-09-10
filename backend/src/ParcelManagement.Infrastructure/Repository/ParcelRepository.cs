@@ -62,7 +62,7 @@ namespace ParcelManagement.Infrastructure.Repository
 
         public async Task<Parcel?> GetOneParcelBySpecificationAsync(ISpecification<Parcel> specification)
         {
-            return await _dbContext.Parcels.Where(specification.ToExpression()).FirstOrDefaultAsync();
+            return await GetOneBySpecificationAsync(specification);
         }
 
         public async Task<int> GetParcelCountBySpecification(ISpecification<Parcel> specification)

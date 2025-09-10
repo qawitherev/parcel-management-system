@@ -15,10 +15,23 @@ namespace ParcelManagement.Core.Specifications
         }
     }
 
+    public class IncludeExpressionString
+    {
+        public string Path { get; }
+
+        public IncludeExpressionString(string path)
+        {
+            Path = path;
+        }
+    }
+
     public interface ISpecification<T>
     {
         Expression<Func<T, bool>> ToExpression();
         List<IncludeExpression<T>> IncludeExpressions { get; }
+
+        List<IncludeExpressionString> IncludeExpressionString { get; }
+
 
         int? Skip { get; }
 

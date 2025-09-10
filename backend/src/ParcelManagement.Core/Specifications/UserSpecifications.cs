@@ -12,6 +12,8 @@ namespace ParcelManagement.Core.Specifications
 
         public int? Take => null;
 
+        public List<IncludeExpressionString> IncludeExpressionString => throw new NotImplementedException();
+
         public Expression<Func<User, bool>> ToExpression() => user => user.Username == receivedUsername;
     }
 }

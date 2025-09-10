@@ -9,6 +9,8 @@ namespace ParcelManagement.Core.Specifications
 
         public int? Take => null;
 
+        public List<IncludeExpressionString> IncludeExpressionString => throw new NotImplementedException();
+
         List<IncludeExpression<Parcel>> ISpecification<Parcel>.IncludeExpressions => [];
 
         public Expression<Func<Parcel, bool>> ToExpression() => parcel => parcel.Status == ParcelStatus.AwaitingPickup;
@@ -25,6 +27,8 @@ namespace ParcelManagement.Core.Specifications
         public int? Skip => null;
 
         public int? Take => null;
+
+        List<IncludeExpressionString> ISpecification<Parcel>.IncludeExpressionString => [];
 
         List<IncludeExpression<Parcel>> ISpecification<Parcel>.IncludeExpressions => [];
 
@@ -43,6 +47,8 @@ namespace ParcelManagement.Core.Specifications
 
         public int? Take => null;
 
+        public List<IncludeExpressionString> IncludeExpressionString => throw new NotImplementedException();
+
         List<IncludeExpression<Parcel>> ISpecification<Parcel>.IncludeExpressions => [];
 
         public Expression<Func<Parcel, bool>> ToExpression() => p => p.ResidentUnitDeprecated == _residentUnit;
@@ -51,7 +57,7 @@ namespace ParcelManagement.Core.Specifications
     public class ParcelByUserSpecification : ISpecification<Parcel>
     {
         private readonly Guid _userId;
-        private readonly ParcelStatus? _status; 
+        private readonly ParcelStatus? _status;
         public ParcelByUserSpecification(Guid userId, ParcelStatus? status = null)
         {
             _userId = userId;
@@ -61,6 +67,9 @@ namespace ParcelManagement.Core.Specifications
                 new IncludeExpression<Parcel>(p => p.ResidentUnit!)
                     .ThenInclude(ru => ((ResidentUnit)ru).UserResidentUnits)
             };
+            IncludeExpressionString = [
+                new IncludeExpressionString("ResidentUnit.UserResidentUnits")
+            ];
         }
 
         public List<IncludeExpression<Parcel>> IncludeExpressions { get; }
@@ -68,6 +77,8 @@ namespace ParcelManagement.Core.Specifications
         public int? Skip => null;
 
         public int? Take => null;
+
+        public List<IncludeExpressionString> IncludeExpressionString { get; }
 
         public Expression<Func<Parcel, bool>> ToExpression()
         {
@@ -87,6 +98,10 @@ namespace ParcelManagement.Core.Specifications
             {
                 new IncludeExpression<Parcel>(p => p.TrackingEvents)
             };
+            IncludeExpressionString = new List<IncludeExpressionString>()
+            {
+                new IncludeExpressionString("TrackingEvents.User")
+            };
         }
 
         public List<IncludeExpression<Parcel>> IncludeExpressions { get; }
@@ -94,6 +109,8 @@ namespace ParcelManagement.Core.Specifications
         public int? Skip => null;
 
         public int? Take => null;
+
+        public List<IncludeExpressionString> IncludeExpressionString { get; } 
 
         public Expression<Func<Parcel, bool>> ToExpression()
         {
@@ -108,6 +125,8 @@ namespace ParcelManagement.Core.Specifications
         public int? Skip => null;
 
         public int? Take => null;
+
+        public List<IncludeExpressionString> IncludeExpressionString => throw new NotImplementedException();
 
         public Expression<Func<Parcel, bool>> ToExpression()
         {

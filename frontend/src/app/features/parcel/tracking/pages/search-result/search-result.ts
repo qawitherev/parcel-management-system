@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ResultItem } from "../../components/result-item/result-item";
-import { NgFor } from '@angular/common';
+import { CommonModule, NgFor } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { AppConsole } from '../../../../../utils/app-console';
 import { FormControl, ɵInternalFormsSharedModule, ReactiveFormsModule } from '@angular/forms';
@@ -12,7 +12,7 @@ import { NgIf, AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'app-search-result',
-  imports: [ResultItem, NgFor, ɵInternalFormsSharedModule, ReactiveFormsModule, NgIf, AsyncPipe],
+  imports: [ResultItem, NgFor, ɵInternalFormsSharedModule, ReactiveFormsModule, NgIf, AsyncPipe, CommonModule],
   templateUrl: './search-result.html',
   styleUrl: './search-result.css'
 })

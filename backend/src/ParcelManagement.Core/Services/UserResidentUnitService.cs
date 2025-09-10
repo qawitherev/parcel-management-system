@@ -6,7 +6,9 @@ namespace ParcelManagement.Core.Services
 {
     public interface IUserResidentUnitService
     {
-        Task<UserResidentUnit> CreateUserResidentUnit(UserResidentUnit userResidentUnit, Guid creator);
+        Task<UserResidentUnit> CreateUserResidentUnit(Guid creator,
+            Guid userId, Guid residentUnitId
+        );
 
         Task UpdateUserResidentUnit(UserResidentUnit userResidentUnit);
 
@@ -15,24 +17,43 @@ namespace ParcelManagement.Core.Services
         Task<IReadOnlyCollection<ResidentUnit?>> GetResidentsUnitByUser(Guid userId);
     }
 
-    public class UserResidentUnitService(IUserResidentUnitRepository repository) : IUserResidentUnitService
+    public class UserResidentUnitService(
+        IUserResidentUnitRepository uruRepo,
+        IResidentUnitRepository ruRepo,
+        IUserRepository userRepo
+        ) : IUserResidentUnitService
     {
-        private readonly IUserResidentUnitRepository _repository = repository;
-        public async Task<UserResidentUnit> CreateUserResidentUnit(UserResidentUnit userResidentUnit, Guid creator)
+        private readonly IUserResidentUnitRepository _uruRepo = uruRepo;
+        private readonly IResidentUnitRepository _ruRepo = ruRepo;
+        private readonly IUserRepository _userRepo = userRepo;
+        
+        public async Task<UserResidentUnit> CreateUserResidentUnit(Guid creator,
+            Guid userId, Guid residentUnitId
+        )
         {
-            var res = await _repository.GetResidentUnitByCombination(
-                userResidentUnit.UserId,
-                userResidentUnit.ResidentUnitId);
+            var user = await _userRepo.GetUserByIdAsync(userId) ?? throw new NullReferenceException($"User ${userId} not found");
+            var ru = await _ruRepo.GetResidentUnitByIdAsync(residentUnitId) ?? throw new NullReferenceException($"Resident unit not found");
+            var res = await _uruRepo.GetResidentUnitByCombination(
+                userId,
+                residentUnitId);
             if (res == null)
             {
-                await _repository.CreateUserResidentUnitAsync(userResidentUnit);
-                return userResidentUnit;
+                return await _uruRepo.CreateUserResidentUnitAsync(new UserResidentUnit
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = userId,
+                    ResidentUnitId = residentUnitId,
+                    IsActive = true,
+                    CreatedAt = DateTimeOffset.UtcNow, 
+                    CreatedBy = creator
+                });
+                
             }
             else if (res != null && !res.IsActive)
             {
-                userResidentUnit.IsActive = true;
-                await _repository.UpdateUserResidentUnit(userResidentUnit);
-                return userResidentUnit;
+                res.IsActive = true;
+                await _uruRepo.UpdateUserResidentUnit(res);
+                return res;
             }
             else
             {
@@ -42,22 +63,22 @@ namespace ParcelManagement.Core.Services
 
         public async Task<IReadOnlyCollection<ResidentUnit?>> GetResidentsUnitByUser(Guid userId)
         {
-            return await _repository.GetResidentUnitsByUser(userId);
+            return await _uruRepo.GetResidentUnitsByUser(userId);
         }
 
         public async Task<IReadOnlyCollection<User?>> GetUsersByResidentUnit(Guid residentUnitId)
         {
-            return await _repository.GetUsersByResidentUnit(residentUnitId);
+            return await _uruRepo.GetUsersByResidentUnit(residentUnitId);
         }
 
         public async Task UpdateUserResidentUnit(UserResidentUnit userResidentUnit)
         {
-            var existing = await _repository.GetResidentUnitByCombination(
+            var existing = await _uruRepo.GetResidentUnitByCombination(
                 userResidentUnit.UserId,
                 userResidentUnit.ResidentUnitId
             ) ?? throw new NullReferenceException($"Entry UserResidentUnit does not exist");
             existing.IsActive = userResidentUnit.IsActive;
-            await _repository.UpdateUserResidentUnit(userResidentUnit);
+            await _uruRepo.UpdateUserResidentUnit(userResidentUnit);
         }
     }
 }

@@ -5,6 +5,7 @@ import { AuthEndpoints } from '../../core/endpoints/auth-endpoints';
 import { AppConsole } from '../../utils/app-console';
 import { Register } from './pages/register/register';
 import { Router } from '@angular/router';
+import { handleApiError } from '../../core/error-handling/api-catch-error';
 
 interface RegisterResidentRequest {
   Username: string, 
@@ -45,10 +46,7 @@ export class Auth {
     AppConsole.log(`Sending request: ${JSON.stringify(registerPayload)}`)
     return this.http.post<RegisterResponse>(AuthEndpoints.register, registerPayload)
       .pipe(
-        catchError(err => {
-        AppConsole.error(err)
-        return of({ error: true, message: err.error.message || 'Unknown error' });
-      })
+        catchError(handleApiError)
       )
   } 
 
@@ -59,10 +57,7 @@ export class Auth {
         tap(res => {
           this.saveToken(res.token)
         }),
-        catchError(err => {
-          AppConsole.error(err)
-          return of({error: true, message: err.error.message || 'Unknown error'})
-        })
+        catchError(handleApiError)
       )
   }
 
@@ -70,11 +65,8 @@ export class Auth {
     AppConsole.log(`Sending request register manager: ${JSON.stringify(registerRequest)}`)
     return this.http.post(AuthEndpoints.registerManager, registerRequest)
       .pipe(
-        catchError(err => {
-          AppConsole.log(err)
-          return of({ error: true, message: err.error.message})
-        }), 
-        tap(res => {
+        catchError(handleApiError), 
+        tap(_ => {
           this.router.navigateByUrl('/login')
         })
       )
@@ -83,6 +75,8 @@ export class Auth {
   saveToken(token: string) {
     localStorage.setItem('parcel-management-system-token', token);
   }
+
+
 
   
 }

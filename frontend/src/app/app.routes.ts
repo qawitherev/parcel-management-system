@@ -9,8 +9,17 @@ export const routes: Routes = [
     {path: 'unauthorized', loadChildren: () => import('./system-pages/system-pages-module')
         .then(m => m.SystemPagesModule)
     },
-    { path: 'parcels/tracking', loadChildren: () => import('./features/parcels/tracking/tracking-module')
+    { path: 'parcels/tracking', loadChildren: () => import('./features/parcel/tracking/tracking-module')
         .then(m => m.TrackingModule)
     },
+    { path: 'parcels/checkIn', loadChildren: () => import('./features/parcel/check-in/check-in-module')
+        .then(m => m.CheckInModule)
+    }, 
+    { path: 'resident/userResidentUnit', loadChildren: () => import('./features/resident/user-resident-unit/user-resident-unit-module')
+        .then(m => m.UserResidentUnitModule)
+    }, 
+    { path: 'parcels/claim', loadChildren: () => import('./features/parcel/claim/claim-module')
+        .then(m => m.ClaimModule)
+    }
 
 ];

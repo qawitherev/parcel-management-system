@@ -70,7 +70,8 @@ namespace ParcelManagement.Core.Services
                 ResidentUnitId = realResidentUnit.Id,
                 Status = ParcelStatus.AwaitingPickup,
                 Weight = weight ?? 0,
-                Dimensions = dimensions ?? ""
+                Dimensions = dimensions ?? "", 
+                EntryDate = DateTimeOffset.UtcNow
             };
 
             await _parcelRepo.AddParcelAsync(newParcel);
@@ -90,6 +91,10 @@ namespace ParcelManagement.Core.Services
             var spec = new ParcelByTrackingNumberSpecification(trackingNumber);
             var toBeClaimedParcel = await _parcelRepo.GetOneParcelBySpecificationAsync(spec) ??
                 throw new InvalidOperationException($"Parcel with tracking number '{trackingNumber}' not found.");
+            if (toBeClaimedParcel.Status == ParcelStatus.Claimed)
+            {
+                throw new InvalidOperationException($"Parcel {trackingNumber} has been claimed!");
+            }
             toBeClaimedParcel.Status = ParcelStatus.Claimed;
             toBeClaimedParcel.ExitDate = DateTime.UtcNow;
 

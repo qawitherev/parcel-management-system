@@ -20,7 +20,12 @@ export class GuardsService {
     if (!token) {
       return false;
     }
-    const decoded = jwtDecode<JwtExp>(token);
+    var decoded: any
+    try {
+      decoded = jwtDecode<JwtExp>(token);
+    } catch {
+      return false
+    }
     const now = Math.floor(Date.now() / 1000); // -> because exp is in second since epoch
     // and Date.now() return mili since epoch, thats why divide 1000
     return now <= decoded.exp; // -> so we compare if now bigger than exp

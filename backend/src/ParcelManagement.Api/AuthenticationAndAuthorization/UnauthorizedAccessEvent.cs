@@ -24,6 +24,7 @@ namespace ParcelManagement.Api.AuthenticationAndAuthorization
 
                 OnChallenge = async (context) =>
                 {
+                    context.HandleResponse();
                     context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                     context.Response.ContentType = "application/json";
                     await context.Response.WriteAsJsonAsync(new

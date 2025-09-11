@@ -11,6 +11,19 @@ import { catchError, Observable, of } from 'rxjs';
 import { NgIf, AsyncPipe } from '@angular/common';
 import { handleApiError } from '../../../../../core/error-handling/api-catch-error';
 
+export interface ParcelHistory {
+  trackingNumber: string, 
+  entryDate: Date, 
+  currentStatus: string, 
+  history: ParcelHistoryItem[]
+}
+
+export interface ParcelHistoryItem {
+  eventTime: Date, 
+  event: string, 
+  performedByUser: string
+}
+
 @Component({
   selector: 'app-search-result',
   imports: [ResultItem, NgFor, ɵInternalFormsSharedModule, ReactiveFormsModule, NgIf, AsyncPipe, CommonModule],
@@ -19,23 +32,21 @@ import { handleApiError } from '../../../../../core/error-handling/api-catch-err
 })
 export class SearchResult implements OnInit {
   parcelsTrackingHistory$?: Observable<any>
-  parcels = [
-    { item: '1'}, 
-    { item: '2'}, 
-    { item: '3'},
-    { item: '1'}, 
-    { item: '2'}, 
-    { item: '3'},
-    { item: '1'}, 
-    { item: '2'}, 
-    { item: '3'},
-  ]
+
   constructor(
     private trackingService: TrackingService,
     private route: ActivatedRoute
   ) {}
 
   searchKeyword = new FormControl()
+
+  onSearch() {
+    AppConsole.log(`onSearch() not implemented yet`)
+    this.parcelsTrackingHistory$ = this.trackingService.getUserParcelHistory(this.searchKeyword.value).pipe(
+      catchError(handleApiError)
+    )
+  }
+
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => 
     {

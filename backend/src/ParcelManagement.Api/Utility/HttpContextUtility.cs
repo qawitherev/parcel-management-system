@@ -1,11 +1,12 @@
 using System.Security.Claims;
+using ParcelManagement.Core.Entities;
 
 namespace ParcelManagement.Api.Utility
 {
     public interface IUserContextService
     {
         Guid GetUserId();
-        string GetUserRole();
+        UserRole GetUserRole();
         string? GetClaimByClaimType(string claimType);
     }
 
@@ -33,10 +34,15 @@ namespace ParcelManagement.Api.Utility
             return userId;
         }
 
-        public string GetUserRole()
+        public UserRole GetUserRole()
         {
-            return _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Role)?.Value ??
+            var roleString = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Role)?.Value ??
                 throw new UnauthorizedAccessException("User role missing");
+            if (!Enum.TryParse<UserRole>(roleString, out var role))
+            {
+                throw new InvalidOperationException($"Invalid role found in claim");
+            }
+            return role;
         }
     }
 }

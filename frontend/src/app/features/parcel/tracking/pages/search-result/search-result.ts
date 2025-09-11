@@ -9,6 +9,7 @@ import { TrackingModule } from '../../tracking-module';
 import { TrackingService } from '../../../tracking';
 import { catchError, Observable, of } from 'rxjs';
 import { NgIf, AsyncPipe } from '@angular/common';
+import { handleApiError } from '../../../../../core/error-handling/api-catch-error';
 
 @Component({
   selector: 'app-search-result',
@@ -41,9 +42,7 @@ export class SearchResult implements OnInit {
       const keyword = params['keyword']
       this.searchKeyword.setValue(keyword)
       this.parcelsTrackingHistory$ =  this.trackingService.getUserParcelHistory(keyword).pipe(
-        catchError(err => {
-          return of( { error: true, message: err.error.message})
-        })
+        catchError(handleApiError)
       )
     }
     )

@@ -152,6 +152,8 @@ namespace ParcelManagement.Api.Controller
             var parcelHistoriesDto = new ParcelHistoriesDto
             {
                 TrackingNumber = res.TrackingNumber,
+                EntryDate = res.EntryDate, 
+                CurrentStatus = res.Status,
                 History = [.. res.TrackingEvents.Select(te => new ParcelHistoriesChild
                 {
                     EventTime = te.EventTime,

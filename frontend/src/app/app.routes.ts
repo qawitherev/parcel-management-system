@@ -20,6 +20,8 @@ export const routes: Routes = [
     }, 
     { path: 'parcels/claim', loadChildren: () => import('./features/parcel/claim/claim-module')
         .then(m => m.ClaimModule)
+    }, 
+    { path: 'parcels/parcels', loadChildren: () => import('./features/parcel/parcels/parcels-module')
+        .then(m => m.ParcelsModule)
     }
-
 ];

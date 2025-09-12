@@ -1,0 +1,26 @@
+<div class="container mx-auto p-4">
+    <div class="overflow-x-auto">
+        <table class="table-auto w-full border-collapse border border-gray-300">
+            <thead>
+                <tr class="bg-gray-100">
+                    <th class="border border-gray-300 px-4 py-2 text-left">#</th>
+                    <th class="border border-gray-300 px-4 py-2 text-left">Tracking Number</th>
+                    <th class="border border-gray-300 px-4 py-2 text-left">Weight</th>
+                    <th class="border border-gray-300 px-4 py-2 text-left">Dimension</th>
+                    <th class="border border-gray-300 px-4 py-2 text-left">Resident Unit</th>
+                    <th class="border border-gray-300 px-4 py-2 text-left">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let parcel of (parcelList$ | async)?.parcels; let i = index">
+                    <td class="border border-gray-300 px-4 py-2">{{ i + 1}}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{parcel.trackingNumber}}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{parcel.weight}}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{parcel.dimensions}}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{parcel.residentUnit}}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{parcel.status}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

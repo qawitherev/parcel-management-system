@@ -33,7 +33,7 @@ namespace ParcelManagement.Core.Specifications
         List<IncludeExpressionString> IncludeExpressionString { get; }
 
 
-        int? Skip { get; }
+        int? Page { get; }
 
         int? Take { get; }
     }

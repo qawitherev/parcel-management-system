@@ -8,7 +8,7 @@ namespace ParcelManagement.Core.Specifications
     {
         public List<IncludeExpression<User>> IncludeExpressions => throw new NotImplementedException();
 
-        public int? Skip => null;
+        public int? Page => null;
 
         public int? Take => null;
 

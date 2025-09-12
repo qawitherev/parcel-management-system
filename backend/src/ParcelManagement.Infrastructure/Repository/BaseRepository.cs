@@ -1,3 +1,4 @@
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ParcelManagement.Core.Repositories;
 using ParcelManagement.Core.Specifications;
@@ -22,8 +23,12 @@ namespace ParcelManagement.Infrastructure.Repository
             );
 
             query = query.Where(specification.ToExpression());
-            if (specification.Skip.HasValue) query = query.Skip(specification.Skip.Value);
-            if (specification.Take.HasValue) query = query.Take(specification.Take.Value);
+            if (specification.Page.HasValue && specification.Take.HasValue)
+            {
+                var skip = (specification.Page.Value - 1) * specification.Take.Value;
+                query = query.Skip(skip);
+                query = query.Take(specification.Take.Value);
+            }
 
             return await query.ToListAsync();
         }

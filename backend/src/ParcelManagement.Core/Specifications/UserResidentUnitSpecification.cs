@@ -7,7 +7,7 @@ namespace ParcelManagement.Core.Specifications
     {
         public List<IncludeExpression<UserResidentUnit>> IncludeExpressions => throw new NotImplementedException();
 
-        public int? Skip => throw new NotImplementedException();
+        public int? Page => throw new NotImplementedException();
 
         public int? Take => throw new NotImplementedException();
 
@@ -21,7 +21,7 @@ namespace ParcelManagement.Core.Specifications
     {
         public List<IncludeExpression<UserResidentUnit>> IncludeExpressions => throw new NotImplementedException();
 
-        public int? Skip => throw new NotImplementedException();
+        public int? Page => throw new NotImplementedException();
 
         public int? Take => throw new NotImplementedException();
 

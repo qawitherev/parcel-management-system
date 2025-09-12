@@ -12,6 +12,16 @@ namespace ParcelManagement.Core.Services
             decimal? weight,
             string? dimensions, Guid performedByUser);
 
+        Task<(IReadOnlyList<Parcel>, int count)> GetParcelsForView(
+            UserRole? role,
+            Guid? userId,
+            string? trackingNumber,
+            ParcelStatus? status,
+            string? customEvent,
+            int? page,
+            int? take = 20
+        );
+
         Task ClaimParcelAsync(string trackingNumber, Guid performedByUser);
 
         Task<Parcel?> GetParcelByIdAsync(Guid id);
@@ -70,7 +80,7 @@ namespace ParcelManagement.Core.Services
                 ResidentUnitId = realResidentUnit.Id,
                 Status = ParcelStatus.AwaitingPickup,
                 Weight = weight ?? 0,
-                Dimensions = dimensions ?? "", 
+                Dimensions = dimensions ?? "",
                 EntryDate = DateTimeOffset.UtcNow
             };
 
@@ -177,6 +187,23 @@ namespace ParcelManagement.Core.Services
             var spec = new ParcelHistoriesSpecification(p.Id);
             return await _parcelRepo.GetOneParcelBySpecificationAsync(spec) ??
                 throw new NullReferenceException("Parcel has no histories");
+        }
+
+        public async Task<(IReadOnlyList<Parcel>, int count)> GetParcelsForView(
+            UserRole? role, Guid? userId, string? trackingNumber, ParcelStatus? status, string? customEvent, int? page, int? take = 20)
+        {
+            var spec = new ParcelViewSpecification(
+                role, 
+                userId,
+                trackingNumber,
+                status,
+                customEvent,
+                page,
+                take
+            );
+            var res = await _parcelRepo.GetParcelsBySpecificationAsync(spec);
+            var count = await _parcelRepo.GetParcelCountBySpecification(spec);
+            return (res, count);
         }
 
         public async Task<(IReadOnlyCollection<Parcel>, int count)> GetRecentlyPickedUp()

@@ -1,11 +1,12 @@
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using ParcelManagement.Core.Entities;
 
 namespace ParcelManagement.Core.Specifications
 {
     public class ParcelsAwaitingPickupSpecification : ISpecification<Parcel>
     {
-        public int? Skip => null;
+        public int? Page => null;
 
         public int? Take => null;
 
@@ -24,7 +25,7 @@ namespace ParcelManagement.Core.Specifications
             _trackingNumber = trackingNumber;
         }
 
-        public int? Skip => null;
+        public int? Page => null;
 
         public int? Take => null;
 
@@ -43,7 +44,7 @@ namespace ParcelManagement.Core.Specifications
             _residentUnit = residentUnit;
         }
 
-        public int? Skip => null;
+        public int? Page => null;
 
         public int? Take => null;
 
@@ -74,7 +75,7 @@ namespace ParcelManagement.Core.Specifications
 
         public List<IncludeExpression<Parcel>> IncludeExpressions { get; }
 
-        public int? Skip => null;
+        public int? Page => null;
 
         public int? Take => null;
 
@@ -106,11 +107,11 @@ namespace ParcelManagement.Core.Specifications
 
         public List<IncludeExpression<Parcel>> IncludeExpressions { get; }
 
-        public int? Skip => null;
+        public int? Page => null;
 
         public int? Take => null;
 
-        public List<IncludeExpressionString> IncludeExpressionString { get; } 
+        public List<IncludeExpressionString> IncludeExpressionString { get; }
 
         public Expression<Func<Parcel, bool>> ToExpression()
         {
@@ -122,7 +123,7 @@ namespace ParcelManagement.Core.Specifications
     {
         List<IncludeExpression<Parcel>> ISpecification<Parcel>.IncludeExpressions => [];
 
-        public int? Skip => null;
+        public int? Page => null;
 
         public int? Take => null;
 
@@ -133,6 +134,57 @@ namespace ParcelManagement.Core.Specifications
             var threeDaysAgo = DateTimeOffset.UtcNow.AddDays(-3);
             return p =>
                 p.Status == ParcelStatus.Claimed && p.EntryDate >= threeDaysAgo;
+        }
+    }
+
+    public class ParcelViewSpecification : ISpecification<Parcel>
+    {
+        private readonly string? _trackingNumber;
+        private readonly int? _page;
+        private readonly int? _take;
+        private readonly ParcelStatus? _status;
+        private readonly string? _customEvent;
+        private readonly Guid? _userId;
+        private readonly UserRole? _role;
+
+        public ParcelViewSpecification(
+            UserRole? role,
+            Guid? userId,
+            string? trackingNumber,
+            ParcelStatus? status,
+            string? customEvent,
+            int? page,
+            int? take = 20
+
+        ) {
+            _userId = userId;
+            _role = role;
+            _trackingNumber = trackingNumber;
+            _status = status;
+            _customEvent = customEvent;
+            _page = page;
+            _take = take;
+            IncludeExpressionString = [
+                new IncludeExpressionString("TrackingEvents"),
+                new IncludeExpressionString("ResidentUnit.UserResidentUnits.User")
+            ];
+        }
+
+        public List<IncludeExpression<Parcel>> IncludeExpressions => throw new NotImplementedException();
+
+        public List<IncludeExpressionString> IncludeExpressionString { get; }
+
+        public int? Page => _page;
+
+        public int? Take => _take;
+
+        public Expression<Func<Parcel, bool>> ToExpression()
+        {
+            return p =>
+                (string.IsNullOrEmpty(_trackingNumber) || p.TrackingNumber.Contains(_trackingNumber)) &&
+                (!_status.HasValue || p.Status == _status) &&
+                (string.IsNullOrEmpty(_customEvent) || p.TrackingEvents.Any(te => !string.IsNullOrEmpty(te.CustomEvent) && te.CustomEvent.Contains(_customEvent))) &&
+                (_role != UserRole.Resident || p.ResidentUnit!.UserResidentUnits.Any(uru => _userId.HasValue && uru.UserId == _userId.Value));
         }
     }
 }

@@ -56,7 +56,6 @@ namespace ParcelManagement.Api.Controller
             return CreatedAtAction(nameof(GetParcelById), new { id = newParcelDto.Id }, newParcelDto);
         }
 
-
         [HttpPost("{trackingNumber}/claim")]
         [Authorize(Roles = "Resident, ParcelRoomManager")]
         public async Task<IActionResult> ClaimParcel(string trackingNumber)
@@ -113,7 +112,7 @@ namespace ParcelManagement.Api.Controller
                 Parcels = [.. parcels.Where(p => p != null).Select(p => new ParcelResponseDto {
                     Id = p!.Id,
                     TrackingNumber = p.TrackingNumber,
-                    Weight = p.Weight ?? 0, 
+                    Weight = p.Weight ?? 0,
                     Dimensions = p.Dimensions ?? ""
                 })]
             };
@@ -179,5 +178,33 @@ namespace ParcelManagement.Api.Controller
             };
             return Ok(parcelResponseDtoList);
         }
+
+        // TODO: to make spec for user view 
+        [HttpPost("all")]
+        [Authorize(Roles = "Admin, ParcelRoomManager")]
+        public async Task<IActionResult> GetAllParcels([FromBody] GetAllParcelsRequestDto dto)
+        {
+            var (resParcels, count) = await _parcelService.GetParcelsForView(
+                dto.TrackingNumber,
+                EnumUtils.ToEnumOrNull<ParcelStatus>(dto.Status ?? ""),
+                dto.CustomEvent,
+                dto.Page,
+                dto.Take
+            );
+            var responseDto = new GetAllParcelsResponseDto
+            {
+                Count = count,
+                Parcels = [.. resParcels.Select(p => new ParcelResponseDto {
+                    Id = p.Id,
+                    TrackingNumber = p.TrackingNumber,
+                    Weight = p.Weight,
+                    Dimensions = p.Dimensions,
+                    ResidentUnit = p.ResidentUnit!.UnitName, 
+                    Status = p.Status
+                })],
+            };
+            return Ok(responseDto);
+        }
+
     }
 }

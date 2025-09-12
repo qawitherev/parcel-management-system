@@ -25,6 +25,10 @@ namespace ParcelManagement.Api.DTO
         public decimal? Weight { get; set; }
 
         public string? Dimensions { get; set; }
+
+        public string? ResidentUnit { get; set; }
+        public ParcelStatus? Status { get; set; }
+
     }
 
     public class ParcelResponseDtoList
@@ -50,7 +54,7 @@ namespace ParcelManagement.Api.DTO
     {
         public required string TrackingNumber { get; set; }
         public required List<ParcelHistoriesChild> History { get; set; }
-        
+
     }
 
     public class ParcelHistoriesChild
@@ -59,4 +63,21 @@ namespace ParcelManagement.Api.DTO
         public required string Event { get; set; }
         public required string PerformedByUser { get; set; }
     }
+
+    public class GetAllParcelsRequestDto
+    {
+        public string? TrackingNumber { get; set; }
+        public string? Status { get; set; }
+        public string? CustomEvent { get; set; }
+        public int? Page { get; set; }
+        public int? Take { get; set; }
+    }
+
+    public class GetAllParcelsResponseDto
+    {
+        public required List<ParcelResponseDto> Parcels { get; set; }
+        public int Count { get; set; }
+    }
+
+
 }

@@ -13,6 +13,8 @@ namespace ParcelManagement.Core.Services
             string? dimensions, Guid performedByUser);
 
         Task<(IReadOnlyList<Parcel>, int count)> GetParcelsForView(
+            UserRole? role,
+            Guid? userId,
             string? trackingNumber,
             ParcelStatus? status,
             string? customEvent,
@@ -183,9 +185,12 @@ namespace ParcelManagement.Core.Services
                 throw new NullReferenceException("Parcel has no histories");
         }
 
-        public async Task<(IReadOnlyList<Parcel>, int count)> GetParcelsForView(string? trackingNumber, ParcelStatus? status, string? customEvent, int? page, int? take = 20)
+        public async Task<(IReadOnlyList<Parcel>, int count)> GetParcelsForView(
+            UserRole? role, Guid? userId, string? trackingNumber, ParcelStatus? status, string? customEvent, int? page, int? take = 20)
         {
             var spec = new ParcelViewSpecification(
+                role, 
+                userId,
                 trackingNumber,
                 status,
                 customEvent,

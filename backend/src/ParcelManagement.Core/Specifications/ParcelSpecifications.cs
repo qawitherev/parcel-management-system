@@ -144,8 +144,12 @@ namespace ParcelManagement.Core.Specifications
         private readonly int? _take;
         private readonly ParcelStatus? _status;
         private readonly string? _customEvent;
+        private readonly Guid? _userId;
+        private readonly UserRole? _role;
 
         public ParcelViewSpecification(
+            UserRole? role,
+            Guid? userId,
             string? trackingNumber,
             ParcelStatus? status,
             string? customEvent,
@@ -153,6 +157,8 @@ namespace ParcelManagement.Core.Specifications
             int? take = 20
 
         ) {
+            _userId = userId;
+            _role = role;
             _trackingNumber = trackingNumber;
             _status = status;
             _customEvent = customEvent;
@@ -177,7 +183,8 @@ namespace ParcelManagement.Core.Specifications
             return p =>
                 (string.IsNullOrEmpty(_trackingNumber) || p.TrackingNumber.Contains(_trackingNumber)) &&
                 (!_status.HasValue || p.Status == _status) &&
-                (string.IsNullOrEmpty(_customEvent) || p.TrackingEvents.Any(te => !string.IsNullOrEmpty(te.CustomEvent) && te.CustomEvent.Contains(_customEvent)));
+                (string.IsNullOrEmpty(_customEvent) || p.TrackingEvents.Any(te => !string.IsNullOrEmpty(te.CustomEvent) && te.CustomEvent.Contains(_customEvent))) &&
+                (_role != UserRole.Resident || p.ResidentUnit!.UserResidentUnits.Any(uru => _userId.HasValue && uru.UserId == _userId.Value));
         }
     }
 }

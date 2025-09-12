@@ -181,10 +181,14 @@ namespace ParcelManagement.Api.Controller
 
         // TODO: to make spec for user view 
         [HttpPost("all")]
-        [Authorize(Roles = "Admin, ParcelRoomManager")]
+        [Authorize]
         public async Task<IActionResult> GetAllParcels([FromBody] GetAllParcelsRequestDto dto)
         {
+            var role = EnumUtils.ToEnumOrNull<UserRole>(_userContextService.GetUserRole());
+            var userId = _userContextService.GetUserId();
             var (resParcels, count) = await _parcelService.GetParcelsForView(
+                role,
+                userId,
                 dto.TrackingNumber,
                 EnumUtils.ToEnumOrNull<ParcelStatus>(dto.Status ?? ""),
                 dto.CustomEvent,

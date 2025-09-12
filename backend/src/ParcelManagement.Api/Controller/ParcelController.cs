@@ -179,7 +179,6 @@ namespace ParcelManagement.Api.Controller
             return Ok(parcelResponseDtoList);
         }
 
-        // TODO: to make spec for user view 
         [HttpPost("all")]
         [Authorize]
         public async Task<IActionResult> GetAllParcels([FromBody] GetAllParcelsRequestDto dto)

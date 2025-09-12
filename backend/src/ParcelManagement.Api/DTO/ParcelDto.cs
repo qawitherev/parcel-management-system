@@ -21,7 +21,6 @@ namespace ParcelManagement.Api.DTO
         public required Guid Id { set; get; }
         public required string TrackingNumber { get; set; }
 
-
         public decimal? Weight { get; set; }
 
         public string? Dimensions { get; set; }

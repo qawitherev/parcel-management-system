@@ -158,18 +158,22 @@ namespace ParcelManagement.Core.Services
             // check if the parcel belongs to the accessing user 
             var user = await _userRepo.GetUserByIdAsync(inquiringUserId) ??
                 throw new KeyNotFoundException("User not found");
-            var parcelByUserSpec = new ParcelByUserSpecification(inquiringUserId);
-            var userParcels = await _parcelRepo.GetParcelsBySpecificationAsync(parcelByUserSpec);
-            if (!userParcels.Any())
-            {
-                throw new UnauthorizedAccessException("User has no parcels");
-            }
-            if (!userParcels.Any(up => up?.TrackingNumber == trackingNumber))
-            {
-                throw new UnauthorizedAccessException("Parcel does not belong to user");
-            }
             var p = await _parcelRepo.GetOneParcelBySpecificationAsync(new ParcelByTrackingNumberSpecification(trackingNumber)) ??
                 throw new KeyNotFoundException($"Parcel {trackingNumber} is not found");
+            if (role == UserRole.Resident)
+            {
+                var parcelByUserSpec = new ParcelByUserSpecification(inquiringUserId);
+                var userParcels = await _parcelRepo.GetParcelsBySpecificationAsync(parcelByUserSpec);
+                if (!userParcels.Any(up => up?.TrackingNumber == trackingNumber))
+                {
+                    throw new UnauthorizedAccessException("Parcel does not belong to user");
+                }
+
+                if (!userParcels.Any())
+                {
+                    throw new UnauthorizedAccessException("User has no parcels");
+                }
+            }
             var spec = new ParcelHistoriesSpecification(p.Id);
             return await _parcelRepo.GetOneParcelBySpecificationAsync(spec) ??
                 throw new NullReferenceException("Parcel has no histories");

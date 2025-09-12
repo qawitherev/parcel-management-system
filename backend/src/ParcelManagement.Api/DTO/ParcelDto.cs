@@ -49,6 +49,8 @@ namespace ParcelManagement.Api.DTO
     public class ParcelHistoriesDto
     {
         public required string TrackingNumber { get; set; }
+        public required DateTimeOffset EntryDate { get; set; }
+        public required ParcelStatus CurrentStatus { get; set; }
         public required List<ParcelHistoriesChild> History { get; set; }
         
     }

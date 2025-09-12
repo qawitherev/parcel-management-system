@@ -2,15 +2,15 @@
     <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-md h-full flex flex-col justify-center">
         <div class="mb-4">
             <span class="text-gray-500 font-semibold">Status:</span>
-            <span class="text-blue-600 font-bold">AwaitingPickup</span>
+            <span class="text-blue-600 font-bold">{{parcelHistoryItem.event}}</span>
         </div>
         <div class="mb-4">
             <span class="text-gray-500 font-semibold">Time:</span>
-            <span class="text-gray-800 font-bold" >12.00</span>
+            <span class="text-gray-800 font-bold" >{{formattedTime}}</span>
         </div>
         <div>
             <span class="text-gray-500 font-semibold">Performed By:</span>
-            <span class="text-gray-800 font-bold">manager</span>
+            <span class="text-gray-800 font-bold">{{parcelHistoryItem.performedByUser}}</span>
         </div>
     </div>
 </div>

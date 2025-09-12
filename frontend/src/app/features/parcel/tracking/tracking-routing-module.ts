@@ -6,7 +6,7 @@ import { isLoggedInGuard } from '../../../core/guards/auth-guard-guard';
 const routes: Routes = [
   { path: '', component: Tracking, canActivate: [isLoggedInGuard]}, 
   { path: 'searchResult', loadComponent: () => import('./pages/search-result/search-result')
-      .then(c => c.SearchResult)
+      .then(c => c.SearchResult), canActivate: [isLoggedInGuard]
   },
 ];
 

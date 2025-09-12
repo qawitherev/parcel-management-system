@@ -1,12 +1,19 @@
 <div class="min-h-screen bg-gray-50 p-6">
   <!-- Search Bar -->
-  <div class="max-w-xl mx-auto mb-8">
+  <div class="max-w-xl mx-auto mb-8 flex items-center gap-2">
     <input
       [formControl]="searchKeyword"
       type="text"
       placeholder="Search parcels..."
-      class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition"
+      class="flex-1 px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition"
     />
+    <button
+      type="button"
+      (click)="onSearch()"
+      class="px-4 py-3 bg-blue-500 text-white font-medium rounded-lg shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+    >
+      Search
+    </button>
   </div>
 
   <!-- Search Results Container -->
@@ -18,17 +25,15 @@
       <!-- Example search result -->
       <div class="flex items-center justify-between p-4 border-b last:border-b-0">
         <div>
-          <h2 class="text-lg font-semibold text-gray-800">Parcel #123456</h2>
-          <p class="text-sm text-gray-500">Status: In Transit</p>
+          <h2 class="text-lg font-semibold text-gray-800">Parcel {{res.trackingNumber}}</h2>
+          <p class="text-sm text-gray-500">Status: {{res.currentStatus}}</p>
         </div>
-        <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-          View Details
-        </button>
+        
       </div>
     </div>
     <div class="w-full grid grid-cols-4 gap-4 justify-start items-center">
-      <ng-container *ngFor="let parcel of parcels">
-        <app-result-item></app-result-item>
+      <ng-container *ngFor="let historyItem of res.history">
+        <app-result-item [parcelHistoryItem]="historyItem"></app-result-item>
       </ng-container>
     </div>
     } @else {

@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { ParcelHistoryItem } from '../../pages/search-result/search-result';
+import { getTime } from '../../../../../utils/date-time-utils';
 
 @Component({
   selector: 'app-result-item',
@@ -6,6 +8,12 @@ import { Component } from '@angular/core';
   templateUrl: './result-item.html',
   styleUrl: './result-item.css'
 })
-export class ResultItem {
+export class ResultItem implements OnInit {
+  formattedTime?: string
 
+  @Input() parcelHistoryItem!: ParcelHistoryItem
+
+  ngOnInit(): void {
+    this.formattedTime = getTime(this.parcelHistoryItem.eventTime.toString())
+  }
 }

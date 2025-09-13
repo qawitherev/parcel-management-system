@@ -2,7 +2,7 @@ import { AfterViewInit, Component, OnInit, ViewChild, viewChild } from '@angular
 import { Observable } from 'rxjs';
 import { ParcelResponseList, ParcelsService } from '../../parcels-service';
 import { AsyncPipe, CommonModule, NgFor } from '@angular/common';
-import { Pagination } from "../../../../../common/components/pagination/pagination";
+import { Pagination, PaginationEmitData } from "../../../../../common/components/pagination/pagination";
 import { AppConsole } from '../../../../../utils/app-console';
 
 @Component({
@@ -23,8 +23,10 @@ export class ParcelsList implements OnInit, AfterViewInit {
   @ViewChild(Pagination) paginationChild !: Pagination
 
   ngAfterViewInit(): void {
-    this.paginationChild.dataEmitter.subscribe(
-      (data: string) => AppConsole.log(`Data from child: ${data}`)
+    this.paginationChild.paginationDataEmitter.subscribe(
+      (data: PaginationEmitData) => {
+        AppConsole.log(`ReceivedPaginationData: ${JSON.stringify(data)}`)
+      }
     )
   }
 

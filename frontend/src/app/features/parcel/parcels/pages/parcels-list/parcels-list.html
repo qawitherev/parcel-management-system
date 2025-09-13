@@ -71,7 +71,8 @@
             @if (parcel.count != 0) {
                 <app-pagination
                 [count]="parcel.count"
-                (paginationDataEmitter)="ngAfterViewInit()"
+                [inCurrentPage]="paginationCurrentPage"
+                (paginationDataEmitter)="onPaginationChanged($event)"
             ></app-pagination>
             } @else {
                 <div class="flex flex-col items-center justify-center py-10">

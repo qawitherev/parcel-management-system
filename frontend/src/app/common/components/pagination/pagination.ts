@@ -24,30 +24,31 @@ export interface PaginationEmitData {
 })
 export class Pagination implements OnChanges {
   @Input() count!: number;
+  @Input() inCurrentPage!: number;
   @Output() paginationDataEmitter = new EventEmitter<PaginationEmitData>();
 
   pageNavDisplay: (number | string)[] = [];
-  currentPage: number = 1;
   totalPage?: number;
-  pageSize: number = 1;
+  pageSize: number = 10;
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['count']) {
       this.totalPage = Math.ceil(this.count / this.pageSize);
-      this.pageNavDisplay = this.getPageNavDisplay(this.currentPage, this.totalPage);
+      this.pageNavDisplay = this.getPageNavDisplay(this.inCurrentPage, this.totalPage);
     }
   }
 
   onPageNavigate(newPage: number) {
     if (newPage < 1) {
-      this.currentPage = 1;
+      this.inCurrentPage = 1;
     } else if (newPage > this.totalPage!) {
-      this.currentPage = this.totalPage!;
+      this.inCurrentPage = this.totalPage!;
     } else {
-      this.currentPage = newPage;
+      this.inCurrentPage = newPage;
     }
+    AppConsole.log(`PAGINATION: CurrentState: currentPage: ${this.inCurrentPage}, totalPage: ${this.totalPage}, pageSize: ${this.pageSize}`)
     this.paginationDataEmitter.emit({
-      currentPage: this.currentPage,
+      currentPage: this.inCurrentPage,
       pageSize: this.pageSize,
     });
   }

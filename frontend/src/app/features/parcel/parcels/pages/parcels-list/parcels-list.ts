@@ -11,8 +11,9 @@ import { AppConsole } from '../../../../../utils/app-console';
   templateUrl: './parcels-list.html',
   styleUrl: './parcels-list.css'
 })
-export class ParcelsList implements OnInit, AfterViewInit {
+export class ParcelsList implements OnInit {
   parcelList$?: Observable<ParcelResponseList>
+  paginationCurrentPage: number = 1
 
   constructor(private parcelService: ParcelsService) {}
 
@@ -20,18 +21,27 @@ export class ParcelsList implements OnInit, AfterViewInit {
   // “In this parent component, create a property called child of type ChildComponent. 
   // Angular will automatically assign it with the first <app-child> found in the template 
   // after the view is initialized.”
-  @ViewChild(Pagination) paginationChild !: Pagination
+  // @ViewChild(Pagination) paginationChild !: Pagination
 
-  ngAfterViewInit(): void {
-    this.paginationChild.paginationDataEmitter.subscribe(
-      (data: PaginationEmitData) => {
-        AppConsole.log(`ReceivedPaginationData: ${JSON.stringify(data)}`)
-      }
+    ngOnInit(): void {
+    this.parcelList$ = this.parcelService.getAllParcels(
+          "", 
+          "", 
+          "", 
+          1, 
+          10
+        )
+  }
+
+  onPaginationChanged(data: PaginationEmitData) {
+    AppConsole.log(`PAGINATION: ReceivedPaginationData: ${JSON.stringify(data)}`)
+    this.paginationCurrentPage = data.currentPage
+    this.parcelList$ = this.parcelService.getAllParcels(
+      "", 
+      "", 
+      "", 
+      this.paginationCurrentPage, 
+      data.pageSize
     )
   }
-
-  ngOnInit(): void {
-    this.parcelList$ = this.parcelService.getAllParcels()
-  }
-  
 }

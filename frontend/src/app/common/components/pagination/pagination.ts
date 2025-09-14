@@ -10,6 +10,7 @@ import {
 import { AppConsole } from '../../../utils/app-console';
 import { NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { NgClass } from '@angular/common';
 
 export interface PaginationEmitData {
   currentPage: number;
@@ -19,7 +20,7 @@ export interface PaginationEmitData {
 @Component({
   selector: 'app-pagination',
   standalone: true,
-  imports: [NgFor, FormsModule],
+  imports: [NgFor, FormsModule, NgClass],
   templateUrl: './pagination.html',
   styleUrl: './pagination.css',
 })
@@ -32,7 +33,7 @@ export class Pagination implements OnChanges {
   pageNavDisplay: (number | string)[] = [];
   totalPage?: number;
 
-  pageSizeOptions = [10, 20, 100]
+  pageSizeOptions = [1, 2, 3]
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['count']) {
@@ -41,7 +42,10 @@ export class Pagination implements OnChanges {
     }
   }
 
-  onPageNavigate(newPage: number) {
+  onPageNavigate(newPage: number | string) {
+    if (typeof newPage !== 'number') {
+      return;
+    }
     if (newPage < 1) {
       this.inCurrentPage = 1;
     } else if (newPage > this.totalPage!) {

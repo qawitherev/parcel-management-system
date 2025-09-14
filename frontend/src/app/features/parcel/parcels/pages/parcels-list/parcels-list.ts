@@ -14,7 +14,7 @@ import { AppConsole } from '../../../../../utils/app-console';
 export class ParcelsList implements OnInit {
   parcelList$?: Observable<ParcelResponseList>
   paginationCurrentPage: number = 1
-  paginationPageSize: number = 10
+  paginationPageSize: number = 1
 
   constructor(private parcelService: ParcelsService) {}
 
@@ -29,8 +29,8 @@ export class ParcelsList implements OnInit {
           "", 
           "", 
           "", 
-          1, 
-          10
+          this.paginationCurrentPage, 
+          this.paginationPageSize
         )
   }
 

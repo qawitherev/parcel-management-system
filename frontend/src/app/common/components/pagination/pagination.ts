@@ -33,7 +33,7 @@ export class Pagination implements OnChanges {
   pageNavDisplay: (number | string)[] = [];
   totalPage?: number;
 
-  pageSizeOptions = [1, 2, 3]
+  pageSizeOptions = [10, 50, 100]
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['count']) {

@@ -29,11 +29,14 @@
             <!-- Status Dropdown -->
             <div>
                 <select 
+                    [(ngModel)]="selectedStatus"
+                    (change)="onStatusChanged($event)"
                     class="w-48 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                    <option value="">All Statuses</option>
+                    <!-- <option value="">All Statuses</option>
                     <option value="Claimed">Claimed</option>
-                    <option value="AwaitingPickup">Awaiting Pickup</option>`
+                    <option value="AwaitingPickup">Awaiting Pickup</option> -->
+                    <option *ngFor="let option of availableStatus" > {{option}} </option>
                 </select>
             </div>
         </div>

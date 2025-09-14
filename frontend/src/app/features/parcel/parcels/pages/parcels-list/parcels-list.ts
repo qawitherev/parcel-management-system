@@ -1,10 +1,8 @@
 import { AfterViewInit, Component, OnInit, ViewChild, viewChild } from '@angular/core';
 import {
   BehaviorSubject,
-  debounce,
   debounceTime,
   distinctUntilChanged,
-  Observable,
   Subject,
   switchMap,
 } from 'rxjs';
@@ -29,6 +27,7 @@ interface ParcelFilter {
   styleUrl: './parcels-list.css',
 })
 export class ParcelsList implements OnInit {
+
   parcelList$ = new BehaviorSubject<ParcelResponseList | null>(null);
   paginationCurrentPage: number = 1;
   paginationPageSize: number = 10;
@@ -37,6 +36,8 @@ export class ParcelsList implements OnInit {
     status: '',
   };
   private searchSubject = new Subject<string>();
+  availableStatus = ["All", "AwaitingPickup", "Claimed"]
+  selectedStatus: string = "All"
 
   constructor(private parcelService: ParcelsService) {}
 
@@ -58,7 +59,7 @@ export class ParcelsList implements OnInit {
         distinctUntilChanged(),
         switchMap((searchKeyword) =>
           this.parcelService.getAllParcels(
-            searchKeyword,
+            this.filterState.search,
             '',
             '',
             this.paginationCurrentPage,
@@ -85,6 +86,21 @@ export class ParcelsList implements OnInit {
   }
 
   onSearch(value: string) {
-    this.searchSubject.next(value);
+    this.filterState.search = value
+    this.searchSubject.next(this.filterState.search);
+  }
+
+  onStatusChanged(event: Event) {
+    const status = event.target as HTMLSelectElement
+    this.filterState.status = status.value.toString()
+    this.parcelService.getAllParcels(
+      this.filterState.search,
+      this.filterState.status, 
+      "", 
+      this.paginationCurrentPage, 
+      this.paginationPageSize
+    ).subscribe(res => {
+      this.parcelList$.next(res)
+    })
   }
 }

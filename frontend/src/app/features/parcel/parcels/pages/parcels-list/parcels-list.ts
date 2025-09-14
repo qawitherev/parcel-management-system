@@ -3,6 +3,7 @@ import {
   BehaviorSubject,
   debounceTime,
   distinctUntilChanged,
+  filter,
   Subject,
   switchMap,
 } from 'rxjs';
@@ -77,8 +78,8 @@ export class ParcelsList implements OnInit {
     this.paginationCurrentPage = data.currentPage;
     this.paginationPageSize = data.pageSize;
     this.parcelService.getAllParcels(
-      '',
-      '',
+      this.filterState.search,
+      this.filterState.status,
       '',
       this.paginationCurrentPage,
       this.paginationPageSize

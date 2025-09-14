@@ -14,6 +14,7 @@ import { AppConsole } from '../../../../../utils/app-console';
 export class ParcelsList implements OnInit {
   parcelList$?: Observable<ParcelResponseList>
   paginationCurrentPage: number = 1
+  paginationPageSize: number = 10
 
   constructor(private parcelService: ParcelsService) {}
 
@@ -36,12 +37,13 @@ export class ParcelsList implements OnInit {
   onPaginationChanged(data: PaginationEmitData) {
     AppConsole.log(`PAGINATION: ReceivedPaginationData: ${JSON.stringify(data)}`)
     this.paginationCurrentPage = data.currentPage
+    this.paginationPageSize = data.pageSize
     this.parcelList$ = this.parcelService.getAllParcels(
       "", 
       "", 
       "", 
       this.paginationCurrentPage, 
-      data.pageSize
+      this.paginationPageSize
     )
   }
 }

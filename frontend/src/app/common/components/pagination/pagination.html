@@ -1,25 +1,37 @@
 <div class="flex justify-between items-center w-full p-4 border rounded-lg shadow-md bg-white">
-    <!-- Left Side -->
-    <div class="text-gray-600 text-sm">
+  <!-- Left Side -->
+  <!-- <div class="text-gray-600 text-sm">
         Showing {{pageSize > count ? count : pageSize}} {{pageSize > 1 ? 'results' : 'result'}} of {{count}}
-    </div>
+    </div> -->
+  <div class="text-gray-600 text-sm">
+    Showing
+    <select [(ngModel)]="inPageSize" (change)="onPageSizeChanged($event)">
+      <option *ngFor="let pageSize of pageSizeOptions" [value]="pageSize">
+        {{ pageSize }}
+      </option>
+    </select>
+    {{ inPageSize > 1 ? 'results' : 'result' }}
+    of {{ count }}
+  </div>
 
-    <!-- Right Side -->
-    <div class="flex items-center space-x-2">
-        <button
-        (click)="onPageNavigate(inCurrentPage - 1)"
-        class="px-3 py-1 text-sm text-gray-500 border rounded hover:bg-gray-100">
-            Previous
-        </button>
-        <div *ngFor="let item of pageNavDisplay; let i = index" >
-            <button class="px-3 py-1 text-sm text-gray-500 border rounded hover:bg-gray-100">
-                {{item}}
-            </button>
-        </div>
-        <button
-        (click)="onPageNavigate(inCurrentPage + 1)"
-        class="px-3 py-1 text-sm text-gray-500 border rounded hover:bg-gray-100">
-            Next
-        </button>
+  <!-- Right Side -->
+  <div class="flex items-center space-x-2">
+    <button
+      (click)="onPageNavigate(inCurrentPage - 1)"
+      class="px-3 py-1 text-sm text-gray-500 border rounded hover:bg-gray-100"
+    >
+      Previous
+    </button>
+    <div *ngFor="let item of pageNavDisplay; let i = index">
+      <button class="px-3 py-1 text-sm text-gray-500 border rounded hover:bg-gray-100">
+        {{ item }}
+      </button>
     </div>
+    <button
+      (click)="onPageNavigate(inCurrentPage + 1)"
+      class="px-3 py-1 text-sm text-gray-500 border rounded hover:bg-gray-100"
+    >
+      Next
+    </button>
+  </div>
 </div>

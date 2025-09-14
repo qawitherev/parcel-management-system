@@ -181,7 +181,7 @@ namespace ParcelManagement.Api.Controller
         [Authorize]
         public async Task<IActionResult> GetAllParcels([FromBody] GetAllParcelsRequestDto dto)
         {
-            var role = EnumUtils.ToEnumOrNull<UserRole>(_userContextService.GetUserRole());
+            var role = EnumUtils.ToEnumOrNull<UserRole>(_userContextService.GetUserRole().ToString());
             var userId = _userContextService.GetUserId();
             var (resParcels, count) = await _parcelService.GetParcelsForView(
                 role,

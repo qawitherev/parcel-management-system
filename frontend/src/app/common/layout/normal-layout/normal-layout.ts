@@ -2,9 +2,9 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AuthRoutingModule } from '../../../features/auth/auth-routing-module';
 import { LayoutService, SidebarService } from '../layout-service.ts';
 import { RoleService, RoleWithExp } from '../../../core/roles/role-service';
-import { AppConsole } from '../../../utils/app-console';
 import { BehaviorSubject, combineLatest, map, Observable, pipe, Subject, takeUntil } from 'rxjs';
 import { AsyncPipe, NgIf } from '@angular/common';
+import { Auth } from '../../../features/auth/auth';
 
 interface MenuItem {
   label: string;
@@ -65,7 +65,8 @@ export class NormalLayout implements OnInit, OnDestroy {
   constructor(
     private layoutService: LayoutService,
     private roleService: RoleService,
-    private sidebarService: SidebarService
+    private sidebarService: SidebarService, 
+    private authService: Auth
   ) {}
 
   menuItems = MENU_ITEMS;
@@ -75,6 +76,7 @@ export class NormalLayout implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>()
 
   ngOnInit(): void {
+    this.expandedMap = this.sidebarService.getSidebarState()
     this.userRole$ = this.roleService.getRole().pipe(
       map(r => r ?? null), 
       takeUntil(this.destroy$)
@@ -98,5 +100,9 @@ export class NormalLayout implements OnInit, OnDestroy {
 
   isExpanded(label: string): boolean {
     return this.expandedMap.get(label) ?? false;
+  }
+
+  logout() {
+    this.authService.logout()
   }
 }

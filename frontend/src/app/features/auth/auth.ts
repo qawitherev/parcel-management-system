@@ -6,6 +6,7 @@ import { AppConsole } from '../../utils/app-console';
 import { Register } from './pages/register/register';
 import { Router } from '@angular/router';
 import { handleApiError } from '../../core/error-handling/api-catch-error';
+import { RoleService } from '../../core/roles/role-service';
 
 interface RegisterResidentRequest {
   Username: string, 
@@ -40,7 +41,9 @@ interface LoginResponse {
 export class Auth {
 
   
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private roleService: RoleService,
+    private http: HttpClient, private router: Router) {}
 
   register(registerPayload: RegisterResidentRequest): Observable<any> {
     AppConsole.log(`Sending request: ${JSON.stringify(registerPayload)}`)
@@ -70,6 +73,11 @@ export class Auth {
           this.router.navigateByUrl('/login')
         })
       )
+  }
+
+  logout() {
+    this.roleService.clearRole()
+    this.router.navigateByUrl('/login')
   }
 
   saveToken(token: string) {

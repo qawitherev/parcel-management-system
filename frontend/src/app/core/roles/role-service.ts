@@ -15,8 +15,10 @@ export interface RoleWithExp {
   providedIn: 'root',
 })
 export class RoleService {
+    
     private _role: RoleWithExp
     private _roleStorage: RoleStorage
+
     constructor(private http: HttpClient) {
         this._role = { role: "", expiredAt: 0}
         this._roleStorage = new RoleStorage()

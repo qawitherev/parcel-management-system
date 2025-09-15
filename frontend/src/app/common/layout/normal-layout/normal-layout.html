@@ -3,7 +3,7 @@
   <aside
     class="fixed inset-y-0 left-0 w-64 bg-gray-800 text-white transform transition-transform duration-300"
   >
-    <div class="p-4 text-2xl font-bold border-b border-gray-700">MyApp</div>
+    <div class="p-4 text-2xl font-bold border-b border-gray-700">Parcel App</div>
     <nav class="p-4 space-y-2">
       @for (item of menuItems; track $index) {
         @if (item.children) {
@@ -16,12 +16,16 @@
             @if (isExpanded(item.label)) {
                 <div class="ml-4 space-y-1">
                     @for (child of item.children; track $index) {
-                        <a
-                        class="block py-2 px-3 rounded hover:bg-gray-700"
-                            [routerLink]="child.route"
-                        >
-                            {{child.label}}
-                        </a>
+                      <div *ngIf="userRoleStream$ | async as role">
+                        @if ((child.roles?.includes(role))) {
+                          <a
+                          class="block py-2 px-3 rounded hover:bg-gray-700"
+                              [routerLink]="child.route"
+                          >
+                              {{child.label}}
+                          </a>
+                        }
+                      </div>
                     }
                 </div>
             }

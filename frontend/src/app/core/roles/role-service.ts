@@ -38,7 +38,10 @@ export class RoleService {
         this.clearRole()
         return this.getRoleByApi().pipe(
             map((res: any) => {
-                if(res.error) return null
+                if(res.error) {
+                    AppConsole.log(`ROLE: error getRoleByApi: ${res.error}`)
+                    return null
+                }
                 this.setRole(res.role)
                 return this._role
             })

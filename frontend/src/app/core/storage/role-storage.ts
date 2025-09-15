@@ -1,6 +1,6 @@
 import { RoleWithExp } from "../roles/role-service";
 
-const PERSISTENT_ROLE_KEY = 'parcel-management-system-role'
+export const PERSISTENT_ROLE_KEY = 'parcel-management-system-role'
 
 export class RoleStorage {
     setStoredRole(payload: RoleWithExp) {

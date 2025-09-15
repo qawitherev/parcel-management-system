@@ -1,0 +1,55 @@
+<div class="flex h-screen">
+  <!-- Sidebar -->
+  <aside
+    class="fixed inset-y-0 left-0 w-64 bg-gray-800 text-white transform transition-transform duration-300"
+  >
+    <div class="p-4 text-2xl font-bold border-b border-gray-700">MyApp</div>
+    <nav class="p-4 space-y-2">
+      @for (item of menuItems; track $index) {
+        @if (item.children) {
+            <a
+            (click)="toggleParentExpand(item.label)"
+             class="block py-2 px-3 rounded hover:bg-gray-700 cursor-pointer font-semibold text-gray-200">
+                {{item.label}}
+        </a>
+
+            @if (isExpanded(item.label)) {
+                <div class="ml-4 space-y-1">
+                    @for (child of item.children; track $index) {
+                        <a
+                        class="block py-2 px-3 rounded hover:bg-gray-700"
+                            [routerLink]="child.route"
+                        >
+                            {{child.label}}
+                        </a>
+                    }
+                </div>
+            }
+        } @else {
+            <a
+                class="block py-2 px-3 rounded hover:bg-gray-700 font-semibold text-gray-200"
+                [routerLink]="item.route"
+            >
+                {{item.label}}
+            </a>
+        }
+      
+      }
+    </nav>
+  </aside>
+
+  <!-- Main content -->
+  <div class="flex-1 flex flex-col ml-0 lg:ml-64 transition-all duration-300">
+    <!-- Topbar -->
+    <header class="bg-white shadow p-4 flex justify-between items-center">
+      <!-- Hamburger -->
+      <button class="lg:hidden text-gray-600 focus:outline-none">yuh</button>
+      <h1 class="text-lg font-semibold">Page Title</h1>
+    </header>
+
+    <!-- Page Content -->
+    <main class="p-6 flex-1 overflow-y-auto">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

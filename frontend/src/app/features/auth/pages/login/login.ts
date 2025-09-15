@@ -14,6 +14,7 @@ import { NgIf } from '@angular/common';
 import { AppConsole } from '../../../../utils/app-console';
 import { httpResource } from '@angular/common/http';
 import { RoleService } from '../../../../core/roles/role-service';
+import { EmptyLayout } from "../../../../common/layout/empty-layout/empty-layout";
 
 @Component({
   selector: 'app-login',
@@ -24,8 +25,7 @@ import { RoleService } from '../../../../core/roles/role-service';
     RouterModule,
     NgClass,
     NgIf,
-    AsyncPipe,
-  ],
+    AsyncPipe],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })

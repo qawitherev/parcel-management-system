@@ -1,9 +1,8 @@
-import { AfterViewInit, Component, OnInit, ViewChild, viewChild } from '@angular/core';
+import { Component, OnInit} from '@angular/core';
 import {
   BehaviorSubject,
   debounceTime,
   distinctUntilChanged,
-  filter,
   Subject,
   switchMap,
 } from 'rxjs';

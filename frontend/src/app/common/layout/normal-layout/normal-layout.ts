@@ -17,9 +17,11 @@ const MENU_ITEMS: MenuItem[] = [
   {
     label: 'Dashboard',
     route: '/dashboard/user',
+    roles: ['Resident', 'ParcelRoomManager', 'Admin']
   },
   {
     label: 'Parcel',
+    roles: ['Resident', 'ParcelRoomManager', 'Admin'],
     children: [
       {
         label: 'CheckIn',
@@ -45,11 +47,12 @@ const MENU_ITEMS: MenuItem[] = [
   },
   {
     label: 'Resident',
+    roles: ['ParcelRoomManager', 'Admin'],
     children: [
       {
         label: 'User Resident Unit',
         route: '/resident/userResidentUnit',
-        roles: ['Resident', 'ParcelRoomManager', 'Admin'],
+        roles: ['ParcelRoomManager', 'Admin'],
       },
     ],
   },

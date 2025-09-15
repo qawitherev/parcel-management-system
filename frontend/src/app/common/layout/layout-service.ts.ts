@@ -1,11 +1,38 @@
 import { Injectable } from '@angular/core';
 import { AppConsole } from '../../utils/app-console';
+import { BehaviorSubject, filter, map, Observable } from 'rxjs';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
-export class LayoutServiceTs {
-  
+export class LayoutService {
+  pageTitle$ = new BehaviorSubject<string>('Parcel App')
+
+  constructor(
+    private router: Router, 
+    private activatedRoute: ActivatedRoute
+  ) {
+    this.router.events.pipe(
+      filter(e => e instanceof NavigationEnd), 
+      map(() => {
+        let route = this.activatedRoute
+        while(route.firstChild){
+          route = route.firstChild
+        }
+        return route
+      })
+    ).subscribe(route => {
+      const title = route?.snapshot.data['title']
+      AppConsole.log(`PAGE TITLE: page title is ${title}`)
+      if (title) {
+        this.pageTitle$.next(title)
+      } else {
+        this.pageTitle$.next('Parcel App')
+      }
+    }
+    )
+  }
 }
 
 const PERSISTENT_SIDEBAR_STATE_KEY = 'parcel-management-system-sidebar-state'

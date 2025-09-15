@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AuthRoutingModule } from '../../../features/auth/auth-routing-module';
-import { SidebarService } from '../layout-service.ts';
-import { RoleService } from '../../../core/roles/role-service';
+import { LayoutService, SidebarService } from '../layout-service.ts';
+import { RoleService, RoleWithExp } from '../../../core/roles/role-service';
 import { AppConsole } from '../../../utils/app-console';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, Observable, pipe, Subject, takeUntil } from 'rxjs';
 import { AsyncPipe, NgIf } from '@angular/common';
 
 interface MenuItem {
@@ -49,6 +49,7 @@ const MENU_ITEMS: MenuItem[] = [
       {
         label: 'User Resident Unit',
         route: '/resident/userResidentUnit',
+        roles: ['Resident', 'ParcelRoomManager', 'Admin'],
       },
     ],
   },
@@ -60,20 +61,33 @@ const MENU_ITEMS: MenuItem[] = [
   templateUrl: './normal-layout.html',
   styleUrl: './normal-layout.css',
 })
-export class NormalLayout implements OnInit {
-  constructor(private roleService: RoleService, private sidebarService: SidebarService) {}
+export class NormalLayout implements OnInit, OnDestroy {
+  constructor(
+    private layoutService: LayoutService,
+    private roleService: RoleService,
+    private sidebarService: SidebarService
+  ) {}
 
   menuItems = MENU_ITEMS;
   expandedMap = new Map<string, boolean>();
-  userRole?: string;
-  userRoleStream$ = new BehaviorSubject<string | null>(null)
+  userRole$?: Observable<RoleWithExp | null>;
+  pageTitle$?: Observable<string>
+  private destroy$ = new Subject<void>()
 
   ngOnInit(): void {
-    this.expandedMap = this.sidebarService.getSidebarState();
-    this.roleService.getRole().subscribe((role) => {
-      this.userRole = role?.role ?? '';
-      this.userRoleStream$.next(role?.role ?? null)
-    });
+    this.userRole$ = this.roleService.getRole().pipe(
+      map(r => r ?? null), 
+      takeUntil(this.destroy$)
+    )
+    this.pageTitle$ = this.layoutService.pageTitle$.pipe(
+      map(title => title),
+      takeUntil(this.destroy$)
+    )
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next()
+    this.destroy$.complete()
   }
 
   toggleParentExpand(label: string) {

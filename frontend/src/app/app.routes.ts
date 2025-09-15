@@ -34,16 +34,20 @@ export const routes: Routes = [
         component: NormalLayout, 
         children: [
             {
-                path: 'tracking', loadChildren: () => import('./features/parcel/tracking/tracking-module').then(m => m.TrackingModule)
+                path: 'tracking', loadChildren: () => import('./features/parcel/tracking/tracking-module').then(m => m.TrackingModule), 
+                data: { title: 'Parcel Tracking'}
             }, 
             {
-                path: 'checkIn', loadChildren: () => import('./features/parcel/check-in/check-in-module').then(m => m.CheckInModule)
+                path: 'checkIn', loadChildren: () => import('./features/parcel/check-in/check-in-module').then(m => m.CheckInModule),
+                data: { title: 'Parcel Tracking'}
             }, 
             {
-                path: 'claim', loadChildren: () => import('./features/parcel/claim/claim-module').then(m => m.ClaimModule)
+                path: 'claim', loadChildren: () => import('./features/parcel/claim/claim-module').then(m => m.ClaimModule),
+                data: { title: 'Parcel Claim'}
             }, 
             {
-                path: 'parcels', loadChildren: () => import('./features/parcel/parcels/parcels-module').then(m => m.ParcelsModule)
+                path: 'parcels', loadChildren: () => import('./features/parcel/parcels/parcels-module').then(m => m.ParcelsModule),
+                data: { title: 'All Parcels'}
             }
         ], 
         canActivate: [isLoggedInGuard]
@@ -54,7 +58,8 @@ export const routes: Routes = [
         component: NormalLayout,
         children: [
             {
-                path: '', loadChildren: () => import('./features/dashboard/dashboard-module').then(m => m.DashboardModule)
+                path: '', loadChildren: () => import('./features/dashboard/dashboard-module').then(m => m.DashboardModule), 
+                data: {title: 'Dashboard'}
             }
         ], 
     },
@@ -64,7 +69,8 @@ export const routes: Routes = [
         component: NormalLayout, 
         children: [
             {
-                path: 'userResidentUnit', loadChildren: () => import('./features/resident/user-resident-unit/user-resident-unit-module').then(m => m.UserResidentUnitModule)
+                path: 'userResidentUnit', loadChildren: () => import('./features/resident/user-resident-unit/user-resident-unit-module').then(m => m.UserResidentUnitModule), 
+                data: { title: 'User Resident Unit'}
             }
         ]
     }

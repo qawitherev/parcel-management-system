@@ -3,7 +3,9 @@
   <aside
     class="fixed inset-y-0 left-0 w-64 bg-gray-800 text-white transform transition-transform duration-300"
   >
-    <div class="p-4 text-2xl font-bold border-b border-gray-700">Parcel App</div>
+    <div
+    *ngIf="pageTitle$ | async as title"
+     class="p-4 text-2xl font-bold border-b border-gray-700">{{title}}</div>
     <nav class="p-4 space-y-2">
       @for (item of menuItems; track $index) {
         @if (item.children) {
@@ -16,8 +18,8 @@
             @if (isExpanded(item.label)) {
                 <div class="ml-4 space-y-1">
                     @for (child of item.children; track $index) {
-                      <div *ngIf="userRoleStream$ | async as role">
-                        @if ((child.roles?.includes(role))) {
+                      <div *ngIf="userRole$ | async as role">
+                        @if ((child.roles?.includes(role.role))) {
                           <a
                           class="block py-2 px-3 rounded hover:bg-gray-700"
                               [routerLink]="child.route"
@@ -47,8 +49,14 @@
     <!-- Topbar -->
     <header class="bg-white shadow p-4 flex justify-between items-center">
       <!-- Hamburger -->
-      <button class="lg:hidden text-gray-600 focus:outline-none">yuh</button>
-      <h1 class="text-lg font-semibold">Page Title</h1>
+      <h1
+      *ngIf="pageTitle$ | async as title"
+      class="text-lg font-semibold">{{title}}</h1>
+      <button
+        class="py-2 px-4 bg-gray-800 text-white rounded hover:bg-white hover:text-gray-800 border border-gray-800 transition-colors duration-300"
+      >
+        Logout
+      </button>
     </header>
 
     <!-- Page Content -->

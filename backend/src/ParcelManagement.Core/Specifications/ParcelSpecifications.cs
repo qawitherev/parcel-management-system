@@ -12,6 +12,10 @@ namespace ParcelManagement.Core.Specifications
 
         public List<IncludeExpressionString> IncludeExpressionString => throw new NotImplementedException();
 
+        public Expression<Func<Parcel, object>> OrderBy => throw new NotImplementedException();
+
+        public Expression<Func<Parcel, object>> OrderByDesc => throw new NotImplementedException();
+
         List<IncludeExpression<Parcel>> ISpecification<Parcel>.IncludeExpressions => [];
 
         public Expression<Func<Parcel, bool>> ToExpression() => parcel => parcel.Status == ParcelStatus.AwaitingPickup;
@@ -28,6 +32,10 @@ namespace ParcelManagement.Core.Specifications
         public int? Page => null;
 
         public int? Take => null;
+
+        public Expression<Func<Parcel, object>> OrderBy => throw new NotImplementedException();
+
+        public Expression<Func<Parcel, object>> OrderByDesc => throw new NotImplementedException();
 
         List<IncludeExpressionString> ISpecification<Parcel>.IncludeExpressionString => [];
 
@@ -49,6 +57,10 @@ namespace ParcelManagement.Core.Specifications
         public int? Take => null;
 
         public List<IncludeExpressionString> IncludeExpressionString => throw new NotImplementedException();
+
+        public Expression<Func<Parcel, object>> OrderBy => throw new NotImplementedException();
+
+        public Expression<Func<Parcel, object>> OrderByDesc => throw new NotImplementedException();
 
         List<IncludeExpression<Parcel>> ISpecification<Parcel>.IncludeExpressions => [];
 
@@ -80,6 +92,10 @@ namespace ParcelManagement.Core.Specifications
         public int? Take => null;
 
         public List<IncludeExpressionString> IncludeExpressionString { get; }
+
+        public Expression<Func<Parcel, object>> OrderBy => throw new NotImplementedException();
+
+        public Expression<Func<Parcel, object>> OrderByDesc => throw new NotImplementedException();
 
         public Expression<Func<Parcel, bool>> ToExpression()
         {
@@ -113,6 +129,10 @@ namespace ParcelManagement.Core.Specifications
 
         public List<IncludeExpressionString> IncludeExpressionString { get; }
 
+        public Expression<Func<Parcel, object>> OrderBy => throw new NotImplementedException();
+
+        public Expression<Func<Parcel, object>> OrderByDesc => throw new NotImplementedException();
+
         public Expression<Func<Parcel, bool>> ToExpression()
         {
             return p => p.TrackingEvents.Any(te => te.ParcelId == _parcelId);
@@ -128,6 +148,10 @@ namespace ParcelManagement.Core.Specifications
         public int? Take => null;
 
         public List<IncludeExpressionString> IncludeExpressionString => throw new NotImplementedException();
+
+        public Expression<Func<Parcel, object>> OrderBy => throw new NotImplementedException();
+
+        public Expression<Func<Parcel, object>> OrderByDesc => throw new NotImplementedException();
 
         public Expression<Func<Parcel, bool>> ToExpression()
         {
@@ -177,6 +201,10 @@ namespace ParcelManagement.Core.Specifications
         public int? Page => _page;
 
         public int? Take => _take;
+
+        public Expression<Func<Parcel, object>> OrderBy => throw new NotImplementedException();
+
+        public Expression<Func<Parcel, object>> OrderByDesc => throw new NotImplementedException();
 
         public Expression<Func<Parcel, bool>> ToExpression()
         {

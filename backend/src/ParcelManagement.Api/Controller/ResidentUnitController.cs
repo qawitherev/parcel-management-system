@@ -58,5 +58,26 @@ namespace ParcelManagement.Api.Controller
             var residentUnit = await _residentUnitService.GetResidentUnitById(dto.ResidentUnitId);
             return CreatedAtAction(nameof(GetResidentUnitById), new { id = dto.ResidentUnitId }, residentUnit);
         }
+
+        [HttpGet("all")]
+        [Authorize(Roles = "Admin, ParcelRoomManager")]
+        public async Task<IActionResult> GetAllResidentUnit([FromQuery] GetAllResidentUnitsRequestDto dto)
+        {
+            var column = EnumUtils.ToEnumOrNull<ResidentUnitSortableColumn>(dto.Column ?? "");
+            var (residentUnits, count) = await _residentUnitService.GetResidentUnitsForViewAsync(dto.UnitName, column, dto.Page, dto.Take, dto.IsAsc);
+            var responseDto = new GetAllResidentUnitsResponseDto
+            {
+                ResidentUnits = [.. residentUnits.Select(ru => new ResidentUnitResponseDto {
+                    Id = ru.Id,
+                    UnitName = ru.UnitName,
+                    CreatedAt = ru.CreatedAt,
+                    CreatedBy = ru.CreatedByUser.Username ?? "",
+                    UpdatedAt = ru.UpdatedAt,
+                    UpdatedBy = ru.UpdatedByUser?.Username ?? ""
+                })],
+                Count = count
+            };
+            return Ok(responseDto);
+        }
     }
 }

@@ -22,6 +22,7 @@ namespace ParcelManagement.Infrastructure.Repository
                 query
             );
 
+            // we probably have to check for null for safety here 
             query = query.Where(specification.ToExpression());
             if (specification.Page.HasValue && specification.Take.HasValue)
             {
@@ -29,6 +30,16 @@ namespace ParcelManagement.Infrastructure.Repository
                 query = query.Skip(skip);
                 query = query.Take(specification.Take.Value);
             }
+
+            if (specification.OrderBy != null)
+            {
+                query = query.OrderBy(specification.OrderBy);
+            }
+            if (specification.OrderByDesc != null)
+            {
+                query = query.OrderByDescending(specification.OrderByDesc);
+            }
+
 
             return await query.ToListAsync();
         }
@@ -87,7 +98,8 @@ namespace ParcelManagement.Infrastructure.Repository
         {
             foreach (var include in specification.IncludeExpressionString)
             {
-                theQuery = theQuery.Include(include.Path);
+                // left join
+                theQuery = EntityFrameworkQueryableExtensions.Include(theQuery, include.Path);
 
             }
 

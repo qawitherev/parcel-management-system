@@ -14,6 +14,10 @@ namespace ParcelManagement.Core.Specifications
 
         public List<IncludeExpressionString> IncludeExpressionString => throw new NotImplementedException();
 
+        public Expression<Func<User, object>>? OrderBy => throw new NotImplementedException();
+
+        public Expression<Func<User, object>>? OrderByDesc => throw new NotImplementedException();
+
         public Expression<Func<User, bool>> ToExpression() => user => user.Username == receivedUsername;
     }
 }

@@ -26,4 +26,17 @@ namespace ParcelManagement.Infrastructure.Database
             builder.HasIndex(u => u.Username).IsUnique();
         }
     }
+
+    public class ResidentUnitEntityConfiguration : IEntityTypeConfiguration<ResidentUnit>
+    {
+        public void Configure(EntityTypeBuilder<ResidentUnit> builder)
+        {
+            builder.HasKey(ru => ru.Id);
+            builder.HasIndex(ru => ru.UnitName).IsUnique();
+            builder.HasOne(ru => ru.CreatedByUser).WithMany().HasForeignKey(ru => ru.CreatedBy);
+            builder.HasOne(ru => ru.UpdatedByUser).WithMany().HasForeignKey(ru => ru.UpdatedBy)
+                .IsRequired(false);
+
+        }
+    }
 }

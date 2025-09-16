@@ -177,6 +177,7 @@ namespace ParcelManagement.Api.Controller
             return Ok(parcelResponseDtoList);
         }
 
+        //TODO: to convert this into GET 
         [HttpPost("all")]
         [Authorize]
         public async Task<IActionResult> GetAllParcels([FromBody] GetAllParcelsRequestDto dto)

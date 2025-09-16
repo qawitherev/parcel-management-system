@@ -34,17 +34,6 @@ namespace ParcelManagement.Infrastructure.Database
                 .Property(p => p.Status)
                 .HasConversion<string>();
 
-            // TO BE REMOVED
-            // modelBuilder.Entity<User>()
-            //     .Property(u => u.Role)
-            //     .HasConversion<string>();
-
-            // TO BE REMOVED
-            // add unique constraint to user.username and index it
-            // modelBuilder.Entity<User>()
-            //     .HasIndex(user => user.Username)
-            //     .IsUnique();
-
             modelBuilder.Entity<Parcel>()
                 .Property(p => p.Weight)
                 .HasPrecision(18, 2);
@@ -74,11 +63,9 @@ namespace ParcelManagement.Infrastructure.Database
                 .WithMany(ru => ru.UserResidentUnits)
                 .HasForeignKey(uru => uru.ResidentUnitId);
 
-            modelBuilder.Entity<ResidentUnit>()
-                .HasIndex(ru => ru.UnitName).IsUnique();
-
             modelBuilder.ApplyConfiguration(new TrackingEventEntityConfiguration());
             modelBuilder.ApplyConfiguration(new UserEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new ResidentUnitEntityConfiguration());
 
         }
     }

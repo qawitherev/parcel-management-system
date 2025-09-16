@@ -27,11 +27,11 @@ namespace ParcelManagement.Core.Specifications
 
     public interface ISpecification<T>
     {
-        Expression<Func<T, bool>> ToExpression();
         List<IncludeExpression<T>> IncludeExpressions { get; }
-
         List<IncludeExpressionString> IncludeExpressionString { get; }
-
+        Expression<Func<T, bool>> ToExpression();
+        Expression<Func<T, object>>? OrderBy { get; }
+        Expression<Func<T, object>>? OrderByDesc { get; }
 
         int? Page { get; }
 

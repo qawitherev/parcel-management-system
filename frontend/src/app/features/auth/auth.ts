@@ -77,6 +77,7 @@ export class Auth {
 
   logout() {
     this.roleService.clearRole()
+    localStorage.removeItem('parcel-management-system-token');
     this.router.navigateByUrl('/login')
   }
 

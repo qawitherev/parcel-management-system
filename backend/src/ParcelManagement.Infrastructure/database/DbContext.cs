@@ -29,6 +29,10 @@ namespace ParcelManagement.Infrastructure.Database
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.ApplyConfiguration(new TrackingEventEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new UserEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new ResidentUnitEntityConfiguration());
+
             // configure the column to use string enum instead of int
             modelBuilder.Entity<Parcel>()
                 .Property(p => p.Status)
@@ -62,11 +66,6 @@ namespace ParcelManagement.Infrastructure.Database
                 .HasOne(uru => uru.ResidentUnit)
                 .WithMany(ru => ru.UserResidentUnits)
                 .HasForeignKey(uru => uru.ResidentUnitId);
-
-            modelBuilder.ApplyConfiguration(new TrackingEventEntityConfiguration());
-            modelBuilder.ApplyConfiguration(new UserEntityConfiguration());
-            modelBuilder.ApplyConfiguration(new ResidentUnitEntityConfiguration());
-
         }
     }
 }

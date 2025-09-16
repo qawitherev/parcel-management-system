@@ -41,9 +41,9 @@ namespace ParcelManagement.Api.Controller
             {
                 return BadRequest(ModelState);
             }
-            // var userId = _userServiceContext.GetUserId();
+            var userId = _userServiceContext.GetUserId();
             var unit = await _residentUnitService.CreateResidentUnitAsync(
-                registerUnitDto.UnitName, Guid.NewGuid()
+                registerUnitDto.UnitName, userId
             );
             return CreatedAtAction(nameof(GetResidentUnitById), new { id = unit.Id }, unit);
         }

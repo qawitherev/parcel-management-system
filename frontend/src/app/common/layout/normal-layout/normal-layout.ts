@@ -56,6 +56,17 @@ const MENU_ITEMS: MenuItem[] = [
       },
     ],
   },
+  {
+    label: 'Resident Unit', 
+    roles: ['ParcelRoomManager', 'Admin'], 
+    children: [
+      {
+        label: 'Resident Units', 
+        route: '/residentUnit/units',
+        roles: ['ParcelRoomManager', 'Admin']
+      }
+    ]
+  }
 ];
 
 @Component({

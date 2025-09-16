@@ -170,6 +170,8 @@ namespace ParcelManagement.Core.Specifications
         private readonly string? _customEvent;
         private readonly Guid? _userId;
         private readonly UserRole? _role;
+        private readonly ParcelSortableColumn? _column;
+        private readonly bool _isAsc;
 
         public ParcelViewSpecification(
             UserRole? role,
@@ -177,15 +179,20 @@ namespace ParcelManagement.Core.Specifications
             string? trackingNumber,
             ParcelStatus? status,
             string? customEvent,
+            ParcelSortableColumn? column,
             int? page,
-            int? take = 20
+            int? take = 20,
+            bool isAsc = true
 
-        ) {
+        )
+        {
             _userId = userId;
             _role = role;
             _trackingNumber = trackingNumber;
             _status = status;
             _customEvent = customEvent;
+            _column = column;
+            _isAsc = isAsc;
             _page = page;
             _take = take;
             IncludeExpressionString = [
@@ -202,9 +209,9 @@ namespace ParcelManagement.Core.Specifications
 
         public int? Take => _take;
 
-        public Expression<Func<Parcel, object>> OrderBy => throw new NotImplementedException();
+        public Expression<Func<Parcel, object>>? OrderBy => _isAsc ? GetSortExpression() : null;
 
-        public Expression<Func<Parcel, object>> OrderByDesc => throw new NotImplementedException();
+        public Expression<Func<Parcel, object>>? OrderByDesc => !_isAsc ? GetSortExpression() : null;
 
         public Expression<Func<Parcel, bool>> ToExpression()
         {
@@ -213,6 +220,15 @@ namespace ParcelManagement.Core.Specifications
                 (!_status.HasValue || p.Status == _status) &&
                 (string.IsNullOrEmpty(_customEvent) || p.TrackingEvents.Any(te => !string.IsNullOrEmpty(te.CustomEvent) && te.CustomEvent.Contains(_customEvent))) &&
                 (_role != UserRole.Resident || p.ResidentUnit!.UserResidentUnits.Any(uru => _userId.HasValue && uru.UserId == _userId.Value));
+        }
+
+        private Expression<Func<Parcel, object>> GetSortExpression()
+        {
+            return _column switch
+            {
+                ParcelSortableColumn.TrackingNumber => p => p.TrackingNumber,
+                _ => p => p.Id
+            };
         }
     }
 }

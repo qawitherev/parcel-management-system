@@ -190,6 +190,7 @@ namespace ParcelManagement.Api.Controller
                 dto.TrackingNumber,
                 EnumUtils.ToEnumOrNull<ParcelStatus>(dto.Status ?? ""),
                 dto.CustomEvent,
+                null, 
                 dto.Page,
                 dto.Take
             );

@@ -73,5 +73,16 @@ export const routes: Routes = [
                 data: { title: 'User Resident Unit'}
             }
         ]
+    }, 
+
+    {
+        path: 'residentUnit', 
+        component: NormalLayout, 
+        children: [
+            {
+                path: 'units', loadChildren: () => import('./features/resident-units/units/units-module').then(m => m.UnitsModule),
+                data: { title: 'Resident Units'}
+            }
+        ]
     }
 ];

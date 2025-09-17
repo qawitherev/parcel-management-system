@@ -22,29 +22,24 @@
     </div>
     } @else { @if (units && 'residentUnits' in units) { @for (unit of units.residentUnits; track
     $index) {
-    <tr
-      class="border-b hover:bg-gray-100 text-gray-600 text-sm"
-    >
+    <tr class="border-b hover:bg-gray-100 text-gray-600 text-sm">
       <td class="px-6 py-4">{{ $index + 1 }}</td>
       <td class="px-6 py-4">{{ unit.unitName }}</td>
       <td class="px-6 py-4">{{ unit.createdBy }}</td>
       <td class="px-6 py-4">{{ unit.createdAt }}</td>
       <td class="px-6 py-4">{{ unit.updatedBy }}</td>
-      <td class="px-6 py-4">{{unit.updatedAt}}
-      </td>
+      <td class="px-6 py-4">{{ unit.updatedAt }}</td>
     </tr>
     } } }
   </tbody>
 </table>
 <div class="mb-4"></div>
 @if (units && 'residentUnits' in units && units.count >0) {
-  <app-pagination
+<app-pagination
   [count]="units.count"
   [inCurrentPage]="paginationCurrentPage"
   [inPageSize]="paginationPageSize"
   (paginationDataEmitter)="onPaginationChanged($event)"
 >
-
 </app-pagination>
 }
-

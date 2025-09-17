@@ -1,9 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { GetAllResidentUnitsResponse, GetAllUnitsParams, UnitsService } from '../../units-service';
-import { BehaviorSubject, Observable, Subject, switchMap, take, takeUntil } from 'rxjs';
+import { GetAllResidentUnitsResponse, GetAllUnitsParams, ResidentUnitResponse, UnitsService } from '../../units-service';
+import { BehaviorSubject, map, Observable, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { ApiError } from '../../../../../core/error-handling/api-catch-error';
 import { AsyncPipe } from '@angular/common';
 import { PaginationEmitData, Pagination } from '../../../../../common/components/pagination/pagination';
+import { formatTime } from '../../../../../utils/date-time-utils';
 
 @Component({
   selector: 'app-units',
@@ -25,7 +26,23 @@ export class Units implements OnInit, OnDestroy {
   });
 
   unitsList$ = this.queryParams.pipe(
-    switchMap((params) => this.unitsService.getAllUnits(params)),
+    switchMap((params) => this.unitsService.getAllUnits(params).pipe(
+      map(res => {
+        if ('residentUnits' in res) {
+          return {
+            ...res, 
+            residentUnits: res.residentUnits.map((unit: ResidentUnitResponse) => {
+              return {
+                ...unit, 
+                createdAt: formatTime(unit.createdAt),
+                updatedAt: formatTime(unit.updatedAt!)
+              }
+            })
+          }
+        }
+        return res
+      })
+    )),
     takeUntil(this.destroy$)
   );
 

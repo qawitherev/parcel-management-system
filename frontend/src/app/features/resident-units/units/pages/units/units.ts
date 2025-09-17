@@ -74,4 +74,8 @@ export class Units implements OnInit, OnDestroy {
       unitName: searchKeyword
     })
   }
+
+  onEditClick(id: string) {
+
+  }
 }

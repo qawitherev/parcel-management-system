@@ -33,6 +33,13 @@ namespace ParcelManagement.Api.Controller
             return Ok(await _residentUnitService.GetResidentUnitById(id));
         }
 
+        [HttpGet("{id}")]
+        [Authorize(Roles ="ParcelRoomManager, Admin")]
+        public async Task<IActionResult> GetResidentUnitByIdReal(Guid id)
+        {
+            return Ok(await _residentUnitService.GetResidentUnitById(id));
+        }
+
         [HttpPost("registerUnit")]
         [Consumes("application/json")]
         public async Task<IActionResult> RegisterUnit([FromBody] RegisterUnitDto registerUnitDto)

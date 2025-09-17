@@ -1,5 +1,28 @@
 @let units = unitsList$ | async;
-
+<div class="relative">
+  <input
+    [(ngModel)]="queryParams.value.unitName"
+    (ngModelChange)="onSearch($event)"
+    type="text"
+    placeholder="Search units..."
+    class="w-64 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+  />
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    class="absolute top-2.5 right-3 h-5 w-5 text-gray-400"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+  >
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      d="M8 16l-4-4m0 0l4-4m-4 4h16"
+    />
+  </svg>
+</div>
+<div class="mb-4"></div>
 <table class="table-auto w-full border-collapse bg-white">
   <thead>
     <tr class="bg-gray-200 text-gray-700 uppercase text-sm leading-normal">

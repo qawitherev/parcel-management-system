@@ -36,3 +36,15 @@
     } } }
   </tbody>
 </table>
+<div class="mb-4"></div>
+@if (units && 'residentUnits' in units && units.count >0) {
+  <app-pagination
+  [count]="units.count"
+  [inCurrentPage]="paginationCurrentPage"
+  [inPageSize]="paginationPageSize"
+  (paginationDataEmitter)="onPaginationChanged($event)"
+>
+
+</app-pagination>
+}
+

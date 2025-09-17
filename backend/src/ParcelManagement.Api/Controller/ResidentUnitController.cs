@@ -41,9 +41,9 @@ namespace ParcelManagement.Api.Controller
             {
                 return BadRequest(ModelState);
             }
-            // var userId = _userServiceContext.GetUserId();
+            var userId = _userServiceContext.GetUserId();
             var unit = await _residentUnitService.CreateResidentUnitAsync(
-                registerUnitDto.UnitName, Guid.NewGuid()
+                registerUnitDto.UnitName, userId
             );
             return CreatedAtAction(nameof(GetResidentUnitById), new { id = unit.Id }, unit);
         }
@@ -57,6 +57,27 @@ namespace ParcelManagement.Api.Controller
             await _uruService.CreateUserResidentUnit(creatorId, dto.UserId, dto.ResidentUnitId);
             var residentUnit = await _residentUnitService.GetResidentUnitById(dto.ResidentUnitId);
             return CreatedAtAction(nameof(GetResidentUnitById), new { id = dto.ResidentUnitId }, residentUnit);
+        }
+
+        [HttpGet("all")]
+        [Authorize(Roles = "Admin, ParcelRoomManager")]
+        public async Task<IActionResult> GetAllResidentUnit([FromQuery] GetAllResidentUnitsRequestDto dto)
+        {
+            var column = EnumUtils.ToEnumOrNull<ResidentUnitSortableColumn>(dto.Column ?? "");
+            var (residentUnits, count) = await _residentUnitService.GetResidentUnitsForViewAsync(dto.UnitName, column, dto.Page, dto.Take, dto.IsAsc);
+            var responseDto = new GetAllResidentUnitsResponseDto
+            {
+                ResidentUnits = [.. residentUnits.Select(ru => new ResidentUnitResponseDto {
+                    Id = ru.Id,
+                    UnitName = ru.UnitName,
+                    CreatedAt = ru.CreatedAt,
+                    CreatedBy = ru.CreatedByUser.Username ?? "",
+                    UpdatedAt = ru.UpdatedAt,
+                    UpdatedBy = ru.UpdatedByUser?.Username ?? ""
+                })],
+                Count = count
+            };
+            return Ok(responseDto);
         }
     }
 }

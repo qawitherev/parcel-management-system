@@ -1,0 +1,60 @@
+@let units = unitsList$ | async;
+<div class="relative">
+  <input
+    [(ngModel)]="queryParams.value.unitName"
+    (ngModelChange)="onSearch($event)"
+    type="text"
+    placeholder="Search units..."
+    class="w-64 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+  />
+</div>
+<div class="mb-4"></div>
+<table class="table-auto w-full border-collapse bg-white">
+  <thead>
+    <tr class="bg-gray-200 text-gray-700 uppercase text-sm leading-normal">
+      <th class="px-6 py-3 text-left">#</th>
+      <th class="px-6 py-3 text-left">Unit Name</th>
+      <th class="px-6 py-3 text-left">Created By</th>
+      <th class="px-6 py-3 text-left">Created At</th>
+      <th class="px-6 py-3 text-left">Updated By</th>
+      <th class="px-6 py-3 text-left">Updated At</th>
+    </tr>
+  </thead>
+  <tbody>
+    @if (units && 'error' in units) {
+    <div
+      class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+      role="alert"
+    >
+      <strong class="font-bold">Error occurred:</strong>
+      <span class="block sm:inline">{{ units.message }}</span>
+    </div>
+    } @else { @if (units && 'residentUnits' in units) { @for (unit of units.residentUnits; track
+    $index) {
+    <tr class="border-b hover:bg-gray-100 text-gray-600 text-sm">
+      <td class="px-6 py-4">{{ $index + 1 }}</td>
+      <td class="px-6 py-4">{{ unit.unitName }}</td>
+      <td class="px-6 py-4">{{ unit.createdBy }}</td>
+      <td class="px-6 py-4">{{ unit.createdAt }}</td>
+      <td class="px-6 py-4">{{ unit.updatedBy }}</td>
+      <td class="px-6 py-4">{{ unit.updatedAt }}</td>
+    </tr>
+    }} }
+  </tbody>
+</table>
+@if ('residentUnits' in units! && units!.count < 1) {
+<div class="flex flex-col items-center justify-center py-10">
+  <p class="text-gray-500 text-lg">No units found</p>
+  <p class="text-gray-400 text-sm">Try adjusting your search or filter criteria.</p>
+</div>
+}
+<div class="mb-4"></div>
+@if (units && 'residentUnits' in units && units.count >0) {
+<app-pagination
+  [count]="units.count"
+  [inCurrentPage]="paginationCurrentPage"
+  [inPageSize]="paginationPageSize"
+  (paginationDataEmitter)="onPaginationChanged($event)"
+>
+</app-pagination>
+}

@@ -29,21 +29,14 @@ namespace ParcelManagement.Infrastructure.Database
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.ApplyConfiguration(new TrackingEventEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new UserEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new ResidentUnitEntityConfiguration());
+
             // configure the column to use string enum instead of int
             modelBuilder.Entity<Parcel>()
                 .Property(p => p.Status)
                 .HasConversion<string>();
-
-            // TO BE REMOVED
-            // modelBuilder.Entity<User>()
-            //     .Property(u => u.Role)
-            //     .HasConversion<string>();
-
-            // TO BE REMOVED
-            // add unique constraint to user.username and index it
-            // modelBuilder.Entity<User>()
-            //     .HasIndex(user => user.Username)
-            //     .IsUnique();
 
             modelBuilder.Entity<Parcel>()
                 .Property(p => p.Weight)
@@ -73,13 +66,6 @@ namespace ParcelManagement.Infrastructure.Database
                 .HasOne(uru => uru.ResidentUnit)
                 .WithMany(ru => ru.UserResidentUnits)
                 .HasForeignKey(uru => uru.ResidentUnitId);
-
-            modelBuilder.Entity<ResidentUnit>()
-                .HasIndex(ru => ru.UnitName).IsUnique();
-
-            modelBuilder.ApplyConfiguration(new TrackingEventEntityConfiguration());
-            modelBuilder.ApplyConfiguration(new UserEntityConfiguration());
-
         }
     }
 }

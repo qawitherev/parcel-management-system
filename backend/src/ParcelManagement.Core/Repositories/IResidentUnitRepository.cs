@@ -18,8 +18,10 @@ namespace ParcelManagement.Core.Repositories
         // my conscience says that here we better to use 
         // IReadOnlyCollection<T> because of many functionality e.g., 
         // indexer i.e., res[0] --> to access first element 
-        Task<IReadOnlyList<ResidentUnit?>> GetResidentUnitsBySpecificationAsync(ISpecification<ResidentUnit> specification);
+        Task<IReadOnlyList<ResidentUnit>> GetResidentUnitsBySpecificationAsync(ISpecification<ResidentUnit> specification);
 
         Task<ResidentUnit?> GetOneResidentUnitBySpecificationAsync(ISpecification<ResidentUnit> specification);
+
+        Task<int> GetResidentUnitCountBySpecification(ISpecification<ResidentUnit> specification);
     }
 }

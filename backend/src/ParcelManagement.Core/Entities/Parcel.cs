@@ -10,6 +10,12 @@ namespace ParcelManagement.Core.Entities
         Exception
     }
 
+    public enum ParcelSortableColumn
+    {
+        //TODO: to add more, this is just a temp fix 
+        TrackingNumber, 
+    }
+
     public class Parcel
     {
         public Guid Id { get; set; } // Primary Key

@@ -20,7 +20,7 @@ export class RoleStorage {
     }
 
     clearStoredRole() {
-        sessionStorage.removeItem(PERSISTENT_ROLE_KEY)
-        localStorage.removeItem(PERSISTENT_ROLE_KEY)
+        sessionStorage.setItem(PERSISTENT_ROLE_KEY, '')
+        localStorage.setItem(PERSISTENT_ROLE_KEY, '')
     }
 }

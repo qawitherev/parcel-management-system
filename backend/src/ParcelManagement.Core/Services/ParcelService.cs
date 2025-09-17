@@ -18,8 +18,9 @@ namespace ParcelManagement.Core.Services
             string? trackingNumber,
             ParcelStatus? status,
             string? customEvent,
-            int? page,
-            int? take = 20
+            ParcelSortableColumn? column,
+            int? page, int? take = 20, 
+            bool isAsc = true
         );
 
         Task ClaimParcelAsync(string trackingNumber, Guid performedByUser);
@@ -190,7 +191,9 @@ namespace ParcelManagement.Core.Services
         }
 
         public async Task<(IReadOnlyList<Parcel>, int count)> GetParcelsForView(
-            UserRole? role, Guid? userId, string? trackingNumber, ParcelStatus? status, string? customEvent, int? page, int? take = 20)
+            UserRole? role, Guid? userId, string? trackingNumber, ParcelStatus? status, string? customEvent, ParcelSortableColumn? column, int? page, int? take = 20, 
+            bool isAsc = true
+            )
         {
             var spec = new ParcelViewSpecification(
                 role, 
@@ -198,8 +201,10 @@ namespace ParcelManagement.Core.Services
                 trackingNumber,
                 status,
                 customEvent,
+                column, 
                 page,
-                take
+                take, 
+                isAsc
             );
             var res = await _parcelRepo.GetParcelsBySpecificationAsync(spec);
             var count = await _parcelRepo.GetParcelCountBySpecification(spec);

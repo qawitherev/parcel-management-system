@@ -11,6 +11,14 @@ namespace ParcelManagement.Core.Services
         Task<ResidentUnit> CreateResidentUnitAsync(string unitName, Guid userId);
 
         Task UpdateResidentUnitAsync(ResidentUnit residentUnit);
+
+        Task<(IReadOnlyList<ResidentUnit>, int count)> GetResidentUnitsForViewAsync(
+            string? unitName,
+            ResidentUnitSortableColumn? column,
+            int? page,
+            int? take,
+            bool isAsc = true
+        );
     }
 
     public class ResidentUnitService(IResidentUnitRepository residentUnitRepository) : IResidentUnitService
@@ -41,6 +49,20 @@ namespace ParcelManagement.Core.Services
             var existing = await _residentUnitRepo.GetResidentUnitByIdAsync(residentUnit.Id) ??
                 throw new NullReferenceException($"Resident unit {residentUnit.UnitName} does not exist");
             await _residentUnitRepo.UpdateResidenUnitAsync(residentUnit);
+        }
+
+        public async Task<(IReadOnlyList<ResidentUnit>, int count)> GetResidentUnitsForViewAsync(
+            string? unitName,
+            ResidentUnitSortableColumn? column,
+            int? page,
+            int? take,
+            bool isAsc = true
+        )
+        {
+            var spec = new ResidentUnitViewSpecification(unitName, column, page, take, isAsc);
+            var residentUnits = await _residentUnitRepo.GetResidentUnitsBySpecificationAsync(spec);
+            var count = await _residentUnitRepo.GetResidentUnitCountBySpecification(spec);
+            return (residentUnits, count);
         }
     }
 }

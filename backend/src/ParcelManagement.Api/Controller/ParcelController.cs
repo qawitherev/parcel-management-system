@@ -177,6 +177,7 @@ namespace ParcelManagement.Api.Controller
             return Ok(parcelResponseDtoList);
         }
 
+        //TODO: to convert this into GET 
         [HttpPost("all")]
         [Authorize]
         public async Task<IActionResult> GetAllParcels([FromBody] GetAllParcelsRequestDto dto)
@@ -189,6 +190,7 @@ namespace ParcelManagement.Api.Controller
                 dto.TrackingNumber,
                 EnumUtils.ToEnumOrNull<ParcelStatus>(dto.Status ?? ""),
                 dto.CustomEvent,
+                null, 
                 dto.Page,
                 dto.Take
             );

@@ -10,11 +10,11 @@ namespace ParcelManagement.Core.Specifications
 
         public int? Take => null;
 
-        public List<IncludeExpressionString> IncludeExpressionString => throw new NotImplementedException();
+        List<IncludeExpressionString> ISpecification<Parcel>.IncludeExpressionString => [];
 
-        public Expression<Func<Parcel, object>> OrderBy => throw new NotImplementedException();
+        Expression<Func<Parcel, object>>? ISpecification<Parcel>.OrderBy => null;
 
-        public Expression<Func<Parcel, object>> OrderByDesc => throw new NotImplementedException();
+        Expression<Func<Parcel, object>>? ISpecification<Parcel>.OrderByDesc => null;
 
         List<IncludeExpression<Parcel>> ISpecification<Parcel>.IncludeExpressions => [];
 
@@ -93,9 +93,9 @@ namespace ParcelManagement.Core.Specifications
 
         public List<IncludeExpressionString> IncludeExpressionString { get; }
 
-        public Expression<Func<Parcel, object>> OrderBy => throw new NotImplementedException();
+        Expression<Func<Parcel, object>>? ISpecification<Parcel>.OrderBy => null;
 
-        public Expression<Func<Parcel, object>> OrderByDesc => throw new NotImplementedException();
+        Expression<Func<Parcel, object>>? ISpecification<Parcel>.OrderByDesc => null;
 
         public Expression<Func<Parcel, bool>> ToExpression()
         {

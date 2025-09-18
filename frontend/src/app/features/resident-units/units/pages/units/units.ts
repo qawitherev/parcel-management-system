@@ -1,11 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { GetAllResidentUnitsResponse, GetAllUnitsParams, ResidentUnitResponse, UnitsService } from '../../units-service';
+import { GetAllResidentUnitsResponse, GetAllUnitsParams, ResidentUnit, UnitsService } from '../../units-service';
 import { BehaviorSubject, debounceTime, distinctUntilChanged, map, Observable, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { PaginationEmitData, Pagination } from '../../../../../common/components/pagination/pagination';
 import { formatTime } from '../../../../../utils/date-time-utils';
 import { FormsModule } from '@angular/forms';
 import { AppConsole } from '../../../../../utils/app-console';
+import { Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-units',
@@ -34,7 +36,7 @@ export class Units implements OnInit, OnDestroy {
         if ('residentUnits' in res) {
           return {
             ...res, 
-            residentUnits: res.residentUnits.map((unit: ResidentUnitResponse) => {
+            residentUnits: res.residentUnits.map((unit: ResidentUnit) => {
               return {
                 ...unit, 
                 createdAt: formatTime(unit.createdAt),
@@ -49,7 +51,9 @@ export class Units implements OnInit, OnDestroy {
     takeUntil(this.destroy$)
   );
 
-  constructor(private unitsService: UnitsService) {}
+  constructor(private unitsService: UnitsService, private router: Router,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
     // do nothing
@@ -76,6 +80,6 @@ export class Units implements OnInit, OnDestroy {
   }
 
   onEditClick(id: string) {
-
+    this.router.navigate(['edit', id], {relativeTo: this.route})
   }
 }

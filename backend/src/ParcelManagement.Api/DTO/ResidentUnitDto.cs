@@ -20,7 +20,7 @@ namespace ParcelManagement.Api.DTO
         public int? Take { get; set; }
     }
 
-    public class ResidentUnitResponseDto
+    public class ResidentUnitDto
     {
         public required Guid Id { get; set; }
         public required string UnitName { get; set; }
@@ -32,7 +32,12 @@ namespace ParcelManagement.Api.DTO
 
     public class GetAllResidentUnitsResponseDto
     {
-        public required List<ResidentUnitResponseDto> ResidentUnits { get; set; }
+        public required List<ResidentUnitDto> ResidentUnits { get; set; }
         public required int Count { get; set; }
+    }
+
+    public class ResidentUnitUpdateDto
+    {
+        public required string UnitName { get; set; }
     }
 }

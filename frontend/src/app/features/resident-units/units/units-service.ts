@@ -4,6 +4,7 @@ import { residentUnitsEndpoints } from '../../../core/endpoints/resident-units-e
 import { HttpParamsBuilder } from '../../../utils/param-builder';
 import { catchError, Observable } from 'rxjs';
 import { ApiError, handleApiError } from '../../../core/error-handling/api-catch-error';
+import { environment } from '../../../../environment/environment';
 
 export interface GetAllUnitsParams {
   unitName?: string, 
@@ -14,11 +15,11 @@ export interface GetAllUnitsParams {
 }
 
 export interface GetAllResidentUnitsResponse {
-  residentUnits: ResidentUnitResponse[], 
+  residentUnits: ResidentUnit[], 
   count: number
 }
 
-export interface ResidentUnitResponse {
+export interface ResidentUnit {
   id: string, 
   unitName: string, 
   createdAt: string, 
@@ -38,9 +39,20 @@ export class UnitsService {
 
   getAllUnits(queryParams: GetAllUnitsParams): Observable<GetAllResidentUnitsResponse | ApiError> {
     const params: HttpParams = HttpParamsBuilder(queryParams)
-    return this.http.get<GetAllResidentUnitsResponse>(residentUnitsEndpoints.getAllUnits, {params})
+    return this.http.get<GetAllResidentUnitsResponse | ApiError>(residentUnitsEndpoints.getAllUnits, {params})
       .pipe(
         catchError(handleApiError)
       )
+  }
+
+  getUnit(id: string): Observable<ResidentUnit | ApiError> {
+    return this.http.get<ResidentUnit | ApiError>(`${environment.apiBaseUrl}/residentUnit/${id}`)
+      .pipe(
+        catchError(handleApiError)
+      )
+  }
+
+  updateUnit(unit: ResidentUnit): void {
+    
   }
 }

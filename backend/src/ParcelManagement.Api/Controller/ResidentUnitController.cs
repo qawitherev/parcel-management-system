@@ -34,7 +34,7 @@ namespace ParcelManagement.Api.Controller
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles ="ParcelRoomManager, Admin")]
+        [Authorize(Roles = "ParcelRoomManager, Admin")]
         public async Task<IActionResult> GetResidentUnitByIdReal(Guid id)
         {
             return Ok(await _residentUnitService.GetResidentUnitById(id));
@@ -74,7 +74,7 @@ namespace ParcelManagement.Api.Controller
             var (residentUnits, count) = await _residentUnitService.GetResidentUnitsForViewAsync(dto.UnitName, column, dto.Page, dto.Take, dto.IsAsc);
             var responseDto = new GetAllResidentUnitsResponseDto
             {
-                ResidentUnits = [.. residentUnits.Select(ru => new ResidentUnitResponseDto {
+                ResidentUnits = [.. residentUnits.Select(ru => new ResidentUnitDto {
                     Id = ru.Id,
                     UnitName = ru.UnitName,
                     CreatedAt = ru.CreatedAt,
@@ -85,6 +85,14 @@ namespace ParcelManagement.Api.Controller
                 Count = count
             };
             return Ok(responseDto);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateResidentUnitAsync([FromBody] ResidentUnitUpdateDto dto, Guid id)
+        {
+            var userId = _userServiceContext.GetUserId();
+            await _residentUnitService.UpdateResidentUnitAsync(id, dto.UnitName, userId);
+            return NoContent();
         }
     }
 }

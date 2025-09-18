@@ -53,6 +53,11 @@ export class UnitsService {
   }
 
   updateUnit(id: string, unitName: string): Observable<any> {
-    return this.http.patch(`${environment.apiBaseUrl}/residentUnit/${id}`, unitName)
+    const body = {
+      unitName: unitName
+    }
+    return this.http.patch(`${environment.apiBaseUrl}/residentUnit/${id}`, body).pipe(
+      catchError(handleApiError)
+    )
   }
 }

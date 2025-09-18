@@ -3,7 +3,7 @@ import { ResidentUnit, UnitsService } from '../../units-service';
 import { Observable, switchMap, tap } from 'rxjs';
 import { ApiError } from '../../../../../core/error-handling/api-catch-error';
 import { ActivatedRoute } from '@angular/router';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-units-edit',
@@ -15,10 +15,11 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 export class UnitsEdit implements OnInit {
   formGroup?: FormGroup
   theUnit$? : Observable<ResidentUnit | ApiError>
+  id?: string
 
   constructor(private unitService: UnitsService, private route: ActivatedRoute, private fb: FormBuilder) {
     this.formGroup = fb.group({
-      unitName: []
+      unitName: ['', [Validators.required]]
     })
   }
 
@@ -31,10 +32,17 @@ export class UnitsEdit implements OnInit {
             this.formGroup?.patchValue({
               unitName: unit.unitName
             })
+            this.id = unit.id
           }
         }
       )
     )
+  }
+
+  onUpdate(): void {
+    if (this.formGroup?.valid && this.id != null) {
+      this.unitService.updateUnit(this.id, this.formGroup.get('unitName')?.value)
+    }
   }
 
 

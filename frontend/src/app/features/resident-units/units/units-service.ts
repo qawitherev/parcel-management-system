@@ -52,7 +52,7 @@ export class UnitsService {
       )
   }
 
-  updateUnit(unit: ResidentUnit): void {
-    
+  updateUnit(unit: ResidentUnit): Observable<any> {
+    return this.http.patch(`${environment.apiBaseUrl}/residentUnit/${unit.id}`, unit.unitName)
   }
 }

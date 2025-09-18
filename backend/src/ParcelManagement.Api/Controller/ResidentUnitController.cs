@@ -87,7 +87,7 @@ namespace ParcelManagement.Api.Controller
             return Ok(responseDto);
         }
 
-        [HttpPut("{id}")]
+        [HttpPatch("{id}")]
         public async Task<IActionResult> UpdateResidentUnitAsync([FromBody] ResidentUnitUpdateDto dto, Guid id)
         {
             var userId = _userServiceContext.GetUserId();

@@ -1,6 +1,6 @@
-import { Component, input, OnInit } from '@angular/core';
+import { Component, input, OnDestroy, OnInit } from '@angular/core';
 import { ResidentUnit, UnitsService } from '../../units-service';
-import { Observable, switchMap, tap } from 'rxjs';
+import { Observable, Subject, switchMap, takeUntil, tap } from 'rxjs';
 import { ApiError } from '../../../../../core/error-handling/api-catch-error';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
@@ -20,11 +20,12 @@ import { AsyncPipe, NgClass } from '@angular/common';
   templateUrl: './units-edit.html',
   styleUrl: './units-edit.css',
 })
-export class UnitsEdit implements OnInit {
+export class UnitsEdit implements OnInit, OnDestroy {
   formGroup: FormGroup;
   theUnit$?: Observable<ResidentUnit | ApiError>;
   updateResponse$?: Observable<ApiError | void>
   id?: string;
+  destroy$ = new Subject<void>()
 
   constructor(
     private unitService: UnitsService,
@@ -49,6 +50,9 @@ export class UnitsEdit implements OnInit {
         }
       })
     );
+    this.theUnit$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe()
     AppConsole.log(`unit name is ${this.formGroup.get('unitName')?.value}`);
   }
 
@@ -67,5 +71,10 @@ export class UnitsEdit implements OnInit {
 
   onBack(): void {
     this.router.navigateByUrl('residentUnit/units')
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next()
+    this.destroy$.complete()
   }
 }

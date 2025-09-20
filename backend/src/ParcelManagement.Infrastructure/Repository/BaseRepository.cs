@@ -1,5 +1,6 @@
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using ParcelManagement.Core.Repositories;
 using ParcelManagement.Core.Specifications;
 using ParcelManagement.Infrastructure.Database;
@@ -82,6 +83,11 @@ namespace ParcelManagement.Infrastructure.Repository
             query = query.Where(specification.ToExpression());
 
             return await query.CountAsync();
+        }
+
+        public Task<IDbContextTransaction> BeginTransactionAsync()
+        {
+            return _dbContext.Database.BeginTransactionAsync();
         }
 
         // we dont do update here because we have entity that has composite key

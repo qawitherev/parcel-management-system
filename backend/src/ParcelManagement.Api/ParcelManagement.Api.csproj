@@ -21,6 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ParcelManagement.Core\ParcelManagement.Core.csproj" />
     <ProjectReference Include="..\ParcelManagement.Infrastructure\ParcelManagement.Infrastructure.csproj" />
+    <ProjectReference Include="..\ParcelManagement.Shared\ParcelManagement.Shared.csproj" />
   </ItemGroup>
 
 </Project>

@@ -45,7 +45,7 @@ namespace ParcelManagement.Infrastructure.Repository
             return await GetCountBySpecificationAsync(specification);
         }
 
-        public async Task<IReadOnlyList<ResidentUnit?>> GetResidentUnitsAsync()
+        public async Task<IReadOnlyList<ResidentUnit>> GetResidentUnitsAsync()
         {
             return await _dbContext.ResidentUnits.ToListAsync();
         }

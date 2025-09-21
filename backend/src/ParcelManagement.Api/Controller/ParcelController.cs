@@ -213,8 +213,27 @@ namespace ParcelManagement.Api.Controller
         [Authorize(Roles = "ParcelRoomManager, Admin")]
         public async Task<IActionResult> ParcelBulkCheckIn([FromBody] List<BulkCheckInRequestDto> parcels)
         {
-
-            return Ok();
+            var theParcels = parcels.Select(p => (
+                p.TrackingNumber,
+                p.ResidentUnit,
+                p.Weight,
+                p.Dimension
+            ));
+            var userId = _userContextService.GetUserId();
+            var response = await _parcelService.BulkCheckInAsync(theParcels, userId);
+            var hasError = response.Items.Any(i => i.IsError);
+            var dtoResponse = new BulkCheckInResponseDto
+            {
+                Status = !hasError ? "Ok"
+                    : "Failed",
+                ParcelCheckedIn = response.Items.Count(i => !i.IsError),
+                Message = !hasError ? "All parcel checked in"
+                    : "Some parcels failed to checked in. Rollback operation",
+                Error = [..response.Items.Where(i => i.IsError).Select(i => new BulkCheckInResponseErrorDto {
+                    Row = i.Row, ErrorDetail = i.Message!
+                })]
+            };
+            return Ok(dtoResponse);
         }
         
             

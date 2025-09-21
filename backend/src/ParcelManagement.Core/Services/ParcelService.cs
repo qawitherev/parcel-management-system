@@ -14,7 +14,7 @@ namespace ParcelManagement.Core.Services
             string? dimensions, Guid performedByUser);
 
         Task<BulkCheckInResponse> BulkCheckInAsync(
-            IEnumerable<(string trackingNumber, string residenUnit, decimal? weight, string? dimensions)> parcels,
+            IEnumerable<(string trackingNumber, string residentUnit, decimal? weight, string? dimensions)> parcels,
             Guid performedByUser);
 
         Task<(IReadOnlyList<Parcel>, int count)> GetParcelsForView(
@@ -104,106 +104,9 @@ namespace ParcelManagement.Core.Services
             return newParcel;
         }
 
-        public async Task<BulkCheckInResponse> BulkCheckInAsync(IEnumerable<(string trackingNumber, string residenUnit, decimal? weight, string? dimensions)> parcels, Guid performedByUser)
-        {
-            var response = new BulkCheckInResponse
-            {
-                Items = []
-            };
-            var existingResidentUnits = await _residentUnitRepo.GetResidentUnitsAsync();
-            var existingParcels = await _parcelRepo.GetAllParcelsAsync();
-
-            var existingRUDict = existingResidentUnits.ToDictionary(
-                ru => ru.UnitName,
-                StringComparer.OrdinalIgnoreCase
-            );
-
-            var existingParcelsDict = existingParcels.ToDictionary(
-                p => p!.TrackingNumber,
-                StringComparer.OrdinalIgnoreCase
-            );
-
-            int currentRow = 0;
-            using (var transaction = await _parcelRepo.BeginTransactionAsync())
-            {
-                foreach (var (trackingNumber, residentUnit, weight, dimensions) in parcels)
-                {
-                    try
-                    {
-                        currentRow++;
-                        if (!existingRUDict.TryGetValue(residentUnit, out var unitInside))
-                        {
-                            response.Items.Add(new ParcelCheckInResponse
-                            {
-                                TrackingNumber = trackingNumber,
-                                IsError = true,
-                                Row = currentRow,
-                                Message = $"Resident unit {residentUnit} not found"
-                            });
-                        }
-
-                        // check if parcel already in db
-                        if (existingParcelsDict.TryGetValue(trackingNumber, out var parcelInside))
-                        {
-                            response.Items.Add(new ParcelCheckInResponse
-                            {
-                                TrackingNumber = trackingNumber,
-                                IsError = true,
-                                Row = currentRow,
-                                Message = $"Parcel {trackingNumber} has been checked in"
-                            });
-                        }
-
-                        if (response.Items.Any(p => p.IsError))
-                        {
-                            continue;
-                        }
-
-
-
-                        var toBeAddedParcel = new Parcel
-                        {
-                            Id = Guid.NewGuid(),
-                            TrackingNumber = trackingNumber,
-                            ResidentUnitId = existingRUDict[residentUnit].Id,
-                            EntryDate = DateTimeOffset.UtcNow,
-                            Status = ParcelStatus.AwaitingPickup,
-                            Weight = weight,
-                            Dimensions = dimensions,
-                        };
-                        await _parcelRepo.AddParcelAsync(toBeAddedParcel);
-                        await _trackingEventRepo.CreateAsync(new TrackingEvent
-                        {
-                            Id = Guid.NewGuid(),
-                            ParcelId = toBeAddedParcel.Id,
-                            TrackingEventType = TrackingEventType.CheckIn,
-                            EventTime = DateTimeOffset.UtcNow,
-                            PerformedByUser = performedByUser
-                        });
-                        response.Items.Add(new ParcelCheckInResponse
-                        {
-                            TrackingNumber = trackingNumber,
-                            Row = currentRow,
-                            IsError = false,
-                        });
-
-                    }
-
-                    catch (Exception ex)
-                    {
-                        await transaction.RollbackAsync();
-                        throw new Exception($"Bulk updated operation failed. Message: {ex.Message}");
-                    }
-                }
-                await transaction.CommitAsync();
-            }
-            
-
-            return response;
-        }
-
-        public async Task<BulkCheckInResponse> BulkCheckInAsyncV2(
-            IEnumerable<(string trackingNumber, string residentUnit, decimal? weight, string? dimensions)> inParcels, Guid performedByUser
+        public async Task<BulkCheckInResponse> BulkCheckInAsync(
+            IEnumerable<(string trackingNumber, string residentUnit, decimal? weight, string? dimensions)> inParcels,
+            Guid performedByUser
         )
         {
             var response = new BulkCheckInResponse()
@@ -226,9 +129,11 @@ namespace ParcelManagement.Core.Services
             try
             {
                 int currentRow = 0;
+                var isError = false;
                 foreach (var (trackingNumber, residentUnit, weight, dimensions) in inParcels)
                 {
                     currentRow++;
+                    isError = false;
                     if (!existingResidentUnitDict.TryGetValue(residentUnit, out var ru))
                     {
                         response.Items.Add(new ParcelCheckInResponse
@@ -238,6 +143,7 @@ namespace ParcelManagement.Core.Services
                             IsError = true,
                             Message = $"Resident unit {residentUnit} not found"
                         });
+                        isError = true;
                     }
                     if (existingParcelsDict.TryGetValue(trackingNumber, out var parcel))
                     {
@@ -248,23 +154,48 @@ namespace ParcelManagement.Core.Services
                             IsError = true,
                             Message = $"Parcel {trackingNumber} already checked in"
                         });
+                        isError = true;
                     }
-                    if (response.Items.Any(i => i.IsError))
+                    if (isError)
                     {
                         continue;
                     }
+                    var toBeAddedParcel = new Parcel
+                    {
+                        Id = Guid.NewGuid(),
+                        TrackingNumber = trackingNumber,
+                        ResidentUnitId = existingResidentUnitDict[residentUnit].Id,
+                        EntryDate = DateTimeOffset.UtcNow,
+                        Status = ParcelStatus.AwaitingPickup,
+                        Weight = weight,
+                        Dimensions = dimensions
+                    };
+                    var trackingEvent = new TrackingEvent
+                    {
+                        Id = Guid.NewGuid(),
+                        ParcelId = toBeAddedParcel.Id,
+                        TrackingEventType = TrackingEventType.CheckIn,
+                        EventTime = DateTimeOffset.UtcNow,
+                        PerformedByUser = performedByUser
+                    };
+                    response.Items.Add(new ParcelCheckInResponse
+                    {
+                        TrackingNumber = trackingNumber,
+                        Row = currentRow,
+                        IsError = false,
+                    });
+                    await _parcelRepo.AddParcelAsync(toBeAddedParcel);
+                    await _trackingEventRepo.CreateAsync(trackingEvent);
+                    existingParcelsDict[trackingNumber] = toBeAddedParcel;
                 }
+            }
+            catch (Exception ex)
             {
+                await transaction.RollbackAsync();
+                throw new Exception($"Failed to bulk check in. See error: {ex.Message}");
                 
             }
-            }
-            catch
-            {
-                
-            }
-            
-            
-
+            await transaction.CommitAsync();
             return response;
         }
         public async Task ClaimParcelAsync(string trackingNumber, Guid performedByUser)

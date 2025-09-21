@@ -226,7 +226,7 @@ namespace ParcelManagement.Api.Controller
             {
                 Status = !hasError ? "Ok"
                     : "Failed",
-                ParcelCheckedIn = response.Items.Count(i => !i.IsError),
+                ParcelCheckedIn = hasError ? 0 : response.Items.Count,
                 Message = !hasError ? "All parcel checked in"
                     : "Some parcels failed to checked in. Rollback operation",
                 Error = [..response.Items.Where(i => i.IsError).Select(i => new BulkCheckInResponseErrorDto {

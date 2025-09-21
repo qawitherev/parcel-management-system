@@ -144,6 +144,7 @@ namespace ParcelManagement.Core.Services
                             Message = $"Resident unit {residentUnit} not found"
                         });
                         isError = true;
+                        throw new Exception($"Resident unit {residentUnit} not found");
                     }
                     if (existingParcelsDict.TryGetValue(trackingNumber, out var parcel))
                     {
@@ -155,6 +156,7 @@ namespace ParcelManagement.Core.Services
                             Message = $"Parcel {trackingNumber} already checked in"
                         });
                         isError = true;
+                        throw new Exception($"Parcel {trackingNumber} already checked in");
                     }
                     if (isError)
                     {
@@ -189,10 +191,10 @@ namespace ParcelManagement.Core.Services
                     existingParcelsDict[trackingNumber] = toBeAddedParcel;
                 }
             }
-            catch (Exception ex)
+            catch 
             {
                 await transaction.RollbackAsync();
-                throw new Exception($"Failed to bulk check in. See error: {ex.Message}");
+                return response;
                 
             }
             await transaction.CommitAsync();

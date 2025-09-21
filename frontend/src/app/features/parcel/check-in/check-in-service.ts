@@ -3,10 +3,14 @@ import { Injectable } from '@angular/core';
 import { catchError, Observable, of } from 'rxjs';
 import { parcelEndpoints } from '../../../core/endpoints/parcel-endpoints';
 
-interface CheckInPayload {
+export interface CheckInPayload {
   trackingNumber: string, 
-  residentUnit: string
+  residentUnit: string, 
+  weight?: number, 
+  dimension?: string
 }
+
+
 
 @Injectable({
   providedIn: 'root'

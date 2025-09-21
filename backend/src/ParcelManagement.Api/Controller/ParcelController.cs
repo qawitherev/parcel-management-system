@@ -147,7 +147,7 @@ namespace ParcelManagement.Api.Controller
             var parcelHistoriesDto = new ParcelHistoriesDto
             {
                 TrackingNumber = res.TrackingNumber,
-                EntryDate = res.EntryDate, 
+                EntryDate = res.EntryDate,
                 CurrentStatus = res.Status,
                 History = [.. res.TrackingEvents.Select(te => new ParcelHistoriesChild
                 {
@@ -190,7 +190,7 @@ namespace ParcelManagement.Api.Controller
                 dto.TrackingNumber,
                 EnumUtils.ToEnumOrNull<ParcelStatus>(dto.Status ?? ""),
                 dto.CustomEvent,
-                null, 
+                null,
                 dto.Page,
                 dto.Take
             );
@@ -202,12 +202,22 @@ namespace ParcelManagement.Api.Controller
                     TrackingNumber = p.TrackingNumber,
                     Weight = p.Weight,
                     Dimensions = p.Dimensions,
-                    ResidentUnit = p.ResidentUnit!.UnitName, 
+                    ResidentUnit = p.ResidentUnit!.UnitName,
                     Status = p.Status
                 })],
             };
             return Ok(responseDto);
         }
 
+        [HttpPost("bulkCheckIn")]
+        [Authorize(Roles = "ParcelRoomManager, Admin")]
+        public async Task<IActionResult> ParcelBulkCheckIn([FromBody] List<BulkCheckInRequestDto> parcels)
+        {
+
+            return Ok();
+        }
+        
+            
+        
     }
 }

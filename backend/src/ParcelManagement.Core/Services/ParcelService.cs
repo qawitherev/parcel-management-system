@@ -130,10 +130,11 @@ namespace ParcelManagement.Core.Services
             {
                 int currentRow = 0;
                 var isError = false;
+                var isRowError = false;
                 foreach (var (trackingNumber, residentUnit, weight, dimensions) in inParcels)
                 {
                     currentRow++;
-                    isError = false;
+                    isRowError = false;
                     if (!existingResidentUnitDict.TryGetValue(residentUnit, out var ru))
                     {
                         response.Items.Add(new ParcelCheckInResponse
@@ -144,7 +145,8 @@ namespace ParcelManagement.Core.Services
                             Message = $"Resident unit {residentUnit} not found"
                         });
                         isError = true;
-                        throw new Exception($"Resident unit {residentUnit} not found");
+                        isRowError = true;
+                        // throw new Exception($"Resident unit {residentUnit} not found");
                     }
                     if (existingParcelsDict.TryGetValue(trackingNumber, out var parcel))
                     {
@@ -156,7 +158,17 @@ namespace ParcelManagement.Core.Services
                             Message = $"Parcel {trackingNumber} already checked in"
                         });
                         isError = true;
-                        throw new Exception($"Parcel {trackingNumber} already checked in");
+                        isRowError = true;
+                        // throw new Exception($"Parcel {trackingNumber} already checked in");
+                    }
+                    if (!isRowError)
+                    {
+                    response.Items.Add(new ParcelCheckInResponse
+                    {
+                        TrackingNumber = trackingNumber,
+                        Row = currentRow,
+                        IsError = false,
+                    });
                     }
                     if (isError)
                     {
@@ -180,12 +192,6 @@ namespace ParcelManagement.Core.Services
                         EventTime = DateTimeOffset.UtcNow,
                         PerformedByUser = performedByUser
                     };
-                    response.Items.Add(new ParcelCheckInResponse
-                    {
-                        TrackingNumber = trackingNumber,
-                        Row = currentRow,
-                        IsError = false,
-                    });
                     await _parcelRepo.AddParcelAsync(toBeAddedParcel);
                     await _trackingEventRepo.CreateAsync(trackingEvent);
                     existingParcelsDict[trackingNumber] = toBeAddedParcel;
@@ -195,7 +201,6 @@ namespace ParcelManagement.Core.Services
             {
                 await transaction.RollbackAsync();
                 return response;
-                
             }
             await transaction.CommitAsync();
             return response;

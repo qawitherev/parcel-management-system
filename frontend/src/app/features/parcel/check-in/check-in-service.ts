@@ -10,8 +10,6 @@ export interface CheckInPayload {
   dimension?: string
 }
 
-
-
 @Injectable({
   providedIn: 'root'
 })
@@ -24,5 +22,9 @@ export class CheckInService {
         return of({ error: true, message: err.error.message})
       })
     )
+  }
+
+  bulkCheckInParcel(payload: CheckInPayload[]): Observable<any> {
+    return this.http.post(parcelEndpoints.bulkCheckIn, payload)
   }
 }

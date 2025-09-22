@@ -1,3 +1,4 @@
+import { AppConsole } from "../../utils/app-console";
 import { RoleWithExp } from "../roles/role-service";
 
 export const PERSISTENT_ROLE_KEY = 'parcel-management-system-role'
@@ -10,11 +11,27 @@ export class RoleStorage {
     }
 
     getStoredRole(): RoleWithExp | null{
-        if(sessionStorage.getItem(PERSISTENT_ROLE_KEY)) {
-            return sessionStorage.getItem(PERSISTENT_ROLE_KEY) as unknown as RoleWithExp
+        var storedSession = sessionStorage.getItem(PERSISTENT_ROLE_KEY)
+        var storedLocal = localStorage.getItem(PERSISTENT_ROLE_KEY)
+        var roleWithExp: RoleWithExp
+        if(storedSession) {
+            try {
+                roleWithExp = JSON.parse(storedSession) as RoleWithExp
+                return roleWithExp
+            } catch (err) {
+                AppConsole.error(`Failed to try parse into RoleWithExp: ${err}`)
+                return null
+            }
         } 
-        if(localStorage.getItem(PERSISTENT_ROLE_KEY)) {
-            return localStorage.getItem(PERSISTENT_ROLE_KEY) as unknown as RoleWithExp
+
+        if(storedLocal) {
+            try {
+                roleWithExp = JSON.parse(storedLocal) as RoleWithExp
+                return roleWithExp
+            } catch (err) {
+                AppConsole.error(`Failed to try parse into RoleWithExp: ${err}`)
+                return null
+            }
         }
         return null
     }

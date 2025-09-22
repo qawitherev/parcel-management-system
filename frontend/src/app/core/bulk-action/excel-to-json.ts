@@ -1,6 +1,5 @@
 import * as XLSX from 'xlsx';
 import { CheckInPayload } from '../../features/parcel/check-in/check-in-service';
-import { registerLocaleData } from '@angular/common';
 
 export function excelToJson<T>(file: File, mapper: (data: any) => T): Promise<T[]> {
   return new Promise((resolve, reject) => {
@@ -28,7 +27,7 @@ function convertToObjects<T>(data: any[], mapper: (row: any) => T): T[] {
   return data.map(mapper);
 }
 
-function mapperCheckInPayload(data: any): CheckInPayload {
+export function mapperCheckInPayload(data: any): CheckInPayload {
     return {
         trackingNumber: data.trackingNumber, 
         residentUnit: data.residentUnit, 

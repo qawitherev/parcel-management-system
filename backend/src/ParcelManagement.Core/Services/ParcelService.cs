@@ -163,12 +163,12 @@ namespace ParcelManagement.Core.Services
                     }
                     if (!isRowError)
                     {
-                    response.Items.Add(new ParcelCheckInResponse
-                    {
-                        TrackingNumber = trackingNumber,
-                        Row = currentRow,
-                        IsError = false,
-                    });
+                        response.Items.Add(new ParcelCheckInResponse
+                        {
+                            TrackingNumber = trackingNumber,
+                            Row = currentRow,
+                            IsError = false,
+                        });
                     }
                     if (isError)
                     {
@@ -196,8 +196,12 @@ namespace ParcelManagement.Core.Services
                     await _trackingEventRepo.CreateAsync(trackingEvent);
                     existingParcelsDict[trackingNumber] = toBeAddedParcel;
                 }
+                if (response.Items.Any(i => i.IsError))
+                {
+                    throw new Exception();
+                }
             }
-            catch 
+            catch
             {
                 await transaction.RollbackAsync();
                 return response;

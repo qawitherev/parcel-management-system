@@ -93,8 +93,6 @@ export class Pagination implements OnChanges {
       temp.push(totalPages);
     }
 
-    AppConsole.log(`temp is: ${temp}`);
-
     return temp;
   }
 }

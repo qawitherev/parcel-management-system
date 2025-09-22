@@ -5,10 +5,11 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { AppConsole } from '../../../../../utils/app-console';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { NgClass } from '@angular/common';
+import { FileUpload } from "../../../../../common/components/file-upload/file-upload";
 
 @Component({
   selector: 'app-check-in',
-  imports: [ReactiveFormsModule, NgIf, AsyncPipe, NgClass],
+  imports: [ReactiveFormsModule, NgIf, AsyncPipe, NgClass, FileUpload],
   templateUrl: './check-in.html',
   styleUrl: './check-in.css'
 })
@@ -16,6 +17,7 @@ export class CheckIn implements OnDestroy {
   private destroy$ = new Subject<any>()
   formGroup: FormGroup
   checkInResponse$?: Observable<any>
+  isBulkCheckInPopup: boolean = false
 
   constructor(private checkInService: CheckInService, private fb: FormBuilder) {
     this.formGroup = fb.group({
@@ -39,5 +41,9 @@ export class CheckIn implements OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next(null)
     this.destroy$.complete()
+  }
+
+  onBulkCheckInPopup() {
+    this.isBulkCheckInPopup = !this.isBulkCheckInPopup
   }
 }

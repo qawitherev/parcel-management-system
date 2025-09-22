@@ -227,7 +227,7 @@ namespace ParcelManagement.Core.Specifications
             return _column switch
             {
                 ParcelSortableColumn.TrackingNumber => p => p.TrackingNumber,
-                _ => p => p.Id
+                _ => p => p.EntryDate
             };
         }
     }

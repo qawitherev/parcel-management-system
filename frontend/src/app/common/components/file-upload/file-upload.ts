@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
 import { excelToJson, mapperCheckInPayload } from '../../../core/bulk-action/excel-to-json';
 import { CheckInPayload } from '../../../features/parcel/check-in/check-in-service';
 import { AppConsole } from '../../../utils/app-console';
@@ -22,14 +22,23 @@ export class FileUpload {
 
   formGroup: FormGroup
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private cdr: ChangeDetectorRef) {
     this.formGroup = fb.group({
       file: [null, [Validators.required]]
     })
   }
 
-  async onFileUpload(event: Event): Promise<void> {
+  onFileChange(event: any): void {
     const input = event.target as HTMLInputElement
+    const file = input.files?.[0]
+    this.formGroup.get('file')?.patchValue(file)
+  }
+
+  async onFileUpload(event: Event): Promise<void> {
+    if(!this.formGroup.valid) {
+      this.errorMessage = 'Not valid'
+      return
+    }
     const file = this.formGroup.get('file')?.value
     if (!file) {
       this.errorMessage = "No file found"
@@ -41,18 +50,22 @@ export class FileUpload {
     ]
     if (!acceptedFormats.includes(file.type)) {
       this.errorMessage = "File type not supported. Only upload xlsx or xls file"
+      return
     }
     
     try {
       this.isLoading = true
       const converted = await excelToJson<CheckInPayload>(file, mapperCheckInPayload)
+      AppConsole.log(`FILE-UPLOAD: converted: ${JSON.stringify(converted)}`)
       this.dataEmitter.emit(converted)
+      this.cancelEmitter.emit()
     } catch(err) {
-      this.errorMessage = `Error parsing file. Please try again`
-      AppConsole.error(`Parsing Error: ${JSON.stringify(err)}`)
+      AppConsole.log(`FILE-UPLOAD: inside catch block`)
+      this.errorMessage = `Error parsing file. Please try again. Error details: ${err}`
+      this.cdr.detectChanges()
+      AppConsole.error(`Parsing Error: ${err}`)
     } finally {
       this.isLoading = false
-      input.value = ''
     }
   }
 

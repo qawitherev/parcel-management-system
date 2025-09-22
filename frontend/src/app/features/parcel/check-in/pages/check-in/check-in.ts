@@ -1,11 +1,12 @@
 import { Component, OnDestroy } from '@angular/core';
-import { CheckInService } from '../../check-in-service';
+import { CheckInPayload, CheckInService } from '../../check-in-service';
 import { Observable, Subject } from 'rxjs';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AppConsole } from '../../../../../utils/app-console';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { NgClass } from '@angular/common';
 import { FileUpload } from "../../../../../common/components/file-upload/file-upload";
+import { mapperCheckInPayload } from '../../../../../core/bulk-action/excel-to-json';
 
 @Component({
   selector: 'app-check-in',
@@ -18,6 +19,7 @@ export class CheckIn implements OnDestroy {
   formGroup: FormGroup
   checkInResponse$?: Observable<any>
   isBulkCheckInPopup: boolean = false
+  payloadMapper: (data: any) => CheckInPayload = mapperCheckInPayload
 
   constructor(private checkInService: CheckInService, private fb: FormBuilder) {
     this.formGroup = fb.group({
@@ -45,5 +47,9 @@ export class CheckIn implements OnDestroy {
 
   onBulkCheckInPopup() {
     this.isBulkCheckInPopup = !this.isBulkCheckInPopup
+  }
+
+  onUploadFinished(data: CheckInPayload[]) {
+    
   }
 }

@@ -2,16 +2,26 @@
 <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center z-50">
     <div class="bg-gray-100 rounded-lg shadow-lg p-6 w-96">
         <h2 class="text-lg font-semibold text-gray-500 mb-4">Upload File</h2>
-        <form>
+        <form
+            [formGroup]="formGroup"
+            (ngSubmit)="onFileUpload($event)"
+        >
             <div class="mb-4">
                 <label for="fileInput" class="block text-sm font-medium text-gray-500 mb-2"
                     >Choose File</label
                 >
                 <input
+                    formControlName="file"
                     type="file"
                     id="fileInput"
                     class="block w-full text-sm text-gray-500 border border-gray-300 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-200 file:text-gray-700 hover:file:bg-gray-300"
                 />
+                <div class="mb-4"></div>
+                @if (errorMessage) {
+                    <div class="text-sm text-red-500 bg-red-100 border border-red-400 rounded-lg p-2">
+                        {{errorMessage}}
+                    </div>
+                }
             </div>
             <div class="flex justify-end">
                 <button

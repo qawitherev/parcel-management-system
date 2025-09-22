@@ -2,11 +2,12 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { excelToJson, mapperCheckInPayload } from '../../../core/bulk-action/excel-to-json';
 import { CheckInPayload } from '../../../features/parcel/check-in/check-in-service';
 import { AppConsole } from '../../../utils/app-console';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-file-upload',
   standalone: true,
-  imports: [],
+  imports: [ReactiveFormsModule],
   templateUrl: './file-upload.html',
   styleUrl: './file-upload.css'
 })
@@ -19,15 +20,28 @@ export class FileUpload {
   errorMessage: string | null = null
   isLoading: boolean = false
 
+  formGroup: FormGroup
+
+  constructor(private fb: FormBuilder) {
+    this.formGroup = fb.group({
+      file: [null, [Validators.required]]
+    })
+  }
+
   async onFileUpload(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement
-    const file = input?.files?.[0]
-    if (!file) return
+    const file = this.formGroup.get('file')?.value
+    if (!file) {
+      this.errorMessage = "No file found"
+      return
+    }
     const acceptedFormats = [
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // xlsx
       'application/vnd.ms-excel' // xls
     ]
-    if (!acceptedFormats.includes(file.type)) return // will do the error message later 
+    if (!acceptedFormats.includes(file.type)) {
+      this.errorMessage = "File type not supported. Only upload xlsx or xls file"
+    }
     
     try {
       this.isLoading = true

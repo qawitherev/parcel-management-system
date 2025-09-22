@@ -3,7 +3,9 @@
     @if (isBulkCheckInPopup) {
     <div class="relative">
       <app-file-upload
+        [mapper]="payloadMapper"
         (cancelEmitter)="onBulkCheckInPopup()"
+        (dataEmitter)="onUploadFinished($event)"
       ></app-file-upload>
     </div>
     }

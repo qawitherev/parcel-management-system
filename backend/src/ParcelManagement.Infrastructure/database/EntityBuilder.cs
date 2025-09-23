@@ -39,4 +39,15 @@ namespace ParcelManagement.Infrastructure.Database
 
         }
     }
+
+    public class LockerEntityConfiguration : IEntityTypeConfiguration<Locker>
+    {
+        public void Configure(EntityTypeBuilder<Locker> builder)
+        {
+            builder.HasKey(l => l.Id);
+            builder.HasIndex(l => l.LockerName).IsUnique();
+            builder.HasOne(l => l.CreatedByUser).WithMany().HasForeignKey(l => l.CreatedBy);
+            builder.HasOne(l => l.UpdatedByuser).WithMany().HasForeignKey(l => l.UpdatedBy).IsRequired(false);
+        }
+    }
 }

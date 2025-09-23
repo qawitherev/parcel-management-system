@@ -24,6 +24,8 @@ namespace ParcelManagement.Infrastructure.Database
         
         public virtual DbSet<TrackingEvent> TrackingEvents { get; set; }
 
+        public virtual DbSet<Locker> Lockers { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -32,6 +34,7 @@ namespace ParcelManagement.Infrastructure.Database
             modelBuilder.ApplyConfiguration(new TrackingEventEntityConfiguration());
             modelBuilder.ApplyConfiguration(new UserEntityConfiguration());
             modelBuilder.ApplyConfiguration(new ResidentUnitEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new LockerEntityConfiguration());
 
             // configure the column to use string enum instead of int
             modelBuilder.Entity<Parcel>()

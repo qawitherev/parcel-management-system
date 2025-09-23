@@ -10,6 +10,7 @@ using ParcelManagement.Core.Entities;
 namespace ParcelManagement.Api.Controller
 {
     [ApiController]
+    [ApiVersion("1.0")]
     [Route("api/[controller]")]
     [Consumes("application/json")]
     public class ParcelController(IParcelService parcelService,

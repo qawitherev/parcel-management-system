@@ -8,6 +8,7 @@ using ParcelManagement.Infrastructure.Database;
 using ParcelManagement.Infrastructure.Repository;
 using System.Text.Json.Serialization;
 using ParcelManagement.Api.Utility;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +30,12 @@ builder.Services.AddControllers().AddJsonOptions(
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     }
 );
+builder.Services.AddApiVersioning(option =>
+{
+    option.DefaultApiVersion = new ApiVersion(1, 0);
+    option.AssumeDefaultVersionWhenUnspecified = true;
+    option.ReportApiVersions = true;
+});
 
 // CORS 
 builder.Services.AddCors(options =>

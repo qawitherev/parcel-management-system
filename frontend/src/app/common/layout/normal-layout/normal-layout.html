@@ -12,7 +12,7 @@
     <nav class="p-4 space-y-2">
       @for (item of menuItems; track $index) { @if (item.children) {
         @if (userRole$ | async; as role) {
-          @if (item.roles?.includes(role.role) || true) {
+          @if (item.roles?.includes(role.role)) {
         <a
           (click)="toggleParentExpand(item.label)"
           class="block py-2 px-3 rounded hover:bg-gray-700 cursor-pointer font-semibold text-gray-200"

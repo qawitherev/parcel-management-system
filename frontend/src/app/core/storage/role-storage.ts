@@ -13,7 +13,7 @@ export class RoleStorage {
     getStoredRole(): RoleWithExp | null{
         var storedSession = sessionStorage.getItem(PERSISTENT_ROLE_KEY)
         var storedLocal = localStorage.getItem(PERSISTENT_ROLE_KEY)
-        var roleWithExp: RoleWithExp
+        let roleWithExp: RoleWithExp
         if(storedSession) {
             try {
                 roleWithExp = JSON.parse(storedSession) as RoleWithExp

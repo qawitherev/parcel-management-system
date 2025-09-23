@@ -55,7 +55,7 @@ export class FileUpload {
     
     try {
       this.isLoading = true
-      const converted = await excelToJson<CheckInPayload>(file, mapperCheckInPayload)
+      const converted = await excelToJson(file, this.mapper)
       AppConsole.log(`FILE-UPLOAD: converted: ${JSON.stringify(converted)}`)
       this.dataEmitter.emit(converted)
       this.cancelEmitter.emit()

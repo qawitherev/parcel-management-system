@@ -10,7 +10,7 @@ namespace ParcelManagement.Core.Specifications
 
         public int? Take => null;
 
-        List<IncludeExpressionString> ISpecification<Parcel>.IncludeExpressionString => [];
+        List<IncludeExpressionString> ISpecification<Parcel>.IncludeExpressionsString => [];
 
         Expression<Func<Parcel, object>>? ISpecification<Parcel>.OrderBy => null;
 
@@ -37,7 +37,7 @@ namespace ParcelManagement.Core.Specifications
 
         public Expression<Func<Parcel, object>> OrderByDesc => throw new NotImplementedException();
 
-        List<IncludeExpressionString> ISpecification<Parcel>.IncludeExpressionString => [];
+        List<IncludeExpressionString> ISpecification<Parcel>.IncludeExpressionsString => [];
 
         List<IncludeExpression<Parcel>> ISpecification<Parcel>.IncludeExpressions => [];
 
@@ -56,7 +56,7 @@ namespace ParcelManagement.Core.Specifications
 
         public int? Take => null;
 
-        public List<IncludeExpressionString> IncludeExpressionString => throw new NotImplementedException();
+        public List<IncludeExpressionString> IncludeExpressionsString => throw new NotImplementedException();
 
         public Expression<Func<Parcel, object>> OrderBy => throw new NotImplementedException();
 
@@ -80,7 +80,7 @@ namespace ParcelManagement.Core.Specifications
                 new IncludeExpression<Parcel>(p => p.ResidentUnit!)
                     .ThenInclude(ru => ((ResidentUnit)ru).UserResidentUnits)
             };
-            IncludeExpressionString = [
+            IncludeExpressionsString = [
                 new IncludeExpressionString("ResidentUnit.UserResidentUnits")
             ];
         }
@@ -91,7 +91,7 @@ namespace ParcelManagement.Core.Specifications
 
         public int? Take => null;
 
-        public List<IncludeExpressionString> IncludeExpressionString { get; }
+        public List<IncludeExpressionString> IncludeExpressionsString { get; }
 
         Expression<Func<Parcel, object>>? ISpecification<Parcel>.OrderBy => null;
 
@@ -115,7 +115,7 @@ namespace ParcelManagement.Core.Specifications
             {
                 new IncludeExpression<Parcel>(p => p.TrackingEvents)
             };
-            IncludeExpressionString = new List<IncludeExpressionString>()
+            IncludeExpressionsString = new List<IncludeExpressionString>()
             {
                 new IncludeExpressionString("TrackingEvents.User")
             };
@@ -127,7 +127,7 @@ namespace ParcelManagement.Core.Specifications
 
         public int? Take => null;
 
-        public List<IncludeExpressionString> IncludeExpressionString { get; }
+        public List<IncludeExpressionString> IncludeExpressionsString { get; }
 
         public Expression<Func<Parcel, object>> OrderBy => throw new NotImplementedException();
 
@@ -147,7 +147,7 @@ namespace ParcelManagement.Core.Specifications
 
         public int? Take => null;
 
-        public List<IncludeExpressionString> IncludeExpressionString => throw new NotImplementedException();
+        public List<IncludeExpressionString> IncludeExpressionsString => throw new NotImplementedException();
 
         public Expression<Func<Parcel, object>> OrderBy => throw new NotImplementedException();
 
@@ -195,7 +195,7 @@ namespace ParcelManagement.Core.Specifications
             _isAsc = isAsc;
             _page = page;
             _take = take;
-            IncludeExpressionString = [
+            IncludeExpressionsString = [
                 new IncludeExpressionString("TrackingEvents"),
                 new IncludeExpressionString("ResidentUnit.UserResidentUnits.User")
             ];
@@ -203,7 +203,7 @@ namespace ParcelManagement.Core.Specifications
 
         public List<IncludeExpression<Parcel>> IncludeExpressions => throw new NotImplementedException();
 
-        public List<IncludeExpressionString> IncludeExpressionString { get; }
+        public List<IncludeExpressionString> IncludeExpressionsString { get; }
 
         public int? Page => _page;
 

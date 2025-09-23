@@ -11,7 +11,7 @@ namespace ParcelManagement.Core.Specifications
 
         public int? Take => throw new NotImplementedException();
 
-        public List<IncludeExpressionString> IncludeExpressionString => throw new NotImplementedException();
+        public List<IncludeExpressionString> IncludeExpressionsString => throw new NotImplementedException();
 
         public Expression<Func<UserResidentUnit, object>>? OrderBy => throw new NotImplementedException();
 
@@ -29,7 +29,7 @@ namespace ParcelManagement.Core.Specifications
 
         public int? Take => throw new NotImplementedException();
 
-        public List<IncludeExpressionString> IncludeExpressionString => throw new NotImplementedException();
+        public List<IncludeExpressionString> IncludeExpressionsString => throw new NotImplementedException();
 
         public Expression<Func<UserResidentUnit, object>>? OrderBy => throw new NotImplementedException();
 

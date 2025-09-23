@@ -102,7 +102,7 @@ namespace ParcelManagement.Infrastructure.Repository
             IQueryable<T> theQuery
             ) where T : class
         {
-            foreach (var include in specification.IncludeExpressionString)
+            foreach (var include in specification.IncludeExpressionsString)
             {
                 // left join
                 theQuery = EntityFrameworkQueryableExtensions.Include(theQuery, include.Path);

@@ -95,6 +95,9 @@ builder.Services.AddScoped<IUserResidentUnitService, UserResidentUnitService>();
 builder.Services.AddScoped<ITrackingEventRepository, TrackingEventRepository>();
 builder.Services.AddScoped<ITrackingEventService, TrackingEventService>();
 
+builder.Services.AddScoped<ILockerRepository, LockerRepository>();
+builder.Services.AddScoped<ILockerService, LockerService>();
+
 builder.Services.AddScoped<IUserContextService, UserContextService>();
 
 builder.Services.AddScoped<AdminDataSeeder>();

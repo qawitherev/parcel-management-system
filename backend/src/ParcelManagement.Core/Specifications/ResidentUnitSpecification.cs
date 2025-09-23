@@ -11,7 +11,7 @@ namespace ParcelManagement.Core.Specifications
 
         public int? Take => throw new NotImplementedException();
 
-        List<IncludeExpressionString> ISpecification<ResidentUnit>.IncludeExpressionString => [];
+        List<IncludeExpressionString> ISpecification<ResidentUnit>.IncludeExpressionsString => [];
 
         public Expression<Func<ResidentUnit, object>> OrderBy => throw new NotImplementedException();
 
@@ -40,14 +40,14 @@ namespace ParcelManagement.Core.Specifications
             _isAsc = isAsc;
             _page = page;
             _take = take;
-            IncludeExpressionString = [
+            IncludeExpressionsString = [
                 new IncludeExpressionString("CreatedByUser"),
                 new IncludeExpressionString("UpdatedByUser")
             ];
         }
         List<IncludeExpression<ResidentUnit>> ISpecification<ResidentUnit>.IncludeExpressions => [];
 
-        public List<IncludeExpressionString> IncludeExpressionString { get; }
+        public List<IncludeExpressionString> IncludeExpressionsString { get; }
 
         public Expression<Func<ResidentUnit, object>>? OrderBy => _isAsc ? GetSortExpression() : null;
 

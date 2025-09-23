@@ -12,9 +12,9 @@ namespace ParcelManagement.Core.Entities
         public required string LockerName { get; set; }
         public required Guid CreatedBy { get; set; }
         public required DateTimeOffset CreatedAt { get; set; }
-        public required Guid? UpdatedBy { get; set; }
-        public required DateTimeOffset? UpdatedAt { get; set; }
-        public bool IsActive { get; set; }
+        public Guid? UpdatedBy { get; set; }
+        public DateTimeOffset? UpdatedAt { get; set; }
+        public required bool IsActive { get; set; }
 
         // navigational properties 
         public User CreatedByUser { get; set; } = null!;

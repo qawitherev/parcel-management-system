@@ -11,8 +11,8 @@
     </div>
     <nav class="p-4 space-y-2">
       @for (item of menuItems; track $index) { @if (item.children) {
-      <div *ngIf="userRole$ | async as role">
-        @if (item.roles?.includes(role.role)) {
+        @if (userRole$ | async; as role) {
+          @if (item.roles?.includes(role.role)) {
         <a
           (click)="toggleParentExpand(item.label)"
           class="block py-2 px-3 rounded hover:bg-gray-700 cursor-pointer font-semibold text-gray-200"
@@ -20,7 +20,9 @@
           {{ item.label }}
         </a>
         }
-      </div>
+        }
+        
+
 
       @if (isExpanded(item.label)) {
       <div class="ml-4 space-y-1">

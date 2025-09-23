@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore.Storage;
 using ParcelManagement.Core.Entities;
 using ParcelManagement.Core.Specifications;
 
@@ -13,5 +14,7 @@ namespace ParcelManagement.Core.Repositories
         Task<IReadOnlyList<Parcel>> GetParcelsBySpecificationAsync(ISpecification<Parcel> specification);
         Task<int> GetParcelCountBySpecification(ISpecification<Parcel> specification);
         Task<Parcel?> GetOneParcelBySpecificationAsync(ISpecification<Parcel> specification);
+
+        Task<IDbContextTransaction> BeginTransactionAsync();
     }
 }

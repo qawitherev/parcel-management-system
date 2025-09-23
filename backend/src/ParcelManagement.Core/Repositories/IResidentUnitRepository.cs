@@ -9,7 +9,7 @@ namespace ParcelManagement.Core.Repositories
 
         Task<ResidentUnit?> GetResidentUnitByIdAsync(Guid id);
 
-        Task<IReadOnlyList<ResidentUnit?>> GetResidentUnitsAsync();
+        Task<IReadOnlyList<ResidentUnit>> GetResidentUnitsAsync();
 
         Task UpdateResidenUnitAsync(ResidentUnit residentUnit);
 

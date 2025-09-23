@@ -1,4 +1,5 @@
 using ParcelManagement.Core.Specifications;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace ParcelManagement.Core.Repositories
 {
@@ -13,6 +14,9 @@ namespace ParcelManagement.Core.Repositories
         Task<T> CreateAsync(T obj);
 
         Task<T?> FindByIdAsync(Guid id);
+
         Task<ICollection<T>>? GetAllAsync();
+
+        Task<IDbContextTransaction> BeginTransactionAsync();
     }
 }

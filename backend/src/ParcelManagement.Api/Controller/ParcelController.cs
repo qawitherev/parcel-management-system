@@ -147,7 +147,7 @@ namespace ParcelManagement.Api.Controller
             var parcelHistoriesDto = new ParcelHistoriesDto
             {
                 TrackingNumber = res.TrackingNumber,
-                EntryDate = res.EntryDate, 
+                EntryDate = res.EntryDate,
                 CurrentStatus = res.Status,
                 History = [.. res.TrackingEvents.Select(te => new ParcelHistoriesChild
                 {
@@ -190,7 +190,7 @@ namespace ParcelManagement.Api.Controller
                 dto.TrackingNumber,
                 EnumUtils.ToEnumOrNull<ParcelStatus>(dto.Status ?? ""),
                 dto.CustomEvent,
-                null, 
+                null,
                 dto.Page,
                 dto.Take
             );
@@ -202,12 +202,52 @@ namespace ParcelManagement.Api.Controller
                     TrackingNumber = p.TrackingNumber,
                     Weight = p.Weight,
                     Dimensions = p.Dimensions,
-                    ResidentUnit = p.ResidentUnit!.UnitName, 
+                    ResidentUnit = p.ResidentUnit!.UnitName,
                     Status = p.Status
                 })],
             };
             return Ok(responseDto);
         }
 
+        [HttpPost("bulkCheckIn")]
+        [Authorize(Roles = "ParcelRoomManager, Admin")]
+        public async Task<IActionResult> ParcelBulkCheckIn([FromBody] List<BulkCheckInRequestDto> parcels)
+        {
+            var theParcels = parcels.Select(p => (
+                p.TrackingNumber,
+                p.ResidentUnit,
+                p.Weight,
+                p.Dimension
+            ));
+            var userId = _userContextService.GetUserId();
+            var response = await _parcelService.BulkCheckInAsync(theParcels, userId);
+            var hasError = response.Items.Any(i => i.IsError);
+            if (hasError)
+            {
+                var dtoResponseError = new BulkCheckInResponseDto
+                {
+                    Status = "Failed",
+                    ParcelCheckedIn = 0,
+                    Message = "Some parcel failed to check in. Rollback operation",
+                    Error = [..response.Items.Where(i => i.IsError).Select(i => new BulkCheckInResponseErrorDto {
+                    Row = i.Row, ErrorDetail = i.Message!
+                })]
+                };
+                return BadRequest(dtoResponseError);
+            }
+            else
+            {
+                var dtoResponseSuccess = new BulkCheckInResponseDto
+                {
+                    Status = "Ok",
+                    ParcelCheckedIn = response.Items.Count,
+                    Message = "All parcels checked in",
+                };
+                return Ok(dtoResponseSuccess);
+            }
+        }
+        
+            
+        
     }
 }

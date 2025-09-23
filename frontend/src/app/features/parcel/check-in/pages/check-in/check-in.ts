@@ -1,14 +1,16 @@
 import { Component, OnDestroy } from '@angular/core';
-import { CheckInService } from '../../check-in-service';
-import { Observable, Subject } from 'rxjs';
+import { BulkCheckInError, CheckInPayload, CheckInService } from '../../check-in-service';
+import { Observable, Subject, tap } from 'rxjs';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AppConsole } from '../../../../../utils/app-console';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { NgClass } from '@angular/common';
+import { FileUpload } from "../../../../../common/components/file-upload/file-upload";
+import { mapperCheckInPayload } from '../../../../../core/bulk-action/excel-to-json';
 
 @Component({
   selector: 'app-check-in',
-  imports: [ReactiveFormsModule, NgIf, AsyncPipe, NgClass],
+  imports: [ReactiveFormsModule, NgIf, AsyncPipe, NgClass, FileUpload],
   templateUrl: './check-in.html',
   styleUrl: './check-in.css'
 })
@@ -16,6 +18,9 @@ export class CheckIn implements OnDestroy {
   private destroy$ = new Subject<any>()
   formGroup: FormGroup
   checkInResponse$?: Observable<any>
+  bulkCheckInResponse$?: Observable<any>
+  isBulkCheckInPopup: boolean = false
+  payloadMapper: (data: any) => CheckInPayload = mapperCheckInPayload
 
   constructor(private checkInService: CheckInService, private fb: FormBuilder) {
     this.formGroup = fb.group({
@@ -39,5 +44,16 @@ export class CheckIn implements OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next(null)
     this.destroy$.complete()
+  }
+
+  onBulkCheckInPopup() {
+    this.isBulkCheckInPopup = !this.isBulkCheckInPopup
+  }
+
+  onUploadFinished(data: CheckInPayload[]) {
+    this.bulkCheckInResponse$ = this.checkInService.bulkCheckInParcel(data).pipe(
+      tap(res => AppConsole.log(`RES: res is ${JSON.stringify(res)}`)
+      )
+    )
   }
 }

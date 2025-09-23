@@ -1,6 +1,6 @@
 import { Component, OnDestroy } from '@angular/core';
-import { CheckInPayload, CheckInService } from '../../check-in-service';
-import { Observable, Subject } from 'rxjs';
+import { BulkCheckInError, CheckInPayload, CheckInService } from '../../check-in-service';
+import { Observable, Subject, tap } from 'rxjs';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AppConsole } from '../../../../../utils/app-console';
 import { AsyncPipe, NgIf } from '@angular/common';
@@ -18,6 +18,7 @@ export class CheckIn implements OnDestroy {
   private destroy$ = new Subject<any>()
   formGroup: FormGroup
   checkInResponse$?: Observable<any>
+  bulkCheckInResponse$?: Observable<any>
   isBulkCheckInPopup: boolean = false
   payloadMapper: (data: any) => CheckInPayload = mapperCheckInPayload
 
@@ -50,6 +51,9 @@ export class CheckIn implements OnDestroy {
   }
 
   onUploadFinished(data: CheckInPayload[]) {
-    
+    this.bulkCheckInResponse$ = this.checkInService.bulkCheckInParcel(data).pipe(
+      tap(res => AppConsole.log(`RES: res is ${JSON.stringify(res)}`)
+      )
+    )
   }
 }

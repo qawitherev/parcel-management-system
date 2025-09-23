@@ -40,7 +40,8 @@ function convertToObjects<T>(data: any[], mapper: (row: any) => T): T[] {
 }
 
 export function mapperCheckInPayload(data: any): CheckInPayload{
-    if (!data.TrackingNumber || data.ResidentUnit) {
+    AppConsole.log(`MAPPER: data is ${JSON.stringify(data)}`)
+    if (!data.TrackingNumber || !data.ResidentUnit) {
       throw new Error('Required fields missing value')
     }
     return {

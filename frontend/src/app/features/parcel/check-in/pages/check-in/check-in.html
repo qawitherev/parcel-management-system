@@ -60,11 +60,23 @@
       <div class="mt-4 p-4 bg-red-100 text-red-700 rounded-md">
         <p>{{ res.message }}</p>
       </div>
-      } @else {
+      }
+      @else {
       <div class="mt-4 p-4 bg-green-100 text-green-700 rounded-md">
         <p>Parcel {{ res.trackingNumber }} has been successfully checked in!</p>
       </div>
       }
     </div>
+    @if (bulkCheckInResponse$ |async; as bulkUploadRes) {
+      @if (bulkUploadRes.error) {
+        <div class="mt-4 p-4 bg-red-100 text-red-700 rounded-md">
+        <p>{{ bulkUploadRes.message }}</p>
+        @for (item of bulkUploadRes.errors; track $index) {
+          <p>Row: {{item.row}}</p>
+          <p>Details: {{item.errorDetail}}</p>
+        }
+      </div>
+      }
+    }
   </div>
 </div>

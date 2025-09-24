@@ -10,7 +10,7 @@ namespace ParcelManagement.Core.Entities
         ParcelRoomManager,
     }
 
-    public class User
+    public class User: IEntity
     {
         public Guid Id { get; set; } // Primary Key
 

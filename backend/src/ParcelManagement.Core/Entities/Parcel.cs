@@ -16,7 +16,7 @@ namespace ParcelManagement.Core.Entities
         TrackingNumber, 
     }
 
-    public class Parcel
+    public class Parcel: IEntity
     {
         public Guid Id { get; set; } // Primary Key
 

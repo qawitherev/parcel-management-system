@@ -1,4 +1,5 @@
 using ParcelManagement.Core.Entities;
+using ParcelManagement.Core.Model.Helper;
 using ParcelManagement.Core.Repositories;
 using ParcelManagement.Core.Specifications;
 
@@ -7,13 +8,9 @@ namespace ParcelManagement.Core.Services
     public interface ILockerService
     {
         Task<Locker> CreateLockerAsync(string lockerName, Guid performedByUser);
-        Task<Locker?> GetLockerByIdAsync(Guid id);
-        Task<IReadOnlyList<Locker>> GetLockersAsync(
-            string? lockerName,
-            LockerSortableColumn? column,
-            int? page,
-            int? take,
-            bool isAsc = true
+        Task<Locker> GetLockerByIdAsync(Guid id);
+        Task<(IReadOnlyList<Locker>, int count)> GetLockersAsync(
+            FilterPaginationRequest<LockerSortableColumn> filterRequest
         );
         Task UpdateLockerAsync(Locker locker);
     }
@@ -49,19 +46,24 @@ namespace ParcelManagement.Core.Services
             return newLocker;
         }
 
-        public Task<Locker?> GetLockerByIdAsync(Guid id)
+        public async Task<Locker> GetLockerByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return await _lockerRepo.GetLockerByIdAsync(id) ??
+                throw new KeyNotFoundException($"Locker not found");
         }
 
-        public Task<IReadOnlyList<Locker>> GetLockersAsync(string? lockerName, LockerSortableColumn? column, int? page, int? take, bool isAsc = true)
+        public async Task<(IReadOnlyList<Locker>, int count)> GetLockersAsync(
+            FilterPaginationRequest<LockerSortableColumn> filterRequest)
         {
-            throw new NotImplementedException();
+            var spec = new GetAllLockersSpecification(filterRequest);
+            var lockers = await _lockerRepo.GetLockersBySpecificationAsync(spec);
+            var count = await _lockerRepo.GetLockerCountBySpecification(spec);
+            return (lockers, count);
         }
 
-        public Task UpdateLockerAsync(Locker locker)
+        public async Task UpdateLockerAsync(Locker locker)
         {
-            throw new NotImplementedException();
+            await _lockerRepo.UpdateLockerAsync(locker);
         }
     }
 }

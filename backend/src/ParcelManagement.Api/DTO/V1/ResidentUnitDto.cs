@@ -1,4 +1,4 @@
-namespace ParcelManagement.Api.DTO
+namespace ParcelManagement.Api.DTO.V1
 {
     public class RegisterUnitDto
     {

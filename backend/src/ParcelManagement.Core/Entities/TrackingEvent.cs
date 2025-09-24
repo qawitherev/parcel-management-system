@@ -10,7 +10,7 @@ namespace ParcelManagement.Core.Entities
         Custom
     }
 
-    public class TrackingEvent
+    public class TrackingEvent: IEntity
     {
         [Required]
         public required Guid Id { get; set; }

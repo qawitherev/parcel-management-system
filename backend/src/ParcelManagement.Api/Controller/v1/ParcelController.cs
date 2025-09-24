@@ -2,12 +2,12 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ParcelManagement.Api.DTO;
+using ParcelManagement.Api.DTO.V1;
 using ParcelManagement.Api.Utility;
 using ParcelManagement.Core.Services;
 using ParcelManagement.Core.Entities;
 
-namespace ParcelManagement.Api.Controller
+namespace ParcelManagement.Api.Controller.V1
 {
     [ApiController]
     [ApiVersion("1.0")]

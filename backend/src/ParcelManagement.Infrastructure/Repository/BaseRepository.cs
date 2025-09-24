@@ -1,13 +1,14 @@
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using ParcelManagement.Core.Entities;
 using ParcelManagement.Core.Repositories;
 using ParcelManagement.Core.Specifications;
 using ParcelManagement.Infrastructure.Database;
 
 namespace ParcelManagement.Infrastructure.Repository
 {
-    public class BaseRepository<T> : IBaseRepository<T> where T : class
+    public class BaseRepository<T> : IBaseRepository<T> where T : class, IEntity
     {
         private readonly ApplicationDbContext _dbContext;
         public BaseRepository(ApplicationDbContext dbContext)
@@ -92,6 +93,13 @@ namespace ParcelManagement.Infrastructure.Repository
 
         // we dont do update here because we have entity that has composite key
         // instad of ID 
+        public async Task UpdateAsync(T obj)
+        {
+            var existing = await _dbContext.Set<T>().FindAsync(obj.Id) ??
+                throw new KeyNotFoundException($"{obj.GetType().Name} with key {obj.Id} not found");
+            _dbContext.Entry(existing).CurrentValues.SetValues(obj);
+            await _dbContext.SaveChangesAsync();
+        }
     }
 
     // helper function so that we dont repeat ourself

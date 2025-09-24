@@ -1,6 +1,6 @@
 namespace ParcelManagement.Core.Entities
 {
-    public class UserResidentUnit
+    public class UserResidentUnit: IEntity
     {
         public Guid Id { get; set; }
 

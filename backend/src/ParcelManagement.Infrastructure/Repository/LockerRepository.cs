@@ -22,7 +22,7 @@ namespace ParcelManagement.Infrastructure.Repository
 
         public async Task<Locker?> GetLockerByIdAsync(Guid id)
         {
-            return await _dbContext.Lockers.FindAsync(id);
+            return await FindByIdAsync(id);
         }
 
         public async Task<int> GetLockerCountBySpecification(ISpecification<Locker> specification)
@@ -42,10 +42,7 @@ namespace ParcelManagement.Infrastructure.Repository
 
         public async Task UpdateLockerAsync(Locker locker)
         {
-            var existing = await _dbContext.Lockers.FindAsync(locker.Id) ??
-                throw new NullReferenceException($"Locker not found");
-            _dbContext.Entry(existing).CurrentValues.SetValues(locker);
-            await _dbContext.SaveChangesAsync();
+            await UpdateAsync(locker);
         }
     }
 }

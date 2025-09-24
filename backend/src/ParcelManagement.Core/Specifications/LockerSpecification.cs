@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using ParcelManagement.Core.Entities;
+using ParcelManagement.Core.Model.Helper;
 
 namespace ParcelManagement.Core.Specifications
 {
@@ -30,6 +31,48 @@ namespace ParcelManagement.Core.Specifications
         public Expression<Func<Locker, bool>> ToExpression()
         {
             return l => l.LockerName == _lockerName;
+        }
+    }
+
+    public class GetAllLockersSpecification : ISpecification<Locker>
+    {
+        private readonly FilterPaginationRequest<LockerSortableColumn> _filterRequest; 
+
+        public GetAllLockersSpecification(
+            FilterPaginationRequest<LockerSortableColumn> filterRequest)
+        {
+            _filterRequest = filterRequest;
+            IncludeExpressionsString = [
+                new IncludeExpressionString("CreatedByUser"),
+                new IncludeExpressionString("UpdatedByUser")
+            ];
+        }
+
+        List<IncludeExpression<Locker>> ISpecification<Locker>.IncludeExpressions => [];
+
+        public List<IncludeExpressionString> IncludeExpressionsString { get; }
+
+        public Expression<Func<Locker, object>>? OrderBy => _filterRequest.IsAscending ? GetSortExpression() : null;
+
+        public Expression<Func<Locker, object>>? OrderByDesc => !_filterRequest.IsAscending ? GetSortExpression() : null;
+
+        public int? Page => _filterRequest.Page;
+
+        public int? Take => _filterRequest.Take;
+
+        public Expression<Func<Locker, bool>> ToExpression()
+        {
+            return locker => locker.LockerName == _filterRequest.SearchKeyword;
+        }
+
+        private Expression<Func<Locker, object>> GetSortExpression()
+        {
+            return _filterRequest.SortableColumn switch
+            {
+                LockerSortableColumn.Id => l => l.Id,
+                LockerSortableColumn.LockerName => l => l.LockerName,
+                _ => l => l.CreatedAt
+            };
         }
     }
 }

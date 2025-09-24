@@ -125,7 +125,7 @@ namespace ParcelManagement.Core.Services
                 p => p!.TrackingNumber, 
                 StringComparer.OrdinalIgnoreCase
             );
-            using var transaction = await _parcelRepo.BeginTransactionAsync();
+            // using var transaction = await _parcelRepo.BeginTransactionAsync();
             try
             {
                 int currentRow = 0;
@@ -203,10 +203,10 @@ namespace ParcelManagement.Core.Services
             }
             catch
             {
-                await transaction.RollbackAsync();
+                // await transaction.RollbackAsync();
                 return response;
             }
-            await transaction.CommitAsync();
+            // await transaction.CommitAsync();
             return response;
         }
         public async Task ClaimParcelAsync(string trackingNumber, Guid performedByUser)

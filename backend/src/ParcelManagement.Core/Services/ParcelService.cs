@@ -29,7 +29,6 @@ namespace ParcelManagement.Core.Services
         );
 
 
-
         Task ClaimParcelAsync(string trackingNumber, Guid performedByUser);
 
         Task<Parcel?> GetParcelByIdAsync(Guid id);

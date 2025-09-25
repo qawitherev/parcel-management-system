@@ -6,7 +6,7 @@ namespace ParcelManagement.Core.Entities
         LockerName, 
         CreatedAt, 
     }
-    public class Locker: IEntity
+    public class Locker : IEntity
     {
         public required Guid Id { get; set; }
         public required string LockerName { get; set; }
@@ -19,5 +19,6 @@ namespace ParcelManagement.Core.Entities
         // navigational properties 
         public User CreatedByUser { get; set; } = null!;
         public User? UpdatedByUser { get; set; }
+        public ICollection<Parcel> Parcels { get; set; } = null!;
     }
 }

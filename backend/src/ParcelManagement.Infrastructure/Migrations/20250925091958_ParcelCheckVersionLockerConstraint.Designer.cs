@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ParcelManagement.Infrastructure.Database;
 
@@ -11,9 +12,11 @@ using ParcelManagement.Infrastructure.Database;
 namespace ParcelManagement.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250925091958_ParcelCheckVersionLockerConstraint")]
+    partial class ParcelCheckVersionLockerConstraint
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -111,7 +114,7 @@ namespace ParcelManagement.Infrastructure.Migrations
 
                     b.ToTable("Parcels", t =>
                         {
-                            t.HasCheckConstraint("CK_Parcels_LockerRequired", "(`Version` = 1) OR (`Version` > 1 AND `LockerId` IS NOT NULL)");
+                            t.HasCheckConstraint("CK_Parcels_LockerRequired", "[Version] = 1 OR ([Version] > 1 AND [Locker] IS NOT NULL)");
                         });
                 });
 

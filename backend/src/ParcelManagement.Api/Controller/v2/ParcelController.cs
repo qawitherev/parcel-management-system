@@ -4,7 +4,7 @@ using ParcelManagement.Core.Services;
 namespace ParcelManagement.Api.Controller.V2
 {
     [ApiController]
-    [ApiVersion("1.1")]
+    [ApiVersion("2.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [Consumes("application/json")]
     public class ParcelController(

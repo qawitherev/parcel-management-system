@@ -35,26 +35,7 @@ namespace ParcelManagement.Infrastructure.Database
             modelBuilder.ApplyConfiguration(new UserEntityConfiguration());
             modelBuilder.ApplyConfiguration(new ResidentUnitEntityConfiguration());
             modelBuilder.ApplyConfiguration(new LockerEntityConfiguration());
-
-            // configure the column to use string enum instead of int
-            modelBuilder.Entity<Parcel>()
-                .Property(p => p.Status)
-                .HasConversion<string>();
-
-            modelBuilder.Entity<Parcel>()
-                .Property(p => p.Weight)
-                .HasPrecision(18, 2);
-
-            // add unique constraint on tracking number and index it
-            modelBuilder.Entity<Parcel>()
-                .HasIndex(p => p.TrackingNumber)
-                .IsUnique();
-
-            // it is a best practice to start from the dependent entity—the one with the foreign key.
-            modelBuilder.Entity<Parcel>()
-                .HasOne(p => p.ResidentUnit)
-                .WithMany(ru => ru.Parcels)
-                .HasForeignKey(p => p.ResidentUnitId);
+            modelBuilder.ApplyConfiguration(new ParcelEntityConfiguration());
 
             // making composite primary key for bridge table 
             modelBuilder.Entity<UserResidentUnit>()

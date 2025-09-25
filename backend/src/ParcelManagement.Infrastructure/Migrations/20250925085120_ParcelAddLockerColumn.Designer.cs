@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ParcelManagement.Infrastructure.Database;
 
@@ -11,9 +12,11 @@ using ParcelManagement.Infrastructure.Database;
 namespace ParcelManagement.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250925085120_ParcelAddLockerColumn")]
+    partial class ParcelAddLockerColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -109,10 +112,7 @@ namespace ParcelManagement.Infrastructure.Migrations
                     b.HasIndex("TrackingNumber")
                         .IsUnique();
 
-                    b.ToTable("Parcels", t =>
-                        {
-                            t.HasCheckConstraint("CK_Parcels_LockerRequired", "(`Version` = 1) OR (`Version` > 1 AND `LockerId` IS NOT NULL)");
-                        });
+                    b.ToTable("Parcels");
                 });
 
             modelBuilder.Entity("ParcelManagement.Core.Entities.ResidentUnit", b =>

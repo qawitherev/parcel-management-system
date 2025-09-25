@@ -9,6 +9,9 @@ using ParcelManagement.Infrastructure.Repository;
 using System.Text.Json.Serialization;
 using ParcelManagement.Api.Utility;
 using Microsoft.AspNetCore.Mvc;
+using ParcelManagement.Core.UnitOfWork;
+using ParcelManagement.Infrastructure.UnitOfWork;
+using ParcelManagement.Api.Filter;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +24,10 @@ if (builder.Environment.IsDevelopment())
 }
 
 // tell the DI container that we have controller
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<TransactionFilter>();
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers().AddJsonOptions(
@@ -99,6 +105,8 @@ builder.Services.AddScoped<ILockerRepository, LockerRepository>();
 builder.Services.AddScoped<ILockerService, LockerService>();
 
 builder.Services.AddScoped<IUserContextService, UserContextService>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<TransactionFilter>();
 
 builder.Services.AddScoped<AdminDataSeeder>();
 

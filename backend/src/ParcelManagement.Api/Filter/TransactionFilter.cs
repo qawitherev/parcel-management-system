@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc.Filters;
-using ParcelManagement.Core.Repositories;
 using ParcelManagement.Core.UnitOfWork;
 using ParcelManagement.Infrastructure.Database;
 
@@ -7,14 +6,11 @@ namespace ParcelManagement.Api.Filter
 {
     public class TransactionFilter : IAsyncActionFilter
     {
-        private readonly ApplicationDbContext _dbContext;
         private readonly IUnitOfWork _unitOfWork;
         public TransactionFilter(
-            ApplicationDbContext dbContext,
             IUnitOfWork unitOfWork
             )
         {
-            _dbContext = dbContext;
             _unitOfWork = unitOfWork;
         }
 
@@ -50,6 +46,7 @@ namespace ParcelManagement.Api.Filter
             }
             else
             {
+                Console.WriteLine($"ACTION-FILTER: inside transaction filter");
                 await next();
             }
         }

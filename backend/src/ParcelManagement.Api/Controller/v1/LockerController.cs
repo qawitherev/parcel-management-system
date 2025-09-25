@@ -24,7 +24,7 @@ namespace ParcelManagement.Api.Controller.V1
             _lockerService = lockerService;
         }
 
-        [HttpGet("/{id}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetLockerById(Guid id)
         {
             var locker = await _lockerService.GetLockerByIdAsync(id);
@@ -32,7 +32,7 @@ namespace ParcelManagement.Api.Controller.V1
             {
                 Id = locker.Id,
                 LockerName = locker.LockerName,
-                CreatedBy = locker.CreatedByUser.Username,
+                CreatedBy = locker.CreatedBy.ToString(),
                 CreatedAt = locker.CreatedAt,
                 UpdatedBy = locker.UpdatedByUser?.Username,
                 UpdatedAt = locker.UpdatedAt

@@ -22,10 +22,7 @@ namespace ParcelManagement.Api.Controller.V1
         private readonly ITrackingEventService _trackingEventService = trackingEventService;
         private readonly IUserContextService _userContextService = userContextService;
 
-        // since we wont expose this endpoint publicly, we won't follow 
-        // url pattern to give way to 
-        // {"{trackingNumber}"}
-        [HttpGet("GetParcelById/{id}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetParcelById(Guid id)
         {
             var parcel = await _parcelService.GetParcelByIdAsync(id);
@@ -57,7 +54,7 @@ namespace ParcelManagement.Api.Controller.V1
             return CreatedAtAction(nameof(GetParcelById), new { id = newParcelDto.Id }, newParcelDto);
         }
 
-        [HttpPost("{trackingNumber}/claim")]
+        [HttpPost("trackingNumber/{trackingNumber}/claim")]
         [Authorize(Roles = "Resident, ParcelRoomManager")]
         public async Task<IActionResult> ClaimParcel(string trackingNumber)
         {
@@ -66,7 +63,7 @@ namespace ParcelManagement.Api.Controller.V1
             return NoContent(); // 204
         }
 
-        [HttpGet("{trackingNumber}")]
+        [HttpGet("trackingNumber/{trackingNumber}")]
         [Authorize(Roles = "Resident, ParcelRoomManager")]
         public async Task<IActionResult> GetParcelByTrackingNumber(string trackingNumber)
         {
@@ -120,7 +117,7 @@ namespace ParcelManagement.Api.Controller.V1
             return Ok(responseDto);
         }
 
-        [HttpPost("{trackingNumber}/events")]
+        [HttpPost("trackingNumber/{trackingNumber}/events")]
         [Authorize(Roles = "ParcelRoomManager")]
         public async Task<IActionResult> CreateManualEvent([FromBody] ManualEventsDto dto, string trackingNumber)
         {
@@ -136,7 +133,7 @@ namespace ParcelManagement.Api.Controller.V1
             return Ok(returnedDto);
         }
 
-        [HttpGet("{trackingNumber}/history")]
+        [HttpGet("trackingNumber/{trackingNumber}/history")]
         [Authorize]
         public async Task<IActionResult> GetParcelHistory(string trackingNumber)
         {

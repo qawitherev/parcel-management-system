@@ -14,6 +14,7 @@ using ParcelManagement.Infrastructure.UnitOfWork;
 using ParcelManagement.Api.Filter;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using ParcelManagement.Api.Swagger;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,16 +37,10 @@ builder.Services.AddSwaggerGen(option =>
     option.SwaggerDoc("v1", new OpenApiInfo { Title = "ParcelAPI", Version = "v1" });
     option.SwaggerDoc("v2", new OpenApiInfo { Title = "ParcelAPI", Version = "v2" });
 
-    option.DocInclusionPredicate((docName, apiDesc) =>
-    {
-        if (!apiDesc.TryGetMethodInfo(out var methodInfo)) return false;
-        var versions = methodInfo?.DeclaringType?
-            .GetCustomAttributes(true)
-            .OfType<ApiVersionAttribute>()
-            .SelectMany(attr => attr.Versions)
-            .ToList();
-        return versions!.Any(v => $"v{v.MajorVersion}" == docName);
-    });
+    option.DocInclusionPredicate(SwaggerSetup.DocInclusionPredicate);
+
+    option.OperationFilter<SwaggerVersionParameterRemover>();
+    option.DocumentFilter<ReplaceVersionWithValue>();
 });
 builder.Services.AddControllers().AddJsonOptions(
     options =>

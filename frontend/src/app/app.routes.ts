@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { EmptyLayout } from './common/layout/empty-layout/empty-layout';
 import { NormalLayout } from './common/layout/normal-layout/normal-layout';
-import { isLoggedInGuard } from './core/guards/auth-guard-guard';
+import { isAdminAndManagerAuthed, isLoggedInGuard, isManagerAuthed } from './core/guards/auth-guard-guard';
 
 export const routes: Routes = [
 
@@ -62,6 +62,7 @@ export const routes: Routes = [
                 data: {title: 'Dashboard'}
             }
         ], 
+        canActivate: [isLoggedInGuard]
     },
 
     {
@@ -72,7 +73,8 @@ export const routes: Routes = [
                 path: 'userResidentUnit', loadChildren: () => import('./features/resident/user-resident-unit/user-resident-unit-module').then(m => m.UserResidentUnitModule), 
                 data: { title: 'User Resident Unit'}
             }
-        ]
+        ],
+        canActivate: [isLoggedInGuard]
     }, 
 
     {
@@ -83,6 +85,19 @@ export const routes: Routes = [
                 path: 'units', loadChildren: () => import('./features/resident-units/units/units-module').then(m => m.UnitsModule),
                 data: { title: 'Resident Units'}
             }
-        ]
+        ], 
+        canActivate: [isLoggedInGuard]
+    }, 
+
+    {
+        path: 'locker', 
+        component: NormalLayout, 
+        children: [
+            {
+                path: '', loadChildren: () => import('./features/locker/locker-module').then(m => m.LockerModule),
+                data: { title: 'Locker'}
+            }
+        ], 
+        canActivate: [isLoggedInGuard, isAdminAndManagerAuthed]
     }
 ];

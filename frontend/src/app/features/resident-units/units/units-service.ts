@@ -46,7 +46,7 @@ export class UnitsService {
   }
 
   getUnit(id: string): Observable<ResidentUnit | ApiError> {
-    return this.http.get<ResidentUnit | ApiError>(`${environment.apiBaseUrl}/residentUnit/${id}`)
+    return this.http.get<ResidentUnit | ApiError>(`${environment.apiBaseUrl}/v1/residentUnit/${id}`)
       .pipe(
         catchError(handleApiError)
       )

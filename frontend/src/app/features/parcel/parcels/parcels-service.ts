@@ -5,50 +5,48 @@ import { parcelEndpoints } from '../../../core/endpoints/parcel-endpoints';
 import { handleApiError } from '../../../core/error-handling/api-catch-error';
 
 interface GetAllParcelsRequest {
-  trackingNumber?: string, 
-    status?: string, 
-    customEvent?: string, 
-    page?: number, 
-    take?: number
+  searchKeyword?: string;
+  status?: string;
+  customEvent?: string;
+  page?: number;
+  take?: number;
 }
 
 export interface ParcelResponse {
-  id: string, 
-  trackingNumber: string,
-  weight?: number, 
-  dimensions?: string, 
-  residentUnit: string, 
-  status: string
+  id: string;
+  trackingNumber: string;
+  locker?: string;
+  weight?: number;
+  dimensions?: string;
+  residentUnit: string;
+  status: string;
 }
 
 export interface ParcelResponseList {
-  parcels: ParcelResponse[], 
-  count: number
+  parcels: ParcelResponse[];
+  count: number;
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ParcelsService {
-
   constructor(private http: HttpClient) {}
 
   getAllParcels(
-    trackingNumber?: string, 
-    status?: string, 
-    customEvent?: string, 
-    page?: number, 
+    searchKeyword?: string,
+    status?: string,
+    customEvent?: string,
+    page?: number,
     take?: number
   ): Observable<any> {
     const payload: GetAllParcelsRequest = {
-      trackingNumber,
+      searchKeyword,
       status,
       customEvent,
       page,
-      take
+      take,
     };
-    return this.http.post(parcelEndpoints.all, payload).pipe(
-      catchError(handleApiError)
-    )
+    return this.http.post(parcelEndpoints.all, payload).pipe(catchError(handleApiError));
   }
 }

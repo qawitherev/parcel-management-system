@@ -45,6 +45,7 @@
                 <tr class="bg-gray-200 text-gray-700 uppercase text-sm leading-normal">
                     <th class="px-6 py-3 text-left">#</th>
                     <th class="px-6 py-3 text-left">Tracking Number</th>
+                    <th class="px-6 py-3 text-left">Locker</th>
                     <th class="px-6 py-3 text-left">Weight</th>
                     <th class="px-6 py-3 text-left">Dimension</th>
                     <th class="px-6 py-3 text-left">Resident Unit</th>
@@ -56,6 +57,7 @@
                     class="border-b hover:bg-gray-100 text-gray-600 text-sm">
                     <td class="px-6 py-4">{{ i + 1 }}</td>
                     <td class="px-6 py-4">{{ parcel.trackingNumber }}</td>
+                    <td class="px-6 py-4">{{ parcel.locker }}</td>
                     <td class="px-6 py-4">{{ parcel.weight }}</td>
                     <td class="px-6 py-4">{{ parcel.dimensions }}</td>
                     <td class="px-6 py-4">{{ parcel.residentUnit }}</td>

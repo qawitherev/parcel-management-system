@@ -9,6 +9,8 @@ namespace ParcelManagement.Core.Services
 {
     public interface IParcelService
     {
+        Task<Parcel?> GetParcelByIdAsync(Guid id);
+
         // check in, claim, getByTrackingNumber, getAll (to be implemented later: getByResidentUnit)
         Task<Parcel> CheckInParcelAsync(string trackingNumber, string residentUnit,
             decimal? weight,
@@ -38,8 +40,6 @@ namespace ParcelManagement.Core.Services
 
 
         Task ClaimParcelAsync(string trackingNumber, Guid performedByUser);
-
-        Task<Parcel?> GetParcelByIdAsync(Guid id);
 
         Task<IReadOnlyList<Parcel?>> GetAllParcelAsync();
 
@@ -315,7 +315,8 @@ namespace ParcelManagement.Core.Services
             var existingLocker = await _lockerRepo.GetOneLockerBySpecification(lockerByLockerNameSpecification) ??
                 throw new KeyNotFoundException($"Locker {locker} is not found");
             var newParcel = await CheckInHelper(trackingNumber, existingRu.Id, existingLocker.Id, weight, dimensions, performedByUser);
-            return newParcel;
+            var parcelWithDetails = await GetParcelDetailsById(newParcel.Id);
+            return parcelWithDetails;
         }
 
 
@@ -345,6 +346,14 @@ namespace ParcelManagement.Core.Services
             await _parcelRepo.AddParcelAsync(newParcel);
             await _trackingEventRepo.CreateAsync(newTracking);
             return newParcel;
+        }
+
+        private async Task<Parcel> GetParcelDetailsById(Guid id)
+        {
+            var spec = new ParcelDetailsByIdSpecification(id);
+            var parcelWithDetails = await _parcelRepo.GetOneParcelBySpecificationAsync(spec) ??
+                throw new KeyNotFoundException($"Parcel not found");
+            return parcelWithDetails;
         }
     }
 }

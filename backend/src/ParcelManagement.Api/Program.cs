@@ -34,8 +34,8 @@ builder.Services.AddControllers(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(option =>
 {
-    option.SwaggerDoc("v1", new OpenApiInfo { Title = "ParcelAPI", Version = "v1" });
-    option.SwaggerDoc("v2", new OpenApiInfo { Title = "ParcelAPI", Version = "v2" });
+    option.SwaggerDoc("v1", new OpenApiInfo { Title = "Parcel API version 1", Version = "v1" });
+    option.SwaggerDoc("v2", new OpenApiInfo { Title = "Parcel API version 2", Version = "v2" });
 
     option.DocInclusionPredicate(SwaggerSetup.DocInclusionPredicate);
 
@@ -143,7 +143,11 @@ app.MapControllers();
 if (builder.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(option =>
+    {
+        option.SwaggerEndpoint("/swagger/v1/swagger.json", "Parcel API v1");
+        option.SwaggerEndpoint("/swagger/v2/swagger.json", "Parcel API v2");
+    });
 }
 
 app.UseMiddleware<ApiExceptionMiddelware>();

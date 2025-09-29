@@ -1,3 +1,4 @@
+using System.Data.Common;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using ParcelManagement.Core.Entities;
@@ -229,6 +230,36 @@ namespace ParcelManagement.Core.Specifications
                 ParcelSortableColumn.TrackingNumber => p => p.TrackingNumber,
                 _ => p => p.EntryDate
             };
+        }
+    }
+
+    public class ParcelDetailsByIdSpecification : ISpecification<Parcel>
+    {
+        private readonly Guid _id;
+        public ParcelDetailsByIdSpecification(Guid id)
+        {
+            _id = id;
+            IncludeExpressionsString = [
+                new IncludeExpressionString("ResidentUnit"),
+                new IncludeExpressionString("Locker")
+            ];
+        }
+        
+        public List<IncludeExpressionString> IncludeExpressionsString { get; }
+
+        List<IncludeExpression<Parcel>> ISpecification<Parcel>.IncludeExpressions => [];
+
+        Expression<Func<Parcel, object>>? ISpecification<Parcel>.OrderBy => null;
+
+        Expression<Func<Parcel, object>>? ISpecification<Parcel>.OrderByDesc => null;
+
+        int? ISpecification<Parcel>.Page => null;
+
+        int? ISpecification<Parcel>.Take => null;
+
+        public Expression<Func<Parcel, bool>> ToExpression()
+        {
+            return p => p.Id == _id;
         }
     }
 }

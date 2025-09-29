@@ -14,8 +14,7 @@ namespace ParcelManagement.Api.Swagger
             var versions = methodInfo?.DeclaringType?
                 .GetCustomAttributes(true)
                 .OfType<ApiVersionAttribute>()
-                .SelectMany(attr => attr.Versions)
-                .ToList();
+                .SelectMany(attr => attr.Versions);
 
             return versions!.Any(v => $"v{v.MajorVersion}" == docName);
         }

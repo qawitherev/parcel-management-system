@@ -18,4 +18,17 @@ namespace ParcelManagement.Api.DTO.V2
 
         public string? Dimensions { get; set; }
     }
+
+    public class ParcelResponseDto
+    {
+        public required Guid Id { set; get; }
+        public required string TrackingNumber { get; set; }
+        public required string Locker{ get; set; }
+        public decimal? Weight { get; set; }
+
+        public string? Dimensions { get; set; }
+
+        public string? ResidentUnit { get; set; }
+        public ParcelStatus? Status { get; set; }
+    }
 }

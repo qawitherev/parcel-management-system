@@ -8,7 +8,7 @@ namespace ParcelManagement.Api.Controller.V1
 {
     [ApiController]
     [ApiVersion("1.0")]
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [Consumes("application/json")]
     public class LockerController : ControllerBase
     {

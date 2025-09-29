@@ -8,7 +8,8 @@ using ParcelManagement.Core.Services;
 namespace ParcelManagement.Api.Controller
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [Consumes("application/json")]
     public class ResidentUnitController : ControllerBase
     {

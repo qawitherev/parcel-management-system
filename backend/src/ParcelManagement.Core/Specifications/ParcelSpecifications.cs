@@ -2,6 +2,7 @@ using System.Data.Common;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using ParcelManagement.Core.Entities;
+using ParcelManagement.Core.Model.Helper;
 
 namespace ParcelManagement.Core.Specifications
 {
@@ -164,41 +165,26 @@ namespace ParcelManagement.Core.Specifications
 
     public class ParcelViewSpecification : ISpecification<Parcel>
     {
-        private readonly string? _trackingNumber;
-        private readonly int? _page;
-        private readonly int? _take;
         private readonly ParcelStatus? _status;
-        private readonly string? _customEvent;
         private readonly Guid? _userId;
         private readonly UserRole? _role;
-        private readonly ParcelSortableColumn? _column;
-        private readonly bool _isAsc;
+        private readonly FilterPaginationRequest<ParcelSortableColumn> _filterPaginationRequest;
 
         public ParcelViewSpecification(
+            FilterPaginationRequest<ParcelSortableColumn> filterPaginationRequest,
             UserRole? role,
             Guid? userId,
-            string? trackingNumber,
-            ParcelStatus? status,
-            string? customEvent,
-            ParcelSortableColumn? column,
-            int? page,
-            int? take = 20,
-            bool isAsc = true
-
+            ParcelStatus? status
         )
         {
             _userId = userId;
             _role = role;
-            _trackingNumber = trackingNumber;
             _status = status;
-            _customEvent = customEvent;
-            _column = column;
-            _isAsc = isAsc;
-            _page = page;
-            _take = take;
+            _filterPaginationRequest = filterPaginationRequest;
             IncludeExpressionsString = [
                 new IncludeExpressionString("TrackingEvents"),
-                new IncludeExpressionString("ResidentUnit.UserResidentUnits.User")
+                new IncludeExpressionString("ResidentUnit.UserResidentUnits.User"),
+                new IncludeExpressionString("Locker")
             ];
         }
 
@@ -206,26 +192,28 @@ namespace ParcelManagement.Core.Specifications
 
         public List<IncludeExpressionString> IncludeExpressionsString { get; }
 
-        public int? Page => _page;
+        public int? Page => _filterPaginationRequest.Page;
 
-        public int? Take => _take;
+        public int? Take => _filterPaginationRequest.Take;
 
-        public Expression<Func<Parcel, object>>? OrderBy => _isAsc ? GetSortExpression() : null;
+        public Expression<Func<Parcel, object>>? OrderBy => _filterPaginationRequest.IsAscending ? GetSortExpression() : null;
 
-        public Expression<Func<Parcel, object>>? OrderByDesc => !_isAsc ? GetSortExpression() : null;
+        public Expression<Func<Parcel, object>>? OrderByDesc => !_filterPaginationRequest.IsAscending ? GetSortExpression() : null;
 
         public Expression<Func<Parcel, bool>> ToExpression()
         {
             return p =>
-                (string.IsNullOrEmpty(_trackingNumber) || p.TrackingNumber.Contains(_trackingNumber)) &&
+                (string.IsNullOrEmpty(_filterPaginationRequest.SearchKeyword) || p.TrackingNumber.Contains(_filterPaginationRequest.SearchKeyword) || 
+                    (p.Locker != null && p.Locker.LockerName.Contains(_filterPaginationRequest.SearchKeyword)) ||
+                    p.TrackingEvents.Any(te => !string.IsNullOrEmpty(te.CustomEvent) && te.CustomEvent.Contains(_filterPaginationRequest.SearchKeyword))
+                ) &&
                 (!_status.HasValue || p.Status == _status) &&
-                (string.IsNullOrEmpty(_customEvent) || p.TrackingEvents.Any(te => !string.IsNullOrEmpty(te.CustomEvent) && te.CustomEvent.Contains(_customEvent))) &&
                 (_role != UserRole.Resident || p.ResidentUnit!.UserResidentUnits.Any(uru => _userId.HasValue && uru.UserId == _userId.Value));
         }
 
         private Expression<Func<Parcel, object>> GetSortExpression()
         {
-            return _column switch
+            return _filterPaginationRequest.SortableColumn switch
             {
                 ParcelSortableColumn.TrackingNumber => p => p.TrackingNumber,
                 _ => p => p.EntryDate

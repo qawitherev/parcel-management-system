@@ -185,7 +185,7 @@ namespace ParcelManagement.Api.Controller.V1
             var (resParcels, count) = await _parcelService.GetParcelsForView(
                 role,
                 userId,
-                dto.TrackingNumber,
+                dto.SearchKeyword,
                 EnumUtils.ToEnumOrNull<ParcelStatus>(dto.Status ?? ""),
                 dto.CustomEvent,
                 null,
@@ -198,6 +198,7 @@ namespace ParcelManagement.Api.Controller.V1
                 Parcels = [.. resParcels.Select(p => new ParcelResponseDto {
                     Id = p.Id,
                     TrackingNumber = p.TrackingNumber,
+                    Locker = p.Locker?.LockerName ?? "",
                     Weight = p.Weight,
                     Dimensions = p.Dimensions,
                     ResidentUnit = p.ResidentUnit!.UnitName,
@@ -214,6 +215,7 @@ namespace ParcelManagement.Api.Controller.V1
             var theParcels = parcels.Select(p => (
                 p.TrackingNumber,
                 p.ResidentUnit,
+                p.Locker,
                 p.Weight,
                 p.Dimension
             ));

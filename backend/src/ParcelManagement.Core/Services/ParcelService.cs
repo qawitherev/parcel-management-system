@@ -1,3 +1,4 @@
+using System.Reflection.Metadata;
 using Microsoft.AspNetCore.Http.Features;
 using ParcelManagement.Core.Entities;
 using ParcelManagement.Core.Model.Helper;
@@ -24,7 +25,7 @@ namespace ParcelManagement.Core.Services
         );
 
         Task<BulkCheckInResponse> BulkCheckInAsync(
-            IEnumerable<(string trackingNumber, string residentUnit, decimal? weight, string? dimensions)> parcels,
+            IEnumerable<(string trackingNumber, string residentUnit, string? lockerName, decimal? weight, string? dimensions)> parcels,
             Guid performedByUser);
 
         Task<(IReadOnlyList<Parcel>, int count)> GetParcelsForView(
@@ -94,7 +95,7 @@ namespace ParcelManagement.Core.Services
         }
 
         public async Task<BulkCheckInResponse> BulkCheckInAsync(
-            IEnumerable<(string trackingNumber, string residentUnit, decimal? weight, string? dimensions)> inParcels,
+            IEnumerable<(string trackingNumber, string residentUnit, string? lockerName, decimal? weight, string? dimensions)> inParcels,
             Guid performedByUser
         )
         {
@@ -114,12 +115,31 @@ namespace ParcelManagement.Core.Services
                 p => p!.TrackingNumber,
                 StringComparer.OrdinalIgnoreCase
             );
+
+            // a check to determine if we're passing locker or not 
+            // all or nothing check 
+            if (!((inParcels.Count() == inParcels.Count(ip => ip.lockerName == null)) || 
+                (inParcels.Count() == inParcels.Count(ip => ip.lockerName != null)))
+                )
+            {
+                throw new InvalidOperationException($"Locker name for all rows must be provided");
+            }
+            var isV2 = inParcels.Any(ip => ip.lockerName != null);
+
+            Dictionary<string, Locker>? existingLockerDict = null;
+            if (isV2)
+            {
+                var allLockerSpec = new AllLockersSpecification(new FilterPaginationRequest<LockerSortableColumn> { });
+                var existingLockers = await _lockerRepo.GetLockersBySpecificationAsync(allLockerSpec);
+                existingLockerDict = existingLockers.ToDictionary(locker => locker.LockerName, StringComparer.OrdinalIgnoreCase);
+            }
+
             try
             {
                 int currentRow = 0;
                 var isError = false;
                 var isRowError = false;
-                foreach (var (trackingNumber, residentUnit, weight, dimensions) in inParcels)
+                foreach (var (trackingNumber, residentUnit, locker, weight, dimensions) in inParcels)
                 {
                     currentRow++;
                     isRowError = false;
@@ -135,6 +155,18 @@ namespace ParcelManagement.Core.Services
                         isError = true;
                         isRowError = true;
                         // throw new Exception($"Resident unit {residentUnit} not found");
+                    }
+                    if (!existingLockerDict!.TryGetValue(locker!, out var theLocker) && isV2)
+                    {
+                        response.Items.Add(new ParcelCheckInResponse
+                        {
+                            TrackingNumber = trackingNumber,
+                            Row = currentRow,
+                            IsError = true,
+                            Message = $"Locker {locker} not found"
+                        });
+                        isError = true;
+                        isRowError = true;    
                     }
                     if (existingParcelsDict.TryGetValue(trackingNumber, out var parcel))
                     {
@@ -163,7 +195,8 @@ namespace ParcelManagement.Core.Services
                         continue;
                     }
                     var newParcel = await CheckInHelper(
-                        trackingNumber, existingResidentUnitDict[residentUnit].Id, null, weight, dimensions, performedByUser);
+                        trackingNumber, existingResidentUnitDict[residentUnit].Id, existingLockerDict[locker!].Id, weight, dimensions, performedByUser,
+                        isV2 ? 2 : 1);
                     existingParcelsDict[trackingNumber] = newParcel;
                 }
                 if (response.Items.Any(i => i.IsError))
@@ -271,20 +304,22 @@ namespace ParcelManagement.Core.Services
         }
 
         public async Task<(IReadOnlyList<Parcel>, int count)> GetParcelsForView(
-            UserRole? role, Guid? userId, string? trackingNumber, ParcelStatus? status, string? customEvent, ParcelSortableColumn? column, int? page, int? take = 20,
+            UserRole? role, Guid? userId, string? searchKeyword, ParcelStatus? status, string? customEvent, ParcelSortableColumn? column, int? page, int? take = 20,
             bool isAsc = true
             )
         {
+            var filterPaginationRequest = new FilterPaginationRequest<ParcelSortableColumn>
+            {
+                SearchKeyword = searchKeyword,
+                Page = page,
+                Take = take,
+                SortableColumn = column ?? ParcelSortableColumn.TrackingNumber
+            };
             var spec = new ParcelViewSpecification(
-                role,
+                filterPaginationRequest,
+                role, 
                 userId,
-                trackingNumber,
-                status,
-                customEvent,
-                column,
-                page,
-                take,
-                isAsc
+                status
             );
             var res = await _parcelRepo.GetParcelsBySpecificationAsync(spec);
             var count = await _parcelRepo.GetParcelCountBySpecification(spec);

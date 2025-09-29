@@ -34,11 +34,11 @@ namespace ParcelManagement.Core.Specifications
         }
     }
 
-    public class GetAllLockersSpecification : ISpecification<Locker>
+    public class AllLockersSpecification : ISpecification<Locker>
     {
         private readonly FilterPaginationRequest<LockerSortableColumn> _filterRequest; 
 
-        public GetAllLockersSpecification(
+        public AllLockersSpecification(
             FilterPaginationRequest<LockerSortableColumn> filterRequest)
         {
             _filterRequest = filterRequest;
@@ -62,7 +62,7 @@ namespace ParcelManagement.Core.Specifications
 
         public Expression<Func<Locker, bool>> ToExpression()
         {
-            return locker => locker.LockerName == _filterRequest.SearchKeyword;
+            return locker => string.IsNullOrEmpty(_filterRequest.SearchKeyword) || locker.LockerName == _filterRequest.SearchKeyword;
         }
 
         private Expression<Func<Locker, object>> GetSortExpression()

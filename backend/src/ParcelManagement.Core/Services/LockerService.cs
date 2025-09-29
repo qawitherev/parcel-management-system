@@ -55,7 +55,7 @@ namespace ParcelManagement.Core.Services
         public async Task<(IReadOnlyList<Locker>, int count)> GetLockersAsync(
             FilterPaginationRequest<LockerSortableColumn> filterRequest)
         {
-            var spec = new GetAllLockersSpecification(filterRequest);
+            var spec = new AllLockersSpecification(filterRequest);
             var lockers = await _lockerRepo.GetLockersBySpecificationAsync(spec);
             var count = await _lockerRepo.GetLockerCountBySpecification(spec);
             return (lockers, count);

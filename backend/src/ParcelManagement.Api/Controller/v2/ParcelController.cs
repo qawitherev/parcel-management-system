@@ -13,7 +13,7 @@ namespace ParcelManagement.Api.Controller.V2
     [Route("api/v{version:apiVersion}/[controller]")]
     [Consumes("application/json")]
     public class ParcelController(
-        IParcelService parcelService, 
+        IParcelService parcelService,
         IUserContextService userContextService
     ) : ControllerBase
     {
@@ -50,5 +50,7 @@ namespace ParcelManagement.Api.Controller.V2
 
             return CreatedAtAction(nameof(GetParcelById), new { id = newParcel.Id }, parcelDto);
         }
+        
+        
     }
 }

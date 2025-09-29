@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ParcelManagement.Api.DTO.V1;
 using ParcelManagement.Api.Utility;
+using ParcelManagement.Core.Entities;
+using ParcelManagement.Core.Model.Helper;
 using ParcelManagement.Core.Services;
 
 namespace ParcelManagement.Api.Controller.V1
@@ -41,7 +43,7 @@ namespace ParcelManagement.Api.Controller.V1
         }
 
         [HttpPost("")]
-        [Authorize(Roles ="ParcelRoomManager, Admin")]
+        [Authorize(Roles = "ParcelRoomManager, Admin")]
         public async Task<IActionResult> CreateLocker([FromBody] CreateLockerRequestDto dto)
         {
             var userId = _userContextService.GetUserId();
@@ -56,6 +58,34 @@ namespace ParcelManagement.Api.Controller.V1
                 UpdatedAt = newLocker.UpdatedAt
             };
             return CreatedAtAction(nameof(GetLockerById), new { id = newLocker.Id }, returnDto);
+        }
+
+        [HttpGet("all")]
+        [Authorize(Roles = "ParcelRoomManager, Admin")]
+        public async Task<IActionResult> GetAllLockers([FromQuery] GetAllLockersRequestDto dto)
+        {
+            var sortableColumn = EnumUtils.ToEnumOrNull<LockerSortableColumn>(dto.Column ?? "");
+            var (lockers, count) = await _lockerService.GetLockersAsync(new FilterPaginationRequest<LockerSortableColumn>
+            {
+                SearchKeyword = dto.SearchKeyword,
+                Page = dto.Page,
+                Take = dto.Take,
+                SortableColumn = sortableColumn ?? LockerSortableColumn.CreatedAt,
+                IsAscending = dto.IsAscending
+            });
+            var responseDto = new GetAllLockersResponseDto
+            {
+                Count = count,
+                Lockers = [.. lockers.Select(loc => new LockerResponseDto {
+                    Id = loc.Id,
+                    LockerName = loc.LockerName,
+                    CreatedBy = loc.CreatedByUser.Username,
+                    CreatedAt = loc.CreatedAt,
+                    UpdatedBy = loc.UpdatedByUser?.Username ?? "",
+                    UpdatedAt = loc.UpdatedAt 
+                })]
+            };
+            return Ok(responseDto);
         }
     }
 }

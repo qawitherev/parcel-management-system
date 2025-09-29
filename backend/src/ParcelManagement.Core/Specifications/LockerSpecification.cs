@@ -62,7 +62,7 @@ namespace ParcelManagement.Core.Specifications
 
         public Expression<Func<Locker, bool>> ToExpression()
         {
-            return locker => string.IsNullOrEmpty(_filterRequest.SearchKeyword) || locker.LockerName == _filterRequest.SearchKeyword;
+            return locker => string.IsNullOrEmpty(_filterRequest.SearchKeyword) || locker.LockerName.Contains(_filterRequest.SearchKeyword);
         }
 
         private Expression<Func<Locker, object>> GetSortExpression()

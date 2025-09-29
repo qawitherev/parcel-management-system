@@ -60,6 +60,15 @@ namespace ParcelManagement.Api.Controller.V1
             return CreatedAtAction(nameof(GetLockerById), new { id = newLocker.Id }, returnDto);
         }
 
+        [HttpPatch("{id}")]
+        [Authorize(Roles = "ParcelRoomManager, Admin")]
+        public async Task<IActionResult> UpdateLocker([FromBody] UpdateLockerRequestDto dto, Guid id)
+        {
+            var userId = _userContextService.GetUserId();
+            await _lockerService.UpdateLockerAsync(dto.LockerName, userId);
+            return NoContent();
+        }
+
         [HttpGet("all")]
         [Authorize(Roles = "ParcelRoomManager, Admin")]
         public async Task<IActionResult> GetAllLockers([FromQuery] GetAllLockersRequestDto dto)

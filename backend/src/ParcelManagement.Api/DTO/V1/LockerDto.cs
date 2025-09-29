@@ -34,4 +34,9 @@ namespace ParcelManagement.Api.DTO.V1
         public int Count { get; set; }
         public required List<LockerResponseDto> Lockers { get; set; }
     }
+
+    public class UpdateLockerRequestDto
+    {
+        public required string LockerName { get; set; }
+    }
 }

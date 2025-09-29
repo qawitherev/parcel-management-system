@@ -25,7 +25,8 @@ export class CheckIn implements OnDestroy {
   constructor(private checkInService: CheckInService, private fb: FormBuilder) {
     this.formGroup = fb.group({
       trackingNumber: ['', [Validators.required, Validators.maxLength(20)]],
-      residentUnit: ['', [Validators.required, Validators.maxLength(20)]]
+      residentUnit: ['', [Validators.required, Validators.maxLength(20)]], 
+      locker: ['', [Validators.required, Validators.maxLength(20)]]
     })
   }
 
@@ -34,7 +35,10 @@ export class CheckIn implements OnDestroy {
       AppConsole.log(`Check in starting...`)
       const payload = {
         trackingNumber: this.formGroup.value.trackingNumber, 
-        residentUnit: this.formGroup.value.residentUnit
+        residentUnit: this.formGroup.value.residentUnit, 
+        locker: this.formGroup.value.locker, 
+        weight: 0, 
+        dimension: ""
       }
       AppConsole.log(`payload: ${JSON.stringify(payload)}`)
       this.checkInResponse$ = this.checkInService.checkInParcel(payload)

@@ -8,6 +8,7 @@ import { AppConsole } from '../../../utils/app-console';
 export interface CheckInPayload {
   trackingNumber: string, 
   residentUnit: string, 
+  locker: string,
   weight?: number, 
   dimension?: string
 }

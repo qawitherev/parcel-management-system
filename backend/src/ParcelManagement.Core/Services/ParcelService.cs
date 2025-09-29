@@ -314,14 +314,16 @@ namespace ParcelManagement.Core.Services
             var lockerByLockerNameSpecification = new LockerByLockerNameSpecification(locker);
             var existingLocker = await _lockerRepo.GetOneLockerBySpecification(lockerByLockerNameSpecification) ??
                 throw new KeyNotFoundException($"Locker {locker} is not found");
-            var newParcel = await CheckInHelper(trackingNumber, existingRu.Id, existingLocker.Id, weight, dimensions, performedByUser);
+            var newParcel = await CheckInHelper(trackingNumber, existingRu.Id, existingLocker.Id, weight, dimensions, performedByUser, 2);
             var parcelWithDetails = await GetParcelDetailsById(newParcel.Id);
             return parcelWithDetails;
         }
 
 
         // helpers 
-        private async Task<Parcel> CheckInHelper(string trackingNumber, Guid residentUnitId, Guid? lockerId, decimal? weight, string? dimensions, Guid performedByUser)
+        private async Task<Parcel> CheckInHelper(string trackingNumber, Guid residentUnitId, Guid? lockerId, decimal? weight, string? dimensions, Guid performedByUser, 
+            int version = 1
+        )
         {
             var newParcel = new Parcel
             {
@@ -333,7 +335,8 @@ namespace ParcelManagement.Core.Services
                 Status = ParcelStatus.AwaitingPickup,
                 Weight = weight ?? 0,
                 Dimensions = dimensions ?? "",
-                EntryDate = DateTimeOffset.UtcNow
+                EntryDate = DateTimeOffset.UtcNow, 
+                Version = version
             };
             var newTracking = new TrackingEvent
             {

@@ -65,7 +65,7 @@ namespace ParcelManagement.Api.Controller.V1
         public async Task<IActionResult> UpdateLocker([FromBody] UpdateLockerRequestDto dto, Guid id)
         {
             var userId = _userContextService.GetUserId();
-            await _lockerService.UpdateLockerAsync(dto.LockerName, userId);
+            await _lockerService.UpdateLockerAsync(dto.LockerName, userId, id);
             return NoContent();
         }
 

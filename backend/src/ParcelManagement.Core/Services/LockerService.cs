@@ -12,7 +12,7 @@ namespace ParcelManagement.Core.Services
         Task<(IReadOnlyList<Locker>, int count)> GetLockersAsync(
             FilterPaginationRequest<LockerSortableColumn> filterRequest
         );
-        Task UpdateLockerAsync(string lockerName, Guid performedBy);
+        Task UpdateLockerAsync(string lockerName, Guid performedBy, Guid lockerId);
     }
 
     public class LockerService : ILockerService
@@ -61,10 +61,9 @@ namespace ParcelManagement.Core.Services
             return (lockers, count);
         }
 
-        public async Task UpdateLockerAsync(string lockerName, Guid performedBy)
+        public async Task UpdateLockerAsync(string lockerName, Guid performedBy, Guid lockerId)
         {
-            var spec = new LockerByLockerNameSpecification(lockerName);
-            var locker = await _lockerRepo.GetOneLockerBySpecification(spec) ??
+            var locker = await _lockerRepo.GetLockerByIdAsync(lockerId) ??
                 throw new KeyNotFoundException($"Locker {lockerName} not found");
             locker.LockerName = lockerName;
             locker.UpdatedBy = performedBy;

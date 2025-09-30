@@ -41,7 +41,7 @@ namespace ParcelManagement.Api.Controller
             return Ok(await _residentUnitService.GetResidentUnitById(id));
         }
 
-        [HttpPost("registerUnit")]
+        [HttpPost("")]
         [Consumes("application/json")]
         public async Task<IActionResult> RegisterUnit([FromBody] RegisterUnitDto registerUnitDto)
         {

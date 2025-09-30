@@ -28,6 +28,10 @@ export interface ResidentUnit {
   updatedBy?: string
 }
 
+export interface CreateUnitRequest {
+  unitName: string
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -60,4 +64,12 @@ export class UnitsService {
       catchError(handleApiError)
     )
   }
+
+  createUnit(payload: CreateUnitRequest): Observable<null | ApiError> {
+    return this.http.post<null | ApiError>(`${residentUnitsEndpoints.createUpdateUnit}`, payload)
+      .pipe(
+        catchError(handleApiError)
+      )
+  }
+  
 }

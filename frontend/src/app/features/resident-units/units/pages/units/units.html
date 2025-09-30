@@ -1,5 +1,5 @@
 @let units = unitList$ | async;
-<div class="relative">
+<div class="relative flex items-center justify-between">
   <input
     [value]="keywordStream.value"
     (input)="onSearch($any($event.target).value)"
@@ -7,6 +7,12 @@
     placeholder="Search units..."
     class="w-64 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
   />
+  <button
+    class="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg shadow-md hover:bg-gray-700 hover:text-gray-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+    (click)="onAddClick()"
+  >
+    Add Unit
+  </button>
 </div>
 <div class="mb-4"></div>
 <table class="table-auto w-full border-collapse bg-white">
@@ -33,7 +39,7 @@
     } @else { @if (units && 'residentUnits' in units) { @for (unit of units.residentUnits; track
     $index) {
     <tr class="border-b hover:bg-gray-100 text-gray-600 text-sm">
-      <td class="px-6 py-4">{{ (paginationCurrentPage-1)*paginationPageSize+$index+1 }}</td>
+      <td class="px-6 py-4">{{ (paginationCurrentPage - 1) * paginationPageSize + $index + 1 }}</td>
       <td class="px-6 py-4">{{ unit.unitName }}</td>
       <td class="px-6 py-4">{{ unit.createdBy }}</td>
       <td class="px-6 py-4">{{ unit.createdAt }}</td>
@@ -41,8 +47,7 @@
       <td class="px-6 py-4">{{ unit.updatedAt }}</td>
       <td class="px-6 py-4">
         <button
-            class="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg shadow-md hover:bg-gray-700 hover:text-gray-200 cursor-pointer
-            focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+          class="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg shadow-md hover:bg-gray-700 hover:text-gray-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
           (click)="onEditClick(unit.id)"
         >
           Edit

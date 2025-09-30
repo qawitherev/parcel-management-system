@@ -65,6 +65,12 @@ namespace ParcelManagement.Core.Services
         {
             var locker = await _lockerRepo.GetLockerByIdAsync(lockerId) ??
                 throw new KeyNotFoundException($"Locker {lockerName} not found");
+            var spec = new LockerByLockerNameSpecification(lockerName);
+            var existingName = await _lockerRepo.GetOneLockerBySpecification(spec);
+            if (existingName != null && existingName.Id != lockerId)
+            {
+                throw new InvalidOperationException($"{lockerName} has been taken. Try another name");
+            }
             locker.LockerName = lockerName;
             locker.UpdatedBy = performedBy;
             locker.UpdatedAt = DateTimeOffset.UtcNow;

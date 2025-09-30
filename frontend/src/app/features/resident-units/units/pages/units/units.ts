@@ -89,4 +89,8 @@ export class Units implements OnInit, OnDestroy {
   onEditClick(id: string) {
     this.router.navigate(['edit', id], {relativeTo: this.route})
   }
+
+  onAddClick() {
+    this.router.navigate(['edit'], { relativeTo: this.route})
+  }
 }

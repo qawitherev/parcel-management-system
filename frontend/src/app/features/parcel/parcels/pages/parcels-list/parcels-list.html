@@ -55,7 +55,7 @@
             <tbody>
                 <tr *ngFor="let parcel of (parcelList$ | async)?.parcels; let i = index" 
                     class="border-b hover:bg-gray-100 text-gray-600 text-sm">
-                    <td class="px-6 py-4">{{ i + 1 }}</td>
+                    <td class="px-6 py-4">{{ (paginationCurrentPage-1)*paginationPageSize+i+1 }}</td>
                     <td class="px-6 py-4">{{ parcel.trackingNumber }}</td>
                     <td class="px-6 py-4">{{ parcel.locker }}</td>
                     <td class="px-6 py-4">{{ parcel.weight }}</td>

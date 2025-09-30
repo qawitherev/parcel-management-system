@@ -73,4 +73,8 @@ export class Listing {
       take: data.pageSize
     })
   }
+
+  onAddLockerClick() {
+    this.router.navigate(['addEdit'], {relativeTo: this.route})
+  }
 }

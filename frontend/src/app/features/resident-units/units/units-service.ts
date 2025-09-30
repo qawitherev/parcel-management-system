@@ -56,7 +56,7 @@ export class UnitsService {
     const body = {
       unitName: unitName
     }
-    return this.http.patch(`${environment.apiBaseUrl}/residentUnit/${id}`, body).pipe(
+    return this.http.patch(`${environment.apiBaseUrl}/v1/residentUnit/${id}`, body).pipe(
       catchError(handleApiError)
     )
   }

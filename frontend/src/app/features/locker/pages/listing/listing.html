@@ -1,5 +1,5 @@
 @let lockers = lockerList$ | async;
-<div class="relative">
+<div class="relative flex justify-between items-center">
   <input
     [value]="searchKeyword.value"
     (input)="onSearch($any($event.target).value)"
@@ -7,6 +7,12 @@
     placeholder="Search lockers..."
     class="w-64 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
   />
+  <button
+    class="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg shadow-md hover:bg-gray-700 hover:text-gray-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+    (click)="onAddLockerClick()"
+  >
+    Add New Locker
+  </button>
 </div>
 <div class="mb-4"></div>
 <table class="table-auto w-full border-collapse bg-white">

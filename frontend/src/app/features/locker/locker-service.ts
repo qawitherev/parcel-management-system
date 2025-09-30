@@ -54,7 +54,7 @@ export class LockerService {
   }
 
   updateLocker(payload: CreateUpdateLockerRequest, id: string): Observable<null | ApiError> {
-    return this.http.patch<null | ApiError>(lockerEndpoints.createUpdateLocker, {payload})
+    return this.http.patch<null | ApiError>(`${lockerEndpoints.createUpdateLocker}/${id}`, payload)
       .pipe(
         catchError(handleApiError)
       )

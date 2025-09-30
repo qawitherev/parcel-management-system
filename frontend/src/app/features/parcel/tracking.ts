@@ -12,6 +12,6 @@ export class TrackingService {
 
   getUserParcelHistory(trackingNumber: string): Observable<any> {
     AppConsole.log(`API call: getParcelHistory`)
-    return this.http.get(`${environment.apiBaseUrl}/parcel/${trackingNumber}/history`)
+    return this.http.get(`${environment.apiBaseUrl}/v1/parcel/trackingNumber/${trackingNumber}/history`)
   }
 }

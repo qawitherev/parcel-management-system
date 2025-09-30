@@ -47,6 +47,7 @@ export function mapperCheckInPayload(data: any): CheckInPayload{
     return {
         trackingNumber: data.TrackingNumber, 
         residentUnit: data.ResidentUnit, 
+        locker: "", 
         weight: data.Weight ? data.Weight : undefined, 
         dimension: data.Dimension ? data.Dimension : undefined
     }

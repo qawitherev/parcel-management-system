@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using ParcelManagement.Core.Entities;
 
-namespace ParcelManagement.Api.DTO
+namespace ParcelManagement.Api.DTO.V1
 {
     public class CheckInParcelDto
     {
@@ -20,6 +20,7 @@ namespace ParcelManagement.Api.DTO
     {
         public required Guid Id { set; get; }
         public required string TrackingNumber { get; set; }
+        public string? Locker { get; set; }
 
         public decimal? Weight { get; set; }
 
@@ -67,7 +68,7 @@ namespace ParcelManagement.Api.DTO
 
     public class GetAllParcelsRequestDto
     {
-        public string? TrackingNumber { get; set; }
+        public string? SearchKeyword { get; set; }
         public string? Status { get; set; }
         public string? CustomEvent { get; set; }
         public int? Page { get; set; }
@@ -84,6 +85,7 @@ namespace ParcelManagement.Api.DTO
     {
         public required string TrackingNumber { get; set; }
         public required string ResidentUnit { get; set; }
+        public string? Locker { get; set; }
         public decimal? Weight { get; set; }
         public string? Dimension { get; set; }
     }

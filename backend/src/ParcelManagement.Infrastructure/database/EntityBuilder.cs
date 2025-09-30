@@ -1,3 +1,4 @@
+using System.Data.Common;
 using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -6,6 +7,24 @@ using ParcelManagement.Core.Misc;
 
 namespace ParcelManagement.Infrastructure.Database
 {
+    public class ParcelEntityConfiguration : IEntityTypeConfiguration<Parcel>
+    {
+        public void Configure(EntityTypeBuilder<Parcel> builder)
+        {
+            builder.HasKey(p => p.Id);
+            builder.Property(p => p.Status).HasConversion<string>();
+            builder.Property(p => p.Weight).HasPrecision(18, 2);
+            builder.HasIndex(p => p.TrackingNumber).IsUnique();
+            builder.HasOne(p => p.ResidentUnit).WithMany(ru => ru.Parcels).HasForeignKey(p => p.ResidentUnitId);
+            builder.HasOne(p => p.Locker).WithMany(locker => locker.Parcels).HasForeignKey(p => p.LockerId)
+                .IsRequired(false);
+            builder.ToTable(t => t.HasCheckConstraint("CK_Parcels_LockerRequired",
+            "(`Version` = 1) OR (`Version` > 1 AND `LockerId` IS NOT NULL)"
+            ));
+
+        }
+    }
+
     public class TrackingEventEntityConfiguration : IEntityTypeConfiguration<TrackingEvent>
     {
         public void Configure(EntityTypeBuilder<TrackingEvent> builder)
@@ -37,6 +56,17 @@ namespace ParcelManagement.Infrastructure.Database
             builder.HasOne(ru => ru.UpdatedByUser).WithMany().HasForeignKey(ru => ru.UpdatedBy)
                 .IsRequired(false);
 
+        }
+    }
+
+    public class LockerEntityConfiguration : IEntityTypeConfiguration<Locker>
+    {
+        public void Configure(EntityTypeBuilder<Locker> builder)
+        {
+            builder.HasKey(l => l.Id);
+            builder.HasIndex(l => l.LockerName).IsUnique();
+            builder.HasOne(l => l.CreatedByUser).WithMany().HasForeignKey(l => l.CreatedBy);
+            builder.HasOne(l => l.UpdatedByUser).WithMany().HasForeignKey(l => l.UpdatedBy).IsRequired(false);
         }
     }
 }

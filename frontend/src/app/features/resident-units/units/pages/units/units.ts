@@ -1,13 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { GetAllResidentUnitsResponse, GetAllUnitsParams, ResidentUnit, UnitsService } from '../../units-service';
-import { BehaviorSubject, debounceTime, distinctUntilChanged, map, Observable, Subject, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounce, debounceTime, distinctUntilChanged, map, Observable, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { PaginationEmitData, Pagination } from '../../../../../common/components/pagination/pagination';
 import { formatTime } from '../../../../../utils/date-time-utils';
 import { FormsModule } from '@angular/forms';
-import { AppConsole } from '../../../../../utils/app-console';
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
+import { ListingQueryParams } from '../../../../../common/models/listing-query-params';
+import { AppConsole } from '../../../../../utils/app-console';
 
 @Component({
   selector: 'app-units',
@@ -23,14 +24,23 @@ export class Units implements OnInit, OnDestroy {
   paginationCurrentPage: number = 1;
   paginationPageSize: number = 10;
 
-  queryParams = new BehaviorSubject<GetAllUnitsParams>({
-    page: this.paginationCurrentPage,
-    take: this.paginationPageSize,
-  });
+  keywordStream = new BehaviorSubject<string>('')
+  paginationParams = new BehaviorSubject<Omit<ListingQueryParams, 'searchKeyword'>>({
+    page: this.paginationCurrentPage, 
+    take: this.paginationPageSize
+  })
 
-  unitsList$ = this.queryParams.pipe(
-    debounceTime(300),
-    distinctUntilChanged(),
+  unitList$ = combineLatest([
+    this.keywordStream.pipe(debounceTime(300), distinctUntilChanged()), 
+    this.paginationParams.pipe(distinctUntilChanged())
+  ]).pipe(
+    tap(value => {
+      AppConsole.log(`COMBINE-LATEST: value is: ${JSON.stringify(value)}`)
+    }),
+    map(([searchKeyword, pagination]) => ({
+      searchKeyword, 
+      ...pagination
+    })), 
     switchMap((params) => this.unitsService.getAllUnits(params).pipe(
       map(res => {
         if ('residentUnits' in res) {
@@ -47,9 +57,8 @@ export class Units implements OnInit, OnDestroy {
         }
         return res
       })
-    )),
-    takeUntil(this.destroy$)
-  );
+    ))
+  )
 
   constructor(private unitsService: UnitsService, private router: Router,
     private route: ActivatedRoute
@@ -65,21 +74,23 @@ export class Units implements OnInit, OnDestroy {
   }
 
   onPaginationChanged(data: PaginationEmitData) {
-    this.queryParams.next({
-      ...this.queryParams,
+    this.paginationParams.next({
       page: data.currentPage,
-      take: data.pageSize,
-    });
+      take: data.pageSize
+    })
+    this.paginationCurrentPage = data.currentPage
+    this.paginationPageSize = data.pageSize
   }
 
   onSearch(searchKeyword: string) {
-    this.queryParams.next({
-      ...this.queryParams, 
-      unitName: searchKeyword
-    })
+    this.keywordStream.next(searchKeyword)
   }
 
   onEditClick(id: string) {
     this.router.navigate(['edit', id], {relativeTo: this.route})
+  }
+
+  onAddClick() {
+    this.router.navigate(['edit'], { relativeTo: this.route})
   }
 }

@@ -16,13 +16,15 @@ namespace ParcelManagement.Core.Entities
         TrackingNumber, 
     }
 
-    public class Parcel
+    public class Parcel: IEntity
     {
         public Guid Id { get; set; } // Primary Key
 
         [Required] // Example of a data annotation for validation
         [MaxLength(50)]
         public required string TrackingNumber { get; set; }
+
+        public Guid? LockerId { get; set; }
 
         [MaxLength(10)]
         public string? ResidentUnitDeprecated { get; set; }
@@ -38,8 +40,12 @@ namespace ParcelManagement.Core.Entities
         public decimal? Weight { get; set; } // Nullable
         public string? Dimensions { get; set; } // Nullable
 
+        public int Version { get; set; } = 1;
+
         // navigation property 
         public ResidentUnit? ResidentUnit { get; set; }
+        
+        public Locker? Locker { get; set; }
 
         public ICollection<TrackingEvent> TrackingEvents { get; set; } = [];
     }

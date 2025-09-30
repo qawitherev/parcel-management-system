@@ -1,10 +1,10 @@
 import { environment } from "../../../environment/environment";
 
 export const parcelEndpoints = {
-    getAwaitingPickup: `${environment.apiBaseUrl}/parcel/awaitingPickup`,
-    getRecentlyPickedUp: `${environment.apiBaseUrl}/parcel/recentlyPickedUp`,
-    getMyParcels: `${environment.apiBaseUrl}/parcel/myParcels`, 
-    checkIn: `${environment.apiBaseUrl}/parcel/checkIn`,
-    bulkCheckIn: `${environment.apiBaseUrl}/parcel/bulkCheckIn`,
-    all: `${environment.apiBaseUrl}/parcel/all`
+    getAwaitingPickup: `${environment.apiBaseUrl}/v1/parcel/awaitingPickup`,
+    getRecentlyPickedUp: `${environment.apiBaseUrl}/v1/parcel/recentlyPickedUp`,
+    getMyParcels: `${environment.apiBaseUrl}/v1/parcel/myParcels`, 
+    checkIn: `${environment.apiBaseUrl}/v2/parcel/checkIn`,
+    bulkCheckIn: `${environment.apiBaseUrl}/v1/parcel/bulkCheckIn`,
+    all: `${environment.apiBaseUrl}/v1/parcel/all`
 }

@@ -1,5 +1,6 @@
 import { environment } from "../../../environment/environment";
 
 export const residentUnitsEndpoints = {
-    getAllUnits: `${environment.apiBaseUrl}/residentUnit/all`
+    createUpdateUnit: `${environment.apiBaseUrl}/v1/residentUnit`,
+    getAllUnits: `${environment.apiBaseUrl}/v1/residentUnit/all`
 }

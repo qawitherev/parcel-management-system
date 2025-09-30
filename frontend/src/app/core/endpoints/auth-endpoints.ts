@@ -1,7 +1,7 @@
 import { environment } from "../../../environment/environment"
 
 export const AuthEndpoints = {
-    login: `${environment.apiBaseUrl}/user/login`, 
-    register: `${environment.apiBaseUrl}/user/register/resident`,
-    registerManager: `${environment.apiBaseUrl}/user/register/parcelRoomManager`
+    login: `${environment.apiBaseUrl}/v1/user/login`, 
+    register: `${environment.apiBaseUrl}/v1/user/register/resident`,
+    registerManager: `${environment.apiBaseUrl}/v1/user/register/parcelRoomManager`
 }

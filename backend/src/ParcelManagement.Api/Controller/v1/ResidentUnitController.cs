@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ParcelManagement.Api.DTO;
+using ParcelManagement.Api.DTO.V1;
 using ParcelManagement.Api.Utility;
 using ParcelManagement.Core.Entities;
 using ParcelManagement.Core.Services;
@@ -8,7 +8,8 @@ using ParcelManagement.Core.Services;
 namespace ParcelManagement.Api.Controller
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [Consumes("application/json")]
     public class ResidentUnitController : ControllerBase
     {
@@ -40,7 +41,7 @@ namespace ParcelManagement.Api.Controller
             return Ok(await _residentUnitService.GetResidentUnitById(id));
         }
 
-        [HttpPost("registerUnit")]
+        [HttpPost("")]
         [Consumes("application/json")]
         public async Task<IActionResult> RegisterUnit([FromBody] RegisterUnitDto registerUnitDto)
         {
@@ -71,7 +72,7 @@ namespace ParcelManagement.Api.Controller
         public async Task<IActionResult> GetAllResidentUnit([FromQuery] GetAllResidentUnitsRequestDto dto)
         {
             var column = EnumUtils.ToEnumOrNull<ResidentUnitSortableColumn>(dto.Column ?? "");
-            var (residentUnits, count) = await _residentUnitService.GetResidentUnitsForViewAsync(dto.UnitName, column, dto.Page, dto.Take, dto.IsAsc);
+            var (residentUnits, count) = await _residentUnitService.GetResidentUnitsForViewAsync(dto.SearchKeyword, column, dto.Page, dto.Take, dto.IsAsc);
             var responseDto = new GetAllResidentUnitsResponseDto
             {
                 ResidentUnits = [.. residentUnits.Select(ru => new ResidentUnitDto {

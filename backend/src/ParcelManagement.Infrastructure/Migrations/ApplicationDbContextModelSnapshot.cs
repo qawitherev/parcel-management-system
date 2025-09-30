@@ -17,10 +17,47 @@ namespace ParcelManagement.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.8")
+                .HasAnnotation("ProductVersion", "9.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+
+            modelBuilder.Entity("ParcelManagement.Core.Entities.Locker", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("char(36)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("LockerName")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("LockerName")
+                        .IsUnique();
+
+                    b.HasIndex("UpdatedBy");
+
+                    b.ToTable("Lockers");
+                });
 
             modelBuilder.Entity("ParcelManagement.Core.Entities.Parcel", b =>
                 {
@@ -36,6 +73,9 @@ namespace ParcelManagement.Infrastructure.Migrations
 
                     b.Property<DateTimeOffset?>("ExitDate")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("LockerId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("ResidentUnitDeprecated")
                         .HasMaxLength(10)
@@ -53,18 +93,26 @@ namespace ParcelManagement.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
+
                     b.Property<decimal?>("Weight")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("LockerId");
+
                     b.HasIndex("ResidentUnitId");
 
                     b.HasIndex("TrackingNumber")
                         .IsUnique();
 
-                    b.ToTable("Parcels");
+                    b.ToTable("Parcels", t =>
+                        {
+                            t.HasCheckConstraint("CK_Parcels_LockerRequired", "(`Version` = 1) OR (`Version` > 1 AND `LockerId` IS NOT NULL)");
+                        });
                 });
 
             modelBuilder.Entity("ParcelManagement.Core.Entities.ResidentUnit", b =>
@@ -203,13 +251,36 @@ namespace ParcelManagement.Infrastructure.Migrations
                     b.ToTable("UserResidentUnits");
                 });
 
+            modelBuilder.Entity("ParcelManagement.Core.Entities.Locker", b =>
+                {
+                    b.HasOne("ParcelManagement.Core.Entities.User", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedBy")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ParcelManagement.Core.Entities.User", "UpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("UpdatedBy");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("UpdatedByUser");
+                });
+
             modelBuilder.Entity("ParcelManagement.Core.Entities.Parcel", b =>
                 {
+                    b.HasOne("ParcelManagement.Core.Entities.Locker", "Locker")
+                        .WithMany("Parcels")
+                        .HasForeignKey("LockerId");
+
                     b.HasOne("ParcelManagement.Core.Entities.ResidentUnit", "ResidentUnit")
                         .WithMany("Parcels")
                         .HasForeignKey("ResidentUnitId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Locker");
 
                     b.Navigation("ResidentUnit");
                 });
@@ -265,6 +336,11 @@ namespace ParcelManagement.Infrastructure.Migrations
                     b.Navigation("ResidentUnit");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ParcelManagement.Core.Entities.Locker", b =>
+                {
+                    b.Navigation("Parcels");
                 });
 
             modelBuilder.Entity("ParcelManagement.Core.Entities.Parcel", b =>

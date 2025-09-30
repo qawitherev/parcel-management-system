@@ -2,15 +2,16 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ParcelManagement.Api.DTO;
+using ParcelManagement.Api.DTO.V1;
 using ParcelManagement.Api.Utility;
 using ParcelManagement.Core.Services;
 using ParcelManagement.Core.Entities;
 
-namespace ParcelManagement.Api.Controller
+namespace ParcelManagement.Api.Controller.V1
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [Consumes("application/json")]
     public class ParcelController(IParcelService parcelService,
         ITrackingEventService trackingEventService,
@@ -21,10 +22,7 @@ namespace ParcelManagement.Api.Controller
         private readonly ITrackingEventService _trackingEventService = trackingEventService;
         private readonly IUserContextService _userContextService = userContextService;
 
-        // since we wont expose this endpoint publicly, we won't follow 
-        // url pattern to give way to 
-        // {"{trackingNumber}"}
-        [HttpGet("GetParcelById/{id}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetParcelById(Guid id)
         {
             var parcel = await _parcelService.GetParcelByIdAsync(id);
@@ -56,7 +54,7 @@ namespace ParcelManagement.Api.Controller
             return CreatedAtAction(nameof(GetParcelById), new { id = newParcelDto.Id }, newParcelDto);
         }
 
-        [HttpPost("{trackingNumber}/claim")]
+        [HttpPost("trackingNumber/{trackingNumber}/claim")]
         [Authorize(Roles = "Resident, ParcelRoomManager")]
         public async Task<IActionResult> ClaimParcel(string trackingNumber)
         {
@@ -65,7 +63,7 @@ namespace ParcelManagement.Api.Controller
             return NoContent(); // 204
         }
 
-        [HttpGet("{trackingNumber}")]
+        [HttpGet("trackingNumber/{trackingNumber}")]
         [Authorize(Roles = "Resident, ParcelRoomManager")]
         public async Task<IActionResult> GetParcelByTrackingNumber(string trackingNumber)
         {
@@ -119,7 +117,7 @@ namespace ParcelManagement.Api.Controller
             return Ok(responseDto);
         }
 
-        [HttpPost("{trackingNumber}/events")]
+        [HttpPost("trackingNumber/{trackingNumber}/events")]
         [Authorize(Roles = "ParcelRoomManager")]
         public async Task<IActionResult> CreateManualEvent([FromBody] ManualEventsDto dto, string trackingNumber)
         {
@@ -135,7 +133,7 @@ namespace ParcelManagement.Api.Controller
             return Ok(returnedDto);
         }
 
-        [HttpGet("{trackingNumber}/history")]
+        [HttpGet("trackingNumber/{trackingNumber}/history")]
         [Authorize]
         public async Task<IActionResult> GetParcelHistory(string trackingNumber)
         {
@@ -178,16 +176,16 @@ namespace ParcelManagement.Api.Controller
         }
 
         //TODO: to convert this into GET 
-        [HttpPost("all")]
+        [HttpGet("all")]
         [Authorize]
-        public async Task<IActionResult> GetAllParcels([FromBody] GetAllParcelsRequestDto dto)
+        public async Task<IActionResult> GetAllParcels([FromQuery] GetAllParcelsRequestDto dto)
         {
             var role = EnumUtils.ToEnumOrNull<UserRole>(_userContextService.GetUserRole().ToString());
             var userId = _userContextService.GetUserId();
             var (resParcels, count) = await _parcelService.GetParcelsForView(
                 role,
                 userId,
-                dto.TrackingNumber,
+                dto.SearchKeyword,
                 EnumUtils.ToEnumOrNull<ParcelStatus>(dto.Status ?? ""),
                 dto.CustomEvent,
                 null,
@@ -200,6 +198,7 @@ namespace ParcelManagement.Api.Controller
                 Parcels = [.. resParcels.Select(p => new ParcelResponseDto {
                     Id = p.Id,
                     TrackingNumber = p.TrackingNumber,
+                    Locker = p.Locker?.LockerName ?? "",
                     Weight = p.Weight,
                     Dimensions = p.Dimensions,
                     ResidentUnit = p.ResidentUnit!.UnitName,
@@ -216,6 +215,7 @@ namespace ParcelManagement.Api.Controller
             var theParcels = parcels.Select(p => (
                 p.TrackingNumber,
                 p.ResidentUnit,
+                p.Locker,
                 p.Weight,
                 p.Dimension
             ));

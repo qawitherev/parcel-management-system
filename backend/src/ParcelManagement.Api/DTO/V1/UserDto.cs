@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using ParcelManagement.Core.Specifications;
 
-namespace ParcelManagement.Api.DTO
+namespace ParcelManagement.Api.DTO.V1
 {
     public class LoginDto
     {

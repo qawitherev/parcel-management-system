@@ -66,6 +66,17 @@ const MENU_ITEMS: MenuItem[] = [
         roles: ['ParcelRoomManager', 'Admin']
       }
     ]
+  }, 
+  {
+    label: 'Locker', 
+    roles: ['ParcelRoomManager', 'Admin'], 
+    children: [
+      {
+        label: 'Lockers', 
+        route: '/locker',
+        roles: ['ParcelRoomManager', 'Admin']
+      }
+    ]
   }
 ];
 

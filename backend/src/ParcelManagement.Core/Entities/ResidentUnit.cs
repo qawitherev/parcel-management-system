@@ -9,7 +9,7 @@ namespace ParcelManagement.Core.Entities
         CreatedAt
     }
 
-    public class ResidentUnit
+    public class ResidentUnit: IEntity
     {
         [Required]
         public Guid Id { set; get; }

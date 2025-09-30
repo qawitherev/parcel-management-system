@@ -8,6 +8,13 @@ using ParcelManagement.Infrastructure.Database;
 using ParcelManagement.Infrastructure.Repository;
 using System.Text.Json.Serialization;
 using ParcelManagement.Api.Utility;
+using Microsoft.AspNetCore.Mvc;
+using ParcelManagement.Core.UnitOfWork;
+using ParcelManagement.Infrastructure.UnitOfWork;
+using ParcelManagement.Api.Filter;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using ParcelManagement.Api.Swagger;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,15 +27,33 @@ if (builder.Environment.IsDevelopment())
 }
 
 // tell the DI container that we have controller
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<TransactionFilter>();
+});
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(option =>
+{
+    option.SwaggerDoc("v1", new OpenApiInfo { Title = "Parcel API version 1", Version = "v1" });
+    option.SwaggerDoc("v2", new OpenApiInfo { Title = "Parcel API version 2", Version = "v2" });
+
+    option.DocInclusionPredicate(SwaggerSetup.DocInclusionPredicate);
+
+    option.OperationFilter<SwaggerVersionParameterRemover>();
+    option.DocumentFilter<ReplaceVersionWithValue>();
+});
 builder.Services.AddControllers().AddJsonOptions(
     options =>
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     }
 );
+builder.Services.AddApiVersioning(option =>
+{
+    option.DefaultApiVersion = new ApiVersion(1, 0);
+    option.AssumeDefaultVersionWhenUnspecified = true;
+    option.ReportApiVersions = true;
+});
 
 // CORS 
 builder.Services.AddCors(options =>
@@ -88,7 +113,12 @@ builder.Services.AddScoped<IUserResidentUnitService, UserResidentUnitService>();
 builder.Services.AddScoped<ITrackingEventRepository, TrackingEventRepository>();
 builder.Services.AddScoped<ITrackingEventService, TrackingEventService>();
 
+builder.Services.AddScoped<ILockerRepository, LockerRepository>();
+builder.Services.AddScoped<ILockerService, LockerService>();
+
 builder.Services.AddScoped<IUserContextService, UserContextService>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<TransactionFilter>();
 
 builder.Services.AddScoped<AdminDataSeeder>();
 
@@ -113,7 +143,11 @@ app.MapControllers();
 if (builder.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(option =>
+    {
+        option.SwaggerEndpoint("/swagger/v1/swagger.json", "Parcel API v1");
+        option.SwaggerEndpoint("/swagger/v2/swagger.json", "Parcel API v2");
+    });
 }
 
 app.UseMiddleware<ApiExceptionMiddelware>();

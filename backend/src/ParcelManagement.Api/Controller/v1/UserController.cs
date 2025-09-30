@@ -2,7 +2,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ParcelManagement.Api.AuthenticationAndAuthorization;
-using ParcelManagement.Api.DTO;
+using ParcelManagement.Api.DTO.V1;
 using ParcelManagement.Api.Utility;
 using ParcelManagement.Core.Entities;
 using ParcelManagement.Core.Services;
@@ -11,7 +11,8 @@ namespace ParcelManagement.Api.Controller
 {
 
     [ApiController]
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [Consumes("application/json")]
     public class UserController(IUserService userService, ITokenService tokenService, 
         IUserContextService userContextService

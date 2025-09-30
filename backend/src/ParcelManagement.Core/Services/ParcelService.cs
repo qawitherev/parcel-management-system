@@ -1,5 +1,7 @@
+using System.Reflection.Metadata;
 using Microsoft.AspNetCore.Http.Features;
 using ParcelManagement.Core.Entities;
+using ParcelManagement.Core.Model.Helper;
 using ParcelManagement.Core.Model.Parcel;
 using ParcelManagement.Core.Repositories;
 using ParcelManagement.Core.Specifications;
@@ -8,13 +10,22 @@ namespace ParcelManagement.Core.Services
 {
     public interface IParcelService
     {
+        Task<Parcel?> GetParcelByIdAsync(Guid id);
+
         // check in, claim, getByTrackingNumber, getAll (to be implemented later: getByResidentUnit)
         Task<Parcel> CheckInParcelAsync(string trackingNumber, string residentUnit,
             decimal? weight,
             string? dimensions, Guid performedByUser);
 
+        Task<Parcel> CheckInParcelWithLockerAsync(
+            string trackingNumber, string residentUnit,
+            string locker,
+            decimal? weight,
+            string? dimensions, Guid performedByUser
+        );
+
         Task<BulkCheckInResponse> BulkCheckInAsync(
-            IEnumerable<(string trackingNumber, string residentUnit, decimal? weight, string? dimensions)> parcels,
+            IEnumerable<(string trackingNumber, string residentUnit, string? lockerName, decimal? weight, string? dimensions)> parcels,
             Guid performedByUser);
 
         Task<(IReadOnlyList<Parcel>, int count)> GetParcelsForView(
@@ -29,10 +40,7 @@ namespace ParcelManagement.Core.Services
         );
 
 
-
         Task ClaimParcelAsync(string trackingNumber, Guid performedByUser);
-
-        Task<Parcel?> GetParcelByIdAsync(Guid id);
 
         Task<IReadOnlyList<Parcel?>> GetAllParcelAsync();
 
@@ -53,12 +61,14 @@ namespace ParcelManagement.Core.Services
         IParcelRepository parcelRepo,
         IResidentUnitRepository residentUnitRepo,
         IUserRepository userRepo,
-        ITrackingEventRepository trackingEventRepo
+        ITrackingEventRepository trackingEventRepo,
+        ILockerRepository lockerRepo
         ) : IParcelService
     {
         private readonly IParcelRepository _parcelRepo = parcelRepo;
         private readonly IResidentUnitRepository _residentUnitRepo = residentUnitRepo;
         private readonly IUserRepository _userRepo = userRepo;
+        private readonly ILockerRepository _lockerRepo = lockerRepo;
 
         private readonly ITrackingEventRepository _trackingEventRepo = trackingEventRepo;
 
@@ -70,7 +80,7 @@ namespace ParcelManagement.Core.Services
         {
             // check if residentUnit exist 
             var specByUnitName = new ResidentUnitByUnitNameSpecification(residentUnit);
-            var realResidentUnit = await _residentUnitRepo.GetOneResidentUnitBySpecificationAsync(specByUnitName) ??
+            var existingRu = await _residentUnitRepo.GetOneResidentUnitBySpecificationAsync(specByUnitName) ??
                 throw new NullReferenceException($"Resident unit {residentUnit} not found");
 
             //check for parcel with the same tracking number 
@@ -80,32 +90,12 @@ namespace ParcelManagement.Core.Services
             {
                 throw new InvalidOperationException($"A parcel with tracking number '{trackingNumber}' already exists.");
             }
-            var newParcel = new Parcel
-            {
-                Id = Guid.NewGuid(),
-                TrackingNumber = trackingNumber,
-                ResidentUnitDeprecated = residentUnit,
-                ResidentUnitId = realResidentUnit.Id,
-                Status = ParcelStatus.AwaitingPickup,
-                Weight = weight ?? 0,
-                Dimensions = dimensions ?? "",
-                EntryDate = DateTimeOffset.UtcNow
-            };
-
-            await _parcelRepo.AddParcelAsync(newParcel);
-            await _trackingEventRepo.CreateAsync(new TrackingEvent
-            {
-                Id = Guid.NewGuid(),
-                ParcelId = newParcel.Id,
-                TrackingEventType = TrackingEventType.CheckIn,
-                EventTime = DateTimeOffset.UtcNow,
-                PerformedByUser = performedByUser
-            });
+            var newParcel = await CheckInHelper(trackingNumber, existingRu.Id, null, weight, dimensions, performedByUser);
             return newParcel;
         }
 
         public async Task<BulkCheckInResponse> BulkCheckInAsync(
-            IEnumerable<(string trackingNumber, string residentUnit, decimal? weight, string? dimensions)> inParcels,
+            IEnumerable<(string trackingNumber, string residentUnit, string? lockerName, decimal? weight, string? dimensions)> inParcels,
             Guid performedByUser
         )
         {
@@ -116,22 +106,40 @@ namespace ParcelManagement.Core.Services
 
             var existingResidentUnit = await _residentUnitRepo.GetResidentUnitsAsync();
             var existingResidentUnitDict = existingResidentUnit.ToDictionary(
-                ru => ru.UnitName, 
+                ru => ru.UnitName,
                 StringComparer.OrdinalIgnoreCase
             );
 
             var existingParcels = await _parcelRepo.GetAllParcelsAsync();
             var existingParcelsDict = existingParcels.ToDictionary(
-                p => p!.TrackingNumber, 
+                p => p!.TrackingNumber,
                 StringComparer.OrdinalIgnoreCase
             );
-            using var transaction = await _parcelRepo.BeginTransactionAsync();
+
+            // a check to determine if we're passing locker or not 
+            // all or nothing check 
+            if (!((inParcels.Count() == inParcels.Count(ip => ip.lockerName == null)) || 
+                (inParcels.Count() == inParcels.Count(ip => ip.lockerName != null)))
+                )
+            {
+                throw new InvalidOperationException($"Locker name for all rows must be provided");
+            }
+            var isV2 = inParcels.Any(ip => ip.lockerName != null);
+
+            Dictionary<string, Locker>? existingLockerDict = null;
+            if (isV2)
+            {
+                var allLockerSpec = new AllLockersSpecification(new FilterPaginationRequest<LockerSortableColumn> { });
+                var existingLockers = await _lockerRepo.GetLockersBySpecificationAsync(allLockerSpec);
+                existingLockerDict = existingLockers.ToDictionary(locker => locker.LockerName, StringComparer.OrdinalIgnoreCase);
+            }
+
             try
             {
                 int currentRow = 0;
                 var isError = false;
                 var isRowError = false;
-                foreach (var (trackingNumber, residentUnit, weight, dimensions) in inParcels)
+                foreach (var (trackingNumber, residentUnit, locker, weight, dimensions) in inParcels)
                 {
                     currentRow++;
                     isRowError = false;
@@ -147,6 +155,18 @@ namespace ParcelManagement.Core.Services
                         isError = true;
                         isRowError = true;
                         // throw new Exception($"Resident unit {residentUnit} not found");
+                    }
+                    if (!existingLockerDict!.TryGetValue(locker!, out var theLocker) && isV2)
+                    {
+                        response.Items.Add(new ParcelCheckInResponse
+                        {
+                            TrackingNumber = trackingNumber,
+                            Row = currentRow,
+                            IsError = true,
+                            Message = $"Locker {locker} not found"
+                        });
+                        isError = true;
+                        isRowError = true;    
                     }
                     if (existingParcelsDict.TryGetValue(trackingNumber, out var parcel))
                     {
@@ -174,27 +194,10 @@ namespace ParcelManagement.Core.Services
                     {
                         continue;
                     }
-                    var toBeAddedParcel = new Parcel
-                    {
-                        Id = Guid.NewGuid(),
-                        TrackingNumber = trackingNumber,
-                        ResidentUnitId = existingResidentUnitDict[residentUnit].Id,
-                        EntryDate = DateTimeOffset.UtcNow,
-                        Status = ParcelStatus.AwaitingPickup,
-                        Weight = weight,
-                        Dimensions = dimensions
-                    };
-                    var trackingEvent = new TrackingEvent
-                    {
-                        Id = Guid.NewGuid(),
-                        ParcelId = toBeAddedParcel.Id,
-                        TrackingEventType = TrackingEventType.CheckIn,
-                        EventTime = DateTimeOffset.UtcNow,
-                        PerformedByUser = performedByUser
-                    };
-                    await _parcelRepo.AddParcelAsync(toBeAddedParcel);
-                    await _trackingEventRepo.CreateAsync(trackingEvent);
-                    existingParcelsDict[trackingNumber] = toBeAddedParcel;
+                    var newParcel = await CheckInHelper(
+                        trackingNumber, existingResidentUnitDict[residentUnit].Id, existingLockerDict[locker!].Id, weight, dimensions, performedByUser,
+                        isV2 ? 2 : 1);
+                    existingParcelsDict[trackingNumber] = newParcel;
                 }
                 if (response.Items.Any(i => i.IsError))
                 {
@@ -203,10 +206,8 @@ namespace ParcelManagement.Core.Services
             }
             catch
             {
-                await transaction.RollbackAsync();
                 return response;
             }
-            await transaction.CommitAsync();
             return response;
         }
         public async Task ClaimParcelAsync(string trackingNumber, Guid performedByUser)
@@ -303,20 +304,22 @@ namespace ParcelManagement.Core.Services
         }
 
         public async Task<(IReadOnlyList<Parcel>, int count)> GetParcelsForView(
-            UserRole? role, Guid? userId, string? trackingNumber, ParcelStatus? status, string? customEvent, ParcelSortableColumn? column, int? page, int? take = 20, 
+            UserRole? role, Guid? userId, string? searchKeyword, ParcelStatus? status, string? customEvent, ParcelSortableColumn? column, int? page, int? take = 20,
             bool isAsc = true
             )
         {
+            var filterPaginationRequest = new FilterPaginationRequest<ParcelSortableColumn>
+            {
+                SearchKeyword = searchKeyword,
+                Page = page,
+                Take = take,
+                SortableColumn = column ?? ParcelSortableColumn.TrackingNumber
+            };
             var spec = new ParcelViewSpecification(
+                filterPaginationRequest,
                 role, 
                 userId,
-                trackingNumber,
-                status,
-                customEvent,
-                column, 
-                page,
-                take, 
-                isAsc
+                status
             );
             var res = await _parcelRepo.GetParcelsBySpecificationAsync(spec);
             var count = await _parcelRepo.GetParcelCountBySpecification(spec);
@@ -329,6 +332,66 @@ namespace ParcelManagement.Core.Services
             var parcels = await _parcelRepo.GetParcelsBySpecificationAsync(specification);
             var count = await _parcelRepo.GetParcelCountBySpecification(specification);
             return (parcels, count);
+        }
+
+        public async Task<Parcel> CheckInParcelWithLockerAsync(string trackingNumber, string residentUnit, string locker, decimal? weight, string? dimensions, Guid performedByUser)
+        {
+            // check for trackingNumber, residentUnit, locker legitimacy
+            var parcelByTrackingNumberSpec = new ParcelByTrackingNumberSpecification(trackingNumber);
+            var existingParcel = await _parcelRepo.GetOneParcelBySpecificationAsync(parcelByTrackingNumberSpec);
+            if (existingParcel != null)
+            {
+                throw new InvalidOperationException($"Parcel {trackingNumber} already checked in");
+            }
+            var residentByUnitNameSpecification = new ResidentUnitByUnitNameSpecification(residentUnit);
+            var existingRu = await _residentUnitRepo.GetOneResidentUnitBySpecificationAsync(residentByUnitNameSpecification) ??
+                throw new KeyNotFoundException($"Resident unit {residentUnit} not found");
+            var lockerByLockerNameSpecification = new LockerByLockerNameSpecification(locker);
+            var existingLocker = await _lockerRepo.GetOneLockerBySpecification(lockerByLockerNameSpecification) ??
+                throw new KeyNotFoundException($"Locker {locker} is not found");
+            var newParcel = await CheckInHelper(trackingNumber, existingRu.Id, existingLocker.Id, weight, dimensions, performedByUser, 2);
+            var parcelWithDetails = await GetParcelDetailsById(newParcel.Id);
+            return parcelWithDetails;
+        }
+
+
+        // helpers 
+        private async Task<Parcel> CheckInHelper(string trackingNumber, Guid residentUnitId, Guid? lockerId, decimal? weight, string? dimensions, Guid performedByUser, 
+            int version = 1
+        )
+        {
+            var newParcel = new Parcel
+            {
+                Id = Guid.NewGuid(),
+                TrackingNumber = trackingNumber,
+                ResidentUnitDeprecated = "",
+                ResidentUnitId = residentUnitId,
+                LockerId = lockerId,
+                Status = ParcelStatus.AwaitingPickup,
+                Weight = weight ?? 0,
+                Dimensions = dimensions ?? "",
+                EntryDate = DateTimeOffset.UtcNow, 
+                Version = version
+            };
+            var newTracking = new TrackingEvent
+            {
+                Id = Guid.NewGuid(),
+                ParcelId = newParcel.Id,
+                TrackingEventType = TrackingEventType.CheckIn,
+                EventTime = DateTimeOffset.UtcNow,
+                PerformedByUser = performedByUser
+            };
+            await _parcelRepo.AddParcelAsync(newParcel);
+            await _trackingEventRepo.CreateAsync(newTracking);
+            return newParcel;
+        }
+
+        private async Task<Parcel> GetParcelDetailsById(Guid id)
+        {
+            var spec = new ParcelDetailsByIdSpecification(id);
+            var parcelWithDetails = await _parcelRepo.GetOneParcelBySpecificationAsync(spec) ??
+                throw new KeyNotFoundException($"Parcel not found");
+            return parcelWithDetails;
         }
     }
 }

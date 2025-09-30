@@ -12,7 +12,7 @@ namespace ParcelManagement.Core.Specifications
 
         public int? Take => null;
 
-        public List<IncludeExpressionString> IncludeExpressionString => throw new NotImplementedException();
+        public List<IncludeExpressionString> IncludeExpressionsString => throw new NotImplementedException();
 
         public Expression<Func<User, object>>? OrderBy => throw new NotImplementedException();
 

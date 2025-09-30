@@ -46,14 +46,14 @@ namespace ParcelManagement.Core.Services
 
         public async Task UpdateResidentUnitAsync(Guid id, string unitName, Guid performedBy)
         {
-            var spec = new ResidentUnitByUnitNameSpecification(unitName);
-            var existing = await _residentUnitRepo.GetOneResidentUnitBySpecificationAsync(spec) ??
+            var existing = await _residentUnitRepo.GetResidentUnitByIdAsync(id) ??
                 throw new KeyNotFoundException($"Unit {unitName} not found");
-            if (existing?.Id != id)
+            var spec = new ResidentUnitByUnitNameSpecification(unitName);
+            var existingName = await _residentUnitRepo.GetOneResidentUnitBySpecificationAsync(spec);
+            if (existingName != null && existingName.Id != id)
             {
-                throw new InvalidOperationException($"{unitName} has already exist");
+                throw new InvalidOperationException($"{unitName} has been taken. Try another name");
             }
-
             existing.UnitName = unitName;
             existing.UpdatedAt = DateTimeOffset.UtcNow;
             existing.UpdatedBy = performedBy;

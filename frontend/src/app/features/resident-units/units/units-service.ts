@@ -28,6 +28,10 @@ export interface ResidentUnit {
   updatedBy?: string
 }
 
+export interface CreateUnitRequest {
+  unitName: string
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -46,7 +50,7 @@ export class UnitsService {
   }
 
   getUnit(id: string): Observable<ResidentUnit | ApiError> {
-    return this.http.get<ResidentUnit | ApiError>(`${environment.apiBaseUrl}/residentUnit/${id}`)
+    return this.http.get<ResidentUnit | ApiError>(`${environment.apiBaseUrl}/v1/residentUnit/${id}`)
       .pipe(
         catchError(handleApiError)
       )
@@ -56,8 +60,16 @@ export class UnitsService {
     const body = {
       unitName: unitName
     }
-    return this.http.patch(`${environment.apiBaseUrl}/residentUnit/${id}`, body).pipe(
+    return this.http.patch(`${environment.apiBaseUrl}/v1/residentUnit/${id}`, body).pipe(
       catchError(handleApiError)
     )
   }
+
+  createUnit(payload: CreateUnitRequest): Observable<null | ApiError> {
+    return this.http.post<null | ApiError>(`${residentUnitsEndpoints.createUpdateUnit}`, payload)
+      .pipe(
+        catchError(handleApiError)
+      )
+  }
+  
 }

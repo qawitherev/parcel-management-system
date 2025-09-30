@@ -72,7 +72,7 @@ namespace ParcelManagement.Api.Controller
         public async Task<IActionResult> GetAllResidentUnit([FromQuery] GetAllResidentUnitsRequestDto dto)
         {
             var column = EnumUtils.ToEnumOrNull<ResidentUnitSortableColumn>(dto.Column ?? "");
-            var (residentUnits, count) = await _residentUnitService.GetResidentUnitsForViewAsync(dto.UnitName, column, dto.Page, dto.Take, dto.IsAsc);
+            var (residentUnits, count) = await _residentUnitService.GetResidentUnitsForViewAsync(dto.SearchKeyword, column, dto.Page, dto.Take, dto.IsAsc);
             var responseDto = new GetAllResidentUnitsResponseDto
             {
                 ResidentUnits = [.. residentUnits.Select(ru => new ResidentUnitDto {

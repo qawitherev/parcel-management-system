@@ -13,7 +13,7 @@ namespace ParcelManagement.Api.DTO.V1
 
     public class GetAllResidentUnitsRequestDto
     {
-        public string? UnitName { get; set; }
+        public string? SearchKeyword { get; set; }
         public string? Column { get; set; }
         public bool IsAsc { get; set; }
         public int? Page { get; set; }

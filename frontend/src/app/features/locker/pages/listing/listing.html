@@ -1,8 +1,8 @@
 @let lockers = lockerList$ | async;
 <div class="relative">
   <input
-    [(ngModel)]="queryParams.value.searchKeyword"
-    (ngModelChange)="onSearch($event)"
+    [value]="searchKeyword.value"
+    (input)="onSearch($any($event.target).value)"
     type="text"
     placeholder="Search lockers..."
     class="w-64 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -51,7 +51,7 @@
     }} }
   </tbody>
 </table>
-@if ('lockers' in lockers! && lockers.count < 1) {
+@if (lockers && 'lockers' in lockers && lockers.count < 1) {
 <div class="flex flex-col items-center justify-center py-10">
   <p class="text-gray-500 text-lg">No units found</p>
   <p class="text-gray-400 text-sm">Try adjusting your search or filter criteria.</p>
@@ -60,7 +60,7 @@
 <div
     class="mb-4"
 ></div>
-@if ('lockers' in lockers! ) {
+@if (lockers && 'lockers' in lockers) {
     <app-pagination
         [count]="lockers.count"
         [inCurrentPage]="paginationCurrentPage"

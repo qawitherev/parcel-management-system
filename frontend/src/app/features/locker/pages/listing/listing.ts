@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { BehaviorSubject, debounceTime, distinctUntilChanged, map, Observable, switchMap } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, map, Observable, switchMap } from 'rxjs';
 import { LockerResponse, LockerService } from '../../locker-service';
 import { ApiError } from '../../../../core/error-handling/api-catch-error';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ListingQueryParams } from '../../../../common/models/listing-query-params';
 import { AsyncPipe } from '@angular/common';
 import { formatTime } from '../../../../utils/date-time-utils';
@@ -20,14 +20,21 @@ export class Listing {
  paginationCurrentPage = 1
  paginationPageSize = 10
 
-  queryParams = new BehaviorSubject<ListingQueryParams>({
-    page: this.paginationCurrentPage, 
-    take: this.paginationPageSize
-  })
-  lockerList$ = this.queryParams.pipe(
-    debounceTime(300), 
-    distinctUntilChanged(), 
-    switchMap(params => this.lockerService.getAllLockers(params)
+ searchKeyword = new BehaviorSubject<string>('')
+ paginationParams = new BehaviorSubject<Omit<ListingQueryParams, 'searchKeyword'>>({
+  page: this.paginationCurrentPage, 
+  take: this.paginationPageSize
+ })
+
+ lockerList$ = combineLatest([
+  this.searchKeyword.pipe(debounceTime(300), distinctUntilChanged()), 
+  this.paginationParams.pipe(distinctUntilChanged())
+ ]).pipe(
+  map(([searchKeyword, pagination]) => ({
+    searchKeyword, 
+    ...pagination
+  })), 
+  switchMap(params => this.lockerService.getAllLockers(params)
       .pipe(
         map((res: LockerResponse | ApiError) => {
           if('lockers' in res) {
@@ -46,25 +53,22 @@ export class Listing {
         })
       )
   )
-  )
+ )
 
-
-  constructor(private lockerService: LockerService, private route: ActivatedRoute) {}
+  constructor(private lockerService: LockerService, private route: ActivatedRoute, 
+    private router: Router
+  ) {}
 
   onEditClick(id:string) {
-
+    this.router.navigate(['addEdit', id], {relativeTo: this.route})
   }
 
   onSearch(searchKeyword: string) {
-    this.queryParams.next({
-      ...this.queryParams, 
-      searchKeyword: searchKeyword
-    })
+    this.searchKeyword.next(searchKeyword)
   }
 
   onPaginationChanged(data: PaginationEmitData) {
-    this.queryParams.next({
-      ...this.queryParams, 
+    this.paginationParams.next({
       page: data.currentPage, 
       take: data.pageSize
     })

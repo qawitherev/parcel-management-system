@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-add-edit',
@@ -7,5 +8,5 @@ import { Component } from '@angular/core';
   styleUrl: './add-edit.css'
 })
 export class AddEdit {
-
+  
 }

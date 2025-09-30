@@ -5,7 +5,7 @@
   <h1 class="text-2xl font-semibold text-gray-800 mb-6">{{lockerId ? 'Edit Locker' : 'Add Locker'}}</h1>
   <form [formGroup]="formGroup" (ngSubmit)="onCreateOrUpdate()" class="space-y-4">
     <div>
-      <label for="unitName" class="block text-sm font-medium text-gray-700 mb-2">Unit Name</label>
+      <label for="unitName" class="block text-sm font-medium text-gray-700 mb-2">Locker Name</label>
       <input
         formControlName="lockerName"
         type="text"

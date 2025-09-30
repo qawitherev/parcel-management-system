@@ -78,6 +78,8 @@ export class Units implements OnInit, OnDestroy {
       page: data.currentPage,
       take: data.pageSize
     })
+    this.paginationCurrentPage = data.currentPage
+    this.paginationPageSize = data.pageSize
   }
 
   onSearch(searchKeyword: string) {

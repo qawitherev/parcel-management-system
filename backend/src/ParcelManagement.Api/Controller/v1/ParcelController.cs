@@ -176,9 +176,9 @@ namespace ParcelManagement.Api.Controller.V1
         }
 
         //TODO: to convert this into GET 
-        [HttpPost("all")]
+        [HttpGet("all")]
         [Authorize]
-        public async Task<IActionResult> GetAllParcels([FromBody] GetAllParcelsRequestDto dto)
+        public async Task<IActionResult> GetAllParcels([FromQuery] GetAllParcelsRequestDto dto)
         {
             var role = EnumUtils.ToEnumOrNull<UserRole>(_userContextService.GetUserRole().ToString());
             var userId = _userContextService.GetUserId();

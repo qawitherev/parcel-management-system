@@ -3,8 +3,8 @@
             <!-- Search Bar -->
             <div class="relative">
                 <input 
-                    [(ngModel)]="filterState.search"
-                    (ngModelChange)="onSearch($event)"
+                    [value]="searchKeyword.value"
+                    (input)="onSearch($any($event.target).value)"
                     type="text" 
                     placeholder="Search parcels..." 
                     class="w-64 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"

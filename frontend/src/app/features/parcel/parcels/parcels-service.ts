@@ -1,8 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, Observable } from 'rxjs';
 import { parcelEndpoints } from '../../../core/endpoints/parcel-endpoints';
 import { handleApiError } from '../../../core/error-handling/api-catch-error';
+import { HttpParamsBuilder } from '../../../utils/param-builder';
 
 interface GetAllParcelsRequest {
   searchKeyword?: string;
@@ -34,19 +35,9 @@ export class ParcelsService {
   constructor(private http: HttpClient) {}
 
   getAllParcels(
-    searchKeyword?: string,
-    status?: string,
-    customEvent?: string,
-    page?: number,
-    take?: number
+    inParams: GetAllParcelsRequest
   ): Observable<any> {
-    const payload: GetAllParcelsRequest = {
-      searchKeyword,
-      status,
-      customEvent,
-      page,
-      take,
-    };
-    return this.http.post(parcelEndpoints.all, payload).pipe(catchError(handleApiError));
+    const params: HttpParams = HttpParamsBuilder(inParams)
+    return this.http.get(parcelEndpoints.all, {params}).pipe(catchError(handleApiError));
   }
 }

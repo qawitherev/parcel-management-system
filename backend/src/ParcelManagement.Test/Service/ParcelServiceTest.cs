@@ -179,7 +179,7 @@ namespace ParcelManagement.Test.Service
         {
             await Assert.ThrowsAsync<KeyNotFoundException>(async () =>
             {
-                await _parcelFixture.ParcelService.GetParcelHistoriesAsync("TN001", Guid.NewGuid());
+                await _parcelFixture.ParcelService.GetParcelHistoriesAsync("TN001", Guid.NewGuid(), UserRole.ParcelRoomManager);
             });
             await _parcelFixture.ResetDb();
         }
@@ -252,7 +252,7 @@ namespace ParcelManagement.Test.Service
             await dbContext.SaveChangesAsync();
 
             var res = await _parcelFixture.ParcelService.GetParcelHistoriesAsync(parcel.TrackingNumber,
-                theUser.Id
+                theUser.Id, UserRole.ParcelRoomManager
             );
             Assert.NotEmpty(res.TrackingEvents);
             foreach (var te in trackingEvents)

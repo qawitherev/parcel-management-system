@@ -72,7 +72,7 @@ namespace ParcelManagement.Test.Service
             };
             await Assert.ThrowsAsync<NullReferenceException>(async () =>
             {
-                await _fixture.ResidentUnitService.UpdateResidentUnitAsync(residentUnit);
+                await _fixture.ResidentUnitService.UpdateResidentUnitAsync(residentUnit.Id, residentUnit.UnitName, Guid.NewGuid());
             });
 
             await _fixture.ResetDb();
@@ -97,7 +97,7 @@ namespace ParcelManagement.Test.Service
             await dbContext.SaveChangesAsync();
 
             residentUnit.UnitName = newUnitName;
-            await _fixture.ResidentUnitService.UpdateResidentUnitAsync(residentUnit);
+            await _fixture.ResidentUnitService.UpdateResidentUnitAsync(residentUnit.Id, residentUnit.UnitName, Guid.NewGuid());
             var res = await dbContext.ResidentUnits.FindAsync(theId);
             Assert.NotNull(res);
             Assert.Equal(newUnitName, res.UnitName);

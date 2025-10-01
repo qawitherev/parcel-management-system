@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using ParcelManagement.Api.DTO;
+using ParcelManagement.Api.DTO.V1;
 using ParcelManagement.Core.Entities;
 using ParcelManagement.Core.Misc;
 using ParcelManagement.Infrastructure.Database;

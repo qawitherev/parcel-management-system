@@ -35,6 +35,7 @@ WORKDIR /app
 
 COPY --from=build /app/publish .
 
+EXPOSE 5163
 ENTRYPOINT [ "dotnet", "ParcelManagement.Api.dll"]
 CMD [ "--urls", "http://*:5163" ]
 

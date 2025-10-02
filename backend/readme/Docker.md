@@ -42,7 +42,7 @@ environment files
         }
         use __ to serve the nested object. e.g., ConnectionString__DefaultConnection=thestring
     - through predefined env file 
-        create a .env file (dont forget to gitignore)
+        create a .env file (don't forget to gitignore)
         load during docker run 
         docker run -d --env-file .env (-d means detach: to run the container in foreground, not in terminal)
         also use __ for nested value 

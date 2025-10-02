@@ -99,6 +99,6 @@ WRITING DOCKER FILE
 
 CREATING DOCKER IMAGE FROM DOCKER FILE 
 - use this command and make sure to be inside the same dir as dockerfile located 
-    docker build -t <name>:<tag>
+    docker build -t <name>:<tag> .
         -t stands for tag 
     

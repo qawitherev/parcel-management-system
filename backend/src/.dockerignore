@@ -1,0 +1,36 @@
+# --- .NET build artifacts ---
+bin/
+obj/
+out/
+
+# --- User-specific files ---
+*.swp
+*.user
+*.suo
+*.rsuser
+*.cache
+*.pdb
+
+# --- IDE settings ---
+.vscode/
+.idea/
+*.sln.iml
+
+# --- OS files ---
+.DS_Store
+Thumbs.db
+
+# --- Git ---
+.git
+.gitignore
+.gitattributes
+
+# --- Logs ---
+*.log
+
+# --- Docker-specific ---
+docker-compose.override.yml
+
+# --- Test projects (optional) ---
+ParcelManagement.Test/
+ParcelManagement.Test.Integration/

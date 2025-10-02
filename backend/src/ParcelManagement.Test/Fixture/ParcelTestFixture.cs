@@ -22,8 +22,9 @@ namespace ParcelManagement.Test.Fixture
             var residentUnitRepo = new ResidentUnitRepository(DbContext);
             var userRepo = new UserRepository(DbContext);
             var trackingEventRepo = new TrackingEventRepository(DbContext);
+            var lockerRepo = new LockerRepository(DbContext);
             ParcelRepo = new ParcelRepository(DbContext);
-            ParcelService = new ParcelService(ParcelRepo, residentUnitRepo, userRepo, trackingEventRepo);
+            ParcelService = new ParcelService(ParcelRepo, residentUnitRepo, userRepo, trackingEventRepo, lockerRepo);
             return Task.CompletedTask;
         }
 

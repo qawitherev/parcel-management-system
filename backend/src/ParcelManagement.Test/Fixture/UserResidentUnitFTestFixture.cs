@@ -23,7 +23,9 @@ namespace ParcelManagement.Test.Fixture
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()).Options;
             DbContext = new ApplicationDbContext(dbOptions);
             UserResidentUnitRepository = new UserResidentUnitRepository(DbContext);
-            UserResidentUnitService = new UserResidentUnitService(UserResidentUnitRepository);
+            var residentUnitRepo = new ResidentUnitRepository(DbContext);
+            var userRepo = new UserRepository(DbContext);
+            UserResidentUnitService = new UserResidentUnitService(UserResidentUnitRepository, residentUnitRepo, userRepo);
             return Task.CompletedTask;
         }
 

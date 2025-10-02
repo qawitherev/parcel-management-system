@@ -32,5 +32,5 @@ Thumbs.db
 docker-compose.override.yml
 
 # --- Test projects (optional) ---
-Tests.Unit/
-Tests.Integration/
+ParcelManagement.Test/
+ParcelManagement.Test.Integration/

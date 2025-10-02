@@ -23,7 +23,7 @@ WORKDIR /src/ParcelManagement.Api
 RUN dotnet build "ParcelManagement.Api.csproj" -c Release -o /app/build --no-restore 
 
 # run publish 
-RUN dotnet publish "ParcelManagement.Api.csproj" -c Release -o /app/publish 
+RUN dotnet publish "ParcelManagement.Api.csproj" -c Release -o /app/publish --no-restore 
 
 # move to runtime stage 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final

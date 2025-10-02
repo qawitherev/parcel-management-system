@@ -14,7 +14,9 @@ COPY ["ParcelManagement.Infrastructure/ParcelManagement.Infrastructure.csproj", 
 RUN dotnet restore "ParcelManagement.Api/ParcelManagement.Api.csproj"
 
 # copy rest of the source from machine to container file system
-COPY . .
+COPY ParcelManagement.Api/ ParcelManagement.Api/
+COPY ParcelManagement.Core/ ParcelManagement.Core/
+COPY ParcelManagement.Infrastructure/ ParcelManagement.Infrastructure/
 
 # set working dir to api, since api is our entry point 
 WORKDIR /src/ParcelManagement.Api

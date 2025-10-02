@@ -44,7 +44,7 @@ environment files
     - through predefined env file 
         create a .env file (don't forget to gitignore)
         load during docker run 
-        docker run -d --env-file .env (-d means detach: to run the container in foreground, not in terminal)
+        docker run -d --env-file .env (-d means detach: to run the container in background, not in terminal)
         also use __ for nested value 
     - docker-compose.yaml
         also leverage the use of .env file, but we will discuss this some other time 

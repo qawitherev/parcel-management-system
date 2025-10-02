@@ -51,7 +51,7 @@ environment files
 
 WRITING DOCKER FILE 
 - there are structure when writing docker file 
-- for best practice, we will be using stage dockefile, means the instruction is stage by stage 
+- for best practice, we will be using a staged Dockerfile, meaning the instructions are organized stage by stage 
 - stage 1: the build stage 
     FROM <sdk> as build
         this will download the sdk that we want to build our app with, in this project, it is dotnet sdk version 9 so

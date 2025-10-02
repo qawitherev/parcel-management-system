@@ -59,7 +59,7 @@ WRITING DOCKER FILE
     WORK <dir> 
         this will set the working directory of docker engine, can think of it as cd <path>
     COPY [<source>, <destination>] 
-        this will copy stuff into local machine, into the docker file system 
+        this will copy stuff from the local machine (build context) into the container filesystem 
         in this case we only want to copy csproj for api, core and infrastructure. this is because we want to run dotnet restore
         so in this case
     COPY [] api project, remember only csproj

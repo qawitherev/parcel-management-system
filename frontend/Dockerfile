@@ -31,6 +31,9 @@ COPY --from=build /app/dist/frontend/browser /usr/share/nginx/html
 COPY --from=build /app/dist/frontend/3rdpartylicenses.txt /usr/share/nginx/html
 COPY --from=build /app/dist/frontend/prerendered-routes.json /usr/share/nginx/html
 
+# copy nginx config 
+COPY nginx.conf /etc/nginx/nginx.conf
+
 # for documentation purposes 
 EXPOSE 80
 

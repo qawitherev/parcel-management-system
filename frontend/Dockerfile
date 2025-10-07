@@ -10,7 +10,7 @@ COPY package-lock.json package.json ./
 # run the npm ci (getting the dependencies, by deleting existing node-modules, and downloading new one with version stated in package.json
 RUN npm ci 
 
-# copy necessary files copilot review plis help me choose what file to choose, but for this time, ill copy all
+# Copy all source files for build
 COPY . .
 
 # run the build command with prod configuration

@@ -7,7 +7,7 @@ on:
     paths:
       - 'backend/src'
       - '!backend/readme'
-    
+  workflow_dispatch:
 
 jobs:
   build: 

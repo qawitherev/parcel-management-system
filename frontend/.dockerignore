@@ -16,7 +16,7 @@ readme
 README.md 
 
 #node modules, we'll get this during docker build 
-node-modules 
+node_modules 
 
 # we dont need this 
 .editorconfig

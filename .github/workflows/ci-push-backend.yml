@@ -22,11 +22,12 @@ jobs:
           dotnet-version: '9.0.0'
 
       - name: 'get-dependencies'
-        run: 'dotnet-restore'
+        run: 'dotnet restore'
         working-directory: 'backend/src'
 
       - name: 'build-app'
         run: 'dotnet build --configuration Release --no-restore --warnaserror'
+        working-directory: 'backend/src'
 
       - name: upload-artifact
         uses: actions/upload-artifact@v4

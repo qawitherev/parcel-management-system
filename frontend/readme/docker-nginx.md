@@ -9,7 +9,7 @@ creating the docker file
 - the high view of the steps are as the following 
     - get build base image and setup the working directory 
     - copy package.json and package-lock.json 
-    - run npm ci (this will remove node module and download exact version inside package.json)
+    - run npm ci (this will remove node_modules and download exact version inside package.json)
     - copy necessary files for build 
     - run build 
     - end of stage 1 (build stage)

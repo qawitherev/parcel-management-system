@@ -39,7 +39,7 @@ understanding nginx.conf
 since our backend .net server running on docker container, the recommended way to access the backend server is by doing it on docker container layer 
 while it is possible to access the backend through localhost:5000, we might encounter issues such as CORS that's making us can't access the backend server. 
 
-so the clean and recomended approach is to access the backend through docker container layer 
+so the clean and recommended approach is to access the backend through docker container layer 
 
 to understand this we will be deep dive into docker compose 
 

@@ -37,7 +37,7 @@ understanding nginx.conf
 - mime (Multipurpose internet file extension) --> basically a list of types that nginx can serve
 
 since our backend .net server running on docker container, the recommended way to access the backend server is by doing it on docker container layer 
-while it is possible to access the backend through localhost:5000, we might encounter issue such as cors thats making us cant access the backend server. 
+while it is possible to access the backend through localhost:5000, we might encounter issues such as CORS that's making us can't access the backend server. 
 
 so the clean and recomended approach is to access the backend through docker container layer 
 

@@ -23,11 +23,11 @@ jobs:
 
       - name: 'get-dependencies'
         run: 'dotnet restore'
-        working-directory: 'backend/src'
+        working-directory: 'backend'
 
       - name: 'build-app'
         run: 'dotnet build --configuration Release --no-restore --warnaserror'
-        working-directory: 'backend/src'
+        working-directory: 'backend'
 
       - name: upload-artifact
         uses: actions/upload-artifact@v4

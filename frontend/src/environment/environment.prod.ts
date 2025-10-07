@@ -1,1 +1,4 @@
-// we will go into this when we go into production
+export const environment = {
+    apiBaseUrl: "/api", 
+    enabledLogging: false
+}

@@ -7,10 +7,13 @@ jobs:
     build: 
         runs-on: ubuntu-latest
         steps: 
+            - name: checkout code 
+              uses: actions/checkout@v5
+
             - name: setup .NET env
               uses: ./.github/actions/spin-dotnet
 
-            - name: cache nuget packages 
+            - name: cache nuget packages
               uses: actions/cache@v4
               with: 
                 path: ~/.nuget/packages

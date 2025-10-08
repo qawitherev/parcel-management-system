@@ -66,10 +66,9 @@ jobs:
         - name: run test 
           run: dotnet test --configuration Release --logger "trx;LogFileName=unit-test-result.trx"
           working-directory: backend/src/ParcelManagement.Test
-          if: always()
-          continue-on-error: true
 
         - name: upload test result 
+          if: always()
           uses: actions/upload-artifact@v4
           with: 
             name: test-result 

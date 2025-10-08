@@ -1,0 +1,17 @@
+name: spin-dotnet 
+description: checkout code, setup dotnet 
+
+inputs: 
+  dotnet-version: 
+    description: dotnet sdk version
+    required: false
+    default: 9.0.x
+  
+runs: 
+  using: "composite"
+  steps:
+    - name: checkout code 
+      uses: actions/checkout@v5
+
+    - name: setup dotnet 
+      uses: actions/setup-dotnet@v5

@@ -1,3 +1,5 @@
+# DEPRECATED
+
 name: ci-push-backend 
 
 on: 

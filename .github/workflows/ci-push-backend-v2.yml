@@ -36,3 +36,40 @@ jobs:
                     backend/src/ParcelManagement.Core/bin/Release/net9.0
                     backend/src/ParcelManagement.Infrastructure/bin/Release/net9.0
                     backend/src/ParcelManagement.Test/bin/Release/net9.0
+
+    test: 
+      runs-on: ubuntu-latest 
+      steps: 
+        - name: checkout code 
+          uses: actions/checkout@v5
+
+        - name: setup .NET env 
+          uses: ./.github/actions/spin-dotnet 
+
+        - name: cache nuget package 
+          uses: actions/cache@v4
+          with: 
+            path: ~/.nuget/packages
+            key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+
+        - name: restore dependencies 
+          run: dotnet restore 
+          working-directory: backend 
+
+        - name: download build artifact 
+          uses: actions/download-artifact@v5
+          with: 
+            name: dotnet artifact 
+            path: .
+
+        - name: run test 
+          run: dotnet test --configuration Release --logger "trx;LogFileName=unit-test-result.trx"
+          working-directory: backend/src/ParcelManagement.Test
+          if: always()
+          continue-on-error: true
+
+        - name: upload test result 
+          uses: actions/upload-artifact@v4
+          with: 
+            name: test-result 
+            path: backend/**/*.trx

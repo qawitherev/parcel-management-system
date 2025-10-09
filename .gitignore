@@ -47,4 +47,5 @@ yarn-error.log*
 *.env
 
 # test results
-**/TestResults/
+**/TestResults/ 
+**/test-results/

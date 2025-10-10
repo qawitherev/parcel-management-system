@@ -57,7 +57,7 @@ jobs:
                 path: .
             
             - name: run unit test 
-              run: dotnet test --configuration Release --logger "trx;LogFileName:ci-pr-develop-backend-unit-test-report.trx"
+              run: dotnet test --configuration Release --logger "trx;LogFileName=ci-pr-develop-backend-unit-test-report.trx"
               working-directory: backend/src/ParcelManagement.Test
 
             - name: upload unit test report 
@@ -84,7 +84,7 @@ jobs:
                 path: .
             
             - name: run unit test 
-              run: dotnet test --configuration Release --logger "trx;LogFileName:ci-pr-develop-backend-intg-test-report.trx"
+              run: dotnet test --configuration Release --logger "trx;LogFileName=ci-pr-develop-backend-intg-test-report.trx"
               working-directory: backend/src/ParcelManagement.Test.Integration
 
             - name: upload unit test report 

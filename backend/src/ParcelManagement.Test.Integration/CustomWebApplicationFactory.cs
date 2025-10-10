@@ -33,7 +33,8 @@ namespace ParcelManagement.Test.Integration
                     ["JWTSettings:SecretKey"] = "this-is-a-very-very-very-very-long-secret-key-for-testing",
                     ["JWTSettings:Issuer"] = "test-issuer",
                     ["JWTSettings:Audience"] = "test-audience",
-                    ["JWTSettings:ExpirationMinutes"] = "60"
+                    ["JWTSettings:ExpirationMinutes"] = "60",
+                    ["Admin:Password"] = "this is admin password"
                 }).Build();
                 services.Configure<JWTSettings>(configuration.GetSection("JWTSettings"));
             });

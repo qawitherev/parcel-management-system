@@ -47,15 +47,15 @@ namespace ParcelManagement.Test.Service
             var theId = Guid.NewGuid();
             var newResidentUnit = new ResidentUnit
             {
-                Id = theId,
+                Id = theId, // --> dont use this to assert 
                 UnitName = "RU001",
                 CreatedAt = DateTimeOffset.UtcNow,
                 CreatedBy = Guid.NewGuid()
             };
-            await _fixture.ResidentUnitService.CreateResidentUnitAsync(newResidentUnit.UnitName, Guid.NewGuid());
-            var res = await _fixture.DbContext.ResidentUnits.FindAsync(theId);
+            var see = await _fixture.ResidentUnitService.CreateResidentUnitAsync(newResidentUnit.UnitName, Guid.NewGuid());
+            var res = await _fixture.DbContext.ResidentUnits.FindAsync(see.Id);
             Assert.NotNull(res);
-            Assert.Equal(theId, res.Id);
+            Assert.Equal(see.Id, res.Id);
 
             await _fixture.ResetDb();
         }
@@ -70,7 +70,7 @@ namespace ParcelManagement.Test.Service
                 CreatedAt = DateTimeOffset.UtcNow,
                 CreatedBy = Guid.NewGuid()
             };
-            await Assert.ThrowsAsync<NullReferenceException>(async () =>
+            await Assert.ThrowsAsync<KeyNotFoundException>(async () =>
             {
                 await _fixture.ResidentUnitService.UpdateResidentUnitAsync(residentUnit.Id, residentUnit.UnitName, Guid.NewGuid());
             });

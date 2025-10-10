@@ -102,6 +102,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.Configure<JWTSettings>(
     builder.Configuration.GetSection("JWTSettings")
 );
+
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddScoped<IResidentUnitRepository, ResidentUnitRepository>();
@@ -119,6 +120,10 @@ builder.Services.AddScoped<ILockerService, LockerService>();
 builder.Services.AddScoped<IUserContextService, UserContextService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<TransactionFilter>();
+
+builder.Services.Configure<SystemAdmin>(
+    builder.Configuration.GetSection("Admin")
+);
 
 builder.Services.AddScoped<AdminDataSeeder>();
 

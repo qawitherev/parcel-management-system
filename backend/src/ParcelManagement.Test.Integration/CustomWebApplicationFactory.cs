@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ParcelManagement.Api.AuthenticationAndAuthorization;
+using ParcelManagement.Api.Utility;
 using ParcelManagement.Infrastructure.Database;
 
 namespace ParcelManagement.Test.Integration
@@ -25,18 +26,34 @@ namespace ParcelManagement.Test.Integration
                 services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("integrationTestDb"));
             });
 
-            builder.ConfigureTestServices(services =>
+            // builder.ConfigureTestServices(services =>
+            // {
+            //     services.RemoveAll<JWTSettings>();
+            //     var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+            //     {
+            //         ["JWTSettings:SecretKey"] = "this-is-a-very-very-very-very-long-secret-key-for-testing",
+            //         ["JWTSettings:Issuer"] = "test-issuer",
+            //         ["JWTSettings:Audience"] = "test-audience",
+            //         ["JWTSettings:ExpirationMinutes"] = "60",
+            //         ["Admin:Email"] = "admin@parcelSystem.com",
+            //         ["Admin:Password"] = "this-is-admin-password"
+            //     }).Build();
+            //     services.Configure<JWTSettings>(configuration.GetSection("JWTSettings"));
+            //     services.Configure<SystemAdmin>(configuration.GetSection("Admin"));
+            // });
+
+            builder.ConfigureAppConfiguration((context, config) =>
             {
-                services.RemoveAll<JWTSettings>();
-                var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+                config.Sources.Clear();
+                config.AddInMemoryCollection(new Dictionary<string, string?>
                 {
                     ["JWTSettings:SecretKey"] = "this-is-a-very-very-very-very-long-secret-key-for-testing",
                     ["JWTSettings:Issuer"] = "test-issuer",
                     ["JWTSettings:Audience"] = "test-audience",
                     ["JWTSettings:ExpirationMinutes"] = "60",
-                    ["Admin:Password"] = "this is admin password"
-                }).Build();
-                services.Configure<JWTSettings>(configuration.GetSection("JWTSettings"));
+                    ["Admin:Email"] = "admin@parcelSystem.com",
+                    ["Admin:Password"] = "this-is-admin-password"
+                });
             });
         }
     }

@@ -10,7 +10,7 @@ namespace ParcelManagement.Core.Services
 {
     public interface IParcelService
     {
-        Task<Parcel?> GetParcelByIdAsync(Guid id);
+        Task<Parcel> GetParcelByIdAsync(Guid id);
 
         // check in, claim, getByTrackingNumber, getAll (to be implemented later: getByResidentUnit)
         Task<Parcel> CheckInParcelAsync(string trackingNumber, string residentUnit,
@@ -248,7 +248,7 @@ namespace ParcelManagement.Core.Services
             return (parcels, count);
         }
 
-        public async Task<Parcel?> GetParcelByIdAsync(Guid id)
+        public async Task<Parcel> GetParcelByIdAsync(Guid id)
         {
             var parcel = await _parcelRepo.GetParcelByIdAsync(id) ?? throw new KeyNotFoundException($"Parcel with id {id} is not found");
             return parcel;

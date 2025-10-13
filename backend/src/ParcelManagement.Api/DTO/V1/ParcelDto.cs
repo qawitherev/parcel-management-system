@@ -18,8 +18,8 @@ namespace ParcelManagement.Api.DTO.V1
 
     public class ParcelResponseDto
     {
-        public required Guid Id { set; get; }
-        public required string TrackingNumber { get; set; }
+        public Guid Id { set; get; }
+        public string? TrackingNumber { get; set; }
         public string? Locker { get; set; }
 
         public decimal? Weight { get; set; }

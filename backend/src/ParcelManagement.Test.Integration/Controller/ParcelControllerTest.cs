@@ -1,55 +1,38 @@
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
+using ParcelManagement.Api.Controller.V1;
 using ParcelManagement.Api.DTO;
 using ParcelManagement.Api.DTO.V1;
 using ParcelManagement.Core.Entities;
 using ParcelManagement.Infrastructure.Database;
+using ParcelManagement.Test.Integration.Misc;
 
 namespace ParcelManagement.Test.Integration
 {
-    public class ParcelControllerTest(CustomWebApplicationFactory factory) : IClassFixture<CustomWebApplicationFactory>
+    public class ParcelControllerTest : IntegrationTestBase
     {
-        private readonly HttpClient _client = factory.CreateClient();
 
-        [Fact]
-        public async Task GetParcelById_NonNull_ShouldReturnParcel()
+        public ParcelControllerTest(CustomWebApplicationFactory factory): base(factory)
         {
-            var theId = Guid.NewGuid();
-            // virtually creating the data 
-            using (var scope = factory.Services.CreateScope())
-            {
-                var dbContextUsingScope = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                var parcel = new Parcel
-                {
-                    Id = theId,
-                    TrackingNumber = "TN001",
-                    ResidentUnitDeprecated = "RU001",
-                    ResidentUnitId = Guid.NewGuid()
-                    
-                };
-                await dbContextUsingScope.Parcels.AddAsync(parcel);
-                await dbContextUsingScope.SaveChangesAsync();
-            }
-
-            // call the endpoint 
-            var response = await _client.GetAsync($"api/parcel/GetParcelById/{theId}");
-
-            // assert 
-            response.EnsureSuccessStatusCode();
-            var fetchedParcel = await response.Content.ReadFromJsonAsync<ParcelResponseDto>();
-            Assert.Equal(theId, fetchedParcel!.Id);
+            // nothing 
         }
 
-
         [Fact]
-        public async Task GetParcelById_NotFound_ShouldReturnNotFound()
+        public async Task GetParcelById_ParcelExist_ShouldReturnParcel()
         {
-            var theId = Guid.NewGuid();
+            await ResetDatabaseAsync();
+            // arrange 
+            var existingParcel = await Seeder.SeedParcelAsync();
 
-            var response = await _client.GetAsync($"api/parcel/GetParcelById/{theId}");
+            // calling endpoint 
+            var response = await Client.GetAsync($"api/v1/parcel/{existingParcel.Id}");
+            var fetchedParcel = await response.Content.ReadFromJsonAsync<ParcelResponseDto>(IntegrationMisc.GetJsonSerializerOptions());
 
-            // assert 
-            Assert.Equal(System.Net.HttpStatusCode.NotFound, response.StatusCode);
+            // assertion
+            Assert.NotNull(fetchedParcel);
+            Assert.Equal(existingParcel.Id, fetchedParcel!.Id);
         }
     }
 }

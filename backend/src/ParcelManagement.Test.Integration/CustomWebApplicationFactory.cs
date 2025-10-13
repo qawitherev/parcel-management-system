@@ -1,18 +1,34 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using ParcelManagement.Api.AuthenticationAndAuthorization;
-using ParcelManagement.Api.Utility;
 using ParcelManagement.Infrastructure.Database;
+using Testcontainers.MySql;
 
 namespace ParcelManagement.Test.Integration
 {
-    public class CustomWebApplicationFactory : WebApplicationFactory<ParcelManagement.Api.Program>
+    public class CustomWebApplicationFactory : WebApplicationFactory<ParcelManagement.Api.Program>, IAsyncLifetime
     {
+
+        private readonly MySqlContainer _mySqlContainer;
+
+        public CustomWebApplicationFactory()
+        {
+            _mySqlContainer = new MySqlBuilder()
+                .WithImage("mysql:8.0")
+                .WithDatabase("integrationTestDB")
+                .WithUsername("TestAdmin")
+                .WithPassword("AdminPassword123")
+                .WithCleanUp(true)
+                .Build();
+        }
+
+        public async Task InitializeAsync()
+        {
+            await _mySqlContainer.StartAsync(); // --> will spin up a docker container 
+        }
+
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.UseEnvironment("Testing");
@@ -23,24 +39,20 @@ namespace ParcelManagement.Test.Integration
                 {
                     services.Remove(existingDbContext);
                 }
-                services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("integrationTestDb"));
-            });
 
-            // builder.ConfigureTestServices(services =>
-            // {
-            //     services.RemoveAll<JWTSettings>();
-            //     var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
-            //     {
-            //         ["JWTSettings:SecretKey"] = "this-is-a-very-very-very-very-long-secret-key-for-testing",
-            //         ["JWTSettings:Issuer"] = "test-issuer",
-            //         ["JWTSettings:Audience"] = "test-audience",
-            //         ["JWTSettings:ExpirationMinutes"] = "60",
-            //         ["Admin:Email"] = "admin@parcelSystem.com",
-            //         ["Admin:Password"] = "this-is-admin-password"
-            //     }).Build();
-            //     services.Configure<JWTSettings>(configuration.GetSection("JWTSettings"));
-            //     services.Configure<SystemAdmin>(configuration.GetSection("Admin"));
-            // });
+                services.AddDbContext<ApplicationDbContext>(options =>
+                {
+                    options.UseMySql(
+                        _mySqlContainer.GetConnectionString(),
+                        ServerVersion.AutoDetect(_mySqlContainer.GetConnectionString())
+                    );
+                });
+                var serviceProvider = services.BuildServiceProvider();
+                using var scope = serviceProvider.CreateScope();
+                var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+                dbContext.Database.EnsureCreated();
+            });
 
             builder.ConfigureAppConfiguration((context, config) =>
             {
@@ -55,6 +67,11 @@ namespace ParcelManagement.Test.Integration
                     ["Admin:Password"] = "this-is-admin-password"
                 });
             });
+        }
+
+        async Task IAsyncLifetime.DisposeAsync()
+        {
+            await _mySqlContainer.DisposeAsync();
         }
     }
 }

@@ -26,7 +26,17 @@ namespace ParcelManagement.Api.Controller.V1
         public async Task<IActionResult> GetParcelById(Guid id)
         {
             var parcel = await _parcelService.GetParcelByIdAsync(id);
-            return Ok(parcel);
+            var dtoParcel = new ParcelResponseDto
+            {
+                Id = parcel.Id,
+                TrackingNumber = parcel.TrackingNumber,
+                Locker = parcel.Locker?.LockerName ?? "",
+                Weight = parcel.Weight,
+                Dimensions = parcel.Dimensions,
+                ResidentUnit = parcel.ResidentUnit?.UnitName ?? "",
+                Status = parcel.Status
+            };
+            return Ok(dtoParcel);
         }
 
         [HttpPost("checkIn")]

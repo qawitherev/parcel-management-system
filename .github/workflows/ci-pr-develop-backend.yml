@@ -3,10 +3,11 @@ name: ci-pr-develop-backend
 on: 
     pull_request: 
         branches: [develop]
+    workflow_dispatch:
 
 jobs: 
     build: 
-        runs-on: ubuntu-latest 
+        runs-on: self-hosted
         steps: 
             - name: checkout code 
               uses: actions/checkout@v5
@@ -41,7 +42,7 @@ jobs:
                     backend/src/ParcelManagement.Test/bin/Release/net9.0
 
     unit-test: 
-        runs-on: ubuntu-latest
+        runs-on: self-hosted
         needs: build
         steps: 
             - name: checkout code 
@@ -68,7 +69,7 @@ jobs:
                 path: backend/**/*.trx
 
     integration-test: 
-        runs-on: ubuntu-latest
+        runs-on: self-hosted
         needs: [build, unit-test]
         steps: 
             - name: checkout code 

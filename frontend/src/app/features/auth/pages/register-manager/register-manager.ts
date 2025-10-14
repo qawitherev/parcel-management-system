@@ -4,12 +4,37 @@ import { Observable } from 'rxjs';
 import { passwordMatchValidator } from '../../../../utils/custom-validators';
 import { Auth } from '../../auth';
 import { ReactiveFormsModule } from '@angular/forms';
-import { NgIf, AsyncPipe, NgClass } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { AppConsole } from '../../../../utils/app-console';
 import { Router } from '@angular/router';
+import {
+  ButtonComponent,
+  InputComponent,
+  CardComponent,
+  CardHeaderComponent,
+  CardTitleComponent,
+  CardDescriptionComponent,
+  CardContentComponent,
+  LabelComponent,
+  AlertComponent,
+  AlertDescriptionComponent,
+} from '../../../../components/ui';
+
 @Component({
   selector: 'app-register-manager',
-  imports: [ReactiveFormsModule, NgIf, NgClass],
+  imports: [
+    ReactiveFormsModule,
+    ButtonComponent,
+    InputComponent,
+    CardComponent,
+    CardHeaderComponent,
+    CardTitleComponent,
+    CardDescriptionComponent,
+    CardContentComponent,
+    LabelComponent,
+    AlertComponent,
+    AlertDescriptionComponent,
+  ],
   templateUrl: './register-manager.html',
   styleUrl: './register-manager.css'
 })

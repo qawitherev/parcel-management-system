@@ -1,47 +1,59 @@
 <div class="flex min-h-screen items-center justify-center">
-  <div class="w-full max-w-md bg-white p-8 rounded-2xl shadow">
-    <h2 class="text-2xl font-bold mb-6 text-center">Login</h2>
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <div class="mb-4">
-        <label class="block text-gray-700">Email or Username</label>
-        <input
-          formControlName="emailUsername"
-          type="text"
-          class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-        />
-        @if (form.get('emailUsername')?.invalid && form.get('emailUsername')?.touched) {
-        <div class="text-red-500 text-sm">Please enter username or email</div>
-        }
-      </div>
-      <div class="mb-6">
-        <label class="block text-gray-700">Password</label>
-        <input
-          formControlName="password"
-          type="password"
-          class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-        />
-        @if (form.get('password')?.invalid && form.get('password')?.touched) {
-        <div class="text-red-500 text-sm">Please enter password</div>
-        }
-      </div>
-      <button
-        [ngClass]="
-          form.get('emailUsername')?.valid && form.get('password')?.valid
-            ? 'bg-blue-500 text-white hover:bg-blue-600'
-            : 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-50'
-        "
-        type="submit"
-        class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600"
-      >
-        Login
-      </button>
-      <div *ngIf="loginResponse$ | async as res">
-        <div class="text-red-500 text-sm mt-2">{{ res.message }}</div>
-      </div>
-    </form>
-    <p class="mt-4 text-center">
-      Don't have an account?
-      <a routerLink="/register" class="text-blue-500 hover:underline cursor-pointer">Register</a>
-    </p>
-  </div>
+  <ui-card class="w-full max-w-md">
+    <ui-card-header>
+      <ui-card-title>Login</ui-card-title>
+      <ui-card-description>Enter your credentials to access your account</ui-card-description>
+    </ui-card-header>
+    <ui-card-content>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="space-y-4">
+          <div class="space-y-2">
+            <ui-label htmlFor="emailUsername">Email or Username</ui-label>
+            <ui-input
+              formControlName="emailUsername"
+              type="text"
+              id="emailUsername"
+              placeholder="Enter your email or username"
+              [error]="form.get('emailUsername')?.invalid && form.get('emailUsername')?.touched"
+            />
+            @if (form.get('emailUsername')?.invalid && form.get('emailUsername')?.touched) {
+            <p class="text-sm text-destructive">Please enter username or email</p>
+            }
+          </div>
+          <div class="space-y-2">
+            <ui-label htmlFor="password">Password</ui-label>
+            <ui-input
+              formControlName="password"
+              type="password"
+              id="password"
+              placeholder="Enter your password"
+              [error]="form.get('password')?.invalid && form.get('password')?.touched"
+            />
+            @if (form.get('password')?.invalid && form.get('password')?.touched) {
+            <p class="text-sm text-destructive">Please enter password</p>
+            }
+          </div>
+          <ui-button
+            type="submit"
+            class="w-full"
+            [disabled]="!form.valid"
+            [variant]="form.valid ? 'default' : 'secondary'"
+          >
+            Login
+          </ui-button>
+          <div *ngIf="loginResponse$ | async as res">
+            <ui-alert variant="destructive">
+              <ui-alert-description>{{ res.message }}</ui-alert-description>
+            </ui-alert>
+          </div>
+        </div>
+      </form>
+    </ui-card-content>
+    <ui-card-footer class="flex-col items-start">
+      <p class="text-sm text-muted-foreground">
+        Don't have an account?
+        <a routerLink="/register" class="text-primary hover:underline">Register</a>
+      </p>
+    </ui-card-footer>
+  </ui-card>
 </div>

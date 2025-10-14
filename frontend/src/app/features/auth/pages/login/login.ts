@@ -7,7 +7,7 @@ import {
   ɵInternalFormsSharedModule,
 } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { NgClass, AsyncPipe } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { Observable, tap, map, Subject, takeUntil } from 'rxjs';
 import { Auth } from '../../auth';
 import { NgIf } from '@angular/common';
@@ -15,6 +15,19 @@ import { AppConsole } from '../../../../utils/app-console';
 import { httpResource } from '@angular/common/http';
 import { RoleService } from '../../../../core/roles/role-service';
 import { EmptyLayout } from "../../../../common/layout/empty-layout/empty-layout";
+import {
+  ButtonComponent,
+  InputComponent,
+  CardComponent,
+  CardHeaderComponent,
+  CardTitleComponent,
+  CardDescriptionComponent,
+  CardContentComponent,
+  CardFooterComponent,
+  LabelComponent,
+  AlertComponent,
+  AlertDescriptionComponent,
+} from '../../../../components/ui';
 
 @Component({
   selector: 'app-login',
@@ -23,9 +36,20 @@ import { EmptyLayout } from "../../../../common/layout/empty-layout/empty-layout
     ɵInternalFormsSharedModule,
     ReactiveFormsModule,
     RouterModule,
-    NgClass,
     NgIf,
-    AsyncPipe],
+    AsyncPipe,
+    ButtonComponent,
+    InputComponent,
+    CardComponent,
+    CardHeaderComponent,
+    CardTitleComponent,
+    CardDescriptionComponent,
+    CardContentComponent,
+    CardFooterComponent,
+    LabelComponent,
+    AlertComponent,
+    AlertDescriptionComponent,
+  ],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })

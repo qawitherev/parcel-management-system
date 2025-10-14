@@ -1,44 +1,35 @@
-<div class="fixed inset-0 bg-opacity-50 z-40"></div>
-<div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center z-50">
-    <div class="bg-gray-100 rounded-lg shadow-lg p-6 w-96">
-        <h2 class="text-lg font-semibold text-gray-500 mb-4">Upload File</h2>
-        <form
-            [formGroup]="formGroup"
-            (ngSubmit)="onFileUpload($event)"
-        >
-            <div class="mb-4">
-                <label for="fileInput" class="block text-sm font-medium text-gray-500 mb-2"
-                    >Choose File</label
-                >
-                <input
-                    type="file"
-                    id="fileInput"
-                    (change)="onFileChange($event)"
-                    class="block w-full text-sm text-gray-500 border border-gray-300 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-200 file:text-gray-700 hover:file:bg-gray-300"
-                />
-                <div class="mb-4"></div>
-                @if (errorMessage) {
-                    <div class="text-sm text-red-500 bg-red-100 border border-red-400 rounded-lg p-2">
-                        {{errorMessage}}
-                    </div>
-                }
-            </div>
-            <div class="flex justify-end">
-                <button
-                    class="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg shadow-md hover:bg-gray-700 hover:text-gray-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
-                    (click)="onCancel()"
-                    type="button"
-                >
-                    Cancel
-                </button>
-                <div class="ml-2"></div>
-                <button
-                    class="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg shadow-md hover:bg-gray-700 hover:text-gray-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
-                    type="submit"
-                >
-                    Upload
-                </button>
-            </div>
-        </form>
-    </div>
+<div class="fixed inset-0 bg-background/80 backdrop-blur-sm z-40"></div>
+<div
+  class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center z-50"
+>
+  <ui-card class="w-96">
+    <ui-card-header>
+      <ui-card-title>Upload File</ui-card-title>
+      <ui-card-description>Choose an Excel file to upload</ui-card-description>
+    </ui-card-header>
+    <ui-card-content>
+      <form [formGroup]="formGroup" (ngSubmit)="onFileUpload($event)">
+        <div class="space-y-4">
+          <div class="space-y-2">
+            <ui-label htmlFor="fileInput">Choose File</ui-label>
+            <input
+              type="file"
+              id="fileInput"
+              (change)="onFileChange($event)"
+              class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            />
+          </div>
+          @if (errorMessage) {
+          <ui-alert variant="destructive">
+            <ui-alert-description>{{ errorMessage }}</ui-alert-description>
+          </ui-alert>
+          }
+        </div>
+      </form>
+    </ui-card-content>
+    <ui-card-footer class="flex justify-end gap-2">
+      <ui-button variant="outline" (click)="onCancel()" type="button"> Cancel </ui-button>
+      <ui-button (click)="onFileUpload($event)" type="submit"> Upload </ui-button>
+    </ui-card-footer>
+  </ui-card>
 </div>

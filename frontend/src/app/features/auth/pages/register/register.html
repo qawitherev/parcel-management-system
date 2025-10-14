@@ -1,63 +1,100 @@
-<div class="flex min-h-screen items-center justify-center ">
-  <div class="w-full max-w-md bg-white bg-opacity-50 backdrop-filter backdrop-blur-lg p-8 rounded-2xl shadow">
-    <h2 class="text-2xl font-bold mb-6 text-center">Register</h2>
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <div class="mb-4">
-        <label class="block text-gray-700">Email</label>
-        <input formControlName="email" type="email" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300" />
-        @if (form.get('email')?.invalid && form.get('email')?.touched) {
-            <div class="text-red-500 text-sm" >Please enter a valid email</div>
-        }
-      </div>
-      <div class="mb-4">
-        <label class="block text-gray-700">Username</label>
-        <input formControlName="username" placeholder="Not more than 10 characters" type="text" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300" />
-      </div>
-      <div class="mb-4">
-        <label class="block text-gray-700">Resident Unit</label>
-        <input formControlName="residentUnit" placeholder="Not more than 10 characters" type="text" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300" />
-      </div>
-      <div class="mb-6">
-        <label class="block text-gray-700">Password</label>
-        <input formControlName="password" type="password" placeholder="Make sure to have at least 6 characters" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300" />
-      </div>
-      <div class="mb-6">
-        <label class="block text-gray-700">Confirm Password</label>
-        <input formControlName="confirmPassword" type="password" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300" />
-        @if (form.errors?.['passwordMismatch'] && form.get('confirmPassword')?.touched) {
-        <div class="text-red-500 text-sm" >{{form.getError('errorString')}}</div>
-        }
-      </div>
-      <button [disabled]="!form.get('agreeTerms')?.value"
-       type="submit"
-       [ngClass]="form.get('agreeTerms')?.value
-        ? 'bg-blue-500 text-white hover:bg-blue-600'
-        : 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-50'"
-        class="w-full text-white py-2 rounded-lg transition-colors"
-      >
-        Register
-            </button>
-    <div class="mt-4 flex items-center">
-        <input type="checkbox" formControlName="agreeTerms" id="agreeTerms" class="mr-2" />
-        <label for="agreeTerms" class="text-gray-700 text-sm">
-            I agree to the <a href="#" class="text-blue-500 underline">Terms of Service</a> and Privacy Policy.
-        </label>
-    </div>
-    </form>
-    <div *ngIf="errorMessage" class="text-red-500 text-sm mt-2">
-      {{errorMessage}}
-    </div>
-    <!-- <div *ngIf="registerResponse$ | async as response" >
-      @if (response.error) {
-        <div class="text-red-500 text-sm mt-2">{{ response.message }}</div>
-      } @else {
-        <div class="text-green-600 text-sm mt-2">
-          Registration successful!<br>
-          Username: {{ response.username }}<br>
-          User ID: {{ response.id }}
+<div class="flex min-h-screen items-center justify-center">
+  <ui-card class="w-full max-w-md">
+    <ui-card-header>
+      <ui-card-title class="text-center">Register</ui-card-title>
+      <ui-card-description class="text-center">Create your account</ui-card-description>
+    </ui-card-header>
+    <ui-card-content>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="space-y-4">
+          <div class="space-y-2">
+            <ui-label htmlFor="email">Email</ui-label>
+            <ui-input
+              formControlName="email"
+              type="email"
+              id="email"
+              placeholder="Enter your email"
+              [error]="form.get('email')?.invalid && form.get('email')?.touched"
+            />
+            @if (form.get('email')?.invalid && form.get('email')?.touched) {
+            <p class="text-sm text-destructive">Please enter a valid email</p>
+            }
+          </div>
+          <div class="space-y-2">
+            <ui-label htmlFor="username">Username</ui-label>
+            <ui-input
+              formControlName="username"
+              placeholder="Not more than 10 characters"
+              type="text"
+              id="username"
+              [error]="form.get('username')?.invalid && form.get('username')?.touched"
+            />
+          </div>
+          <div class="space-y-2">
+            <ui-label htmlFor="residentUnit">Resident Unit</ui-label>
+            <ui-input
+              formControlName="residentUnit"
+              placeholder="Not more than 10 characters"
+              type="text"
+              id="residentUnit"
+              [error]="form.get('residentUnit')?.invalid && form.get('residentUnit')?.touched"
+            />
+          </div>
+          <div class="space-y-2">
+            <ui-label htmlFor="password">Password</ui-label>
+            <ui-input
+              formControlName="password"
+              type="password"
+              id="password"
+              placeholder="Make sure to have at least 6 characters"
+              [error]="form.get('password')?.invalid && form.get('password')?.touched"
+            />
+          </div>
+          <div class="space-y-2">
+            <ui-label htmlFor="confirmPassword">Confirm Password</ui-label>
+            <ui-input
+              formControlName="confirmPassword"
+              type="password"
+              id="confirmPassword"
+              placeholder="Confirm your password"
+              [error]="
+                form.errors?.['passwordMismatch'] && form.get('confirmPassword')?.touched
+              "
+            />
+            @if (form.errors?.['passwordMismatch'] && form.get('confirmPassword')?.touched) {
+            <p class="text-sm text-destructive">{{ form.getError('errorString') }}</p>
+            }
+          </div>
+          <div class="flex items-start space-x-2">
+            <input
+              type="checkbox"
+              formControlName="agreeTerms"
+              id="agreeTerms"
+              class="mt-1 h-4 w-4 rounded border-input"
+            />
+            <ui-label htmlFor="agreeTerms" class="text-sm font-normal leading-relaxed">
+              I agree to the
+              <a href="#" class="text-primary underline hover:no-underline"
+                >Terms of Service</a
+              >
+              and Privacy Policy.
+            </ui-label>
+          </div>
+          <ui-button
+            [disabled]="!form.get('agreeTerms')?.value"
+            type="submit"
+            [variant]="form.get('agreeTerms')?.value ? 'default' : 'secondary'"
+            class="w-full"
+          >
+            Register
+          </ui-button>
+          @if (errorMessage) {
+          <ui-alert variant="destructive">
+            <ui-alert-description>{{ errorMessage }}</ui-alert-description>
+          </ui-alert>
+          }
         </div>
-      }
-    </div> -->
-    
-  </div>
+      </form>
+    </ui-card-content>
+  </ui-card>
 </div>

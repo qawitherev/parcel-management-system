@@ -3,15 +3,38 @@ import { FormGroup, FormBuilder, Validators, ReactiveFormsModule, AbstractContro
 import { NgClass, AsyncPipe } from '@angular/common';
 import { Auth } from '../../auth';
 import { Observable } from 'rxjs';
-import { NgIf } from '@angular/common';
 import { AppConsole } from '../../../../utils/app-console';
 import { passwordMatchValidator } from '../../../../utils/custom-validators';
 import { Router } from '@angular/router';
+import {
+  ButtonComponent,
+  InputComponent,
+  CardComponent,
+  CardHeaderComponent,
+  CardTitleComponent,
+  CardDescriptionComponent,
+  CardContentComponent,
+  LabelComponent,
+  AlertComponent,
+  AlertDescriptionComponent,
+} from '../../../../components/ui';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule, NgClass, NgIf],
+  imports: [
+    ReactiveFormsModule,
+    ButtonComponent,
+    InputComponent,
+    CardComponent,
+    CardHeaderComponent,
+    CardTitleComponent,
+    CardDescriptionComponent,
+    CardContentComponent,
+    LabelComponent,
+    AlertComponent,
+    AlertDescriptionComponent,
+  ],
   templateUrl: './register.html',
   styleUrl: './register.css'
 })

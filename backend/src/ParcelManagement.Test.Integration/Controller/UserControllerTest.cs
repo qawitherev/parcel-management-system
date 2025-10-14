@@ -2,6 +2,7 @@ using System.Net.Http.Json;
 using Microsoft.Extensions.DependencyInjection;
 using ParcelManagement.Api.AuthenticationAndAuthorization;
 using ParcelManagement.Api.DTO.V1;
+using ParcelManagement.Core.Entities;
 using ParcelManagement.Test.Integration.Misc;
 
 namespace ParcelManagement.Test.Integration
@@ -66,7 +67,7 @@ namespace ParcelManagement.Test.Integration
             var response = await Client.GetAsync($"api/v1/user/basic");
             var fetchedUser = await response.Content.ReadFromJsonAsync<UserResponseDto>(IntegrationMisc.GetJsonSerializerOptions());
             Assert.NotNull(fetchedUser);
-            Assert.Equal(Guid.Empty, fetchedUser.Id);
+            Assert.Equal(userId, fetchedUser.Id);
         }
     }
 }

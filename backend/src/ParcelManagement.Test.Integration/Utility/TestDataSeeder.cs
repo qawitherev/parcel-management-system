@@ -116,5 +116,35 @@ namespace ParcelManagement.Test.Integration.Utility
             await _dbContext.ResidentUnits.AddAsync(residentUnit);
             await _dbContext.SaveChangesAsync();
         }
+
+        public async Task<ResidentUnit> SeedResidentUnitAsync()
+        {
+            var user = GetUser();
+            var residentUnit = new ResidentUnit
+            {
+                Id = Guid.NewGuid(),
+                UnitName = "RU001",
+                CreatedAt = DateTimeOffset.UtcNow,
+                CreatedBy = user.Id
+            };
+            await _dbContext.Users.AddAsync(user);
+            await _dbContext.ResidentUnits.AddAsync(residentUnit);
+            await _dbContext.SaveChangesAsync();
+            return residentUnit;
+        }
+        
+        private static User GetUser()
+        {
+            var user = new User
+            {
+                Id = Guid.NewGuid(),
+                Username = "TestParcelManager",
+                Email = "testParcelManager@test.com",
+                PasswordHash = "########",
+                Role = UserRole.ParcelRoomManager,
+                CreatedAt = DateTimeOffset.UtcNow
+            };
+            return user;
+        }
     }
 }

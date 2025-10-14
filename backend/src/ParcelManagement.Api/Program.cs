@@ -15,6 +15,7 @@ using ParcelManagement.Api.Filter;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using ParcelManagement.Api.Swagger;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -77,15 +78,19 @@ if (!builder.Environment.IsEnvironment("Testing")) // --> if we're not doing int
 options.UseMySql(connectionString, serverVersion));
 }
 
-// config jwt to builder.service
-var jwtSettings = new JWTSettings();
-builder.Configuration.GetSection("JWTSettings").Bind(jwtSettings);
-if (jwtSettings.SecretKey == null && !builder.Environment.IsEnvironment("Testing"))
-{
-    throw new InvalidOperationException("Failed to bind JWTSettings from configuration. Please check your appsettings.json or environment variables.");
-}
+// todo a separate class to register IOptions<T> into DI container 
+builder.Services.Configure<JWTSettings>(
+    builder.Configuration.GetSection("JWTSettings")
+);
+builder.Services.Configure<SystemAdmin>(
+    builder.Configuration.GetSection("Admin")
+);
+
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(option =>
 {
+    var jwtSettings = new JWTSettings();
+    builder.Configuration.GetSection("JWTSettings").Bind(jwtSettings);
     JwtBearerConfiguration.JwtBearerOptionsConfig(option, jwtSettings);
     option.Events = JwtBearerAccessEvent.UnauthorizedOrForbiddenAccessEvent();
 
@@ -99,9 +104,6 @@ builder.Services.AddScoped<IParcelService, ParcelService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 
-builder.Services.Configure<JWTSettings>(
-    builder.Configuration.GetSection("JWTSettings")
-);
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddScoped<IResidentUnitRepository, ResidentUnitRepository>();

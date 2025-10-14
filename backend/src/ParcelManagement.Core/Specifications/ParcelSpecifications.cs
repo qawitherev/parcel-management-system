@@ -35,9 +35,9 @@ namespace ParcelManagement.Core.Specifications
 
         public int? Take => null;
 
-        public Expression<Func<Parcel, object>> OrderBy => throw new NotImplementedException();
+        public Expression<Func<Parcel, object>>? OrderBy => null;
 
-        public Expression<Func<Parcel, object>> OrderByDesc => throw new NotImplementedException();
+        public Expression<Func<Parcel, object>>? OrderByDesc => null;
 
         List<IncludeExpressionString> ISpecification<Parcel>.IncludeExpressionsString => [];
 
@@ -58,13 +58,13 @@ namespace ParcelManagement.Core.Specifications
 
         public int? Take => null;
 
-        public List<IncludeExpressionString> IncludeExpressionsString => throw new NotImplementedException();
+        public Expression<Func<Parcel, object>>? OrderBy => null;
 
-        public Expression<Func<Parcel, object>> OrderBy => throw new NotImplementedException();
-
-        public Expression<Func<Parcel, object>> OrderByDesc => throw new NotImplementedException();
+        public Expression<Func<Parcel, object>>? OrderByDesc => null;
 
         List<IncludeExpression<Parcel>> ISpecification<Parcel>.IncludeExpressions => [];
+
+        List<IncludeExpressionString> ISpecification<Parcel>.IncludeExpressionsString => [];
 
         public Expression<Func<Parcel, bool>> ToExpression() => p => p.ResidentUnitDeprecated == _residentUnit;
     }

@@ -47,7 +47,7 @@ namespace ParcelManagement.Test.Service
             var theId = Guid.NewGuid();
             var newResidentUnit = new ResidentUnit
             {
-                Id = theId, // --> dont use this to assert 
+                Id = theId, // --> don't use this to assert 
                 UnitName = "RU001",
                 CreatedAt = DateTimeOffset.UtcNow,
                 CreatedBy = Guid.NewGuid()

@@ -1,11 +1,14 @@
-<div class="flex justify-between items-center w-full p-4 border rounded-lg shadow-md bg-white">
+<div
+  class="flex justify-between items-center w-full p-4 rounded-lg border bg-card text-card-foreground"
+>
   <!-- Left Side -->
-  <!-- <div class="text-gray-600 text-sm">
-        Showing {{pageSize > count ? count : pageSize}} {{pageSize > 1 ? 'results' : 'result'}} of {{count}}
-    </div> -->
-  <div class="text-gray-600 text-sm">
+  <div class="text-sm text-muted-foreground">
     Showing
-    <select [(ngModel)]="inPageSize" (change)="onPageSizeChanged($event)">
+    <select
+      [(ngModel)]="inPageSize"
+      (change)="onPageSizeChanged($event)"
+      class="mx-1 px-2 py-1 border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+    >
       <option *ngFor="let pageSize of pageSizeOptions" [value]="pageSize">
         {{ pageSize }}
       </option>
@@ -15,29 +18,36 @@
   </div>
 
   <!-- Right Side -->
-  <div class="flex items-center space-x-2">
-    <button
+  <div class="flex items-center space-x-1">
+    <ui-button
+      variant="outline"
+      size="sm"
       (click)="onPageNavigate(inCurrentPage - 1)"
-      class="px-3 py-1 text-sm text-gray-500 border rounded hover:bg-gray-100"
+      [disabled]="inCurrentPage === 1"
     >
       Previous
-    </button>
-    <div *ngFor="let item of pageNavDisplay; let i = index">
-      <button
-      (click)="onPageNavigate(item)"
-      [ngClass]="{
-      'text-white bg-gray-500 hover:bg-gray-600': inCurrentPage === item,
-      'text-gray-500 hover:bg-gray-100': inCurrentPage !== item
-    }"
-      class="px-3 py-1 text-sm text-gray-500 border rounded hover:bg-gray-100">
+    </ui-button>
+    <div *ngFor="let item of pageNavDisplay; let i = index" class="inline-flex">
+      <ui-button
+        variant="outline"
+        size="sm"
+        (click)="onPageNavigate(item)"
+        [ngClass]="{
+          'bg-primary text-primary-foreground hover:bg-primary/90': inCurrentPage === item,
+          'hover:bg-accent hover:text-accent-foreground': inCurrentPage !== item
+        }"
+        [disabled]="typeof item !== 'number'"
+      >
         {{ item }}
-      </button>
+      </ui-button>
     </div>
-    <button
+    <ui-button
+      variant="outline"
+      size="sm"
       (click)="onPageNavigate(inCurrentPage + 1)"
-      class="px-3 py-1 text-sm text-gray-500 border rounded hover:bg-gray-100"
+      [disabled]="inCurrentPage === totalPage"
     >
       Next
-    </button>
+    </ui-button>
   </div>
 </div>

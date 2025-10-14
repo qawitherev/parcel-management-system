@@ -51,8 +51,7 @@ namespace ParcelManagement.Test.Integration
             Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
             var response = await Client.GetAsync($"api/v1/parcel/{Guid.NewGuid()}");
-            var fetchedParcel = await response.Content.ReadFromJsonAsync<ParcelResponseDto>(IntegrationMisc.GetJsonSerializerOptions());
-            Assert.Equal(Guid.Empty, fetchedParcel!.Id);
+            Assert.Equal(System.Net.HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Fact]

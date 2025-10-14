@@ -27,7 +27,7 @@ namespace ParcelManagement.Infrastructure.Database
         {
             var username = "system-admin";
             var email = _configuration["Admin:Email"] ?? _systemAdmin.Email ?? "admin@parcelSystem.com";
-            var password = _configuration["Admin:Password"] ?? _systemAdmin.Email ??
+            var password = _configuration["Admin:Password"] ?? _systemAdmin.Password ??
                 throw new InvalidOperationException("Admin password not found");
             var hasAdmin = await _dbContext.Users.Where(u => u.Username == username).FirstOrDefaultAsync();
             if (hasAdmin == null)

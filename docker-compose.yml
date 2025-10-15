@@ -1,6 +1,6 @@
 services:
   backend: 
-    image: ${BACKEND-IMAGE}
+    image: ${BACKEND_IMAGE}
     ports:
       - "5000:5163"
     environment:

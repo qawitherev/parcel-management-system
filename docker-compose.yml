@@ -1,6 +1,6 @@
 services:
   backend: 
-    image: ${BACKEND_IMAGE}
+    image: backend-image:staging
     ports:
       - "5000:5163"
     environment:

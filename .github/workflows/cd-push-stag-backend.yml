@@ -31,6 +31,7 @@ jobs:
 
     run-docker-compose: 
       runs-on: self-hosted 
+      needs: build-docker-image
       steps: 
         - name: checkout code 
           uses: actions/checkout@v5

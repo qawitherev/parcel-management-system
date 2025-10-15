@@ -1,6 +1,6 @@
 services:
   backend: 
-    image: parcelmanagement.server:docker.intro
+    image: ${BACKEND-IMAGE}
     ports:
       - "5000:5163"
     environment:

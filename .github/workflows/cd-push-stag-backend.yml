@@ -28,3 +28,14 @@ jobs:
               run: |
                 rm -rf /tmp/.buildx-cache
                 mv /tmp/.buildx-cache-new /tmp/.buildx-cache 
+
+    run-docker-compose: 
+      runs-on: self-hosted 
+      steps: 
+        - name: checkout code 
+          uses: actions/checkout@v5
+
+        - name: run docker compose with built image 
+          run: docker compose up -d
+          env: 
+            BACKEND-IMAGE: backend-image:${{ github.sha }}

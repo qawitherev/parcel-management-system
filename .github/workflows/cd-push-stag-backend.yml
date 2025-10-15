@@ -39,7 +39,7 @@ jobs:
         - name: create .env file 
           run: | 
             cat <<EOF > ./backend/src/.env
-            JWTSettings__SecretKey=${{ secrets.JWTSETTINGS_SECRETKEY }}
+            JWTSettings__SecretKey=${{ secrets.JWTSETTINGS__SECRETKEY }}
             JWTSettings__Issuer=${{ secrets.JWTSETTINGS__ISSUER }}
             JWTSettings__ExpirationMinutes=${{ secrets.JWTSETTINGS__EXPIRATIONMINUTES }}
             JWTSettings__Audience=${{ secrets.JWTSETTINGS__AUDIENCE }}

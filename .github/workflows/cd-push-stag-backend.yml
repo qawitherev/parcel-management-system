@@ -1,0 +1,30 @@
+name: cd-merge-stag-backend
+
+on: 
+    push: 
+        branches: [staging]
+    workflow_dispatch:
+
+jobs: 
+    build-docker-image: 
+        runs-on: self-hosted 
+        steps: 
+            - name: checkout-code 
+              uses: actions/checkout@v5
+
+            - name: build docker image 
+              uses: docker/build-push-action@v6
+              with: 
+                context: ./backend/src
+                file: ./backend/src/Dockerfile
+                tags: |
+                    backend-image:staging
+                    backend-image:${{ github.sha }}
+                push: false
+                cache-from: type=local, src=/tmp/.buildx-cache
+                cache-to: type=local, src=/tmp/.buildx-cache-new 
+
+            - name: transfer new cache 
+              run: |
+                rm -rf /tmp/.buildx-cache
+                mv /tmp/.buildx-cache-new /tmp/.buildx-cache 

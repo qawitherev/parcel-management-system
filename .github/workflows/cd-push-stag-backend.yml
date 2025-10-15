@@ -21,8 +21,8 @@ jobs:
                     backend-image:staging
                     backend-image:${{ github.sha }}
                 push: false
-                cache-from: type=local, src=/tmp/.buildx-cache
-                cache-to: type=local, dest=/tmp/.buildx-cache-new 
+                cache-from: type=local,src=/tmp/.buildx-cache
+                cache-to: type=local,dest=/tmp/.buildx-cache-new 
 
             - name: transfer new cache 
               run: |

@@ -62,6 +62,7 @@ jobs:
             curl -f http://localhost:5000/health || {
               echo "Health check failed"
               echo "Container will be shutdown"
+              exit 1
             }
             echo "Application is healthy"
 

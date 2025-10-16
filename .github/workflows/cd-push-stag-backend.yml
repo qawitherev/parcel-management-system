@@ -47,6 +47,11 @@ jobs:
             Admin__Password=${{ secrets.ADMIN__PASSWORD }}
             EOF
 
+        - name: debug .env file 
+          run: |
+            echo "Contents of .env file"
+            cat ./backend/src/.env
+
         - name: run docker compose with built image 
           run: docker compose up -d
         

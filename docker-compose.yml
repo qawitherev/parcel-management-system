@@ -1,7 +1,6 @@
 services:
   backend: 
     image: backend-image:staging
-    network_mode: "host"
     ports:
       - "5000:5163"
     environment:

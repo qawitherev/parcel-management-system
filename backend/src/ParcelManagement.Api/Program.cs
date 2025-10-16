@@ -137,31 +137,31 @@ builder.Services.AddHealthChecks()
         healthData["AdminPasswordExist"] = !string.IsNullOrEmpty(adminPassword);
         if (string.IsNullOrEmpty(secretKey))
         {
-            issues.Add("JWT Secret key is missing")
+            issues.Add("JWT Secret key is missing");
         }
         if (string.IsNullOrEmpty(adminPassword))
         {
-            issues.Add("Admin password is missing")
+            issues.Add("Admin password is missing");
         }
-        if(issues.Count > 0)
+        if (issues.Count > 0)
         {
             return HealthCheckResult.Unhealthy(
                 $"Some environment secrets are missing. {string.Join(", ", issues)}",
-`               data: healthData
-            )
+                data: healthData
+            );
         } else
         {
             return HealthCheckResult.Healthy(
                 "All environment secrets are loaded",
                 data: healthData
-            )
+            );
         }
     })
     .AddMySql(
-        connectionString: builder.Configuration.GetConnectionString("DefaultConnection"),
+        connectionString: builder.Configuration.GetConnectionString("DefaultConnection") ?? "",
         name: "Database health check",
         failureStatus: HealthStatus.Unhealthy
-    )
+    );
 
 var app = builder.Build();
 
@@ -179,7 +179,7 @@ app.UseAuthorization();
 // map the received route with the controller and execute it 
 app.MapControllers();
 
-app.MapHealthChecks("/health")
+app.MapHealthChecks("/health");
 
 
 //for swagger - only available in dev 

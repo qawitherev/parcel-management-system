@@ -48,11 +48,24 @@ jobs:
             Admin__Password=${{ secrets.ADMIN__PASSWORD }}
             EOF
 
-        - name: debug .env file 
-          run: |
-            echo "Contents of .env file"
-            cat ./backend/src/.env
-
         - name: run docker compose with built image 
           run: docker compose up -d
+
+        - name: wait for all services wake up
+          run: sleep 20
+
+        - name: health check
+          id: healthcheck 
+          continue-on-error: true
+          run: | 
+            echo "Performing health check on backend service"
+            curl -f http://localhost:5000/health || {
+              echo "Health check failed"
+            }
+            echo "Application is healthy"
+            echo "Container will be shutdown"
+
+        - name: Shut down container 
+          if: steps.healthcheck.outcome == 'failure'
+          run: docker compose down 
         

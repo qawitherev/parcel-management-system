@@ -1,0 +1,96 @@
+name: ci-pr-develop-backend
+
+on: 
+    pull_request: 
+        branches: [develop]
+    workflow_dispatch:
+
+jobs: 
+    build: 
+        runs-on: self-hosted
+        steps: 
+            - name: checkout code 
+              uses: actions/checkout@v5
+
+            - name: setup .NET environment
+              uses: actions/setup-dotnet@v5
+              with: 
+                dotnet-version: 9.0.x
+
+            - name: cache nuget package 
+              uses: actions/cache@v4
+              with: 
+                path: ~/.nuget/packages
+                key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+
+            - name: restore dependencies 
+              run: dotnet restore 
+              working-directory: backend
+
+            - name: build .NET artifact 
+              run: dotnet build --configuration Release --no-restore --warnaserror
+              working-directory: backend 
+
+            - name: upload build artifact 
+              uses: actions/upload-artifact@v4
+              with: 
+                name: dotnet-build-artifact 
+                path: | 
+                    backend/src/ParcelManagement.Api/bin/Release/net9.0
+                    backend/src/ParcelManagement.Core/bin/Release/net9.0
+                    backend/src/ParcelManagement.Infrastructure/bin/Release/net9.0
+                    backend/src/ParcelManagement.Test/bin/Release/net9.0
+
+    unit-test: 
+        runs-on: self-hosted
+        needs: build
+        steps: 
+            - name: checkout code 
+              uses: actions/checkout@v5
+
+            - name: setup dotnet 
+              uses: actions/setup-dotnet@v5
+
+            - name: download dotnet build artifact  
+              uses: actions/download-artifact@v5
+              with: 
+                name: dotnet-build-artifact
+                path: .
+            
+            - name: run unit test 
+              run: dotnet test --configuration Release --logger "trx;LogFileName=ci-pr-develop-backend-unit-test-report.trx"
+              working-directory: backend/src/ParcelManagement.Test
+
+            - name: upload unit test report 
+              if: always()
+              uses: actions/upload-artifact@v4
+              with: 
+                name: unit test report
+                path: backend/**/*.trx
+
+    integration-test: 
+        runs-on: self-hosted
+        needs: [build, unit-test]
+        steps: 
+            - name: checkout code 
+              uses: actions/checkout@v5
+
+            - name: setup dotnet 
+              uses: actions/setup-dotnet@v5
+
+            - name: download dotnet build artifact  
+              uses: actions/download-artifact@v5
+              with: 
+                name: dotnet-build-artifact
+                path: .
+            
+            - name: run unit test 
+              run: dotnet test --configuration Release --logger "trx;LogFileName=ci-pr-develop-backend-intg-test-report.trx"
+              working-directory: backend/src/ParcelManagement.Test.Integration
+
+            - name: upload unit test report 
+              if: always()
+              uses: actions/upload-artifact@v4
+              with: 
+                name: integration test report
+                path: backend/**/*.trx

@@ -23,6 +23,7 @@ namespace ParcelManagement.Api.Controller
         private readonly IUserContextService _userContextService = userContextService;
 
         [HttpGet("GetUserById/{id}")]
+        [Authorize]
         public async Task<IActionResult> GetUserById(Guid id)
         {
             var user = await _userService.GetUserById(id);

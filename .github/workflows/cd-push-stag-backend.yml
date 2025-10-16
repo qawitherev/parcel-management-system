@@ -1,0 +1,72 @@
+name: cd-merge-stag-backend
+
+on: 
+    push: 
+        branches: [staging]
+    workflow_dispatch:
+
+jobs: 
+    build-docker-image: 
+        runs-on: self-hosted 
+        steps: 
+            - name: checkout-code 
+              uses: actions/checkout@v5
+
+            - name: build docker image 
+              uses: docker/build-push-action@v6
+              with: 
+                context: ./backend/src
+                file: ./backend/src/Dockerfile
+                tags: |
+                    backend-image:staging
+                    backend-image:${{ github.sha }}
+                push: false
+                cache-from: type=local,src=/tmp/.buildx-cache
+                cache-to: type=local,dest=/tmp/.buildx-cache-new 
+
+            - name: transfer new cache 
+              run: |
+                rm -rf /tmp/.buildx-cache
+                mv /tmp/.buildx-cache-new /tmp/.buildx-cache 
+
+    run-docker-compose: 
+      runs-on: self-hosted 
+      needs: build-docker-image
+      environment: staging
+      steps: 
+        - name: checkout code 
+          uses: actions/checkout@v5
+
+        - name: create .env file 
+          run: | 
+            cat <<EOF > ./backend/src/.env
+            JWTSettings__SecretKey=${{ secrets.JWTSETTINGS__SECRETKEY }}
+            JWTSettings__Issuer=${{ secrets.JWTSETTINGS__ISSUER }}
+            JWTSettings__ExpirationMinutes=${{ secrets.JWTSETTINGS__EXPIRATIONMINUTES }}
+            JWTSettings__Audience=${{ secrets.JWTSETTINGS__AUDIENCE }}
+            ConnectionStrings__DefaultConnection=${{ secrets.CONNECTIONSTRINGS__DEFAULTCONNECTION }}
+            Admin__Password=${{ secrets.ADMIN__PASSWORD }}
+            EOF
+
+        - name: run docker compose with built image 
+          run: docker compose up -d
+
+        - name: wait for all services wake up
+          run: sleep 20
+
+        - name: health check
+          id: healthcheck 
+          continue-on-error: true
+          run: | 
+            echo "Performing health check on backend service"
+            curl -f http://localhost:5000/health || {
+              echo "Health check failed"
+              echo "Container will be shutdown"
+              exit 1
+            }
+            echo "Application is healthy"
+
+        - name: Shut down container 
+          if: steps.healthcheck.outcome == 'failure'
+          run: docker compose down 
+        

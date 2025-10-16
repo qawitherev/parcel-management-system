@@ -15,6 +15,8 @@ using ParcelManagement.Api.Filter;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using ParcelManagement.Api.Swagger;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -77,15 +79,19 @@ if (!builder.Environment.IsEnvironment("Testing")) // --> if we're not doing int
 options.UseMySql(connectionString, serverVersion));
 }
 
-// config jwt to builder.service
-var jwtSettings = new JWTSettings();
-builder.Configuration.GetSection("JWTSettings").Bind(jwtSettings);
-if (jwtSettings.SecretKey == null && !builder.Environment.IsEnvironment("Testing"))
-{
-    throw new InvalidOperationException("Failed to bind JWTSettings from configuration. Please check your appsettings.json or environment variables.");
-}
+// todo a separate class to register IOptions<T> into DI container 
+builder.Services.Configure<JWTSettings>(
+    builder.Configuration.GetSection("JWTSettings")
+);
+builder.Services.Configure<SystemAdmin>(
+    builder.Configuration.GetSection("Admin")
+);
+
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(option =>
 {
+    var jwtSettings = new JWTSettings();
+    builder.Configuration.GetSection("JWTSettings").Bind(jwtSettings);
     JwtBearerConfiguration.JwtBearerOptionsConfig(option, jwtSettings);
     option.Events = JwtBearerAccessEvent.UnauthorizedOrForbiddenAccessEvent();
 
@@ -99,9 +105,6 @@ builder.Services.AddScoped<IParcelService, ParcelService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 
-builder.Services.Configure<JWTSettings>(
-    builder.Configuration.GetSection("JWTSettings")
-);
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddScoped<IResidentUnitRepository, ResidentUnitRepository>();
@@ -122,6 +125,44 @@ builder.Services.AddScoped<TransactionFilter>();
 
 builder.Services.AddScoped<AdminDataSeeder>();
 
+// health check services registration and configuration 
+builder.Services.AddHealthChecks()
+    .AddCheck("check environment secrets", () =>
+    {
+        var healthData = new Dictionary<string, object>();
+        var issues = new List<string>();
+        var secretKey = builder.Configuration["JWTSettings:SecretKey"];
+        var adminPassword = builder.Configuration["Admin:Password"];
+        healthData["SecretKeyExist"] = !string.IsNullOrEmpty(secretKey);
+        healthData["AdminPasswordExist"] = !string.IsNullOrEmpty(adminPassword);
+        if (string.IsNullOrEmpty(secretKey))
+        {
+            issues.Add("JWT Secret key is missing");
+        }
+        if (string.IsNullOrEmpty(adminPassword))
+        {
+            issues.Add("Admin password is missing");
+        }
+        if (issues.Count > 0)
+        {
+            return HealthCheckResult.Unhealthy(
+                $"Some environment secrets are missing. {string.Join(", ", issues)}",
+                data: healthData
+            );
+        } else
+        {
+            return HealthCheckResult.Healthy(
+                "All environment secrets are loaded",
+                data: healthData
+            );
+        }
+    })
+    .AddMySql(
+        connectionString: builder.Configuration.GetConnectionString("DefaultConnection") ?? "",
+        name: "Database health check",
+        failureStatus: HealthStatus.Unhealthy
+    );
+
 var app = builder.Build();
 
 // search all route defined 
@@ -137,6 +178,8 @@ app.UseAuthorization();
 
 // map the received route with the controller and execute it 
 app.MapControllers();
+
+app.MapHealthChecks("/health");
 
 
 //for swagger - only available in dev 

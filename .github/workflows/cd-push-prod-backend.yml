@@ -27,9 +27,7 @@ jobs:
               with: 
                 context: ./backend/src
                 file: ./backend/src/Dockerfile
-                tags: |
-                    backend-image:staging
-                    backend-image:${{ github.sha }}
+                tags: ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
                 push: true
                 cache-from: type=local,src=/tmp/.buildx-cache
                 cache-to: type=local,dest=/tmp/.buildx-cache-new 

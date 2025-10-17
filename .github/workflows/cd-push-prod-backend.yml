@@ -2,7 +2,7 @@ name: cd-push-prod-backend
 
 on: 
     push: 
-        branches: [main]
+        # branches: [main] disabling this for now since we're still in development 
     workflow_dispatch:
 
 jobs: 

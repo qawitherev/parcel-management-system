@@ -18,10 +18,10 @@ jobs:
               uses: docker/build-push-action@v6
               with: 
                 context: ./frontend
-                file: ./fronend/Dockerfile
+                file: ./frontend/Dockerfile
                 tags: |
                     frontend-image:staging
-                    frontend-image: ${{ github.sha }}
+                    frontend-image:${{ github.sha }}
                 push: false 
                 cache-from: type=local,src=/tmp/.buildx-cache
                 cache-to: type=local,dest=/tmp/.buildx-cache-new

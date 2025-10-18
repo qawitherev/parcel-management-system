@@ -1,34 +1,35 @@
-name: cd-merge-stag-backend
-
+name: cd-push-stag-frontend
 on: 
     push: 
-        branches: [staging]
-        paths: ['./backend']
+        branches: [staging] 
+        paths: ['./frontend']
     workflow_dispatch:
-
 jobs: 
     build-docker-image: 
         runs-on: self-hosted 
         steps: 
-            - name: checkout-code 
+            - name: checkout code 
               uses: actions/checkout@v5
+
+            - name: setup buildx
+              uses: docker/setup-buildx-action@v3
 
             - name: build docker image 
               uses: docker/build-push-action@v6
               with: 
-                context: ./backend/src
-                file: ./backend/src/Dockerfile
+                context: ./frontend
+                file: ./fronend/Dockerfile
                 tags: |
-                    backend-image:staging
-                    backend-image:${{ github.sha }}
-                push: false
+                    frontend-image:staging
+                    frontend-image: ${{ github.sha }}
+                push: false 
                 cache-from: type=local,src=/tmp/.buildx-cache
-                cache-to: type=local,dest=/tmp/.buildx-cache-new 
+                cache-to: type=local,dest=/tmp/.buildx-cache-new
 
             - name: transfer new cache 
               run: |
-                rm -rf /tmp/.buildx-cache
-                mv /tmp/.buildx-cache-new /tmp/.buildx-cache 
+                rm -rf /tmp/.builx-cache 
+                mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
     run-docker-compose: 
       runs-on: self-hosted 
@@ -52,8 +53,11 @@ jobs:
         - name: run docker compose with built image 
           run: docker compose up -d
 
-        - name: wait for all services wake up
-          run: sleep 20
+        - name: wait for all services to be ready 
+          run: |
+            wget https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh
+            chmod +x wait-for-it.sh
+            ./wait-for-it.sh localhost:8080 -t 60 -- echo "Service is up!"
 
         - name: health check
           id: healthcheck 
@@ -70,4 +74,3 @@ jobs:
         - name: Shut down container 
           if: steps.healthcheck.outcome == 'failure'
           run: docker compose down 
-        

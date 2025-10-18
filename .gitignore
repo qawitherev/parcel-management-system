@@ -49,3 +49,6 @@ yarn-error.log*
 # test results
 **/TestResults/ 
 **/test-results/
+
+# whatever is this file 
+.DS_Store

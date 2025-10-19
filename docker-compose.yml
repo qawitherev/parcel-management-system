@@ -12,6 +12,9 @@ services:
 
   frontend: 
     image: frontend-image:staging
+    environment: 
+      BACKEND_HOST: backend
+      BACKEND_PORT: 5163
     ports:
       - "80:80"
     depends_on:

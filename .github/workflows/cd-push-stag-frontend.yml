@@ -50,27 +50,45 @@ jobs:
         - name: run docker compose with built image 
           run: docker compose up -d
 
-        - name: wait for all services to be ready 
-          run: |
-            echo "Waiting for services to be ready"
-            timeout 60 bash -c 'until curl -f http//:localhost:5000/health; do
-                echo "Still waiting"
-                sleep 2;
-            done'
-            echo "Services is ready"
-
-        - name: health check
-          id: healthcheck 
+        - name: backend health check 
+          id: backend-health-check
           continue-on-error: true
           run: | 
-            echo "Performing health check on backend service"
-            curl -f http://localhost:5000/health || {
-              echo "Health check failed"
-              echo "Container will be shutdown"
-              exit 1
-            }
-            echo "Application is healthy"
+            echo "Performing healthcheck on backend"
+            max_attempts=10
+            attempt=1
+            while [$attempt -le $max_attempts]; do
+              if curl -f http://localhost:5000/health; then 
+                echo "Backend service is ready"
+                exit 0
+              fi 
+              echo "Attempt: $attemp/$max_attempts: Backend not ready yet"
+              sleep 2
+              $attempt=$((attempt+1))
+            done 
+            echo "Backend failed to start"
+            exit 1
+
+        - name: frontend health check 
+          id: frontend-health-check 
+          continue-on-error: true
+          run: |
+            echo "Performing healthcheck on frontend"
+            max_attempts=10
+            attempt=1
+            while [$attempt -le $max_attemps]; do 
+              if curl -f http://localhost:80 > /dev/null 2>&1; then 
+                echo "Frontend service is ready"
+                exit 0
+              fi 
+              echo "Attempt: $attemp/$max_attempts: Frontend not ready yet"
+              sleep 2
+              $attempt=$((attempt+1))
+            done
+
+            echo "Frontend failed to start"
+            exit 1
 
         - name: Shut down container 
-          if: steps.healthcheck.outcome == 'failure'
+          if: steps.backend-health-check.outcome == 'failure' || steps.frontend-health-check.outcome == 'failure'
           run: docker compose down 

@@ -56,7 +56,7 @@ jobs:
         - name: wait for all services to be ready 
           run: |
             echo "Waiting for services to be ready"
-            timout 60 bash -c 'until curl -f http:localhost:5000/health; do
+            timeout 60 bash -c 'until curl -f http//:localhost:5000/health; do
                 echo "Still waiting"
                 sleep 2;
             done'

@@ -11,7 +11,7 @@ services:
       - app-network
 
   frontend: 
-    image: frontend:docker.intro
+    image: frontend-image:staging
     ports:
       - "80:80"
     depends_on:

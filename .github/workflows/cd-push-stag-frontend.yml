@@ -62,7 +62,7 @@ jobs:
                 echo "Backend service is ready"
                 exit 0
               fi 
-              echo "Attempt: $attemp/$max_attempts: Backend not ready yet"
+              echo "Attempt: $attempt/$max_attempts: Backend not ready yet"
               sleep 2
               attempt=$((attempt+1))
             done 
@@ -76,12 +76,12 @@ jobs:
             echo "Performing healthcheck on frontend"
             max_attempts=10
             attempt=1
-            while [ $attempt -le $max_attemps ]; do 
+            while [ $attempt -le $max_attempts ]; do 
               if curl -f http://localhost:80 > /dev/null 2>&1; then 
                 echo "Frontend service is ready"
                 exit 0
               fi 
-              echo "Attempt: $attemp/$max_attempts: Frontend not ready yet"
+              echo "Attempt: $attempt/$max_attempts: Frontend not ready yet"
               sleep 2
               attempt=$((attempt+1))
             done

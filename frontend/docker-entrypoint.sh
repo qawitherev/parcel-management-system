@@ -1,3 +1,6 @@
+#!/bin/sh
+set -e
+
 # Get environment value 
 BACKEND_HOST=${BACKEND_HOST:-localhost}
 BACKEND_PORT=${BACKEND_PORT:-5163}

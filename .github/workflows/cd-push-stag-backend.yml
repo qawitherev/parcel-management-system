@@ -1,4 +1,4 @@
-name: cd-merge-stag-backend
+name: cd-push-stag-backend
 
 on: 
     push: 

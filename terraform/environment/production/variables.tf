@@ -64,3 +64,9 @@ variable "ecs_service_security_groups" {
   description = "service sgs"
   type = set(string)
 }
+
+variable "region" {
+  description = "instance region"
+  type = string
+  default = "ap-southeast-1"
+}

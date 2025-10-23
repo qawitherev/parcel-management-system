@@ -1,5 +1,11 @@
 terraform {
   required_version = ">=1.0"
+  backend "s3" {
+    bucket = "parcel-management-system"
+    key = "terraform/production/terraform.tfstate"
+    region = "ap-southeast-1"
+    use_lockfile = true
+  }
   
   required_providers {
     aws = {

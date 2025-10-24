@@ -21,7 +21,9 @@ resource "aws_ecs_task_definition" "this" {
   tags = var.tags
 
 
-  container_definitions = var.container_definitions
+  container_definitions = templatefile("${path.module}/templates/container_definition.json", {
+    github_sha = var.github_sha
+  })
 }
 
 resource "aws_ecs_service" "this" {

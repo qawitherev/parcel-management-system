@@ -13,11 +13,6 @@ variable "task_definition_family" {
   type = string
 }
 
-variable "container_definitions" {
-  description = "Container defintion in JSON"
-  type = any
-}
-
 variable "task_cpu" {
   description = "CPU unit for task"
   type = string
@@ -63,4 +58,9 @@ variable "ecs_service_subnets" {
 variable "ecs_service_security_groups" {
   description = "service sgs"
   type = set(string)
+}
+
+variable "github_sha" {
+  description = "sha value from git commit. Enforce uniqueness"
+  type = string
 }

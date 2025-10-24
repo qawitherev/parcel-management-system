@@ -1,0 +1,76 @@
+[
+  {
+    "cpu": 0,
+    "environment": [],
+    "environmentFiles": [
+      {
+        "type": "s3",
+        "value": "arn:aws:s3:::parcel-management-system/parcel-management-prod.env"
+      }
+    ],
+    "essential": true,
+    "image": "qawitherev/backend:${github_sha}",
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "/ecs/parcel-management-system",
+        "awslogs-create-group": "true",
+        "awslogs-region": "ap-southeast-1",
+        "awslogs-stream-prefix": "ecs"
+      },
+      "secretOptions": []
+    },
+    "mountPoints": [],
+    "name": "backend",
+    "portMappings": [
+      {
+        "appProtocol": "http",
+        "containerPort": 5163,
+        "hostPort": 5163,
+        "name": "backend-port",
+        "protocol": "tcp"
+      }
+    ],
+    "systemControls": [],
+    "ulimits": [],
+    "volumesFrom": []
+  },
+  {
+    "cpu": 0,
+    "environment": [
+      {
+        "name": "BACKEND_PORT",
+        "value": "5163"
+      },
+      {
+        "name": "BACKEND_HOST",
+        "value": "localhost"
+      }
+    ],
+    "environmentFiles": [],
+    "essential": true,
+    "image": "qawitherev/frontend:${github_sha}",
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "/ecs/parcel-management-system",
+        "awslogs-create-group": "true",
+        "awslogs-region": "ap-southeast-1",
+        "awslogs-stream-prefix": "ecs"
+      },
+      "secretOptions": []
+    },
+    "mountPoints": [],
+    "name": "frontend",
+    "portMappings": [
+      {
+        "containerPort": 80,
+        "hostPort": 80,
+        "name": "frontend-port",
+        "protocol": "tcp"
+      }
+    ],
+    "systemControls": [],
+    "volumesFrom": []
+  }
+]

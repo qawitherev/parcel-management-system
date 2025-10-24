@@ -38,9 +38,12 @@ jobs:
             - name: logout dockerhub
               run: docker logout 
 
-    setup-terraform: 
+    setup-terraform-and-build-plan: 
       runs-on: ubuntu-latest 
       environment: production
+      needs: build-and-push-image
+      outputs: 
+        tfPlanExitCode: ${{ steps.tf-plan.outputs.exitcode }}
       steps: 
         - name: checkout code 
           uses: actions/checkout@v5
@@ -67,9 +70,28 @@ jobs:
             TF_VAR_cluster_name: ${{ vars.TF_VAR_CLUSTER_NAME }}
             TF_VAR_tags: ${{ vars.TF_VAR_TAGS }}
             TF_VAR_task_definition_family: ${{ vars.TF_VAR_TASK_DEFINITION_FAMILY }}
+            TF_VAR_github_sha: ${{ github.sha }}
             TF_VAR_ecs_service_name: ${{ vars.TF_VAR_ECS_SERVICE_NAME }}
             TF_VAR_ecs_service_desired_count: ${{ vars.TF_VAR_ECS_DESIRED_COUNT }}
           run: |
-            echo "Hello world"
+            export exitcode=0
+            echo "Running terraform plan"
+            terraform plan -detailed-exitcode -no-color -out=tfplan || export exitcode=$
+            echo "exitcode=$exitcode" >> $GITHUB_OUTPUT
+            if [ $exitcode -eq 1 ]; then 
+              echo "Terraform plan failed!"
+              exit 1
+            fi
+            exit 0
+          working-directory: ./terraform/environment/production
+
+        - name: Upload tf plan artifact 
+          uses: actions/upload-artifact@v4
+          with: 
+            name: tfPlan 
+            path: ./terraform/environment/production/tfplan
+
+
+            
 
         

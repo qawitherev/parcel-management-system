@@ -36,15 +36,6 @@ variable "task_enable_fault_injection" {
   default     = false
 }
 
-variable "task_execution_role_arn" {
-  description = "arn for execution role"
-  type        = string
-}
-
-variable "task_role_arn" {
-  description = "arn for task role"
-  type        = string
-}
 
 variable "ecs_service_name" {
   description = "service name"
@@ -53,16 +44,6 @@ variable "ecs_service_name" {
 
 variable "ecs_service_desired_count" {
   description = "desired running service instance count"
-}
-
-variable "ecs_service_subnets" {
-  description = "service subnets"
-  type        = set(string)
-}
-
-variable "ecs_service_security_groups" {
-  description = "service sgs"
-  type        = set(string)
 }
 
 variable "region" {

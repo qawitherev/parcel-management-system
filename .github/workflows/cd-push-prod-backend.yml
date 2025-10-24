@@ -28,7 +28,9 @@ jobs:
               with: 
                 context: ./backend/src
                 file: ./backend/src/Dockerfile
-                tags: ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
+                tags: | 
+                  ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
+                  ${{ secrets.DOCKERHUB_USERNAME }}/backend:${{ github.sha }}
                 push: true
                 cache-from: type=gha
                 cache-to: type=gha,mode=max 
@@ -65,7 +67,6 @@ jobs:
             TF_VAR_cluster_name: ${{ vars.TF_VAR_CLUSTER_NAME }}
             TF_VAR_tags: ${{ vars.TF_VAR_TAGS }}
             TF_VAR_task_definition_family: ${{ vars.TF_VAR_TASK_DEFINITION_FAMILY }}
-            TF_VAR_container_definitions: ${{ vars.TF_VAR_CONTAINER_DEFINITION }}
             TF_VAR_ecs_service_name: ${{ vars.TF_VAR_ECS_SERVICE_NAME }}
             TF_VAR_ecs_service_desired_count: ${{ vars.TF_VAR_ECS_DESIRED_COUNT }}
           run: |

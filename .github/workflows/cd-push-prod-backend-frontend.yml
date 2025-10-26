@@ -1,4 +1,4 @@
-name: cd-push-prod-backend
+name: cd-push-prod-backend-frontend
 
 on: 
     # push: 
@@ -23,7 +23,7 @@ jobs:
                 username: ${{ secrets.DOCKERHUB_USERNAME }}
                 password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
 
-            - name: build docker image 
+            - name: build backend docker image 
               uses: docker/build-push-action@v6
               with: 
                 context: ./backend/src
@@ -34,6 +34,20 @@ jobs:
                 push: true
                 cache-from: type=gha
                 cache-to: type=gha,mode=max 
+
+            - name: build frontend docker image 
+              uses: docker/build-push-action@v6
+              with: 
+                context: ./frontend
+                file: ./frontend
+                tags: | 
+                  ${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest
+                  ${{ secrets.DOCKERHUB_USERNAME }}/frontend:${{ github.sha }}
+                push: true
+                cache-from: type=gha
+                cache-to: type=gha,mode=max 
+              
+            
 
             - name: logout dockerhub
               run: docker logout 

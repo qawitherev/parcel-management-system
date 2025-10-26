@@ -145,12 +145,14 @@ builder.Services.AddHealthChecks()
         }
         if (issues.Count > 0)
         {
+            Console.WriteLine("Environment secrets check failed");
             return HealthCheckResult.Unhealthy(
                 $"Some environment secrets are missing. {string.Join(", ", issues)}",
                 data: healthData
             );
         } else
         {
+            Console.WriteLine("Environment secrets check passed");
             return HealthCheckResult.Healthy(
                 "All environment secrets are loaded",
                 data: healthData

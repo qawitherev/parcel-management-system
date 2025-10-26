@@ -127,6 +127,7 @@ jobs:
           run: |
             echo "Terraform apply..."
             terraform apply -auto-approve tfplan 
+          working-directory: ./terraform/environment/production
 
 
 

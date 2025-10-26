@@ -39,7 +39,7 @@ jobs:
               uses: docker/build-push-action@v6
               with: 
                 context: ./frontend
-                file: ./frontend
+                file: ./frontend/Dockerfile
                 tags: | 
                   ${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest
                   ${{ secrets.DOCKERHUB_USERNAME }}/frontend:${{ github.sha }}

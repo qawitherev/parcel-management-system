@@ -96,7 +96,7 @@ jobs:
       environment: production
       needs: setup-terraform-and-build-plan
       # TODO: to change this into exit code == 2 only
-      if: needs.setup-terraform-and-build-plan.outputs.tfPlanExitCode == 2 || needs.setup-terraform-and-build-plan.outputs.tfPlanExitCode == 1
+      if: needs.setup-terraform-and-build-plan.outputs.tfPlanExitCode == 2 || needs.setup-terraform-and-build-plan.outputs.tfPlanExitCode == 0
       steps: 
         - name: Checkout code
           uses: actions/checkout@v5

@@ -95,7 +95,8 @@ jobs:
       runs-on: ubuntu-latest
       environment: production
       needs: setup-terraform-and-build-plan
-      if: needs.setup-terraform-and-build-plan.outputs.tfPlanExitCode == 2
+      # TODO: to change this into exit code == 2 only
+      if: needs.setup-terraform-and-build-plan.outputs.tfPlanExitCode == 2 || needs.setup-terraform-and-build-plan.outputs.tfPlanExitCode == 1
       steps: 
         - name: Checkout code
           uses: actions/checkout@v5

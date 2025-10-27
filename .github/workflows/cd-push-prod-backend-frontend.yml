@@ -143,6 +143,21 @@ jobs:
             terraform apply -auto-approve tfplan 
           working-directory: ./terraform/environment/production
 
+        - name: Waiting for deployment to complete
+          run: |
+            CLUSTER_NAME=$(terraform output -raw ecs_cluster_name)
+            SERVICE_NAME=$(terraform output -raw ecs_service_name)
+            echo "Checking deployment on cluster $CLUSTER_NAME with service $SERVICE_NAME..."
+            aws ecs wait services-stable \
+              --cluster $CLUSTER_NAME \
+              --services $SERVICE_NAME 
+            echo "Service is now stable. Deployment complete"
+            aws describe-services \
+              --cluster $CLUSTER_NAME \
+              --services $SERVICE_NAME \
+              --query 'services[0].deployments' \
+              --output table 
+
 
 
 

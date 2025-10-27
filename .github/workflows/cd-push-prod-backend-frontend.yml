@@ -152,7 +152,7 @@ jobs:
               --cluster $CLUSTER_NAME \
               --services $SERVICE_NAME 
             echo "Service is now stable. Deployment complete"
-            aws describe-services \
+            aws ecs describe-services \
               --cluster $CLUSTER_NAME \
               --services $SERVICE_NAME \
               --query 'services[0].deployments' \

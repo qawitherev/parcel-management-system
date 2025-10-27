@@ -1,4 +1,4 @@
-output "esc_cluster_name" {
+output "ecs_cluster_name" {
   value = var.cluster_name
 }
 

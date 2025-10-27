@@ -157,6 +157,7 @@ jobs:
               --services $SERVICE_NAME \
               --query 'services[0].deployments' \
               --output table 
+          working-directory: ./terraform/environment/production
 
 
 

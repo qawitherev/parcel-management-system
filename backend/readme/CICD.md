@@ -1,56 +1,118 @@
-*this is still a draft of how i am going to write this documentation*
+# CI/CD Documentation
 
-* intro to what is cicd
-  * Continuous integration continous deployment is a strategy to get small incremental changes quickly getting implemented one step at a time. With this quick small incremental changes, we can quickly deploy or revert the changes from our product. This enables the product to stay updated and ahead of its competitor.
+## Introduction to CI/CD
 
-- what problem we are solving
+Continuous Integration and Continuous Deployment (CI/CD) is a software development strategy that enables small, incremental changes to be implemented and deployed quickly. With rapid incremental changes, I can deploy or revert changes from the product efficiently. This approach helps keep the product updated and competitive.
 
-* my cicd strategy
+## CI/CD Strategy
 
-  * everything runs on container
-  * branching strategy [active branch, development, staging, production]
-  * explain what each branch is for
-  * active branch -> this is where most development and frequent code changes happen
-  * development -> when development already completed, push into this branch. unit test and linting will happen here
-  * staging -> no test happen here maybe we will include static code analysis here. just code analysis, because we already tested when pushed to development. here we will build docker image and run the container, locally. even the pipeline runs locally.
-  * production -> this is where the production code is.
-    * In this project, we are using 3 main branches and one development branch. Namely, main, staging and development; and another one active branch. Active branch is where most of the code is written for development purposes.
-    * Development branch is for storing tested and linted code. There is no deployment happen here. Just storing tested code. Developer will run the code they write using development tools such as dotnet run or ng serve.
-    * When code is pushed into staging branch after pr is approved, git action will run runner locally, build docker image and run docker container locally. The purpose of having this step is to verify that build docker script is working correctly as intended.
-    * Production branch is self explanatory. But instead of having locally, the pipeline will use cloud runner and will be deployed to cloud aws infrastructure defined using terraform.
-* talk about docker
+### Branching Strategy
 
-  * what is it and what problem does it solve (why we use docker)
-  * how we use docker
-    * have 2 images, frontend and backend
-  * where we run docker?
-    * on pr staging
-    * on pr main
-  * Docker is a technology that makes your project to be bundled up inside a single image called docker image that can be run inside a docker container. Inside the image already have the compiled code, the runtime and the dependencies. This greatly enhances portability because any machine can run the app without having to manually setup the runtime and dependencies. 
-  * In this project, we are using two images, frontend and backend image. Frontend will have the angular app served on nginx and backend will have the dotnet runtime and our compiled backend code. 
-* git action
+I use a multi-branch workflow with the following branches:
 
-  * what is git action
-  * how git action works under the hood
-  * why we use git action -> to automate stuff
-  * how we use git action
-    * cloud runner
-    * self hosted runner
-* aws services used
+- **Active branch** - Where most development and frequent code changes occur
+- **Development** - Stores tested and linted code after development is complete. Unit tests and linting run when code is pushed here. No deployment occurs at this stage
+- **Staging** - Code analysis happens here. I build Docker images and run containers locally using a self-hosted runner to verify the Docker build scripts work correctly
+- **Main (Production)** - Contains production-ready code. The pipeline uses GitHub-hosted runners to deploy to AWS infrastructure defined with Terraform
 
-  * explain our ecs architecture (ecs, fargate, service, task)
-  * why this architecture
-  * future improvements
-* terraform
+During development, I run code locally using development tools such as `dotnet run` or `ng serve`. After a pull request is approved and merged to staging, GitHub Actions triggers a self-hosted runner to build Docker images and run containers locally. When code is merged to main, the pipeline deploys to AWS cloud infrastructure.
 
-  * what is terraform?
-  * what problem does terraform solve
-  * how we use terraform
-  * terraform module pattern
-* integrating terraform into git action
+## Docker
 
-  * why do we need to use terraform along with git action
-  * how to we integrate it
-  * possible future enhancement to make it more efficient, e.g, cache the terraform module
+### What is Docker?
 
----
+Docker is a containerization platform that bundles an application, its runtime, and dependencies into a single image that can be run in a container. This enhances portability because any machine can run the application without manually setting up the runtime and dependencies.
+
+### Docker in This Project
+
+I use two Docker images:
+
+- **Frontend image** - Contains the Angular application served by NGINX
+- **Backend image** - Contains the .NET runtime and compiled backend code
+
+### Docker Usage
+
+**Staging environment:**
+- Docker images are built and tagged with `staging` and `github.sha`
+- Docker Compose starts both frontend and backend containers locally on a self-hosted runner
+
+**Production environment:**
+- Docker images are built and tagged with `github.sha` and `latest`
+- Images are pushed to DockerHub (a remote Docker registry)
+- AWS Elastic Container Service (ECS) on Fargate pulls images from DockerHub during deployment
+- Terraform automatically provisions the required AWS infrastructure
+
+## GitHub Actions
+
+### What is GitHub Actions?
+
+GitHub Actions is a CI/CD platform maintained by GitHub that automates workflows by running commands inside virtual machines called runners. Workflows are defined declaratively in YAML files placed in the `.github/workflows` folder. Jobs within a workflow run in parallel unless dependencies are explicitly specified, while steps within a job execute sequentially.
+
+### Runner Types
+
+**GitHub-hosted runners** - Run on GitHub's cloud infrastructure
+
+**Self-hosted runners** - Run on local machines after being registered with GitHub
+
+In this project, I use self-hosted runners for staging deployments and GitHub-hosted runners for production deployments to AWS.
+
+## AWS Services
+
+### Architecture Overview
+
+I use AWS to host the production server. Since this is a containerized application, I chose AWS Elastic Container Service (ECS) as the hosting platform. To reduce costs, I pull Docker images from DockerHub instead of storing them in AWS Elastic Container Registry (ECR).
+
+### ECS Components
+
+**Fargate** - A serverless compute engine for containers. Unlike EC2, Fargate eliminates the need to manage virtual machines, security patching, and Docker installation. This reduces operational overhead at a slightly higher cost.
+
+**Task Definition** - Defines the containers to run, similar to a pod in Kubernetes. In this project, both frontend and backend containers run in the same task.
+
+**Service** - Manages the task instances. I configured the service with a desired count of 1, meaning one instance of the task runs at any given time.
+
+This simplified architecture is suitable for the initial deployment. Future improvements could include separating frontend and backend into different services, implementing auto-scaling, and using a load balancer.
+
+## Terraform
+
+### What is Terraform?
+
+Terraform is an Infrastructure as Code (IaC) tool that allows infrastructure to be defined and managed through code rather than manually through the AWS Console or AWS CLI. This is essential for automated CI/CD pipelines because it eliminates manual provisioning, reduces human error, and ensures consistency.
+
+### Terraform Workflow
+
+Terraform achieves idempotency through the following workflow:
+
+1. **Plan** - Terraform reads the configuration files, queries AWS for existing infrastructure, and calculates the difference (the plan)
+2. **Apply** - Terraform provisions or modifies infrastructure based on the plan
+3. **State Management** - Terraform tracks infrastructure state to avoid re-creating existing resources
+
+### Module Pattern
+
+I use the module pattern to organize infrastructure code. Modules define one or more resources and are imported in `main.tf`. This approach makes the code reusable and maintainable.
+
+### Key Terraform Concepts
+
+**Data sources** - Query AWS for existing infrastructure and retrieve metadata such as ARNs, IDs, and security groups
+
+**Variables** - Allow parameterization of infrastructure definitions. Locally, I assign variable values through `.tfvars` files. In GitHub Actions, I use environment variables and secrets
+
+**Outputs** - Export values from Terraform for use in external scripts, such as shell commands in GitHub Actions
+
+## Integrating Terraform with GitHub Actions
+
+### Automation Workflow
+
+I integrate Terraform with GitHub Actions to achieve full automation:
+
+1. **Terraform Init** - Initializes the Terraform working directory and downloads required providers
+2. **Terraform Plan** - Generates a plan file (`tfplan`) that describes infrastructure changes
+3. **Terraform Apply** - Applies the plan to provision or update AWS infrastructure
+4. **Wait for Deployment** - After applying changes, I use `aws ecs wait services-stable` to wait for the ECS service deployment to complete and health checks to pass before marking the workflow as successful
+
+### Future Enhancements
+
+Potential improvements include:
+
+- Caching Terraform providers to speed up initialization
+- Implementing Terraform workspaces for multiple environments
+- Adding cost estimation tools like Infracost to the pipeline

@@ -8,9 +8,14 @@ using ParcelManagement.Infrastructure.Database;
 
 namespace ParcelManagement.Infrastructure.Repository
 {
-    public class UserResidentUnitRepository(ApplicationDbContext dbContext) : IUserResidentUnitRepository
+    public class UserResidentUnitRepository : BaseRepository<UserResidentUnit>, IUserResidentUnitRepository
     {
-        private readonly ApplicationDbContext _dbContext = dbContext;
+        private readonly ApplicationDbContext _dbContext;
+
+        public UserResidentUnitRepository(ApplicationDbContext dbContext) : base(dbContext)
+        {
+            _dbContext = dbContext;
+        }
 
         public async Task<UserResidentUnit> CreateUserResidentUnitAsync(UserResidentUnit userResidentUnit)
         {
@@ -57,9 +62,14 @@ namespace ParcelManagement.Infrastructure.Repository
             return res;
         }
 
-        public async Task<IReadOnlyCollection<UserResidentUnit?>> GetUserResidentUnitsBySpecification(ISpecification<UserResidentUnit> specification)
+        public async Task<int> GetUserResidentUnitCountBySpecification(ISpecification<UserResidentUnit> specification)
         {
-            return await _dbContext.UserResidentUnits.Where(specification.ToExpression()).ToListAsync();
+            return await GetCountBySpecificationAsync(specification);
+        }
+
+        public async Task<IReadOnlyList<UserResidentUnit>> GetUserResidentUnitsBySpecification(ISpecification<UserResidentUnit> specification)
+        {
+            return await GetBySpecificationAsync(specification);
 
         }
 

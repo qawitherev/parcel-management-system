@@ -1,4 +1,6 @@
+using Microsoft.Extensions.ObjectPool;
 using ParcelManagement.Core.Entities;
+using ParcelManagement.Core.Model.Helper;
 using ParcelManagement.Core.Repositories;
 using ParcelManagement.Core.Specifications;
 
@@ -15,6 +17,14 @@ namespace ParcelManagement.Core.Services
         Task<IReadOnlyCollection<User?>> GetUsersByResidentUnit(Guid residentUnitId);
 
         Task<IReadOnlyCollection<ResidentUnit?>> GetResidentsUnitByUser(Guid userId);
+
+        Task<(IReadOnlyList<UserResidentUnit>, int count)> GetUserResidentUnitForView(
+            string? searchKeyword,
+            UserResidentUnitSortableColumn? column,
+            int? page, int? take = 20, 
+            bool isAsc = true
+        );
+
     }
 
     public class UserResidentUnitService(
@@ -64,6 +74,22 @@ namespace ParcelManagement.Core.Services
         public async Task<IReadOnlyCollection<ResidentUnit?>> GetResidentsUnitByUser(Guid userId)
         {
             return await _uruRepo.GetResidentUnitsByUser(userId);
+        }
+
+        public async Task<(IReadOnlyList<UserResidentUnit>, int count)> GetUserResidentUnitForView(string? searchKeyword, UserResidentUnitSortableColumn? column, int? page, int? take = 20, bool isAsc = true)
+        {
+            var filterPaginationRequest = new FilterPaginationRequest<UserResidentUnitSortableColumn>
+            {
+                SearchKeyword = searchKeyword,
+                Page = page,
+                Take = take,
+                SortableColumn = column ?? UserResidentUnitSortableColumn.ResidentUnit,
+                IsAscending = isAsc
+            };
+            var viewSpecification = new UserResidentUnitUnitViewSpecification(filterPaginationRequest);
+            var userResidentUnit = await _uruRepo.GetUserResidentUnitsBySpecification(viewSpecification);
+            var count = await _uruRepo.GetUserResidentUnitCountBySpecification(viewSpecification);
+            return (userResidentUnit, count);
         }
 
         public async Task<IReadOnlyCollection<User?>> GetUsersByResidentUnit(Guid residentUnitId)

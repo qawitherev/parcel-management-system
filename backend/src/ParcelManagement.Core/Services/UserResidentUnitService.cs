@@ -21,10 +21,9 @@ namespace ParcelManagement.Core.Services
         Task<(IReadOnlyList<UserResidentUnit>, int count)> GetUserResidentUnitForView(
             string? searchKeyword,
             UserResidentUnitSortableColumn? column,
-            int? page, int? take = 20, 
+            int? page, int? take = 20,
             bool isAsc = true
         );
-
     }
 
     public class UserResidentUnitService(
@@ -91,6 +90,8 @@ namespace ParcelManagement.Core.Services
             var count = await _uruRepo.GetUserResidentUnitCountBySpecification(viewSpecification);
             return (userResidentUnit, count);
         }
+
+
 
         public async Task<IReadOnlyCollection<User?>> GetUsersByResidentUnit(Guid residentUnitId)
         {

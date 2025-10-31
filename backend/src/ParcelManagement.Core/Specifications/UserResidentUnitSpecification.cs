@@ -45,11 +45,14 @@ namespace ParcelManagement.Core.Specifications
     public class UserResidentUnitUnitViewSpecification : ISpecification<UserResidentUnit>
     {
         private readonly FilterPaginationRequest<UserResidentUnitSortableColumn> _filterPaginationRequest;
+        private readonly Guid? _residentUnitId; 
         public UserResidentUnitUnitViewSpecification(
-            FilterPaginationRequest<UserResidentUnitSortableColumn> filterPaginationRequest
+            FilterPaginationRequest<UserResidentUnitSortableColumn> filterPaginationRequest,
+            Guid? residentUnitId = null
         )
         {
             _filterPaginationRequest = filterPaginationRequest;
+            _residentUnitId = residentUnitId;
             IncludeExpressionsString = [
                 new IncludeExpressionString("User"),
                 new IncludeExpressionString("ResidentUnit"),
@@ -74,7 +77,8 @@ namespace ParcelManagement.Core.Specifications
             return uResidentUnit => (string.IsNullOrEmpty(_filterPaginationRequest.SearchKeyword) || uResidentUnit.ResidentUnit!.UnitName.Contains(_filterPaginationRequest.SearchKeyword))
                 &&
                 (string.IsNullOrEmpty(_filterPaginationRequest.SearchKeyword) || uResidentUnit.User!.Username.Contains(_filterPaginationRequest.SearchKeyword)) &&
-                uResidentUnit.IsActive;
+                uResidentUnit.IsActive &&
+                _residentUnitId != null && uResidentUnit.ResidentUnitId == _residentUnitId;
         }
 
         private Expression<Func<UserResidentUnit, object>> GetSortExpression()

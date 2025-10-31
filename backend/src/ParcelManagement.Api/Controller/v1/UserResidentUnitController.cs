@@ -37,5 +37,16 @@ namespace ParcelManagement.Api.Controller
             };
             return Ok(responseDto);
         }
+
+        // [HttpGet("resident/{residentUnitId}")]
+        // [Authorize(Roles = "ParcelRoomManager, Admin")]
+        // public async Task<IActionResult> GetResidentsInResidentUnit(Guid residentUnitId)
+        // {
+        //     var uResidentUnits = await _uResidentUnitService.GetResidentsByUnit(residentUnitId);
+        //     var responseDto = new GetResidentsByUnitResponseDto
+        //     {
+        //         ResidentUnitId = uResidentUnits.
+        //     }
+        // }
     }
 }

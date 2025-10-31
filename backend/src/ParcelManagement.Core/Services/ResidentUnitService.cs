@@ -19,6 +19,8 @@ namespace ParcelManagement.Core.Services
             int? take,
             bool isAsc = true
         );
+
+        Task<ResidentUnit> GetResidentsForUnitAsync(Guid residentUnitId);
     }
 
     public class ResidentUnitService(IResidentUnitRepository residentUnitRepository) : IResidentUnitService
@@ -72,6 +74,14 @@ namespace ParcelManagement.Core.Services
             var residentUnits = await _residentUnitRepo.GetResidentUnitsBySpecificationAsync(spec);
             var count = await _residentUnitRepo.GetResidentUnitCountBySpecification(spec);
             return (residentUnits, count);
+        }
+
+        public async Task<ResidentUnit> GetResidentsForUnitAsync(Guid residentUnitId)
+        {
+            var specification = new ResidentUnitResidentsSpecification(residentUnitId);
+            var residentUnits = await _residentUnitRepo.GetOneResidentUnitBySpecificationAsync(specification) ??
+                throw new KeyNotFoundException("Resident unit does not exist");
+            return residentUnits;
         }
     }
 }

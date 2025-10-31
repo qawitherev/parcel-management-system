@@ -14,7 +14,7 @@ namespace ParcelManagement.Api.DTO
         public required List<UserResidentUnitResponseDto> UserResidentUnits { get; set; }
     }
 
-        public class GetAllUserResidentUnitsDto
+    public class GetAllUserResidentUnitsDto
     {
         public string? SearchKeyword { get; set; }
         public string? Status { get; set; }

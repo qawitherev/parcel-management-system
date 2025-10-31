@@ -24,6 +24,8 @@ namespace ParcelManagement.Core.Services
             int? page, int? take = 20,
             bool isAsc = true
         );
+
+        // Task UpdateUnitResidents(List<Guid> newResidents, Guid residentUnitId);
     }
 
     public class UserResidentUnitService(
@@ -97,6 +99,14 @@ namespace ParcelManagement.Core.Services
         {
             return await _uruRepo.GetUsersByResidentUnit(residentUnitId);
         }
+
+        // public async Task UpdateUnitResidents(List<Guid> newResidents, Guid residentUnitId)
+        // {
+        //     var specification = new ResidentUnitResidentsSpecification(residentUnitId);
+        //     var oldResidents = await _ruRepo.GetOneResidentUnitBySpecificationAsync(specification) ??
+        //         throw new KeyNotFoundException("Resident unit does not exist");
+        //     var toRemove = 
+        // }
 
         public async Task UpdateUserResidentUnit(UserResidentUnit userResidentUnit)
         {

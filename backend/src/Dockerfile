@@ -30,6 +30,8 @@ RUN dotnet publish "ParcelManagement.Api.csproj" -c Release -o /app/publish --no
 # move to runtime stage 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
 # new stage we want new dir, so we don't clutter the file 
 WORKDIR /app
 

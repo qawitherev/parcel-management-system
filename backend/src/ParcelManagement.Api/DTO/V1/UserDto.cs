@@ -33,6 +33,12 @@ namespace ParcelManagement.Api.DTO.V1
         public required string Password { get; set; }
     }
 
+    public class UsersResponseDto
+    {
+        public int Count { get; set; }
+        public required List<UserResponseDto> Users { get; set; }
+    }
+
     public class UserResponseDto
     {
         public required Guid Id { get; set; }

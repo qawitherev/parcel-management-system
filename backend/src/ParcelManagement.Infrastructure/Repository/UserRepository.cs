@@ -6,28 +6,44 @@ using ParcelManagement.Infrastructure.Database;
 
 namespace ParcelManagement.Infrastructure.Repository
 {
-    public class UserRepository(ApplicationDbContext dbContext) : IUserRepository
+    public class UserRepository : BaseRepository<User>, IUserRepository
     {
+        private readonly ApplicationDbContext _dbContext;
+        public UserRepository(ApplicationDbContext dbContext) : base(dbContext)
+        {
+            _dbContext = dbContext;
+        }
+
         public async Task<User> CreateUserAsync(User newUser)
         {
-            await dbContext.Users.AddAsync(newUser);
-            await dbContext.SaveChangesAsync();
-            return newUser;
+            return await CreateAsync(newUser);
         }
 
         public async Task<User?> GetUserByIdAsync(Guid id)
         {
-            return await dbContext.Users.FindAsync(id);
+            return await FindByIdAsync(id);
         }
 
-        public async Task<IReadOnlyList<User?>> GetUsersBySpecificationAsync(ISpecification<User> spec)
+        public async Task<IReadOnlyList<User>> GetUsersBySpecificationAsync(ISpecification<User> spec)
         {
-            return await dbContext.Users.Where(spec.ToExpression()).ToListAsync();
+            return await GetBySpecificationAsync(spec);
         }
 
         public async Task<User?> GetOneUserBySpecification(ISpecification<User> spec)
         {
-            return await dbContext.Users.Where(spec.ToExpression()).FirstOrDefaultAsync();
+            return await GetOneBySpecificationAsync(spec);
+        }
+
+        public async Task<int> GetUsersCountBySpecification(ISpecification<User> specification)
+        {
+            return await GetCountBySpecificationAsync(specification);
+        }
+
+        public async Task<List<Guid>> GetInvalidUserId(List<Guid> userIds)
+        {
+            var validUserIds = await _dbContext.Users.Where(user => userIds.Contains(user.Id))
+                .Select(user => user.Id).ToListAsync();
+            return [.. userIds.Except(validUserIds)];     
         }
     }
 }

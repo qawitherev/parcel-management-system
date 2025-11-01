@@ -67,6 +67,13 @@ namespace ParcelManagement.Infrastructure.Repository
             return obj;
         }
 
+        public async Task<IReadOnlyList<T>> CreateRangeAsync(List<T> objs)
+        {
+            await _dbContext.Set<T>().AddRangeAsync(objs);
+            await _dbContext.SaveChangesAsync();
+            return objs;
+        }
+
         public async Task<T?> FindByIdAsync(Guid id)
         {
             return await _dbContext.Set<T>().FindAsync(id);

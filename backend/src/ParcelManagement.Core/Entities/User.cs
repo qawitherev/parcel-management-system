@@ -10,6 +10,13 @@ namespace ParcelManagement.Core.Entities
         ParcelRoomManager,
     }
 
+    public enum UserSortableColumn
+    {
+        Username,
+        Email,
+        CreatedAt,
+    }
+
     public class User: IEntity
     {
         public Guid Id { get; set; } // Primary Key

@@ -8,9 +8,19 @@ using ParcelManagement.Infrastructure.Database;
 
 namespace ParcelManagement.Infrastructure.Repository
 {
-    public class UserResidentUnitRepository(ApplicationDbContext dbContext) : IUserResidentUnitRepository
+    public class UserResidentUnitRepository : BaseRepository<UserResidentUnit>, IUserResidentUnitRepository
     {
-        private readonly ApplicationDbContext _dbContext = dbContext;
+        private readonly ApplicationDbContext _dbContext;
+
+        public UserResidentUnitRepository(ApplicationDbContext dbContext) : base(dbContext)
+        {
+            _dbContext = dbContext;
+        }
+
+        public async Task<IReadOnlyList<UserResidentUnit>> AddResidentsForUnitAsync(List<UserResidentUnit> userResidentUnits)
+        {
+            return await CreateRangeAsync(userResidentUnits);
+        }
 
         public async Task<UserResidentUnit> CreateUserResidentUnitAsync(UserResidentUnit userResidentUnit)
         {
@@ -57,9 +67,14 @@ namespace ParcelManagement.Infrastructure.Repository
             return res;
         }
 
-        public async Task<IReadOnlyCollection<UserResidentUnit?>> GetUserResidentUnitsBySpecification(ISpecification<UserResidentUnit> specification)
+        public async Task<int> GetUserResidentUnitCountBySpecification(ISpecification<UserResidentUnit> specification)
         {
-            return await _dbContext.UserResidentUnits.Where(specification.ToExpression()).ToListAsync();
+            return await GetCountBySpecificationAsync(specification);
+        }
+
+        public async Task<IReadOnlyList<UserResidentUnit>> GetUserResidentUnitsBySpecification(ISpecification<UserResidentUnit> specification)
+        {
+            return await GetBySpecificationAsync(specification);
 
         }
 
@@ -77,6 +92,12 @@ namespace ParcelManagement.Infrastructure.Repository
             var existing = await _dbContext.UserResidentUnits.FindAsync(userResidentUnit.Id) ??
                 throw new NullReferenceException($"UserResidentUnit with id {userResidentUnit.Id} does not exist");
             _dbContext.Entry(existing).CurrentValues.SetValues(userResidentUnit);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task UpdateUserResidentUnits(List<UserResidentUnit> userResidentUnits)
+        {
+            _dbContext.UserResidentUnits.RemoveRange(userResidentUnits);
             await _dbContext.SaveChangesAsync();
         }
     }

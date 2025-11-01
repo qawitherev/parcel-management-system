@@ -38,5 +38,12 @@ namespace ParcelManagement.Infrastructure.Repository
         {
             return await GetCountBySpecificationAsync(specification);
         }
+
+        public async Task<List<Guid>> GetInvalidUserId(List<Guid> userIds)
+        {
+            var validUserIds = await _dbContext.Users.Where(user => userIds.Contains(user.Id))
+                .Select(user => user.Id).ToListAsync();
+            return [.. userIds.Except(validUserIds)];     
+        }
     }
 }

@@ -14,9 +14,11 @@ namespace ParcelManagement.Api.Controller
     public class UserResidentUnitController : ControllerBase
     {
         private readonly IUserResidentUnitService _uResidentUnitService;
-        public UserResidentUnitController(IUserResidentUnitService uResidentUnitService)
+        private readonly IUserContextService _userContextService;
+        public UserResidentUnitController(IUserResidentUnitService uResidentUnitService, IUserContextService userContextService)
         {
             _uResidentUnitService = uResidentUnitService;
+            _userContextService = userContextService;
         }
 
         [HttpGet("")]
@@ -38,15 +40,17 @@ namespace ParcelManagement.Api.Controller
             return Ok(responseDto);
         }
 
-        // [HttpGet("resident/{residentUnitId}")]
-        // [Authorize(Roles = "ParcelRoomManager, Admin")]
-        // public async Task<IActionResult> GetResidentsInResidentUnit(Guid residentUnitId)
-        // {
-        //     var uResidentUnits = await _uResidentUnitService.GetResidentsByUnit(residentUnitId);
-        //     var responseDto = new GetResidentsByUnitResponseDto
-        //     {
-        //         ResidentUnitId = uResidentUnits.
-        //     }
-        // }
+        [HttpPatch("")]
+        [Authorize(Roles = "ParcelRoomManager, Admin")]
+        public async Task<IActionResult> UpdateUnitsResidents([FromBody] UpdateUnitsResidentsDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var createdBy = _userContextService.GetUserId();
+            await _uResidentUnitService.UpdateUnitResidents([.. dto.Residents.Select(r => r.UserId)], dto.ResidentUnitId, createdBy);
+            return NoContent();
+        }
     }
 }

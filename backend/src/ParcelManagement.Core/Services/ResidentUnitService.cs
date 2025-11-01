@@ -81,6 +81,7 @@ namespace ParcelManagement.Core.Services
             var specification = new ResidentUnitResidentsSpecification(residentUnitId);
             var residentUnits = await _residentUnitRepo.GetOneResidentUnitBySpecificationAsync(specification) ??
                 throw new KeyNotFoundException("Resident unit does not exist");
+            residentUnits.UserResidentUnits = [.. residentUnits.UserResidentUnits.Where(uru => uru.IsActive)];
             return residentUnits;
         }
     }

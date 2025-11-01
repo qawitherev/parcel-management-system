@@ -17,6 +17,11 @@ namespace ParcelManagement.Infrastructure.Repository
             _dbContext = dbContext;
         }
 
+        public async Task<IReadOnlyList<UserResidentUnit>> AddResidentsForUnitAsync(List<UserResidentUnit> userResidentUnits)
+        {
+            return await CreateRangeAsync(userResidentUnits);
+        }
+
         public async Task<UserResidentUnit> CreateUserResidentUnitAsync(UserResidentUnit userResidentUnit)
         {
             await _dbContext.UserResidentUnits.AddAsync(userResidentUnit);
@@ -87,6 +92,12 @@ namespace ParcelManagement.Infrastructure.Repository
             var existing = await _dbContext.UserResidentUnits.FindAsync(userResidentUnit.Id) ??
                 throw new NullReferenceException($"UserResidentUnit with id {userResidentUnit.Id} does not exist");
             _dbContext.Entry(existing).CurrentValues.SetValues(userResidentUnit);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task UpdateUserResidentUnits(List<UserResidentUnit> userResidentUnits)
+        {
+            _dbContext.UserResidentUnits.RemoveRange(userResidentUnits);
             await _dbContext.SaveChangesAsync();
         }
     }

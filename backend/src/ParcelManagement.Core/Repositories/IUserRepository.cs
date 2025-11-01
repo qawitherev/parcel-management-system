@@ -16,5 +16,7 @@ namespace ParcelManagement.Core.Repositories
         Task<User?> GetOneUserBySpecification(ISpecification<User> spec);
 
         Task<int> GetUsersCountBySpecification(ISpecification<User> specification);
+
+        Task<List<Guid>> GetInvalidUserId(List<Guid> userIds);
     }
 }

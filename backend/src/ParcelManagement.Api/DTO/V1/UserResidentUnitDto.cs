@@ -23,4 +23,15 @@ namespace ParcelManagement.Api.DTO
         public int? Take { get; set; }
         public bool IsAscending { get; set; } = true;
     }
+
+    public class UpdateUnitsResidentsDto
+    {
+        public required Guid ResidentUnitId { get; set; }
+        public required List<UnitsResidentDto> Residents { get; set; }
+    }
+    
+    public class UnitsResidentDto
+    {
+        public required Guid UserId { get; set; }
+    }
 }

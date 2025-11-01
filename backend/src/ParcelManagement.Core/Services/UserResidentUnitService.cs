@@ -109,7 +109,7 @@ namespace ParcelManagement.Core.Services
             var invalidUserIds = await _userRepo.GetInvalidUserId(newResidents);
             if (invalidUserIds.Count > 0)
             {
-                var appended = string.Join(", ", invalidUserIds.ToString());
+                var appended = string.Join(", ", invalidUserIds);
                 throw new KeyNotFoundException($"Invalid user ids: ${appended}");
             }
             var toRemove = oldResidents.UserResidentUnits.Where(uru => !newResidents.Any(newResident => newResident == uru.UserId));

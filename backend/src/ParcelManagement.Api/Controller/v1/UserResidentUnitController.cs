@@ -25,8 +25,15 @@ namespace ParcelManagement.Api.Controller
         [Authorize(Roles = "ParcelRoomManager, Admin")]
         public async Task<IActionResult> GetAllUserResidentUnit([FromQuery] GetAllResidentUnitsRequestDto dto)
         {
-            var sortableColumn = EnumUtils.ToEnumOrNull<UserResidentUnitSortableColumn>(dto.Column ?? "");
-            var (uResidentUnits, count) = await _uResidentUnitService.GetUserResidentUnitForView(dto.SearchKeyword, sortableColumn, dto.Page, dto.Take, dto.IsAsc);
+            var filterRequest = new FilterPaginationRequest<UserResidentUnitSortableColumn>
+            {
+                SearchKeyword = dto.SearchKeyword,
+                SortableColumn = EnumUtils.ToEnumOrNull<UserResidentUnitSortableColumn>(dto.Column ?? ""),
+                Page = dto.Page,
+                Take = dto.Take,
+                IsAsc = dto.IsAsc
+            };
+            var (uResidentUnits, count) = await _uResidentUnitService.GetUserResidentUnitForView(filterRequest);
             var responseDto = new GetAllUserResidentUnitsResponseDto
             {
                 Count = count,

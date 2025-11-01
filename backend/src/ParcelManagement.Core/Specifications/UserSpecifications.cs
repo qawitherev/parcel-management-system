@@ -45,10 +45,8 @@ namespace ParcelManagement.Core.Specifications
 
         public Expression<Func<User, bool>> ToExpression()
         {
-            return u => (string.IsNullOrEmpty(_filter.SearchKeyword) || u.Username.Contains(_filter.SearchKeyword))
-                &&
-                (string.IsNullOrEmpty(_filter.SearchKeyword) || u.Email.Contains(_filter.SearchKeyword)) &&
-                u.Role == UserRole.Resident;
+            return u => (string.IsNullOrEmpty(_filter.SearchKeyword) || (u.Username.Contains(_filter.SearchKeyword) || u.Email.Contains(_filter.SearchKeyword)))
+                && u.Role == UserRole.Resident;
         }
 
         private Expression<Func<User, object>> GetSortExpression()

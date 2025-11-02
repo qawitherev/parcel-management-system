@@ -49,3 +49,14 @@ yarn-error.log*
 # test results
 **/TestResults/ 
 **/test-results/
+
+# whatever is this file 
+.DS_Store
+
+# terraform 
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+terraform.tfvars
+*.auto.tfvars

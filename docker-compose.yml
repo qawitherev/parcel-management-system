@@ -1,6 +1,6 @@
 services:
   backend: 
-    image: parcelmanagement.server:docker.intro
+    image: backend-image:staging
     ports:
       - "5000:5163"
     environment:
@@ -11,15 +11,16 @@ services:
       - app-network
 
   frontend: 
-    image: frontend:docker.intro
+    image: frontend-image:staging
+    environment: 
+      BACKEND_HOST: backend
+      BACKEND_PORT: 5163
     ports:
       - "80:80"
     depends_on:
       - backend
     networks:
       - app-network
-    volumes:
-      - ./frontend/nginx.conf:/etc/nginx/nginx.conf:ro
 
 networks:
   app-network: 

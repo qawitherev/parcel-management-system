@@ -40,4 +40,18 @@ namespace ParcelManagement.Api.DTO.V1
     {
         public required string UnitName { get; set; }
     }
+
+    public class GetResidentsByUnitResponseDto
+    {
+        public required Guid ResidentUnitId { get; set; }
+        public required string UnitName { get; set; }
+        public required List<Resident> Residents { get; set; }
+
+    }
+    
+    public class Resident
+    {
+        public required Guid UserId { get; set; }
+        public required string Username { get; set; }
+    }
 }

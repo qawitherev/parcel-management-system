@@ -2,6 +2,7 @@ using System.Security.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using ParcelManagement.Core.Entities;
 using ParcelManagement.Core.Misc;
+using ParcelManagement.Core.Model.Helper;
 using ParcelManagement.Core.Repositories;
 using ParcelManagement.Core.Specifications;
 
@@ -18,7 +19,10 @@ namespace ParcelManagement.Core.Services
         Task<User> GetUserById(Guid id);
 
         Task<IReadOnlyList<Parcel?>> GetParcelsByUserAsync(Guid userId, ParcelStatus? parcelStatus);
+
         Task<string> GetUserRole(Guid userId);
+
+        Task<(IReadOnlyList<User>, int count)> GetUserForViewAsync(FilterPaginationRequest<UserSortableColumn> filter);
     }
 
     public class UserService(
@@ -123,6 +127,16 @@ namespace ParcelManagement.Core.Services
             var user = await _userRepository.GetUserByIdAsync(userId) ??
                 throw new KeyNotFoundException($"User not found");
             return user.Role.ToString();
+        }
+
+        public async Task<(IReadOnlyList<User>, int count)> GetUserForViewAsync(FilterPaginationRequest<UserSortableColumn> filter)
+        {
+            var specification = new UserForViewSpecification(filter);
+            filter.Page = null;
+            filter.Take = null;
+            var users = await _userRepository.GetUsersBySpecificationAsync(specification);
+            var count = await _userRepository.GetUsersCountBySpecification(specification);
+            return (users, count);
         }
     }
 }

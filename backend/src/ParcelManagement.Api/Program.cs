@@ -16,6 +16,7 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using ParcelManagement.Api.Swagger;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -124,6 +125,50 @@ builder.Services.AddScoped<TransactionFilter>();
 
 builder.Services.AddScoped<AdminDataSeeder>();
 
+if (builder.Environment.EnvironmentName != "Testing")
+{
+    // health check services registration and configuration 
+    builder.Services.AddHealthChecks()
+    .AddCheck("check environment secrets", () =>
+    {
+        var healthData = new Dictionary<string, object>();
+        var issues = new List<string>();
+        var secretKey = builder.Configuration["JWTSettings:SecretKey"];
+        var adminPassword = builder.Configuration["Admin:Password"];
+        healthData["SecretKeyExist"] = !string.IsNullOrEmpty(secretKey);
+        healthData["AdminPasswordExist"] = !string.IsNullOrEmpty(adminPassword);
+        if (string.IsNullOrEmpty(secretKey))
+        {
+            issues.Add("JWT Secret key is missing");
+        }
+        if (string.IsNullOrEmpty(adminPassword))
+        {
+            issues.Add("Admin password is missing");
+        }
+        if (issues.Count > 0)
+        {
+            Console.WriteLine("Environment secrets check failed");
+            return HealthCheckResult.Unhealthy(
+                $"Some environment secrets are missing. {string.Join(", ", issues)}",
+                data: healthData
+            );
+        } else
+        {
+            Console.WriteLine("Environment secrets check passed");
+            return HealthCheckResult.Healthy(
+                "All environment secrets are loaded",
+                data: healthData
+            );
+        }
+    })
+    .AddMySql(
+        connectionString: builder.Configuration.GetConnectionString("DefaultConnection") ?? "",
+        name: "Database health check",
+        failureStatus: HealthStatus.Unhealthy
+    );
+
+}
+
 var app = builder.Build();
 
 // search all route defined 
@@ -140,6 +185,10 @@ app.UseAuthorization();
 // map the received route with the controller and execute it 
 app.MapControllers();
 
+if (builder.Environment.EnvironmentName != "Testing")
+{
+    app.MapHealthChecks("/health");
+}
 
 //for swagger - only available in dev 
 if (builder.Environment.IsDevelopment())

@@ -2,13 +2,29 @@
   <div class="flex items-center justify-between px-6 py-4 border-b border-[var(--clr-border)]">
     <span class="text-lg text-[var(--clr-dark-a0)] font-semibold">Parcel Management System</span>
     <label class="flex items-center cursor-pointer">
-      <span class="mr-2 text-sm">Dark Mode</span>
-      <input type="checkbox" id="theme-switch" class="hidden" (change)="onThemeToggle()" />
+      <span class="mr-2 text-sm text-[var(--clr-dark-a0)]">{{
+               isDarkMode ? 'Dark Mode' : 'Light Mode'
+          }}</span>
+      <input
+        [checked]="isDarkMode"
+        type="checkbox"
+        id="theme-switch"
+        class="hidden"
+        (change)="onThemeToggle()"
+      />
       <span
-        class="w-10 h-5 flex items-center bg-gray-300 rounded-full p-1 transition-colors duration-300"
+      [ngClass]="{
+          'bg-[var(--clr-surface-a30)]' : !isDarkMode, 
+          'bg-[var(--clr-success-a10)]' : isDarkMode, 
+      }"
+        class="w-10 h-5 flex items-center rounded-full p-1 transition-colors duration-300"
       >
         <span
-          class="bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300"
+          [ngClass]="{
+               'translate-x-4 bg-white': isDarkMode,
+               'bg-[var(--clr-surface-a50)]': !isDarkMode
+          }"
+          class="w-4 h-4 rounded-full shadow-md transform transition-transform duration-300"
         ></span>
       </span>
     </label>

@@ -13,7 +13,6 @@ export class ThemeService {
   private darkMode = false;
 
   constructor() {
-    // get from local storage 
     const themeState = localStorage.getItem(PERSISTENT_THEME_MODE);
     if (themeState == PERSISTENT_THEME_MODE_DARK) {
       this.turnToDark();

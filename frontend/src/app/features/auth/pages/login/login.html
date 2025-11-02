@@ -1,5 +1,5 @@
 <div class="flex min-h-screen items-center justify-center">
-  <div class="w-full max-w-md bg-white p-8 rounded-2xl shadow">
+  <div class="w-full max-w-md bg-[var(--clr-surface-a0)] p-8 rounded-2xl border-1 border-[var(--clr-surface-a30)]">
     <h2 class="text-2xl font-bold mb-6 text-center">Login</h2>
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <div class="mb-4">
@@ -27,13 +27,19 @@
       <button
         [ngClass]="
           form.get('emailUsername')?.valid && form.get('password')?.valid
-            ? 'bg-blue-500 text-white hover:bg-blue-600'
+            ? 'bg-[rgb(var(--clr-dark-a0))] text-[rgb(var(--clr-light-a0))] hover:bg-blue-600'
             : 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-50'
         "
         type="submit"
-        class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600"
+        class="w-full bg-[rgb(var(--clr-primary-a20))] text-[rgb(var(--clr-light-a0))] py-2 rounded-lg hover:bg-blue-600"
       >
         Login
+      </button>
+      <button
+        (click)="onThemeToggle()"
+        class="w-full bg-[var(--clr-primary-a20)] text-[var(--clr-light-a0)] py-2 rounded-lg hover:bg-blue-600"
+      >
+        Toggle Theme
       </button>
       <div *ngIf="loginResponse$ | async as res">
         <div class="text-red-500 text-sm mt-2">{{ res.message }}</div>

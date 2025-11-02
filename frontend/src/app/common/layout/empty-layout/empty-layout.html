@@ -1,6 +1,17 @@
-<div class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500">
-     <router-outlet></router-outlet>
+<div class="bg-[var(--clr-surface-a0)]">
+  <div class="flex items-center justify-between px-6 py-4 border-b border-[var(--clr-border)]">
+    <span class="text-lg text-[var(--clr-dark-a0)] font-semibold">Parcel Management System</span>
+    <label class="flex items-center cursor-pointer">
+      <span class="mr-2 text-sm">Dark Mode</span>
+      <input type="checkbox" id="theme-switch" class="hidden" (change)="onThemeToggle()" />
+      <span
+        class="w-10 h-5 flex items-center bg-gray-300 rounded-full p-1 transition-colors duration-300"
+      >
+        <span
+          class="bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300"
+        ></span>
+      </span>
+    </label>
+  </div>
+  <router-outlet></router-outlet>
 </div>
-   
-
-    

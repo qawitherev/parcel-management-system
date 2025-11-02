@@ -15,6 +15,7 @@ import { AppConsole } from '../../../../utils/app-console';
 import { httpResource } from '@angular/common/http';
 import { RoleService } from '../../../../core/roles/role-service';
 import { EmptyLayout } from "../../../../common/layout/empty-layout/empty-layout";
+import { ThemeService } from '../../../../core/theme/theme-service';
 
 @Component({
   selector: 'app-login',
@@ -40,7 +41,8 @@ export class Login implements OnInit, OnDestroy {
     private authService: Auth,
     private route: ActivatedRoute,
     private router: Router,
-    private roleService: RoleService
+    private roleService: RoleService, 
+    private themeService: ThemeService
   ) {
     this.form = this.fb.group({
       emailUsername: ['', [Validators.required]],
@@ -80,5 +82,13 @@ export class Login implements OnInit, OnDestroy {
         map((res) => (res.error ? res : null))
       );
     }
+  }
+
+  /**
+   * TO REMOVE --> just here to test theme toggling
+   */
+  onThemeToggle() {
+    AppConsole.log(`THEME: Theme toggle to ${this.themeService.getIsDarkMode}`)
+    this.themeService.toggleMode();
   }
 }

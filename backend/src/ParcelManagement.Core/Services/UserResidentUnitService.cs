@@ -17,12 +17,7 @@ namespace ParcelManagement.Core.Services
 
         Task<IReadOnlyCollection<ResidentUnit?>> GetResidentsUnitByUser(Guid userId);
 
-        Task<(IReadOnlyList<UserResidentUnit>, int count)> GetUserResidentUnitForView(
-            string? searchKeyword,
-            UserResidentUnitSortableColumn? column,
-            int? page, int? take = 20,
-            bool isAsc = true
-        );
+        Task<(IReadOnlyList<UserResidentUnit> , int count)> GetUserResidentUnitForView(FilterPaginationRequest<UserResidentUnitSortableColumn> filter);
 
         Task UpdateUnitResidents(List<Guid> newResidents, Guid residentUnitId, Guid createdBy);
     }
@@ -76,17 +71,10 @@ namespace ParcelManagement.Core.Services
             return await _uruRepo.GetResidentUnitsByUser(userId);
         }
 
-        public async Task<(IReadOnlyList<UserResidentUnit>, int count)> GetUserResidentUnitForView(string? searchKeyword, UserResidentUnitSortableColumn? column, int? page, int? take = 20, bool isAsc = true)
+        public async Task<(IReadOnlyList<UserResidentUnit>, int count)> GetUserResidentUnitForView(FilterPaginationRequest<UserResidentUnitSortableColumn> filter)
         {
-            var filterPaginationRequest = new FilterPaginationRequest<UserResidentUnitSortableColumn>
-            {
-                SearchKeyword = searchKeyword,
-                Page = page,
-                Take = take,
-                SortableColumn = column ?? UserResidentUnitSortableColumn.ResidentUnit,
-                IsAscending = isAsc
-            };
-            var viewSpecification = new UserResidentUnitUnitViewSpecification(filterPaginationRequest);
+            filter.Take = 20;
+            var viewSpecification = new UserResidentUnitUnitViewSpecification(filter);
             var userResidentUnit = await _uruRepo.GetUserResidentUnitsBySpecification(viewSpecification);
             var count = await _uruRepo.GetUserResidentUnitCountBySpecification(viewSpecification);
             return (userResidentUnit, count);

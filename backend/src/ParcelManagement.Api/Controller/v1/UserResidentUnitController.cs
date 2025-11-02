@@ -4,6 +4,7 @@ using ParcelManagement.Api.DTO;
 using ParcelManagement.Api.DTO.V1;
 using ParcelManagement.Api.Utility;
 using ParcelManagement.Core.Entities;
+using ParcelManagement.Core.Model.Helper;
 using ParcelManagement.Core.Services;
 
 namespace ParcelManagement.Api.Controller
@@ -28,10 +29,10 @@ namespace ParcelManagement.Api.Controller
             var filterRequest = new FilterPaginationRequest<UserResidentUnitSortableColumn>
             {
                 SearchKeyword = dto.SearchKeyword,
-                SortableColumn = EnumUtils.ToEnumOrNull<UserResidentUnitSortableColumn>(dto.Column ?? ""),
+                SortableColumn = EnumUtils.ToEnumOrNull<UserResidentUnitSortableColumn>(dto.Column ?? "") ?? UserResidentUnitSortableColumn.User,
                 Page = dto.Page,
                 Take = dto.Take,
-                IsAsc = dto.IsAsc
+                IsAscending = dto.IsAsc
             };
             var (uResidentUnits, count) = await _uResidentUnitService.GetUserResidentUnitForView(filterRequest);
             var responseDto = new GetAllUserResidentUnitsResponseDto

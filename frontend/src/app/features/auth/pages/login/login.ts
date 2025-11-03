@@ -83,12 +83,4 @@ export class Login implements OnInit, OnDestroy {
       );
     }
   }
-
-  /**
-   * TO REMOVE --> just here to test theme toggling
-   */
-  onThemeToggle() {
-    AppConsole.log(`THEME: Theme toggle to ${this.themeService.getIsDarkMode}`)
-    this.themeService.toggleMode();
-  }
 }

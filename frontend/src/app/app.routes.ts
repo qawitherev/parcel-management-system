@@ -20,7 +20,7 @@ export const routes: Routes = [
     },
 
     {
-        path: 'unauthorized', 
+        path: 'systemPages', 
         component: EmptyLayout, 
         children: [
             {

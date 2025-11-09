@@ -24,7 +24,7 @@ namespace ParcelManagement.Api.Controller
         private readonly ITokenService _tokenService = tokenService;
         private readonly IUserContextService _userContextService = userContextService;
 
-        [HttpGet("GetUserById/{id}")]
+        [HttpGet("{id}")]
         [Authorize]
         public async Task<IActionResult> GetUserById(Guid id)
         {
@@ -32,7 +32,7 @@ namespace ParcelManagement.Api.Controller
             return Ok(user);
         }
 
-        [HttpGet("basic")]
+        [HttpGet("me")]
         [Authorize]
         public async Task<IActionResult> GetUserByIdAsync()
         {

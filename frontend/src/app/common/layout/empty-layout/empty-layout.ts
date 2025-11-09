@@ -8,7 +8,7 @@ import { MySwitch } from "../../components/switch/my-switch/my-switch";
 @Component({
   selector: 'app-empty-layout',
   standalone: true, 
-  imports: [AuthRoutingModule, NgClass, MySwitch],
+  imports: [AuthRoutingModule, MySwitch],
   templateUrl: './empty-layout.html',
   styleUrl: './empty-layout.css'
 })

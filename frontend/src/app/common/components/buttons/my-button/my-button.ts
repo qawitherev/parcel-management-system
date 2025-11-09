@@ -28,7 +28,7 @@ export class MyButton {
       primary : 'bg-[var(--clr-primary-a20)] hover:bg-[var(--clr-primary-a10)]', 
       secondary: 'bg-[var(--clr-surface-a20)] hover:bg-[var(--clr-surface-a10)]',
       success: 'bg-[var(--clr-success-a20)] hover:bg-[var(--clr-success-a10)]',
-      danger: 'bg-[var(--clr-danger-a20)] hover:bg-[var(--clr-danger-a10)]'
+      danger: 'bg-[var(--clr-danger-a0)] hover:bg-[var(--clr-danger-a10)]'
     }
     const disabled = this.disabled ? 'opacity-50 cursor-not-allowed' : '';
     return `${base} ${variants[this.variant]} ${disabled}`

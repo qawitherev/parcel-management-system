@@ -5,6 +5,9 @@ import { RoleService, RoleWithExp } from '../../../core/roles/role-service';
 import { BehaviorSubject, combineLatest, map, Observable, pipe, Subject, takeUntil } from 'rxjs';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { Auth } from '../../../features/auth/auth';
+import { MyButton } from "../../components/buttons/my-button/my-button";
+import { ThemeService } from '../../../core/theme/theme-service';
+import { MySwitch } from "../../components/switch/my-switch/my-switch";
 
 interface MenuItem {
   label: string;
@@ -82,7 +85,7 @@ const MENU_ITEMS: MenuItem[] = [
 
 @Component({
   selector: 'app-normal-layout',
-  imports: [AuthRoutingModule, NgIf, AsyncPipe],
+  imports: [AuthRoutingModule, NgIf, AsyncPipe, MyButton, MySwitch],
   templateUrl: './normal-layout.html',
   styleUrl: './normal-layout.css',
 })
@@ -91,7 +94,8 @@ export class NormalLayout implements OnInit, OnDestroy {
     private layoutService: LayoutService,
     private roleService: RoleService,
     private sidebarService: SidebarService, 
-    private authService: Auth
+    private authService: Auth, 
+    private themeService: ThemeService
   ) {}
 
   menuItems = MENU_ITEMS;
@@ -129,5 +133,13 @@ export class NormalLayout implements OnInit, OnDestroy {
 
   logout() {
     this.authService.logout()
+  }
+
+  get isDarkMode(): boolean {
+    return this.themeService.getIsDarkMode();
+  }
+
+  onThemeToggle() {
+    this.themeService.toggleMode();
   }
 }

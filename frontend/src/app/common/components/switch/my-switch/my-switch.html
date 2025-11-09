@@ -1,27 +1,27 @@
-    <label class="flex items-center cursor-pointer">
-      <span class="mr-2 text-sm text-[var(--clr-dark-a0)]">{{
-               isPositive ? labelPositive : labelNegative
-          }}</span>
-      <input
-        [checked]="!isPositive"
-        type="checkbox"
-        id="theme-switch"
-        class="hidden"
-        (change)="onSwitchToggled()"
-      />
-      <span
-      [ngClass]="{
-          'bg-[var(--clr-surface-a30)]' : isPositive, 
-          'bg-[var(--clr-success-a10)]' : !isPositive, 
-      }"
-        class="w-10 h-5 flex items-center rounded-full p-1 transition-colors duration-300"
-      >
+<label class="flex items-center cursor-pointer">
+        <span class="mr-2 text-sm text-[var(--clr-dark-a0)]">{{
+                 isPositive ? labelPositive : labelNegative
+            }}</span>
+        <input
+          [checked]="!isPositive"
+          type="checkbox"
+          id="theme-switch"
+          class="hidden"
+          (change)="onSwitchToggled()"
+        />
         <span
-          [ngClass]="{
-               'translate-x-4 bg-white': !isPositive,
-               'bg-[var(--clr-surface-a50)]': isPositive
-          }"
-          class="w-4 h-4 rounded-full shadow-md transform transition-transform duration-300"
-        ></span>
-      </span>
-    </label>
+        [ngClass]="{
+            'bg-[var(--clr-surface-a30)]' : isPositive,
+            'bg-[var(--clr-success-a10)]' : !isPositive,
+        }"
+          class="w-10 h-5 flex items-center rounded-full p-1 transition-colors duration-300"
+        >
+          <span
+            [ngClass]="{
+                 'translate-x-4 bg-white': !isPositive,
+                 'bg-[var(--clr-surface-a50)]': isPositive
+            }"
+            class="w-4 h-4 rounded-full shadow-md transform transition-transform duration-300"
+          ></span>
+        </span>
+      </label>

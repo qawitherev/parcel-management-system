@@ -1,7 +1,7 @@
 <div class="flex h-screen">
   <!-- Sidebar -->
   <aside
-    class="fixed inset-y-0 left-0 w-64 bg-gray-800 text-white transform transition-transform duration-300"
+    class="fixed inset-y-0 left-0 w-64 bg-[var(--clr-surface-a10)] text-[var(--clr-dark-a0)] transform transition-transform duration-300"
   >
     <div
       *ngIf="pageTitle$ | async as title"
@@ -15,7 +15,7 @@
           @if (item.roles?.includes(role.role)) {
         <a
           (click)="toggleParentExpand(item.label)"
-          class="block py-2 px-3 rounded hover:bg-gray-700 cursor-pointer font-semibold text-gray-200"
+          class="block py-2 px-3 rounded hover:bg-[var(--clr-surface-a50)] cursor-pointer font-semibold text-[var(--clr-dark-a0)]"
         >
           {{ item.label }}
         </a>
@@ -29,7 +29,7 @@
         @for (child of item.children; track $index) {
         <div *ngIf="userRole$ | async as role">
           @if ((child.roles?.includes(role.role))) {
-          <a class="block py-2 px-3 rounded hover:bg-gray-700" [routerLink]="child.route">
+          <a class="block py-2 px-3 rounded hover:bg-[var(--clr-surface-a50)]" [routerLink]="child.route">
             {{ child.label }}
           </a>
           }
@@ -38,7 +38,7 @@
       </div>
       } } @else {
       <a
-        class="block py-2 px-3 rounded hover:bg-gray-700 font-semibold text-gray-200"
+        class="block py-2 px-3 rounded hover:bg-[var(--clr-surface-a50)] font-semibold text-[var(--clr-dark-a0)]"
         [routerLink]="item.route"
       >
         {{ item.label }}

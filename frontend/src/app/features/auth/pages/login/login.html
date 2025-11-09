@@ -24,24 +24,21 @@
         <div class="text-red-500 text-sm">Please enter password</div>
         }
       </div>
-      <button
-        [ngClass]="
-          form.get('emailUsername')?.valid && form.get('password')?.valid
-            ? 'bg-[var(--clr-dark-a0)] text-[var(--clr-light-a0)] hover:bg-blue-600'
-            : 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-50'
-        "
+      <app-my-button
+        variant="primary"
+        label="Login"
         type="submit"
-        class="w-full bg-[rgb(var(--clr-primary-a20))] text-[rgb(var(--clr-light-a0))] py-2 rounded-lg"
-      >
-        Login
-      </button>
+        [isLoading]="isLoading"
+        [disabled]="!(form.get('emailUsername')?.valid && form.get('password')?.valid)"
+      ></app-my-button>
       <div *ngIf="loginResponse$ | async as res">
         <div class="text-red-500 text-sm mt-2">{{ res.message }}</div>
       </div>
     </form>
     <p class="mt-4 text-center text-[var(--clr-dark-a0)]">
       Don't have an account?
-      <a routerLink="/register" class="text-blue-500 hover:underline cursor-pointer">Register</a>
+      <a routerLink="/register" class="text-[var(--clr-info-a10)] hover:underline cursor-pointer">Register</a>
     </p>
   </div>
 </div>
+

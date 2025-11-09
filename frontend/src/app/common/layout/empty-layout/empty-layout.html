@@ -1,4 +1,4 @@
-<div class="bg-[var(--clr-surface-a0)]">
+<div class="bg-[var(--clr-surface-a0)] min-h-screen">
   <div class="flex items-center justify-between px-6 py-4 border border-[var(--clr-surface-a30)]">
     <span class="text-lg text-[var(--clr-dark-a0)] font-semibold">Parcel Management System</span>
     <label class="flex items-center cursor-pointer">
@@ -30,5 +30,7 @@
       </span>
     </label>
   </div>
-  <router-outlet></router-outlet>
+  <div class="px-16 py-8">
+    <router-outlet></router-outlet>
+  </div>
 </div>

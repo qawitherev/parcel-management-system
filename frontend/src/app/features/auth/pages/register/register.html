@@ -1,3 +1,5 @@
+@let registerResponse = registerResponse$ | async;
+
 <div class="flex min-h-screen items-center justify-center">
   <div class="w-full max-w-md bg-[var(--clr-surface-a0)] bg-opacity-50 border-1 border-[var(--clr-surface-a30)] p-8 rounded-2xl">
     <h2 class="text-2xl font-bold mb-6 text-center text-[var(--clr-dark-a0)]">Register</h2>
@@ -28,15 +30,12 @@
         <div class="text-red-500 text-sm" >{{form.getError('errorString')}}</div>
         }
       </div>
-      <button [disabled]="!form.get('agreeTerms')?.value"
-       type="submit"
-       [ngClass]="form.get('agreeTerms')?.value
-        ? 'bg-[var(--clr-dark-a0)] text-[var(--clr-light-a0)]'
-        : 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-50'"
-        class="w-full bg-[rgb(var(--clr-primary-a20))] text-[rgb(var(--clr-light-a0))] py-2 rounded-lg transition-colors"
-      >
-        Register
-            </button>
+      <app-my-button
+            label="Register"
+            [isLoading]="isLoading"
+            [disabled]="!(form.get('agreeTerms')?.value)"
+            type="submit"
+      ></app-my-button>
     <div class="mt-4 flex items-center">
         <input type="checkbox" formControlName="agreeTerms" id="agreeTerms" class="mr-2" />
         <label for="agreeTerms" class="text-[var(--clr-dark-a0)] text-sm">
@@ -44,20 +43,10 @@
         </label>
     </div>
     </form>
-    <div *ngIf="errorMessage" class="text-red-500 text-sm mt-2">
-      {{errorMessage}}
-    </div>
-    <!-- <div *ngIf="registerResponse$ | async as response" >
-      @if (response.error) {
-        <div class="text-red-500 text-sm mt-2">{{ response.message }}</div>
-      } @else {
-        <div class="text-green-600 text-sm mt-2">
-          Registration successful!<br>
-          Username: {{ response.username }}<br>
-          User ID: {{ response.id }}
-        </div>
-      }
-    </div> -->
-    
+    @if (registerResponse && 'error' in registerResponse) {
+      <div class="text-red-500 text-sm">
+        {{errorMessage}}
+      </div>
+    }
   </div>
 </div>

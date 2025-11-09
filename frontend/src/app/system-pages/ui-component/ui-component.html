@@ -1,6 +1,7 @@
-<h2 class="w-full text-2xl font-semibold text-[var(--clr-dark-a0)]">Buttons</h2>
-<app-my-button></app-my-button>
-<app-my-button variant="secondary"></app-my-button>
-<app-my-button variant="success"></app-my-button>
-<app-my-button variant="danger"
-onclick="onClick"></app-my-button>
+<h2 class="w-full text-2xl font-semibold text-[var(--clr-dark-a0)] mb-1">Buttons</h2>
+<div class="flex gap-2">
+  <app-my-button label="Primary" (clicked)="onClick($event)"></app-my-button>
+  <app-my-button label="Secondary" variant="secondary" [disabled]="true"></app-my-button>
+  <app-my-button label="Success" variant="success"></app-my-button>
+  <app-my-button label="Danger" variant="danger"></app-my-button>
+</div>

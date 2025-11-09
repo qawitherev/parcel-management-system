@@ -17,11 +17,13 @@ export class MyButton {
   @Input() variant: 'primary' | 'secondary' | 'success' | 'danger' = 'primary'
   @Input() label: string = "Button"
   @Input() disabled: boolean = false
+  @Input() type: 'button' | 'submit' | 'reset' = 'button'
+  @Input() isLoading: boolean = false
 
   @Output() clicked = new EventEmitter<MouseEvent>
 
   get buttonClasses() : string {
-    const base = "px-4 py-2 rounded-lg transition-all duration-200 text-[var(--clr-dark-a0)]"
+    const base = "px-4 py-2 rounded-lg transition-all duration-200 text-[var(--clr-surface-a0)] w-full"
     const variants : any = {
       primary : 'bg-[var(--clr-primary-a20)] hover:bg-[var(--clr-primary-a10)]', 
       secondary: 'bg-[var(--clr-surface-a20)] hover:bg-[var(--clr-surface-a10)]',

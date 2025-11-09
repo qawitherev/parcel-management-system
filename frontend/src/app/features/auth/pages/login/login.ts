@@ -16,6 +16,7 @@ import { httpResource } from '@angular/common/http';
 import { RoleService } from '../../../../core/roles/role-service';
 import { EmptyLayout } from "../../../../common/layout/empty-layout/empty-layout";
 import { ThemeService } from '../../../../core/theme/theme-service';
+import { MyButton } from "../../../../common/components/buttons/my-button/my-button";
 
 @Component({
   selector: 'app-login',
@@ -24,9 +25,10 @@ import { ThemeService } from '../../../../core/theme/theme-service';
     ɵInternalFormsSharedModule,
     ReactiveFormsModule,
     RouterModule,
-    NgClass,
     NgIf,
-    AsyncPipe],
+    AsyncPipe,
+    MyButton
+],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -35,6 +37,7 @@ export class Login implements OnInit, OnDestroy {
   loginResponse$?: Observable<any>;
   returnUrl: string | null = null;
   private destroy$ = new Subject<void>();
+  isLoading: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -62,6 +65,7 @@ export class Login implements OnInit, OnDestroy {
 
   onSubmit() {
     if (this.form.valid) {
+      this.isLoading = true;
       const loginRequest = {
         Username: this.form.value.emailUsername,
         PlainPassword: this.form.value.password,
@@ -77,6 +81,8 @@ export class Login implements OnInit, OnDestroy {
                 const url = this.returnUrl || '/dashboard/user';
                 this.router.navigateByUrl(url);
               });
+          } else {
+            this.isLoading = false;
           }
         }),
         map((res) => (res.error ? res : null))

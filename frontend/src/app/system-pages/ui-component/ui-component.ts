@@ -10,7 +10,7 @@ import { AppConsole } from '../../utils/app-console';
 })
 export class UiComponent {
 
-  onClick() {
+  onClick(event: MouseEvent) {
     AppConsole.log("TEST: hello")
   }
 }

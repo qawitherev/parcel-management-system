@@ -58,7 +58,7 @@ export class RoleService {
     }
 
     private getRoleByApi(): Observable<any> {
-        return this.http.get(`${environment.apiBaseUrl}/v1/user/basic`).pipe(
+        return this.http.get(`${environment.apiBaseUrl}/v1/user/me`).pipe(
             map((res: any) => {
                 return { role: res.role }
             }),

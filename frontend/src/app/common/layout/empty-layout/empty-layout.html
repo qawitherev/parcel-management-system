@@ -29,6 +29,13 @@
         ></span>
       </span>
     </label>
+
+    <app-my-switch 
+      labelPositive="Dark Mode" 
+      labelNegative="Dark Mode"
+      [isPositive]="!isDarkMode"
+      (toggled)="onThemeToggle()"
+    ></app-my-switch>
   </div>
   <div class="px-16 py-8">
     <router-outlet></router-outlet>

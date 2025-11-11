@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { AppConsole } from '../../../../utils/app-console';
 
 /**
  * Storing table model here cause for the vibe 
@@ -6,7 +7,7 @@ import { Component, Input } from '@angular/core';
  * enhance it later 🗿
  */
 export interface TableColumn<T> {
-  key: keyof T | string, 
+  key: string, 
   label: string
 }
 
@@ -21,6 +22,9 @@ export class MyTable<T> {
   @Input() data: T[] = [];
 
   getCellValue(row: any, key: string): any {
+    AppConsole.log(`DEBUG DATA: \n
+      row: ${row}\n
+      key: ${key}`)
     const keys = key.split('.');
     const value = keys.reduce((val, currKey) => val?.[currKey], row);
     return value;

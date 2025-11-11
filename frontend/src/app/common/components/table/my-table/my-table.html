@@ -1,15 +1,23 @@
 <div class="overflow-x-auto">
-    <table>
-        <thead>
+    <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
             <tr>
                 @for (column of columns; track $index) {
-                    <thead>{{column.label}}</thead>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{column.label}}</th>
                 }
             </tr>
         </thead>
 
-        <tbody>
-            
+        <tbody class="bg-white divide-y divide-gray-200">
+            @for (dataItem of data; track $index) {
+                <tr class="hover:bg-gray-50">
+                    @for (column of columns; track $index) {
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {{getCellValue(dataItem, column.key)}}
+                        </td>
+                    }
+                </tr>
+            }
         </tbody>
     </table>
 </div>

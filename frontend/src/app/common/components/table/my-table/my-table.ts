@@ -6,7 +6,7 @@ import { Pagination, PaginationEmitData } from "../../pagination/pagination";
 /**
  * Storing table model here cause for the vibe 
  * For now, we will just go for minimal version, 
- * enhance it later 🗿
+ * enhance it later 
  */
 export interface TableColumn<T> {
   key: string, 

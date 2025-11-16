@@ -18,25 +18,31 @@ interface TestData {
 export class UiComponent {
 
   tableColumns: TableColumn<TestData>[] = [
-    { key: 'id', label: 'ID'}, 
-    { key: 'name', label: 'Name'}, 
-    { key: 'age', label: 'Age'}
+    { key: 'id', label: 'ID', isActionColumn: false }, 
+    { key: 'name', label: 'Name', isActionColumn: false }, 
+    { key: 'age', label: 'Age', isActionColumn: false }, 
+    { key: 'edit', label: 'Edit', isActionColumn: true}
   ];
 
   TestDataData: TestData[] = [
-    { id: '1', name: 'Alice', age: 25 },
-    { id: '2', name: 'Bob', age: 30 },
-    { id: '3', name: 'Charlie', age: 22 },
-    { id: '4', name: 'David', age: 28 },
-    { id: '5', name: 'Eve', age: 35 },
-    { id: '6', name: 'Frank', age: 27 },
-    { id: '7', name: 'Grace', age: 24 },
-    { id: '8', name: 'Heidi', age: 32 },
-    { id: '9', name: 'Ivan', age: 29 },
-    { id: '10', name: 'Judy', age: 26 }
+    { id: '550e8400-e29b-41d4-a716-446655440000', name: 'Alice', age: 25 },
+    { id: '550e8400-e29b-41d4-a716-446655440001', name: 'Bob', age: 30 },
+    { id: '550e8400-e29b-41d4-a716-446655440002', name: 'Charlie', age: 22 },
+    { id: '550e8400-e29b-41d4-a716-446655440003', name: 'David', age: 28 },
+    { id: '550e8400-e29b-41d4-a716-446655440004', name: 'Eve', age: 35 },
+    { id: '550e8400-e29b-41d4-a716-446655440005', name: 'Frank', age: 27 },
+    { id: '550e8400-e29b-41d4-a716-446655440006', name: 'Grace', age: 24 },
+    { id: '550e8400-e29b-41d4-a716-446655440007', name: 'Heidi', age: 32 },
+    { id: '550e8400-e29b-41d4-a716-446655440008', name: 'Ivan', age: 29 },
+    { id: '550e8400-e29b-41d4-a716-446655440009', name: 'Judy', age: 26 }
   ];
 
   onClick(event: MouseEvent) {
     AppConsole.log("TEST: hello")
+  }
+
+  onTableActionClicked(data: any) {
+    AppConsole.log(`DEBUG DATA: \n
+      data: ${JSON.stringify(data)}`)
   }
 }

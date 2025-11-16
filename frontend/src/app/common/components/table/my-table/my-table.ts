@@ -1,5 +1,6 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { AppConsole } from '../../../../utils/app-console';
+import { MyButton } from "../../buttons/my-button/my-button";
 
 /**
  * Storing table model here cause for the vibe 
@@ -8,12 +9,13 @@ import { AppConsole } from '../../../../utils/app-console';
  */
 export interface TableColumn<T> {
   key: string, 
-  label: string
+  label: string, 
+  isActionColumn: boolean
 }
 
 @Component({
   selector: 'app-my-table',
-  imports: [],
+  imports: [MyButton],
   templateUrl: './my-table.html',
   styleUrl: './my-table.css'
 })
@@ -21,12 +23,15 @@ export class MyTable<T> {
   @Input() columns: TableColumn<T>[] = [];
   @Input() data: T[] = [];
 
+  @Output() actionClicked = new EventEmitter<T>();
+
   getCellValue(row: any, key: string): any {
-    AppConsole.log(`DEBUG DATA: \n
-      row: ${row}\n
-      key: ${key}`)
     const keys = key.split('.');
     const value = keys.reduce((val, currKey) => val?.[currKey], row);
     return value;
+  }
+
+  onActionClicked(data: T) {
+    this.actionClicked.emit(data);
   }
 }

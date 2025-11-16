@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { AppConsole } from '../../../../utils/app-console';
 import { MyButton } from "../../buttons/my-button/my-button";
+import { Pagination, PaginationEmitData } from "../../pagination/pagination";
 
 /**
  * Storing table model here cause for the vibe 
@@ -15,15 +16,20 @@ export interface TableColumn<T> {
 
 @Component({
   selector: 'app-my-table',
-  imports: [MyButton],
+  imports: [MyButton, Pagination],
   templateUrl: './my-table.html',
   styleUrl: './my-table.css'
 })
 export class MyTable<T> {
+
+  paginationCurrentPage: number = 1;
+  paginationPageSize: number = 10;
+
   @Input() columns: TableColumn<T>[] = [];
   @Input() data: T[] = [];
 
   @Output() actionClicked = new EventEmitter<T>();
+  @Output() paginationClicked = new EventEmitter<PaginationEmitData>();
 
   getCellValue(row: any, key: string): any {
     const keys = key.split('.');
@@ -33,5 +39,9 @@ export class MyTable<T> {
 
   onActionClicked(data: T) {
     this.actionClicked.emit(data);
+  }
+
+  onPaginationClicked(data: PaginationEmitData) {
+    this.paginationClicked.emit(data);
   }
 }

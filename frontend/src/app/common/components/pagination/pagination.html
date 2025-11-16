@@ -1,9 +1,11 @@
-<div class="flex justify-between items-center w-full p-4 border rounded-lg shadow-md bg-white">
+<div
+  class="flex justify-between items-center w-full p-4 border border-[var(--clr-surface-tonal-a20)] rounded-lg bg-[var(--clr-surface-a0)]"
+>
   <!-- Left Side -->
   <!-- <div class="text-gray-600 text-sm">
         Showing {{pageSize > count ? count : pageSize}} {{pageSize > 1 ? 'results' : 'result'}} of {{count}}
     </div> -->
-  <div class="text-gray-600 text-sm">
+  <div class="text-[var(--clr-dark-a0)] text-sm">
     Showing
     <select [(ngModel)]="inPageSize" (change)="onPageSizeChanged($event)">
       <option *ngFor="let pageSize of pageSizeOptions" [value]="pageSize">
@@ -16,28 +18,19 @@
 
   <!-- Right Side -->
   <div class="flex items-center space-x-2">
-    <button
-      (click)="onPageNavigate(inCurrentPage - 1)"
-      class="px-3 py-1 text-sm text-gray-500 border rounded hover:bg-gray-100"
-    >
-      Previous
-    </button>
+    <app-my-button label="Previous" (clicked)="onPageNavigate(inCurrentPage - 1)"></app-my-button>
     <div *ngFor="let item of pageNavDisplay; let i = index">
       <button
-      (click)="onPageNavigate(item)"
-      [ngClass]="{
-      'text-white bg-gray-500 hover:bg-gray-600': inCurrentPage === item,
-      'text-gray-500 hover:bg-gray-100': inCurrentPage !== item
-    }"
-      class="px-3 py-1 text-sm text-gray-500 border rounded hover:bg-gray-100">
+        (click)="onPageNavigate(item)"
+        [ngClass]="{
+          'text-[var(--clr-surface-a0)] bg-[var(--clr-primary-a0)] hover:bg-[var(--clr-primary-a10)]': inCurrentPage === item,
+          'text-gray-500 bg-[var(--clr-surface-tonal-a0)] hover:bg-[var(--clr-surface-tonal-a50)]': inCurrentPage !== item
+        }"
+        class="px-3 py-1 text-sm text-[var(--clr-surface-a0)] border-[var(--clr-surface-tonal-a20)] rounded-lg"
+      >
         {{ item }}
       </button>
     </div>
-    <button
-      (click)="onPageNavigate(inCurrentPage + 1)"
-      class="px-3 py-1 text-sm text-gray-500 border rounded hover:bg-gray-100"
-    >
-      Next
-    </button>
+    <app-my-button label="Next" (clicked)="onPageNavigate(inCurrentPage + 1)"></app-my-button>
   </div>
 </div>

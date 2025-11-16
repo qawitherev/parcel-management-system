@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { MyButton } from "../../common/components/buttons/my-button/my-button";
 import { AppConsole } from '../../utils/app-console';
 import { TableColumn, MyTable } from '../../common/components/table/my-table/my-table';
+import { PaginationEmitData } from '../../common/components/pagination/pagination';
 
 interface TestData {
   id: string, 
@@ -44,5 +45,10 @@ export class UiComponent {
   onTableActionClicked(data: any) {
     AppConsole.log(`DEBUG DATA: \n
       data: ${JSON.stringify(data)}`)
+  }
+
+  onPaginationClicked(data: PaginationEmitData) {
+    AppConsole.log(`Pagination clicked with data: \n
+      ${JSON.stringify(data)}`)
   }
 }

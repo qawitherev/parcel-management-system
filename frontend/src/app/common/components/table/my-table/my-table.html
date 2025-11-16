@@ -1,6 +1,6 @@
-<div class="overflow-x-auto">
-    <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-[var(--clr-primary-a0)]">
+<div class="overflow-x-auto border border-[var(--clr-surface-tonal-a20)] rounded-lg mb-3">
+    <table class="min-w-full divide-y divide-[var(--clr-surface-tonal-a20)]">
+        <thead class="bg-[var(--clr-surface-a50)]">
             <tr>
                 <th class="px-6 py-3 text-left text-xs font-medium text-[var(--clr-dark-a0)] uppercase tracking-wider">#</th>
                 @for (column of columns; track $index) {
@@ -20,7 +20,7 @@
                         </td>
                         } @else {
                             <td>
-                                <div class="w-1/2">
+                                <div class="w-1/2 h-full">
                                     <app-my-button
                                         [label]="column.label"
                                         (clicked)="onActionClicked(dataItem)"
@@ -35,3 +35,14 @@
         </tbody>
     </table>
 </div>
+
+@if (data.length > 0) {
+    <app-pagination
+        [count]="data.length"
+        [inCurrentPage]="paginationCurrentPage"
+        [inPageSize]="paginationPageSize"
+        (paginationDataEmitter)="onPaginationClicked($event)"
+    >
+
+    </app-pagination>
+}

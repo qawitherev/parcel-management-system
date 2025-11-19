@@ -1,92 +1,49 @@
 <div class="overflow-x-auto rounded-lg">
-        <div class="flex items-center justify-between mb-4">
-            <!-- Search Bar -->
-            <div class="relative">
-                <input 
-                    [value]="searchKeyword.value"
-                    (input)="onSearch($any($event.target).value)"
-                    type="text" 
-                    placeholder="Search parcels..." 
-                    class="w-64 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-                <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    class="absolute top-2.5 right-3 h-5 w-5 text-gray-400" 
-                    fill="none" 
-                    viewBox="0 0 24 24" 
-                    stroke="currentColor"
-                >
-                    <path 
-                        stroke-linecap="round" 
-                        stroke-linejoin="round" 
-                        stroke-width="2" 
-                        d="M8 16l-4-4m0 0l4-4m-4 4h16"
-                    />
-                </svg>
-            </div>
+  <div class="flex items-center justify-between mb-4">
+    <!-- Search Bar -->
+    <div class="relative">
+      <input
+        [value]="searchKeyword.value"
+        (input)="onSearch($any($event.target).value)"
+        type="text"
+        placeholder="Search parcels..."
+        class="w-64 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+      />
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="absolute top-2.5 right-3 h-5 w-5 text-gray-400"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M8 16l-4-4m0 0l4-4m-4 4h16"
+        />
+      </svg>
+    </div>
 
-            <!-- Status Dropdown -->
-            <div>
-                <select 
-                    [(ngModel)]="selectedStatus"
-                    (change)="onStatusChanged($event)"
-                    class="w-48 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                    <!-- <option value="">All Statuses</option>
-                    <option value="Claimed">Claimed</option>
-                    <option value="AwaitingPickup">Awaiting Pickup</option> -->
-                    <option *ngFor="let option of availableStatus" > {{option}} </option>
-                </select>
-            </div>
-        </div>
+    <!-- Status Dropdown -->
+    <div>
+      <select
+        [(ngModel)]="selectedStatus"
+        (change)="onStatusChanged($event)"
+        class="w-48 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+      >
+        <option *ngFor="let option of availableStatus">{{ option }}</option>
+      </select>
+    </div>
+  </div>
+</div>
 
-        <table class="table-auto w-full border-collapse bg-white">
-            <thead>
-                <tr class="bg-gray-200 text-gray-700 uppercase text-sm leading-normal">
-                    <th class="px-6 py-3 text-left">#</th>
-                    <th class="px-6 py-3 text-left">Tracking Number</th>
-                    <th class="px-6 py-3 text-left">Locker</th>
-                    <th class="px-6 py-3 text-left">Weight</th>
-                    <th class="px-6 py-3 text-left">Dimension</th>
-                    <th class="px-6 py-3 text-left">Resident Unit</th>
-                    <th class="px-6 py-3 text-left">Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let parcel of (parcelList$ | async)?.parcels; let i = index" 
-                    class="border-b hover:bg-gray-100 text-gray-600 text-sm">
-                    <td class="px-6 py-4">{{ (paginationCurrentPage-1)*paginationPageSize+i+1 }}</td>
-                    <td class="px-6 py-4">{{ parcel.trackingNumber }}</td>
-                    <td class="px-6 py-4">{{ parcel.locker }}</td>
-                    <td class="px-6 py-4">{{ parcel.weight }}</td>
-                    <td class="px-6 py-4">{{ parcel.dimensions }}</td>
-                    <td class="px-6 py-4">{{ parcel.residentUnit }}</td>
-                    <td class="px-6 py-4">
-                        <span class="px-2 py-1 rounded-full text-xs font-semibold 
-                            {{ parcel.status === 'Claimed' ? 'bg-green-100 text-green-700' : 
-                               parcel.status === 'AwaitingPickup' ? 'bg-yellow-100 text-yellow-700' : 
-                               'bg-red-100 text-red-700' }}">
-                            {{ parcel.status }}
-                        </span>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <div class="mb-4"></div>
-        <div *ngIf="parcelList$ | async as parcel">
-            @if (parcel.count != 0) {
-                <app-pagination
-                [count]="parcel.count"
-                [inCurrentPage]="paginationCurrentPage"
-                [inPageSize]="paginationPageSize"
-                (paginationDataEmitter)="onPaginationChanged($event)"
-            ></app-pagination>
-            } @else {
-                <div class="flex flex-col items-center justify-center py-10">
-                    
-                    <p class="text-gray-500 text-lg">No parcels found</p>
-                    <p class="text-gray-400 text-sm">Try adjusting your search or filter criteria.</p>
-                </div>
-            }
-        </div>
-        
+@let parcelList = parcelList$ | async;
+
+<app-my-table
+  [columns]="tableColumns"
+  [data]="parcelList.parcels"
+  [count]="parcelList.count"
+  (paginationClicked)="onPaginationChanged($event)"
+>
+</app-my-table>

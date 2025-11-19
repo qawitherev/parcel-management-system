@@ -25,7 +25,7 @@ export class MyButton {
   get buttonClasses() : string {
     const base = " text-sm px-4 py-2 rounded-lg transition-all duration-200 text-[var(--clr-surface-a0)] w-full cursor-pointer"
     const variants : any = {
-      primary : 'bg-[var(--clr-primary-a20)] hover:bg-[var(--clr-primary-a10)]', 
+      primary : 'bg-[var(--clr-primary-a20)] hover:bg-[var(--clr-primary-a0)]', 
       secondary: 'bg-[var(--clr-surface-a20)] hover:bg-[var(--clr-surface-a10)]',
       success: 'bg-[var(--clr-success-a20)] hover:bg-[var(--clr-success-a10)]',
       danger: 'bg-[var(--clr-danger-a0)] hover:bg-[var(--clr-danger-a10)]'

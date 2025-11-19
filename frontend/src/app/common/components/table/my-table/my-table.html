@@ -48,7 +48,7 @@
 
 @if (data.length > 0) {
 <app-pagination
-  [count]="data.length"
+  [count]="count"
   [inCurrentPage]="paginationCurrentPage"
   [inPageSize]="paginationPageSize"
   (paginationDataEmitter)="onPaginationClicked($event)"

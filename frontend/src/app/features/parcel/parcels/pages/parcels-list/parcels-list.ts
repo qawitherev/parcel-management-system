@@ -6,9 +6,10 @@ import {
   distinctUntilChanged,
   Subject,
   switchMap,
-  map
+  map,
+  tap
 } from 'rxjs';
-import { ParcelResponseList, ParcelsService } from '../../parcels-service';
+import { ParcelResponse, ParcelResponseList, ParcelsService } from '../../parcels-service';
 import { AsyncPipe, CommonModule, NgFor } from '@angular/common';
 import {
   Pagination,
@@ -17,15 +18,18 @@ import {
 import { AppConsole } from '../../../../../utils/app-console';
 import { FormsModule } from '@angular/forms';
 import { ListingQueryParams } from '../../../../../common/models/listing-query-params';
+import { MyTable, TableColumn } from "../../../../../common/components/table/my-table/my-table";
 
 interface ParcelFilter {
   search: string;
   status: string;
 }
 
+
+
 @Component({
   selector: 'app-parcels-list',
-  imports: [NgFor, AsyncPipe, CommonModule, Pagination, FormsModule],
+  imports: [NgFor, AsyncPipe, CommonModule, Pagination, FormsModule, MyTable],
   templateUrl: './parcels-list.html',
   styleUrl: './parcels-list.css',
 })
@@ -33,6 +37,15 @@ export class ParcelsList implements OnInit {
 
   paginationCurrentPage: number = 1;
   paginationPageSize: number = 10;
+
+  tableColumns: TableColumn<ParcelResponse>[] = [
+    { key: 'trackingNumber', label: 'Tracking Number', isActionColumn: false },
+    { key: 'locker', label: 'Tracking Number', isActionColumn: false },
+    { key: 'weight', label: 'Weight', isActionColumn: false },
+    { key: 'dimension', label: 'Dimension', isActionColumn: false },
+    { key: 'residentUnit', label: 'Resident Unit', isActionColumn: false }, 
+    { key: 'status', label: 'Status', isActionColumn: false }
+  ];
 
   searchKeyword = new BehaviorSubject<string>('')
   statusStream = new BehaviorSubject<string>('All')
@@ -57,6 +70,8 @@ export class ParcelsList implements OnInit {
   private searchSubject = new Subject<string>();
   availableStatus = ["All", "AwaitingPickup", "Claimed"]
   selectedStatus: string = "All"
+
+  
 
   constructor(private parcelService: ParcelsService) {}
 

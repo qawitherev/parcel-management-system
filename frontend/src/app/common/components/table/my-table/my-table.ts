@@ -27,6 +27,7 @@ export class MyTable<T> {
 
   @Input() columns: TableColumn<T>[] = [];
   @Input() data: T[] = [];
+  @Input() count: number = 0;
 
   @Output() actionClicked = new EventEmitter<T>();
   @Output() paginationClicked = new EventEmitter<PaginationEmitData>();
@@ -34,6 +35,8 @@ export class MyTable<T> {
   getCellValue(row: any, key: string): any {
     const keys = key.split('.');
     const value = keys.reduce((val, currKey) => val?.[currKey], row);
+    AppConsole.log(`DEBUG: \n
+      value: ${value}`)
     return value;
   }
 

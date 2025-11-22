@@ -28,9 +28,9 @@ export class ParcelsList implements OnInit {
 
   tableColumns: TableColumn<ParcelResponse>[] = [
     { key: 'trackingNumber', label: 'Tracking Number', isActionColumn: false },
-    { key: 'locker', label: 'Tracking Number', isActionColumn: false },
+    { key: 'locker', label: 'Locker', isActionColumn: false },
     { key: 'weight', label: 'Weight', isActionColumn: false },
-    { key: 'dimension', label: 'Dimension', isActionColumn: false },
+    { key: 'dimensions', label: 'Dimension', isActionColumn: false },
     { key: 'residentUnit', label: 'Resident Unit', isActionColumn: false },
     { key: 'status', label: 'Status', isActionColumn: false },
   ];
@@ -58,7 +58,7 @@ export class ParcelsList implements OnInit {
   availableStatus = ['All', 'AwaitingPickup', 'Claimed'];
   selectedStatus: string = 'All';
 
-  constructor(private parcelService: ParcelsService) {}
+  constructor(private parcelService: ParcelsService) { }
 
   ngOnInit(): void {
     // do nothing

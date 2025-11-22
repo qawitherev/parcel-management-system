@@ -4,10 +4,13 @@ import { AppConsole } from '../../utils/app-console';
 import { TableColumn, MyTable } from '../../common/components/table/my-table/my-table';
 import { PaginationEmitData } from '../../common/components/pagination/pagination';
 
-interface TestData {
-  id: string, 
-  name: string, 
-  age: number
+/**
+ * Interface for test user data
+ */
+interface TestUser {
+  id: string;
+  name: string;
+  age: number;
 }
 
 @Component({
@@ -18,14 +21,14 @@ interface TestData {
 })
 export class UiComponent {
 
-  tableColumns: TableColumn<TestData>[] = [
-    { key: 'id', label: 'ID', isActionColumn: false }, 
-    { key: 'name', label: 'Name', isActionColumn: false }, 
-    { key: 'age', label: 'Age', isActionColumn: false }, 
-    { key: 'edit', label: 'Edit', isActionColumn: true}
+  tableColumns: TableColumn<TestUser>[] = [
+    { key: 'id', label: 'ID', isActionColumn: false },
+    { key: 'name', label: 'Name', isActionColumn: false },
+    { key: 'age', label: 'Age', isActionColumn: false },
+    { key: 'edit', label: 'Edit', isActionColumn: true }
   ];
 
-  TestDataData: TestData[] = [
+  testData: TestUser[] = [
     { id: '550e8400-e29b-41d4-a716-446655440000', name: 'Alice', age: 25 },
     { id: '550e8400-e29b-41d4-a716-446655440001', name: 'Bob', age: 30 },
     { id: '550e8400-e29b-41d4-a716-446655440002', name: 'Charlie', age: 22 },
@@ -42,7 +45,7 @@ export class UiComponent {
     AppConsole.log("TEST: hello")
   }
 
-  onTableActionClicked(data: any) {
+  onTableActionClicked(data: TestUser) {
     AppConsole.log(`DEBUG DATA: \n
       data: ${JSON.stringify(data)}`)
   }

@@ -7,7 +7,7 @@
         (input)="onSearch($any($event.target).value)"
         type="text"
         placeholder="Search parcels..."
-        class="w-64 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        class="text-[var(--clr-dark-a0)] w-64 px-4 py-2 border border-[var(--clr-surface-tonal-a20)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--clr-surface-tonal-a0)] focus:border-[var(--clr-surface-tonal-a50)]"
       />
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -30,9 +30,9 @@
       <select
         [(ngModel)]="selectedStatus"
         (change)="onStatusChanged($event)"
-        class="w-48 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        class="text-[var(--clr-dark-a0)] w-48 px-4 py-2 border border-[var(--clr-surface-tonal-a20)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--clr-surface-tonal-a0)]"
       >
-        <option *ngFor="let option of availableStatus">{{ option }}</option>
+        <option *ngFor="let option of availableStatus" [value]="option">{{ option }}</option>
       </select>
     </div>
   </div>

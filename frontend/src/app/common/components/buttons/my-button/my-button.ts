@@ -8,12 +8,6 @@ import { Component, EventEmitter, Input, input, Output } from '@angular/core';
   styleUrl: './my-button.css'
 })
 export class MyButton {
-  /**
-   * base 
-   * variant 
-   * disable 
-   * 
-   */
   @Input() variant: 'primary' | 'secondary' | 'success' | 'danger' = 'primary'
   @Input() label: string = "Button"
   @Input() disabled: boolean = false

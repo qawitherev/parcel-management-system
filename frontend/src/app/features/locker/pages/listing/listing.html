@@ -1,76 +1,18 @@
 @let lockers = lockerList$ | async;
 <div class="relative flex justify-between items-center">
-  <input
-    [value]="searchKeyword.value"
-    (input)="onSearch($any($event.target).value)"
-    type="text"
-    placeholder="Search lockers..."
-    class="w-64 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-  />
-  <button
-    class="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg shadow-md hover:bg-gray-700 hover:text-gray-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
-    (click)="onAddLockerClick()"
-  >
-    Add New Locker
-  </button>
+  <app-my-searchbar placeHolder="Search lockers" (onKeywordChange)="onSearch($event)">
+  </app-my-searchbar>
+  <app-my-button variant="primary" label="Add Locker" (clicked)="onAddLockerClick()"></app-my-button>
 </div>
 <div class="mb-4"></div>
-<table class="table-auto w-full border-collapse bg-white">
-  <thead>
-    <tr class="bg-gray-200 text-gray-700 uppercase text-sm leading-normal">
-      <th class="px-6 py-3 text-left">#</th>
-      <th class="px-6 py-3 text-left">Locker</th>
-      <th class="px-6 py-3 text-left">Created By</th>
-      <th class="px-6 py-3 text-left">Created At</th>
-      <th class="px-6 py-3 text-left">Updated By</th>
-      <th class="px-6 py-3 text-left">Updated At</th>
-      <th class="px-6 py-3 text-left">Action</th>
-    </tr>
-  </thead>
-  <tbody>
-    @if (lockers && 'error' in lockers) {
-    <div
-      class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
-      role="alert"
-    >
-      <strong class="font-bold">Error occurred:</strong>
-      <span class="block sm:inline">{{ lockers.message }}</span>
-    </div>
-    } @else { @if (lockers && 'lockers' in lockers) { @for (locker of lockers.lockers; track $index)
-    {
-    <tr class="border-b hover:bg-gray-100 text-gray-600 text-sm">
-      <td class="px-6 py-4">{{ $index + 1 }}</td>
-      <td class="px-6 py-4">{{ locker.lockerName }}</td>
-      <td class="px-6 py-4">{{ locker.createdBy }}</td>
-      <td class="px-6 py-4">{{ locker.createdAt }}</td>
-      <td class="px-6 py-4">{{ locker.updatedBy }}</td>
-      <td class="px-6 py-4">{{ locker.updatedAt }}</td>
-      <td class="px-6 py-4">
-        <button
-          class="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg shadow-md hover:bg-gray-700 hover:text-gray-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
-          (click)="onEditClick(locker.id)"
-        >
-          Edit
-        </button>
-      </td>
-    </tr>
-    }} }
-  </tbody>
-</table>
-@if (lockers && 'lockers' in lockers && lockers.count < 1) {
-<div class="flex flex-col items-center justify-center py-10">
-  <p class="text-gray-500 text-lg">No lockers found</p>
-  <p class="text-gray-400 text-sm">Try adjusting your search or filter criteria.</p>
+
+@if (lockers && 'error' in lockers) {
+<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+  <strong class="font-bold">Error occurred:</strong>
+  <span class="block sm:inline">{{ lockers.message }}</span>
 </div>
-}
-<div
-    class="mb-4"
-></div>
-@if (lockers && 'lockers' in lockers) {
-    <app-pagination
-        [count]="lockers.count"
-        [inCurrentPage]="paginationCurrentPage"
-        [inPageSize]="paginationPageSize"
-        (paginationDataEmitter)="onPaginationChanged($event)"
-    ></app-pagination>
+} @else if (lockers && 'lockers' in lockers) {
+<app-my-table [columns]="tableColumns" [data]="lockers.lockers" [count]="lockers.count"
+  (actionClicked)="onActionClicked($event)" (paginationClicked)="onPaginationChanged($event)">
+</app-my-table>
 }

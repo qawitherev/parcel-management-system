@@ -10,11 +10,13 @@ import { ActivatedRoute } from '@angular/router';
 import { ListingQueryParams } from '../../../../../common/models/listing-query-params';
 import { AppConsole } from '../../../../../utils/app-console';
 import { MyTable, TableColumn } from '../../../../../common/components/table/my-table/my-table';
+import { MySearchbar } from "../../../../../common/components/searchbar/my-searchbar/my-searchbar";
+import { MyButton } from "../../../../../common/components/buttons/my-button/my-button";
 
 @Component({
   selector: 'app-units',
   standalone: true,
-  imports: [AsyncPipe, FormsModule, MyTable],
+  imports: [AsyncPipe, FormsModule, MyTable, MySearchbar, MyButton],
   templateUrl: './units.html',
   styleUrl: './units.css',
 })
@@ -42,7 +44,7 @@ export class Units implements OnInit, OnDestroy {
   })
 
   unitList$ = combineLatest([
-    this.keywordStream.pipe(debounceTime(300), distinctUntilChanged()),
+    this.keywordStream,
     this.paginationParams.pipe(distinctUntilChanged())
   ]).pipe(
     tap(value => {

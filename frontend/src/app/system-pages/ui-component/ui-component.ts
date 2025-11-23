@@ -3,6 +3,7 @@ import { MyButton } from "../../common/components/buttons/my-button/my-button";
 import { AppConsole } from '../../utils/app-console';
 import { TableColumn, MyTable } from '../../common/components/table/my-table/my-table';
 import { PaginationEmitData } from '../../common/components/pagination/pagination';
+import { MySearchbar } from "../../common/components/searchbar/my-searchbar/my-searchbar";
 
 /**
  * Interface for test user data
@@ -15,7 +16,7 @@ interface TestUser {
 
 @Component({
   selector: 'app-ui-component',
-  imports: [MyButton, MyTable],
+  imports: [MyButton, MyTable, MySearchbar],
   templateUrl: './ui-component.html',
   styleUrl: './ui-component.css'
 })
@@ -53,5 +54,9 @@ export class UiComponent {
   onPaginationClicked(data: PaginationEmitData) {
     AppConsole.log(`Pagination clicked with data: \n
       ${JSON.stringify(data)}`)
+  }
+
+  onSearchBarChanged(data: string) {
+    AppConsole.log(`From searchbar: ${data}`)
   }
 }

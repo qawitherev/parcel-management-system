@@ -1,25 +1,36 @@
 @let units = unitList$ | async;
 <div class="relative flex items-center justify-between">
-  <input [value]="keywordStream.value" (input)="onSearch($any($event.target).value)" type="text"
+  <input
+    [value]="keywordStream.value"
+    (input)="onSearch($any($event.target).value)"
+    type="text"
     placeholder="Search units..."
-    class="w-64 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+    class="w-64 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+  />
   <button
     class="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg shadow-md hover:bg-gray-700 hover:text-gray-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
-    (click)="onAddClick()">
+    (click)="onAddClick()"
+  >
     Add Unit
   </button>
 </div>
 <div class="mb-4"></div>
 
 @if (units && 'error' in units) {
-<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+<div
+  class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
+  role="alert"
+>
   <strong class="font-bold">Error occurred:</strong>
   <span class="block sm:inline">{{ units.message }}</span>
 </div>
-}
-
-@if (units && 'residentUnits' in units) {
-<app-my-table [columns]="tableColumns" [data]="units.residentUnits" [count]="units.count"
-  (actionClicked)="onActionClicked($event)" (paginationClicked)="onPaginationChanged($event)">
+} @if (units && 'residentUnits' in units) {
+<app-my-table
+  [columns]="tableColumns"
+  [data]="units.residentUnits"
+  [count]="units.count"
+  (actionClicked)="onActionClicked($event)"
+  (paginationClicked)="onPaginationChanged($event)"
+>
 </app-my-table>
 }

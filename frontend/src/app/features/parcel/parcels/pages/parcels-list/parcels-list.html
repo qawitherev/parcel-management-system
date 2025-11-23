@@ -2,27 +2,11 @@
   <div class="flex items-center justify-between mb-4">
     <!-- Search Bar -->
     <div class="relative">
-      <input
-        [value]="searchKeyword.value"
-        (input)="onSearch($any($event.target).value)"
-        type="text"
-        placeholder="Search parcels..."
-        class="text-[var(--clr-dark-a0)] w-64 px-4 py-2 border border-[var(--clr-surface-tonal-a20)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--clr-surface-tonal-a0)] focus:border-[var(--clr-surface-tonal-a50)]"
-      />
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="absolute top-2.5 right-3 h-5 w-5 text-gray-400"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
+      <app-my-searchbar
+        placeHolder="Search parcels..."
+        (onKeywordChange)="onSearchV2($event)"
       >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M8 16l-4-4m0 0l4-4m-4 4h16"
-        />
-      </svg>
+      </app-my-searchbar>
     </div>
 
     <!-- Status Dropdown -->

@@ -15,10 +15,11 @@ import { PaginationEmitData } from '../../../../../common/components/pagination/
 import { FormsModule } from '@angular/forms';
 import { ListingQueryParams } from '../../../../../common/models/listing-query-params';
 import { MyTable, TableColumn } from '../../../../../common/components/table/my-table/my-table';
+import { MySearchbar } from "../../../../../common/components/searchbar/my-searchbar/my-searchbar";
 
 @Component({
   selector: 'app-parcels-list',
-  imports: [NgFor, AsyncPipe, CommonModule, FormsModule, MyTable],
+  imports: [NgFor, AsyncPipe, CommonModule, FormsModule, MyTable, MySearchbar],
   templateUrl: './parcels-list.html',
   styleUrl: './parcels-list.css',
 })
@@ -43,7 +44,7 @@ export class ParcelsList implements OnInit {
   });
 
   parcelList$ = combineLatest([
-    this.searchKeyword.pipe(debounceTime(300), distinctUntilChanged()),
+    this.searchKeyword.pipe(),
     this.statusStream.pipe(distinctUntilChanged()),
     this.paginationParams.pipe(distinctUntilChanged()),
   ]).pipe(
@@ -75,6 +76,10 @@ export class ParcelsList implements OnInit {
 
   onSearch(value: string) {
     this.searchKeyword.next(value);
+  }
+
+  onSearchV2(data: string) {
+    this.searchKeyword.next(data);
   }
 
   onStatusChanged(event: Event) {

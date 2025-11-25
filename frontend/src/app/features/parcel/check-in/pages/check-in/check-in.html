@@ -1,4 +1,9 @@
 <div class="flex flex-col gap-3 justify-start min-h-full">
+  <form
+    [formGroup]="formGroup"
+    (ngSubmit)="onCheckIn()"
+  >
+</form>
   <div class="w-full max-w-md">
     @if (isBulkCheckInPopup) {
     <div class="relative flex justify-center items-start w-full">

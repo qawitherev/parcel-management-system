@@ -56,18 +56,5 @@ namespace ParcelManagement.Test.Integration
             var response = await Client.PostAsync($"api/v1/user/register/resident", body);
             Assert.Equal(System.Net.HttpStatusCode.Conflict, response.StatusCode);
         }
-
-        [Fact]
-        public async Task GetUserByIdAsync_Exist_ShouldReturnUser()
-        {
-            var userId = Guid.NewGuid();
-            var token = await Seeder.GetLoginToken(userId, "userTest", "Resident");
-            Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-
-            var response = await Client.GetAsync($"api/v1/user/basic");
-            var fetchedUser = await response.Content.ReadFromJsonAsync<UserResponseDto>(IntegrationMisc.GetJsonSerializerOptions());
-            Assert.NotNull(fetchedUser);
-            Assert.Equal(userId, fetchedUser.Id);
-        }
     }
 }

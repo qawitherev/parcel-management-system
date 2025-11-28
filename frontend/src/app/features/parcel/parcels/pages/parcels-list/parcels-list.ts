@@ -74,12 +74,8 @@ export class ParcelsList implements OnInit {
     });
   }
 
-  onSearch(value: string) {
-    this.searchKeyword.next(value);
-  }
-
-  onSearchV2(data: string) {
-    this.searchKeyword.next(data);
+  onSearch(searchKeyword: string) {
+    this.searchKeyword.next(searchKeyword);
   }
 
   onStatusChanged(event: Event) {

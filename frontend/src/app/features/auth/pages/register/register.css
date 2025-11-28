@@ -1,3 +1,3 @@
 input::placeholder {
-    color: gray;
+    color: var(--clr-surface-a50);
 }

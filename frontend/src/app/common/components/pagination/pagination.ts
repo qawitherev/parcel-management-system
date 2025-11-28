@@ -11,6 +11,7 @@ import { AppConsole } from '../../../utils/app-console';
 import { NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgClass } from '@angular/common';
+import { MyButton } from "../buttons/my-button/my-button";
 
 export interface PaginationEmitData {
   currentPage: number;
@@ -20,7 +21,7 @@ export interface PaginationEmitData {
 @Component({
   selector: 'app-pagination',
   standalone: true,
-  imports: [NgFor, FormsModule, NgClass],
+  imports: [NgFor, FormsModule, NgClass, MyButton],
   templateUrl: './pagination.html',
   styleUrl: './pagination.css',
 })

@@ -7,42 +7,56 @@ import { ListingQueryParams } from '../../../../common/models/listing-query-para
 import { AsyncPipe } from '@angular/common';
 import { formatTime } from '../../../../utils/date-time-utils';
 import { FormsModule } from '@angular/forms';
-import { Pagination, PaginationEmitData } from "../../../../common/components/pagination/pagination";
+import { PaginationEmitData } from "../../../../common/components/pagination/pagination";
+import { MySearchbar } from "../../../../common/components/searchbar/my-searchbar/my-searchbar";
+import { MyButton } from "../../../../common/components/buttons/my-button/my-button";
+import { MyTable, TableColumn } from "../../../../common/components/table/my-table/my-table";
 
 @Component({
   selector: 'app-listing',
-  imports: [AsyncPipe, FormsModule, Pagination],
+  imports: [AsyncPipe, FormsModule, MySearchbar, MyButton, MyTable],
   templateUrl: './listing.html',
   styleUrl: './listing.css'
 })
 export class Listing {
- // pagination data 
- paginationCurrentPage = 1
- paginationPageSize = 10
 
- searchKeyword = new BehaviorSubject<string>('')
- paginationParams = new BehaviorSubject<Omit<ListingQueryParams, 'searchKeyword'>>({
-  page: this.paginationCurrentPage, 
-  take: this.paginationPageSize
- })
+  tableColumns: TableColumn<any>[] = [
+    { key: 'lockerName', label: 'Locker', isActionColumn: false },
+    { key: 'createdBy', label: 'Created By', isActionColumn: false },
+    { key: 'createdAt', label: 'Created At', isActionColumn: false },
+    { key: 'updatedBy', label: 'Updated By', isActionColumn: false },
+    { key: 'updatedAt', label: 'Updated At', isActionColumn: false },
+    { key: 'edit', label: 'Edit', isActionColumn: true },
+  ]
 
- lockerList$ = combineLatest([
-  this.searchKeyword.pipe(debounceTime(300), distinctUntilChanged()), 
-  this.paginationParams.pipe(distinctUntilChanged())
- ]).pipe(
-  map(([searchKeyword, pagination]) => ({
-    searchKeyword, 
-    ...pagination
-  })), 
-  switchMap(params => this.lockerService.getAllLockers(params)
+  // pagination data 
+  paginationCurrentPage = 1
+  paginationPageSize = 10
+
+  searchKeyword = new BehaviorSubject<string>('')
+  paginationParams = new BehaviorSubject<Omit<ListingQueryParams, 'searchKeyword'>>({
+    page: this.paginationCurrentPage,
+    take: this.paginationPageSize
+  })
+
+  lockerList$ = combineLatest([
+    this.searchKeyword,
+    this.paginationParams.pipe(distinctUntilChanged())
+  ]).pipe(
+    map(([searchKeyword, pagination]) => ({
+      searchKeyword,
+      ...pagination
+    })),
+    switchMap(params => this.lockerService.getAllLockers(params)
       .pipe(
         map((res: LockerResponse | ApiError) => {
-          if('lockers' in res) {
+          if ('lockers' in res) {
             return {
               ...res,
-              lockers: res.lockers.map((locker: any) => {
+              lockers: res.lockers.map((locker: any, index: number) => {
                 return {
-                  ...locker, 
+                  ...locker,
+                  index: ((params.page ?? 1) - 1) * (params.take ?? 10) + index + 1,
                   createdAt: formatTime(locker.createdAt),
                   updatedAt: formatTime(locker.updatedAt)
                 }
@@ -52,15 +66,15 @@ export class Listing {
           return res
         })
       )
+    )
   )
- )
 
-  constructor(private lockerService: LockerService, private route: ActivatedRoute, 
+  constructor(private lockerService: LockerService, private route: ActivatedRoute,
     private router: Router
-  ) {}
+  ) { }
 
-  onEditClick(id:string) {
-    this.router.navigate(['addEdit', id], {relativeTo: this.route})
+  onEditClick(id: string) {
+    this.router.navigate(['addEdit', id], { relativeTo: this.route })
   }
 
   onSearch(searchKeyword: string) {
@@ -69,12 +83,16 @@ export class Listing {
 
   onPaginationChanged(data: PaginationEmitData) {
     this.paginationParams.next({
-      page: data.currentPage, 
+      page: data.currentPage,
       take: data.pageSize
     })
   }
 
   onAddLockerClick() {
-    this.router.navigate(['addEdit'], {relativeTo: this.route})
+    this.router.navigate(['addEdit'], { relativeTo: this.route })
+  }
+
+  onActionClicked(locker: any) {
+    this.onEditClick(locker.id);
   }
 }

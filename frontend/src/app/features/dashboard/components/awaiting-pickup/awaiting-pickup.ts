@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Dashboard } from '../../dashboard';
+import { DashboardService } from '../../dashboard-service';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { AppConsole } from '../../../../utils/app-console';
 
@@ -15,7 +15,7 @@ import { AppConsole } from '../../../../utils/app-console';
 export class AwaitingPickup implements OnInit {
   awaitingPickup$?: Observable<any>
 
-  constructor(private dashboardService: Dashboard) {}
+  constructor(private dashboardService: DashboardService) {}
 
   ngOnInit(): void {
     this.awaitingPickup$ = this.dashboardService.getAwaitingPickup()

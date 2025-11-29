@@ -20,7 +20,7 @@ export const routes: Routes = [
     },
 
     {
-        path: 'unauthorized', 
+        path: 'systemPages', 
         component: EmptyLayout, 
         children: [
             {
@@ -39,7 +39,7 @@ export const routes: Routes = [
             }, 
             {
                 path: 'checkIn', loadChildren: () => import('./features/parcel/check-in/check-in-module').then(m => m.CheckInModule),
-                data: { title: 'Parcel Tracking'}
+                data: { title: 'Check In'}
             }, 
             {
                 path: 'claim', loadChildren: () => import('./features/parcel/claim/claim-module').then(m => m.ClaimModule),

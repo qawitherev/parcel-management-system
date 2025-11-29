@@ -95,5 +95,21 @@ namespace ParcelManagement.Api.Controller
             await _residentUnitService.UpdateResidentUnitAsync(id, dto.UnitName, userId);
             return NoContent();
         }
+
+        [HttpGet("residents/{id}")]
+        public async Task<IActionResult> GetResidentsForUnit(Guid id)
+        {
+            var residentUnit = await _residentUnitService.GetResidentsForUnitAsync(id);
+            var responseDto = new GetResidentsByUnitResponseDto
+            {
+                ResidentUnitId = residentUnit.Id,
+                UnitName = residentUnit.UnitName,
+                Residents = [.. residentUnit.UserResidentUnits.Select(uru => new Resident {
+                    UserId = uru.User!.Id,
+                    Username = uru.User!.Username
+                })]
+            };
+            return Ok(responseDto);
+        }
     }
 }

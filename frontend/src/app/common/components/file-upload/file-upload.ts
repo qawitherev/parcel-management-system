@@ -3,11 +3,12 @@ import { excelToJson, mapperCheckInPayload } from '../../../core/bulk-action/exc
 import { CheckInPayload } from '../../../features/parcel/check-in/check-in-service';
 import { AppConsole } from '../../../utils/app-console';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MyButton } from "../buttons/my-button/my-button";
 
 @Component({
   selector: 'app-file-upload',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, MyButton],
   templateUrl: './file-upload.html',
   styleUrl: './file-upload.css'
 })

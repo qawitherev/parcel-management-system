@@ -1,4 +1,5 @@
 using ParcelManagement.Core.Entities;
+using ParcelManagement.Core.Model.Helper;
 using ParcelManagement.Core.Repositories;
 using ParcelManagement.Core.Specifications;
 
@@ -15,6 +16,10 @@ namespace ParcelManagement.Core.Services
         Task<IReadOnlyCollection<User?>> GetUsersByResidentUnit(Guid residentUnitId);
 
         Task<IReadOnlyCollection<ResidentUnit?>> GetResidentsUnitByUser(Guid userId);
+
+        Task<(IReadOnlyList<UserResidentUnit> , int count)> GetUserResidentUnitForView(FilterPaginationRequest<UserResidentUnitSortableColumn> filter);
+
+        Task UpdateUnitResidents(List<Guid> newResidents, Guid residentUnitId, Guid createdBy);
     }
 
     public class UserResidentUnitService(
@@ -66,9 +71,49 @@ namespace ParcelManagement.Core.Services
             return await _uruRepo.GetResidentUnitsByUser(userId);
         }
 
+        public async Task<(IReadOnlyList<UserResidentUnit>, int count)> GetUserResidentUnitForView(FilterPaginationRequest<UserResidentUnitSortableColumn> filter)
+        {
+            filter.Take = 20;
+            var viewSpecification = new UserResidentUnitUnitViewSpecification(filter);
+            var userResidentUnit = await _uruRepo.GetUserResidentUnitsBySpecification(viewSpecification);
+            var count = await _uruRepo.GetUserResidentUnitCountBySpecification(viewSpecification);
+            return (userResidentUnit, count);
+        }
+
+
+
         public async Task<IReadOnlyCollection<User?>> GetUsersByResidentUnit(Guid residentUnitId)
         {
             return await _uruRepo.GetUsersByResidentUnit(residentUnitId);
+        }
+
+        public async Task UpdateUnitResidents(List<Guid> newResidents, Guid residentUnitId, Guid createdBy)
+        {
+            var specification = new ResidentUnitResidentsSpecification(residentUnitId);
+            var oldResidents = await _ruRepo.GetOneResidentUnitBySpecificationAsync(specification) ??
+                throw new KeyNotFoundException("Resident unit does not exist");
+            oldResidents.UserResidentUnits = [.. oldResidents.UserResidentUnits.Where(uru => uru.IsActive)];
+            var invalidUserIds = await _userRepo.GetInvalidUserId(newResidents);
+            if (invalidUserIds.Count > 0)
+            {
+                var appended = string.Join(", ", invalidUserIds);
+                throw new KeyNotFoundException($"Invalid user ids: ${appended}");
+            }
+            var toRemove = oldResidents.UserResidentUnits.Where(uru => !newResidents.Any(newResident => newResident == uru.UserId));
+            var toAdd = newResidents.Where(newResident => !oldResidents.UserResidentUnits.Any(uru => uru.UserId == newResident));
+            var toAddResidents = toAdd.Select(ta => new UserResidentUnit
+            {
+                Id = Guid.NewGuid(),
+                UserId = ta,
+                ResidentUnitId = residentUnitId,
+                IsActive = true,
+                CreatedAt = DateTimeOffset.UtcNow,
+                CreatedBy = createdBy
+            }).ToList();
+            await _uruRepo.AddResidentsForUnitAsync(toAddResidents);
+            var toRemoveResidents = toRemove.ToList();
+            toRemoveResidents.ForEach(trr => trr.IsActive = false);
+            await _uruRepo.UpdateUserResidentUnits(toRemoveResidents);
         }
 
         public async Task UpdateUserResidentUnit(UserResidentUnit userResidentUnit)

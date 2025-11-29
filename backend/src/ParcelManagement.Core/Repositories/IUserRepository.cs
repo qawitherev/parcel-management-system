@@ -11,8 +11,12 @@ namespace ParcelManagement.Core.Repositories
 
         Task<User> CreateUserAsync(User newUser);
 
-        Task<IReadOnlyList<User?>> GetUsersBySpecificationAsync(ISpecification<User> spec);
+        Task<IReadOnlyList<User>> GetUsersBySpecificationAsync(ISpecification<User> spec);
 
         Task<User?> GetOneUserBySpecification(ISpecification<User> spec);
+
+        Task<int> GetUsersCountBySpecification(ISpecification<User> specification);
+
+        Task<List<Guid>> GetInvalidUserId(List<Guid> userIds);
     }
 }

@@ -54,7 +54,9 @@ namespace ParcelManagement.Core.Services
 
         Task<Parcel> GetParcelHistoriesAsync(string trackingNumber, Guid inquiringUserId, UserRole role);
 
-        Task<(IReadOnlyCollection<Parcel>, int count)> GetRecentlyPickedUp(); 
+        Task<(IReadOnlyCollection<Parcel>, int count)> GetRecentlyPickedUp();
+
+        Task<BulkClaimResponse> BulkClaimAsync(IEnumerable<string> trackingNumbers, Guid performedByUser);
     }
 
     public class ParcelService(
@@ -392,6 +394,75 @@ namespace ParcelManagement.Core.Services
             var parcelWithDetails = await _parcelRepo.GetOneParcelBySpecificationAsync(spec) ??
                 throw new KeyNotFoundException($"Parcel not found");
             return parcelWithDetails;
+        }
+
+        public async Task<BulkClaimResponse> BulkClaimAsync(IEnumerable<string> trackingNumbers, Guid performedByUser)
+        {
+            var response = new BulkClaimResponse
+            {
+                InvalidTrackingNumbers = []
+            };
+
+            var trackingNumberList = trackingNumbers.ToList();
+            if (trackingNumberList.Count == 0)
+            {
+                response.IsSuccess = false;
+                return response;
+            }
+
+            // Get all parcels that belong to the user
+            var userParcelsSpec = new ParcelByUserSpecification(performedByUser);
+            var userParcels = await _parcelRepo.GetParcelsBySpecificationAsync(userParcelsSpec);
+            var userParcelsDict = userParcels
+                .Where(p => p != null)
+                .ToDictionary(p => p!.TrackingNumber, StringComparer.OrdinalIgnoreCase);
+
+            // Validate all tracking numbers first (all-or-nothing strategy)
+            var parcelsToClaimList = new List<Parcel>();
+            foreach (var trackingNumber in trackingNumberList)
+            {
+                if (!userParcelsDict.TryGetValue(trackingNumber, out var parcel))
+                {
+                    response.InvalidTrackingNumbers.Add(trackingNumber);
+                    continue;
+                }
+
+                if (parcel!.Status == ParcelStatus.Claimed)
+                {
+                    response.InvalidTrackingNumbers.Add(trackingNumber);
+                    continue;
+                }
+
+                parcelsToClaimList.Add(parcel);
+            }
+
+            // If any tracking number is invalid, return error (all-or-nothing)
+            if (response.InvalidTrackingNumbers.Count > 0)
+            {
+                response.IsSuccess = false;
+                return response;
+            }
+
+            // All validations passed, proceed with claiming
+            foreach (var parcel in parcelsToClaimList)
+            {
+                parcel.Status = ParcelStatus.Claimed;
+                parcel.ExitDate = DateTime.UtcNow;
+
+                await _parcelRepo.UpdateParcelAsync(parcel);
+                await _trackingEventRepo.CreateAsync(new TrackingEvent
+                {
+                    Id = Guid.NewGuid(),
+                    ParcelId = parcel.Id,
+                    TrackingEventType = TrackingEventType.Claim,
+                    EventTime = DateTimeOffset.UtcNow,
+                    PerformedByUser = performedByUser
+                });
+            }
+
+            response.IsSuccess = true;
+            response.ParcelsClaimed = parcelsToClaimList.Count;
+            return response;
         }
     }
 }

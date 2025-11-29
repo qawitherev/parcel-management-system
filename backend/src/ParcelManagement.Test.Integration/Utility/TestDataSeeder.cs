@@ -146,5 +146,96 @@ namespace ParcelManagement.Test.Integration.Utility
             };
             return user;
         }
+
+        public async Task SeedForBulkClaim(Guid userId)
+        {
+            var residentUnit = new ResidentUnit
+            {
+                Id = Guid.NewGuid(),
+                UnitName = "RU001",
+                CreatedBy = userId
+            };
+
+            var userResidentUnit = new UserResidentUnit
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                ResidentUnitId = residentUnit.Id,
+                IsActive = true,
+                CreatedAt = DateTimeOffset.UtcNow,
+                CreatedBy = userId
+            };
+
+            var parcel1 = new Parcel
+            {
+                Id = Guid.NewGuid(),
+                TrackingNumber = "TN001",
+                ResidentUnitId = residentUnit.Id,
+                EntryDate = DateTimeOffset.UtcNow,
+                Status = ParcelStatus.AwaitingPickup,
+                Version = 1
+            };
+
+            var parcel2 = new Parcel
+            {
+                Id = Guid.NewGuid(),
+                TrackingNumber = "TN002",
+                ResidentUnitId = residentUnit.Id,
+                EntryDate = DateTimeOffset.UtcNow,
+                Status = ParcelStatus.AwaitingPickup,
+                Version = 1
+            };
+
+            await _dbContext.ResidentUnits.AddAsync(residentUnit);
+            await _dbContext.UserResidentUnits.AddAsync(userResidentUnit);
+            await _dbContext.Parcels.AddRangeAsync(parcel1, parcel2);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task SeedForBulkClaimWithClaimedParcel(Guid userId)
+        {
+            var residentUnit = new ResidentUnit
+            {
+                Id = Guid.NewGuid(),
+                UnitName = "RU001",
+                CreatedBy = userId
+            };
+
+            var userResidentUnit = new UserResidentUnit
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                ResidentUnitId = residentUnit.Id,
+                IsActive = true,
+                CreatedAt = DateTimeOffset.UtcNow,
+                CreatedBy = userId
+            };
+
+            var parcel1 = new Parcel
+            {
+                Id = Guid.NewGuid(),
+                TrackingNumber = "TN001",
+                ResidentUnitId = residentUnit.Id,
+                EntryDate = DateTimeOffset.UtcNow,
+                Status = ParcelStatus.AwaitingPickup,
+                Version = 1
+            };
+
+            var parcel2 = new Parcel
+            {
+                Id = Guid.NewGuid(),
+                TrackingNumber = "TN002",
+                ResidentUnitId = residentUnit.Id,
+                EntryDate = DateTimeOffset.UtcNow,
+                Status = ParcelStatus.Claimed,
+                ExitDate = DateTimeOffset.UtcNow,
+                Version = 1
+            };
+
+            await _dbContext.ResidentUnits.AddAsync(residentUnit);
+            await _dbContext.UserResidentUnits.AddAsync(userResidentUnit);
+            await _dbContext.Parcels.AddRangeAsync(parcel1, parcel2);
+            await _dbContext.SaveChangesAsync();
+        }
     }
 }

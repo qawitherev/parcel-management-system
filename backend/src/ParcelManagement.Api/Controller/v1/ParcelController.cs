@@ -257,8 +257,38 @@ namespace ParcelManagement.Api.Controller.V1
                 return Ok(dtoResponseSuccess);
             }
         }
-        
-            
-        
+
+        [HttpPost("bulkClaim")]
+        [Authorize(Roles = "Resident, ParcelRoomManager")]
+        public async Task<IActionResult> ParcelBulkClaim([FromBody] BulkClaimRequestDto request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var userId = _userContextService.GetUserId();
+            var response = await _parcelService.BulkClaimAsync(request.TrackingNumber, userId);
+
+            if (!response.IsSuccess)
+            {
+                var errorResponse = new BulkClaimResponseDto
+                {
+                    Status = "Failed",
+                    ParcelsClaimed = 0,
+                    Message = "Some tracking numbers are invalid or not claimable",
+                    InvalidTrackingNumbers = response.InvalidTrackingNumbers
+                };
+                return Conflict(errorResponse);
+            }
+
+            var successResponse = new BulkClaimResponseDto
+            {
+                Status = "Ok",
+                ParcelsClaimed = response.ParcelsClaimed,
+                Message = "All parcels claimed successfully"
+            };
+            return StatusCode(201, successResponse);
+        }
     }
 }

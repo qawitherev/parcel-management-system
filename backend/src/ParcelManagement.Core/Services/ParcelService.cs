@@ -447,7 +447,7 @@ namespace ParcelManagement.Core.Services
             foreach (var parcel in parcelsToClaimList)
             {
                 parcel.Status = ParcelStatus.Claimed;
-                parcel.ExitDate = DateTime.UtcNow;
+                parcel.ExitDate = DateTimeOffset.UtcNow;
 
                 await _parcelRepo.UpdateParcelAsync(parcel);
                 await _trackingEventRepo.CreateAsync(new TrackingEvent

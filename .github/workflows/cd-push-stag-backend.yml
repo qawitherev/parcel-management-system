@@ -1,8 +1,9 @@
-name: cd-merge-stag-backend
+name: cd-push-stag-backend
 
 on: 
     push: 
         branches: [staging]
+        paths: ['./backend']
     workflow_dispatch:
 
 jobs: 

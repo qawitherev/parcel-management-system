@@ -125,8 +125,10 @@ builder.Services.AddScoped<TransactionFilter>();
 
 builder.Services.AddScoped<AdminDataSeeder>();
 
-// health check services registration and configuration 
-builder.Services.AddHealthChecks()
+if (builder.Environment.EnvironmentName != "Testing")
+{
+    // health check services registration and configuration 
+    builder.Services.AddHealthChecks()
     .AddCheck("check environment secrets", () =>
     {
         var healthData = new Dictionary<string, object>();
@@ -145,12 +147,14 @@ builder.Services.AddHealthChecks()
         }
         if (issues.Count > 0)
         {
+            Console.WriteLine("Environment secrets check failed");
             return HealthCheckResult.Unhealthy(
                 $"Some environment secrets are missing. {string.Join(", ", issues)}",
                 data: healthData
             );
         } else
         {
+            Console.WriteLine("Environment secrets check passed");
             return HealthCheckResult.Healthy(
                 "All environment secrets are loaded",
                 data: healthData
@@ -162,6 +166,8 @@ builder.Services.AddHealthChecks()
         name: "Database health check",
         failureStatus: HealthStatus.Unhealthy
     );
+
+}
 
 var app = builder.Build();
 
@@ -179,8 +185,10 @@ app.UseAuthorization();
 // map the received route with the controller and execute it 
 app.MapControllers();
 
-app.MapHealthChecks("/health");
-
+if (builder.Environment.EnvironmentName != "Testing")
+{
+    app.MapHealthChecks("/health");
+}
 
 //for swagger - only available in dev 
 if (builder.Environment.IsDevelopment())

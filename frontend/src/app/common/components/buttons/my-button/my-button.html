@@ -1,0 +1,9 @@
+<button [type]="type" [ngClass]="buttonClasses" (click)="onClick($event)">
+  @if (!isLoading) {
+  {{ label }}
+  } @else {
+  <span
+    class="inline-block w-5 h-5 border-2 border-t-2 border-t-white border-[var(--clr-primary-a0)] rounded-full animate-spin"
+  ></span>
+  }
+</button>

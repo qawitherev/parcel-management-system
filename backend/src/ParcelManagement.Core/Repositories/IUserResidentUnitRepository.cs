@@ -11,9 +11,11 @@ namespace ParcelManagement.Core.Repositories
 
         Task UpdateUserResidentUnit(UserResidentUnit userResidentUnit);
 
+        Task UpdateUserResidentUnits(List<UserResidentUnit> userResidentUnits);
+
         Task DeleteUserResidentUnit(Guid Id);
 
-        Task<IReadOnlyCollection<UserResidentUnit?>> GetUserResidentUnitsBySpecification(ISpecification<UserResidentUnit> specification);
+        Task<IReadOnlyList<UserResidentUnit>> GetUserResidentUnitsBySpecification(ISpecification<UserResidentUnit> specification);
 
         Task<UserResidentUnit?> GetOneResidentUnitBySpecification(ISpecification<UserResidentUnit> specification);
 
@@ -24,5 +26,9 @@ namespace ParcelManagement.Core.Repositories
         Task<IReadOnlyCollection<User?>> GetUsersByResidentUnit(Guid residentUnitId);
 
         Task<IReadOnlyCollection<ResidentUnit?>> GetResidentUnitsByUser(Guid userId);
+
+        Task<int> GetUserResidentUnitCountBySpecification(ISpecification<UserResidentUnit> specification);
+
+        Task<IReadOnlyList<UserResidentUnit>> AddResidentsForUnitAsync(List<UserResidentUnit> userResidentUnits);
     }
 }

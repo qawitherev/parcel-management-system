@@ -1,16 +1,15 @@
 import { Component, OnDestroy } from '@angular/core';
-import { BulkCheckInError, CheckInPayload, CheckInService } from '../../check-in-service';
+import {  CheckInPayload, CheckInService } from '../../check-in-service';
 import { Observable, Subject, tap } from 'rxjs';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AppConsole } from '../../../../../utils/app-console';
-import { AsyncPipe, NgIf } from '@angular/common';
-import { NgClass } from '@angular/common';
+import { AsyncPipe, NgClass } from '@angular/common';
 import { FileUpload } from "../../../../../common/components/file-upload/file-upload";
 import { mapperCheckInPayload } from '../../../../../core/bulk-action/excel-to-json';
 
 @Component({
   selector: 'app-check-in',
-  imports: [ReactiveFormsModule, NgIf, AsyncPipe, NgClass, FileUpload],
+  imports: [ReactiveFormsModule, AsyncPipe, FileUpload, NgClass],
   templateUrl: './check-in.html',
   styleUrl: './check-in.css'
 })

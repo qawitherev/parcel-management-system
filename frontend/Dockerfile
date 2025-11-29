@@ -19,6 +19,8 @@ RUN npm run build --production
 # now that we have the thing, lets move to stage 2, serve the thing inside nginx 
 FROM nginx:alpine AS final 
 
+RUN apk add --no-cache gettext
+
 # sidenote, when we start new stage, the file system from previous stage is not available in this stage
 # tldr, each stage file system is isolated from each other 
 
@@ -31,8 +33,11 @@ COPY --from=build /app/dist/frontend/browser /usr/share/nginx/html
 COPY --from=build /app/dist/frontend/3rdpartylicenses.txt /usr/share/nginx/html
 COPY --from=build /app/dist/frontend/prerendered-routes.json /usr/share/nginx/html
 
-# copy nginx config 
-COPY nginx.conf /etc/nginx/nginx.conf
+# copy nginx config template 
+COPY nginx.conf.template /etc/nginx/nginx.conf.template
+
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh 
 
 # for documentation purposes 
 EXPOSE 80
@@ -40,7 +45,7 @@ EXPOSE 80
 # serve the file by starting nginx 
 # we use CMD to give more flexibility on runtime 
 # also nginx use it, so just follow 
-CMD [ "nginx", "-g", "daemon off;" ]
+CMD ["/docker-entrypoint.sh"]
 
 # -g is the entrypoint so we can give daemon off; command to the nginx
 # typically daemon off; command is defined inside a config file, but using -g we can just give it inside the cli

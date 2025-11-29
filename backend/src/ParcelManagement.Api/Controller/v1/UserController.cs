@@ -2,9 +2,11 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ParcelManagement.Api.AuthenticationAndAuthorization;
+using ParcelManagement.Api.DTO;
 using ParcelManagement.Api.DTO.V1;
 using ParcelManagement.Api.Utility;
 using ParcelManagement.Core.Entities;
+using ParcelManagement.Core.Model.Helper;
 using ParcelManagement.Core.Services;
 
 namespace ParcelManagement.Api.Controller
@@ -14,7 +16,7 @@ namespace ParcelManagement.Api.Controller
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [Consumes("application/json")]
-    public class UserController(IUserService userService, ITokenService tokenService, 
+    public class UserController(IUserService userService, ITokenService tokenService,
         IUserContextService userContextService
     ) : ControllerBase
     {
@@ -22,7 +24,7 @@ namespace ParcelManagement.Api.Controller
         private readonly ITokenService _tokenService = tokenService;
         private readonly IUserContextService _userContextService = userContextService;
 
-        [HttpGet("GetUserById/{id}")]
+        [HttpGet("{id}")]
         [Authorize]
         public async Task<IActionResult> GetUserById(Guid id)
         {
@@ -30,7 +32,7 @@ namespace ParcelManagement.Api.Controller
             return Ok(user);
         }
 
-        [HttpGet("basic")]
+        [HttpGet("me")]
         [Authorize]
         public async Task<IActionResult> GetUserByIdAsync()
         {
@@ -39,11 +41,14 @@ namespace ParcelManagement.Api.Controller
             return Ok(new UserResponseDto
             {
                 Id = u.Id,
-                Username = u.Username, 
+                Username = u.Username,
                 Role = u.Role.ToString()
             });
         }
 
+        /**
+            REGISTER USER ENDPOINTS 
+        **/
         [HttpPost("register/resident")]
         public async Task<IActionResult> RegisterResident([FromBody] RegisterResidentDto dto)
         {
@@ -59,20 +64,6 @@ namespace ParcelManagement.Api.Controller
                 Role = newUser.Role.ToString()
             };
             return CreatedAtAction(nameof(GetUserById), new { id = newUserDto.Id }, newUserDto);
-        }
-
-        [HttpPost("login")]
-        public async Task<IActionResult> UserLogin([FromBody] LoginDto dto)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            // for now we will just make one user = one role
-            // no keperluan for multiple roles for now 
-            var loginRes = await _userService.UserLoginAsync(dto.Username, dto.PlainPassword);
-            var jwt = _tokenService.GenerateToken(loginRes[0], dto.Username, loginRes[1]);
-            return Ok(new { Token = jwt });
         }
 
         [HttpPost("register/parcelRoomManager")]
@@ -94,5 +85,46 @@ namespace ParcelManagement.Api.Controller
             };
             return CreatedAtAction(nameof(GetUserById), new { id = newUserDto.Id }, newUserDto);
         }
+
+
+        [HttpPost("login")]
+        public async Task<IActionResult> UserLogin([FromBody] LoginDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var loginRes = await _userService.UserLoginAsync(dto.Username, dto.PlainPassword);
+            var jwt = _tokenService.GenerateToken(loginRes[0], dto.Username, loginRes[1]);
+            return Ok(new { Token = jwt });
+        }
+
+        [HttpGet("")]
+        [Authorize(Roles = "ParcelRoomManager, Admin")]
+        public async Task<IActionResult> GetUsersForView([FromQuery] BaseFilterDto dto)
+        {
+            var sortableColumn = EnumUtils.ToEnumOrNull<UserSortableColumn>(dto.Column ?? "");
+            var filter = new FilterPaginationRequest<UserSortableColumn>
+            {
+                SearchKeyword = dto.SearchKeyword,
+                Page = dto.Page,
+                Take = dto.Take,
+                SortableColumn = sortableColumn ?? UserSortableColumn.Username,
+                IsAscending = dto.IsAscending
+            };
+            var (users, count) = await _userService.GetUserForViewAsync(filter);
+            var responseDto = new UsersResponseDto
+            {
+                Count = count,
+                Users = [.. users.Select(user => new UserResponseDto {
+                    Id = user.Id,
+                    Role = user.Role.ToString(),
+                    Username = user.Username
+                })]
+            };
+            return Ok(responseDto);
+        } 
+        
     }
+    
 }

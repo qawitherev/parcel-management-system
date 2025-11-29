@@ -73,4 +73,33 @@ namespace ParcelManagement.Core.Specifications
             };
         }
     }
+
+    public class ResidentUnitResidentsSpecification : ISpecification<ResidentUnit>
+    {
+        private readonly Guid _residentUnitId;
+        public ResidentUnitResidentsSpecification(Guid residentUnitId)
+        {
+            _residentUnitId = residentUnitId;
+            IncludeExpressionsString = [
+                new IncludeExpressionString("UserResidentUnits.User")
+            ];
+        }
+
+        List<IncludeExpression<ResidentUnit>> ISpecification<ResidentUnit>.IncludeExpressions => throw new NotImplementedException();
+
+        public List<IncludeExpressionString> IncludeExpressionsString { get; }
+
+        public Expression<Func<ResidentUnit, object>>? OrderBy => null;
+
+        public Expression<Func<ResidentUnit, object>>? OrderByDesc => null;
+
+        public int? Page => null;
+
+        public int? Take => null;
+
+        public Expression<Func<ResidentUnit, bool>> ToExpression()
+        {
+            return residentUnit => residentUnit.Id == _residentUnitId;
+        }
+    }
 }

@@ -1,11 +1,11 @@
 import { TestBed } from '@angular/core/testing';
-import { Dashboard } from './dashboard';
+import { DashboardService } from './dashboard-service';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
 
 fdescribe('Dashboard', () => {
-  let service: Dashboard;
+  let service: DashboardService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -15,7 +15,7 @@ fdescribe('Dashboard', () => {
         provideHttpClient()
       ]
     });
-    service = TestBed.inject(Dashboard);
+    service = TestBed.inject(DashboardService);
   });
 
   it('should be created', () => {

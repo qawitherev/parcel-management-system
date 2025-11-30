@@ -81,5 +81,92 @@ namespace ParcelManagement.Test.Integration
             Assert.NotNull(fetchedParcel);
             Assert.Equal(body.TrackingNumber, fetchedParcel.TrackingNumber);
         }
+
+        [Fact]
+        public async Task BulkClaim_AllValidParcels_ShouldReturn201()
+        {
+            await ResetDatabaseAsync();
+            var userId = Guid.NewGuid();
+            var token = await Seeder.GetLoginToken(userId, "ResidentTest", "Resident");
+            await Seeder.SeedForBulkClaim(userId);
+
+            var body = new BulkClaimRequestDto
+            {
+                TrackingNumber = ["TN001", "TN002"]
+            };
+            Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            var bodyStringContent = IntegrationMisc.ConvertToStringContent(body);
+            var response = await Client.PostAsync("api/v1/parcel/bulkClaim", bodyStringContent);
+
+            Assert.Equal(System.Net.HttpStatusCode.Created, response.StatusCode);
+            var responseDto = await response.Content.ReadFromJsonAsync<BulkClaimResponseDto>(IntegrationMisc.GetJsonSerializerOptions());
+            Assert.NotNull(responseDto);
+            Assert.Equal("Ok", responseDto.Status);
+            Assert.Equal(2, responseDto.ParcelsClaimed);
+        }
+
+        [Fact]
+        public async Task BulkClaim_InvalidTrackingNumbers_ShouldReturn409()
+        {
+            await ResetDatabaseAsync();
+            var userId = Guid.NewGuid();
+            var token = await Seeder.GetLoginToken(userId, "ResidentTest", "Resident");
+            await Seeder.SeedForBulkClaim(userId);
+
+            var body = new BulkClaimRequestDto
+            {
+                TrackingNumber = ["TN001", "INVALID001"]
+            };
+            Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            var bodyStringContent = IntegrationMisc.ConvertToStringContent(body);
+            var response = await Client.PostAsync("api/v1/parcel/bulkClaim", bodyStringContent);
+
+            Assert.Equal(System.Net.HttpStatusCode.Conflict, response.StatusCode);
+            var responseDto = await response.Content.ReadFromJsonAsync<BulkClaimResponseDto>(IntegrationMisc.GetJsonSerializerOptions());
+            Assert.NotNull(responseDto);
+            Assert.Equal("Failed", responseDto.Status);
+            Assert.Equal(0, responseDto.ParcelsClaimed);
+            Assert.NotNull(responseDto.InvalidTrackingNumbers);
+            Assert.Contains("INVALID001", responseDto.InvalidTrackingNumbers);
+        }
+
+        [Fact]
+        public async Task BulkClaim_ParcelAlreadyClaimed_ShouldReturn409()
+        {
+            await ResetDatabaseAsync();
+            var userId = Guid.NewGuid();
+            var token = await Seeder.GetLoginToken(userId, "ResidentTest", "Resident");
+            await Seeder.SeedForBulkClaimWithClaimedParcel(userId);
+
+            var body = new BulkClaimRequestDto
+            {
+                TrackingNumber = ["TN001", "TN002"]
+            };
+            Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            var bodyStringContent = IntegrationMisc.ConvertToStringContent(body);
+            var response = await Client.PostAsync("api/v1/parcel/bulkClaim", bodyStringContent);
+
+            Assert.Equal(System.Net.HttpStatusCode.Conflict, response.StatusCode);
+            var responseDto = await response.Content.ReadFromJsonAsync<BulkClaimResponseDto>(IntegrationMisc.GetJsonSerializerOptions());
+            Assert.NotNull(responseDto);
+            Assert.Equal("Failed", responseDto.Status);
+            Assert.NotNull(responseDto.InvalidTrackingNumbers);
+            Assert.Contains("TN002", responseDto.InvalidTrackingNumbers);
+        }
+
+        [Fact]
+        public async Task BulkClaim_WithoutAuth_ShouldReturn401()
+        {
+            await ResetDatabaseAsync();
+
+            var body = new BulkClaimRequestDto
+            {
+                TrackingNumber = ["TN001", "TN002"]
+            };
+            var bodyStringContent = IntegrationMisc.ConvertToStringContent(body);
+            var response = await Client.PostAsync("api/v1/parcel/bulkClaim", bodyStringContent);
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+        }
     }
 }

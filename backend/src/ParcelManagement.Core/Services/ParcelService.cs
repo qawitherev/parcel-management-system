@@ -359,7 +359,7 @@ namespace ParcelManagement.Core.Services
 
         // helpers 
         private async Task<Parcel> CheckInHelper(string trackingNumber, Guid residentUnitId, Guid? lockerId, decimal? weight, string? dimensions, Guid performedByUser, 
-            int version = 1
+            int version = 1, bool isBulk = false
         )
         {
             var newParcel = new Parcel
@@ -379,7 +379,7 @@ namespace ParcelManagement.Core.Services
             {
                 Id = Guid.NewGuid(),
                 ParcelId = newParcel.Id,
-                TrackingEventType = TrackingEventType.CheckIn,
+                TrackingEventType = isBulk ? TrackingEventType.BulkCheckIn : TrackingEventType.CheckIn,
                 EventTime = DateTimeOffset.UtcNow,
                 PerformedByUser = performedByUser
             };

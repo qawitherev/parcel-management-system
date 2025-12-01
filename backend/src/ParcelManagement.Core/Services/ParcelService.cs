@@ -454,7 +454,7 @@ namespace ParcelManagement.Core.Services
                 {
                     Id = Guid.NewGuid(),
                     ParcelId = parcel.Id,
-                    TrackingEventType = TrackingEventType.Claim,
+                    TrackingEventType = TrackingEventType.BulkClaim,
                     EventTime = DateTimeOffset.UtcNow,
                     PerformedByUser = performedByUser
                 });

@@ -198,7 +198,7 @@ namespace ParcelManagement.Core.Services
                     }
                     var newParcel = await CheckInHelper(
                         trackingNumber, existingResidentUnitDict[residentUnit].Id, existingLockerDict[locker!].Id, weight, dimensions, performedByUser,
-                        isV2 ? 2 : 1);
+                        isV2 ? 2 : 1, isBulk: true);
                     existingParcelsDict[trackingNumber] = newParcel;
                 }
                 if (response.Items.Any(i => i.IsError))

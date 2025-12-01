@@ -450,7 +450,7 @@ namespace ParcelManagement.Test.Service
             var trackingEvents = dbContext.TrackingEvents.Where(te => 
                 te.ParcelId == parcel1.Id || te.ParcelId == parcel2.Id).ToList();
             Assert.Equal(2, trackingEvents.Count);
-            Assert.All(trackingEvents, te => Assert.Equal(TrackingEventType.Claim, te.TrackingEventType));
+            Assert.All(trackingEvents, te => Assert.Equal(TrackingEventType.BulkClaim, te.TrackingEventType));
             await _parcelFixture.ResetDb();
         }
 

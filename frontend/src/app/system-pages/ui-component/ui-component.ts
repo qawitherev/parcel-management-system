@@ -4,7 +4,7 @@ import { AppConsole } from '../../utils/app-console';
 import { TableColumn, MyTable } from '../../common/components/table/my-table/my-table';
 import { PaginationEmitData } from '../../common/components/pagination/pagination';
 import { MySearchbar } from "../../common/components/searchbar/my-searchbar/my-searchbar";
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FieldConfigValue, MyForm } from "../../common/components/form/my-form/my-form";
 
 /**
@@ -67,7 +67,7 @@ export class UiComponent {
     private formBuilder: FormBuilder
   ) {
     this.formGroup = formBuilder.group({
-      fieldOne: [], 
+      fieldOne: ['', [Validators.required]], 
       fieldTwo: []
     })
   }
@@ -88,5 +88,9 @@ export class UiComponent {
 
   onSearchBarChanged(data: string) {
     AppConsole.log(`From searchbar: ${data}`)
+  }
+
+  onFormSubmit(formValue: any) {
+    AppConsole.log(`onFormSubmit: ${JSON.stringify(formValue)}\n`)
   }
 }

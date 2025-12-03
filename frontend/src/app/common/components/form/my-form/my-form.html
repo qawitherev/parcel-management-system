@@ -4,7 +4,7 @@
             class="text-[var(--clr-dark-a0)]"
         >{{ field.label }}</label>
         <input
-            class="mb-3 mt-1 text-[var(--clr-dark-a0)] w-full px-4 py-2 border border-[var(--clr-surface-tonal-a20)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--clr-surface-tonal-a0)] focus:border-[var(--clr-surface-tonal-a50)]"
+            class="mt-1 text-[var(--clr-dark-a0)] w-full px-4 py-2 border border-[var(--clr-surface-tonal-a20)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--clr-surface-tonal-a0)] focus:border-[var(--clr-surface-tonal-a50)]"
             [formControlName]="field.controlName"
             [placeholder]="field.placeholder"
             [type]="field.type"
@@ -12,6 +12,7 @@
         @if (myFormGroup.get(field.controlName)?.invalid && myFormGroup.get(field.controlName)?.touched) {
             <div class="text-red-500 text-sm">{{ field.invalidMessage }}</div>
         }
+        <div class="mb-3" ></div>
     }
     <div
         class="mb-3"
@@ -24,6 +25,8 @@
                 variant="primary"
                 [label]="submitLabel"
                 type="submit"
+                [disabled]="myFormGroup.invalid"
+                (clicked)="onSubmit()"
             ></app-my-button>
         </div>
     </div>

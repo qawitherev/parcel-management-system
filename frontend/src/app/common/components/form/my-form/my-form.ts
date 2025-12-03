@@ -1,6 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormGroup, ReactiveFormsModule, ɵInternalFormsSharedModule } from '@angular/forms';
 import { MyButton } from "../../buttons/my-button/my-button";
+import { AppConsole } from '../../../../utils/app-console';
 
 export interface FieldConfigValue {
   controlName: string,
@@ -21,4 +22,10 @@ export class MyForm {
  @Input() myFields: FieldConfigValue[] = [];
  @Input() submitLabel!: string;
 
+ @Output() submitted = new EventEmitter<any>();
+
+ onSubmit() {
+  AppConsole.log(`onSubmit`)
+  this.submitted.emit(this.myFormGroup.value);
+ }
 }

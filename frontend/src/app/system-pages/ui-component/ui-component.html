@@ -30,5 +30,6 @@
     [myFormGroup]="formGroup"
     [myFields]="formFields"
     submitLabel="Submit"
+    (submitted)="onFormSubmit($event)"
   ></app-my-form>
 </div>

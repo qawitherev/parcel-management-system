@@ -27,6 +27,7 @@
                 type="submit"
                 [disabled]="myFormGroup.invalid"
                 (clicked)="onSubmit()"
+                [isLoading]="isSubmitLoading"
             ></app-my-button>
         </div>
     </div>

@@ -3,13 +3,16 @@ import { FormGroup, ReactiveFormsModule, ɵInternalFormsSharedModule } from '@an
 import { MyButton } from "../../buttons/my-button/my-button";
 import { AppConsole } from '../../../../utils/app-console';
 
-export interface FieldConfigValue {
+export interface FormFieldConfig {
   controlName: string,
   label: string, 
   placeholder: string, 
-  invalidMessage: string, 
-  type: 'text' | 'password' | 'number'
+  errorMessage?: { [key: string]: string}
+  errorMessageV2?: Partial<Record<Validator, string>>,
+  type: 'text' | 'password' | 'number', 
 }
+
+type Validator = 'required' | 'min' | 'max' | 'minlength' | 'maxlength'
 
 @Component({
   selector: 'app-my-form',
@@ -19,7 +22,7 @@ export interface FieldConfigValue {
 })
 export class MyForm {
  @Input() myFormGroup!: FormGroup;
- @Input() myFields: FieldConfigValue[] = [];
+ @Input() myFields: FormFieldConfig[] = [];
  @Input() submitLabel!: string;
 
  @Output() submitted = new EventEmitter<any>();
@@ -27,5 +30,23 @@ export class MyForm {
  onSubmit() {
   AppConsole.log(`onSubmit`)
   this.submitted.emit(this.myFormGroup.value);
+ }
+
+ getErrorMessage(controlName: string): string {
+  /**
+   * get the controlName 
+   * get the validatorName 
+   * combination ==> the right error message 
+   */
+
+  const theControl = this.myFormGroup.get(controlName);
+  let validator: Validator;
+  if (theControl && theControl.errors) {
+    validator = Object.keys(theControl.errors)[0] as Validator;
+    const field = this.myFields.find(f => f.controlName === controlName);
+    const errMessage = field?.errorMessageV2?.[validator] || '';
+    return errMessage; 
+  }
+  return 'This field has error'
  }
 }

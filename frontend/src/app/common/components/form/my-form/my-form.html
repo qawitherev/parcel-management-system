@@ -10,7 +10,7 @@
             [type]="field.type"
         >
         @if (myFormGroup.get(field.controlName)?.invalid && myFormGroup.get(field.controlName)?.touched) {
-            <div class="text-red-500 text-sm">{{ field.invalidMessage }}</div>
+            <div class="text-red-500 text-sm">{{ getErrorMessage(field.controlName) }}</div>
         }
         <div class="mb-3" ></div>
     }

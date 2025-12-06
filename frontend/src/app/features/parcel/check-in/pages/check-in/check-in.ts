@@ -6,6 +6,7 @@ import { AppConsole } from '../../../../../utils/app-console';
 import { AsyncPipe, NgClass } from '@angular/common';
 import { FileUpload } from "../../../../../common/components/file-upload/file-upload";
 import { mapperCheckInPayload } from '../../../../../core/bulk-action/excel-to-json';
+import { FormFieldConfig } from '../../../../../common/components/form/my-form/my-form';
 
 @Component({
   selector: 'app-check-in',
@@ -20,6 +21,31 @@ export class CheckIn implements OnDestroy {
   bulkCheckInResponse$?: Observable<any>
   isBulkCheckInPopup: boolean = false
   payloadMapper: (data: any) => CheckInPayload = mapperCheckInPayload
+
+  formFieldsConfig: FormFieldConfig[] = [
+    {
+      controlName: "trackingNumber", 
+      label: "Tracking Number", 
+      placeholder: "Enter tracking number", 
+      type: "text", 
+      errorMessageV2: {
+        required: 'Tracking number is required', 
+        maxlength: 'Tracking number cannot be more than 20 characters'
+      }
+    }, 
+    {
+      controlName: "residentUnit", 
+      label: "Resident Unit", 
+      placeholder: "Enter resident unit", 
+      type: "text"
+    }, 
+    {
+      controlName: "locker", 
+      label: "Locker", 
+      placeholder: "Enter locker ", 
+      type: "text"
+    }
+  ]
 
   constructor(private checkInService: CheckInService, private fb: FormBuilder) {
     this.formGroup = fb.group({

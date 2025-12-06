@@ -5,7 +5,7 @@ import { TableColumn, MyTable } from '../../common/components/table/my-table/my-
 import { PaginationEmitData } from '../../common/components/pagination/pagination';
 import { MySearchbar } from "../../common/components/searchbar/my-searchbar/my-searchbar";
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { FieldConfigValue, MyForm } from "../../common/components/form/my-form/my-form";
+import { FormFieldConfig, MyForm } from "../../common/components/form/my-form/my-form";
 
 /**
  * Interface for test user data
@@ -33,19 +33,23 @@ export class UiComponent {
     { key: 'edit', label: 'Edit', isActionColumn: true }
   ];
 
-  formFields: FieldConfigValue[] = [
+  formFields: FormFieldConfig[] = [
     {
       controlName: 'fieldOne',
       label: 'Label 1', 
       placeholder: 'Placeholder 1', 
-      invalidMessage: 'Error message fieldOne', 
+      errorMessage: {
+        required: 'This field is required'
+      },
       type: 'text'
     }, 
     {
       controlName: 'fieldTwo',
       label: 'Label two', 
       placeholder: 'Placeholder two', 
-      invalidMessage: 'Error message fieldTwo', 
+      errorMessage: {
+        minLength: 'Minimum length for this field is 6'
+      },
       type: 'text'
     }
   ]
@@ -68,7 +72,7 @@ export class UiComponent {
   ) {
     this.formGroup = formBuilder.group({
       fieldOne: ['', [Validators.required]], 
-      fieldTwo: []
+      fieldTwo: ['', [Validators.minLength(6)]]
     })
   }
 

@@ -4,6 +4,11 @@ import { catchError, map, Observable, of } from 'rxjs';
 import { environment } from '../../../../environment/environment';
 import { handleApiError } from '../../../core/error-handling/api-catch-error';
 import { AppConsole } from '../../../utils/app-console';
+import { parcelEndpoints } from '../../../core/endpoints/parcel-endpoints';
+
+export interface ClaimPayload {
+  trackingNumber: string
+}
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +23,12 @@ export class ClaimService {
           return { message: "Parcel successfully claimed"}
         } else return res
       }),
+      catchError(handleApiError)
+    )
+  }
+
+  bulkClaim(trackingNumbers: ClaimPayload[]): Observable<any> {
+    return this.http.post(`${parcelEndpoints.bulkClaim}`, trackingNumbers).pipe(
       catchError(handleApiError)
     )
   }

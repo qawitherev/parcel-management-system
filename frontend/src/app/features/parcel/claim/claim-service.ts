@@ -12,7 +12,7 @@ export class ClaimService {
   constructor(private http: HttpClient) {}
 
   claimParcel(trackingNumber: string): Observable<any> {
-    return this.http.post(`${environment.apiBaseUrl}/parcel/${trackingNumber}/claim`, null, { observe: 'response'}).pipe(
+    return this.http.post(`${environment.apiBaseUrl}/v1/parcel/trackingNumber/${trackingNumber}/claim`, null, { observe: 'response'}).pipe(
       map((res : any) => {
         if(res.status === 204) {
           return { message: "Parcel successfully claimed"}

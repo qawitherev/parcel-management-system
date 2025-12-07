@@ -40,6 +40,25 @@
 </div> -->
 
 @let claimResponse = claimResponse$ | async;
+
 <div>
-    <label>Tracking Number</label>
+    <app-my-form
+        [myFormGroup]="formGroup"
+        [myFields]="formFieldConfigs"
+        submitLabel="Claim Parcel"
+        [isSubmitLoading]="isClaiming"
+        (submitted)="onClaim($event)"
+    ></app-my-form>
+
+    @if (claimResponse && 'error' in claimResponse) {
+        <div class="text-red-500 text-sm">
+            {{ claimResponse.message}}
+        </div>
+    }
+
+    @if (claimResponse && !('error' in claimResponse)) {
+        <div class="text-green-500 text-sm">
+            {{claimResponse.message}}
+        </div>
+    }
 </div>

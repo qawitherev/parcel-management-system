@@ -1,6 +1,6 @@
 import { Component, OnDestroy } from '@angular/core';
 import {  CheckInPayload, CheckInService } from '../../check-in-service';
-import { Observable, Subject, tap } from 'rxjs';
+import { finalize, Observable, Subject, tap } from 'rxjs';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AppConsole } from '../../../../../utils/app-console';
 import { AsyncPipe, NgClass } from '@angular/common';
@@ -73,8 +73,11 @@ export class CheckIn implements OnDestroy {
 
   onCheckIn(formValue: CheckInPayload) {
     this.isCheckingIn = true;
-    this.checkInResponse$ = this.checkInService.checkInParcel(formValue);
-    this.isCheckingIn = false;
+    this.checkInResponse$ = this.checkInService.checkInParcel(formValue).pipe(
+      finalize(() => {
+        this.isCheckingIn = false;
+      })
+    );
   }
 
   ngOnDestroy(): void {

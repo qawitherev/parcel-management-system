@@ -31,7 +31,7 @@ async function parcelCsvToJson<T>(file: File, option: CsvParserOption): Promise<
     ? parseLine(csvLines[0], option)
     : generateGenericHeader(csvLines.length);
 
-  const startIndex = option.hasHeader ? 0 : 1;
+  const startIndex = option.hasHeader ? 1 : 0;
 
   let parsedCsv: T[] = [];
 

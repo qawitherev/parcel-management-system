@@ -2,7 +2,7 @@ import { parcelToCsvJsonParent } from './csv-to-json';
 import { of } from 'rxjs';
 import { take } from 'rxjs/operators';
 
-fdescribe('parcelToCsvJsonParent', () => {
+describe('parcelToCsvJsonParent', () => {
   function createCsvFile(content: string, type: string = 'text/csv'): File {
     return new File([content], 'test.csv', { type });
   }

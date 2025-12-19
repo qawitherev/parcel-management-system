@@ -1,5 +1,4 @@
 import { parcelToCsvJsonParent } from './csv-to-json';
-import { of } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 describe('parcelToCsvJsonParent', () => {

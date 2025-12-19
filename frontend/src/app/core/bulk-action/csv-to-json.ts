@@ -53,7 +53,7 @@ async function getCsvText(file: File): Promise<string> {
 
 function parseLine(lineText: string, option: CsvParserOption): string[] {
   // for the first iteration, we will just keep it simple
-  // no quote escape, no fancy thing
+  // no quote escape, no fancy thing... yet.
   let result: string[] = [];
   let current = '';
   for (let i = 0; i < lineText.length; i++) {

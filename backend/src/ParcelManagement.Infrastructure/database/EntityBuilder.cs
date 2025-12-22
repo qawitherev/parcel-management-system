@@ -69,4 +69,22 @@ namespace ParcelManagement.Infrastructure.Database
             builder.HasOne(l => l.UpdatedByUser).WithMany().HasForeignKey(l => l.UpdatedBy).IsRequired(false);
         }
     }
+
+    public class NotificationPrefEntityConfiguration : IEntityTypeConfiguration<NotificationPref>
+    {
+        public void Configure(EntityTypeBuilder<NotificationPref> builder)
+        {
+            builder.HasKey(np => np.Id);
+            builder.HasOne(np => np.User)
+                .WithOne(u => u.NotificationPref)
+                .HasForeignKey<NotificationPref>(np => np.UserId)
+                .IsRequired();
+            builder.HasOne(np => np.CreatingUser)
+                .WithMany()
+                .HasForeignKey(np => np.CreatedBy);
+            builder.HasOne(np => np.UpdatingUser)
+                .WithOne()
+                .HasForeignKey<NotificationPref>(np => np.UpdatedBy);
+        }
+    }
 }

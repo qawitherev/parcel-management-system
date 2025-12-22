@@ -36,6 +36,7 @@ namespace ParcelManagement.Infrastructure.Database
             modelBuilder.ApplyConfiguration(new ResidentUnitEntityConfiguration());
             modelBuilder.ApplyConfiguration(new LockerEntityConfiguration());
             modelBuilder.ApplyConfiguration(new ParcelEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new NotificationPrefEntityConfiguration());
 
             // making composite primary key for bridge table 
             modelBuilder.Entity<UserResidentUnit>()

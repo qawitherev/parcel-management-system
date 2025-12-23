@@ -11,7 +11,7 @@ namespace ParcelManagement.Core.Services
 
         Task<NotificationPref?> GetNotificationPrefByIdAsync(Guid id);
 
-        Task UpdateNotificationPrefs (NotificationPref np);
+        Task UpdateNotificationPrefs (NotificationPrefUpdateRequest np);
 
         Task<NotificationPref?> GetNotificationPrefByUserId(Guid userId);
     }
@@ -40,7 +40,7 @@ namespace ParcelManagement.Core.Services
                 IsOverdueActive = np.IsOverdueActive, 
                 QuiteHoursFrom = np.QuiteHoursFrom, 
                 QuiteHoursTo = np.QuiteHoursTo, 
-                CreatedBy = np.UserId, 
+                CreatedBy = np.CreatingUserId, 
                 CreatedOn = DateTimeOffset.UtcNow, 
             };
             var newNp = await _npRepo.CreateNotificationPrefAsync(notificationPref);
@@ -49,7 +49,7 @@ namespace ParcelManagement.Core.Services
 
         public async Task<NotificationPref?> GetNotificationPrefByIdAsync(Guid id)
         {
-            var np = await _npRepo.GetNotificationPrefAsync(id);
+            var np = await _npRepo.GetNotificationPrefByIdAsync(id);
             return np;
         }
 
@@ -62,9 +62,21 @@ namespace ParcelManagement.Core.Services
             return notiPrefs;
         }
 
-        public async Task UpdateNotificationPrefs(NotificationPref np)
+        public async Task UpdateNotificationPrefs(NotificationPrefUpdateRequest np)
         {
-            await _npRepo.UpdateNotificationPrefAsync(np);
+            var existing = await _npRepo.GetNotificationPrefByIdAsync(np.NotificationPrefId) ?? 
+                throw new KeyNotFoundException($"Invalid data");
+            existing.IsEmailActive = np.IsEmailActive;
+            existing.IsWhatsAppActive = np.IsWhatsAppActive;
+            existing.IsOnCheckInActive = np.IsOnCheckInActive;
+            existing.IsOnClaimActive = np.IsOnClaimActive;
+            existing.IsOverdueActive = np.IsOverdueActive;
+            existing.QuiteHoursFrom = np.QuiteHoursFrom;
+            existing.QuiteHoursTo = np.QuiteHoursTo;
+            existing.UpdatedBy = np.UpdatingUserId;
+            existing.UpdatedOn = DateTimeOffset.UtcNow;
+
+            await _npRepo.UpdateNotificationPrefAsync(existing);
         }
     }
 }

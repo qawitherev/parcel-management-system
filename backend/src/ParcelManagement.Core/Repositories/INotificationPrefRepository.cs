@@ -8,7 +8,7 @@ namespace ParcelManagement.Core.Repositories
         // crud 
         Task<NotificationPref> CreateNotificationPrefAsync(NotificationPref np);
 
-        Task<NotificationPref?> GetNotificationPrefAsync(Guid id);
+        Task<NotificationPref?> GetNotificationPrefByIdAsync(Guid id);
 
         Task UpdateNotificationPrefAsync(NotificationPref np);
 

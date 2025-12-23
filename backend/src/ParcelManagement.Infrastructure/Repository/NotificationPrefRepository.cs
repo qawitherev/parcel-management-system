@@ -23,7 +23,7 @@ namespace ParcelManagement.Infrastructure.Repository
             throw new NotImplementedException();
         }
 
-        public async Task<NotificationPref?> GetNotificationPrefAsync(Guid id)
+        public async Task<NotificationPref?> GetNotificationPrefByIdAsync(Guid id)
         {
             return await FindByIdAsync(id);
 

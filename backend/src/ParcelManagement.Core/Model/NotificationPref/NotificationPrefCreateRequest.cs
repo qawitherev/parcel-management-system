@@ -3,6 +3,8 @@ namespace ParcelManagement.Core.Model.NotificationPref
     public class NotificationPrefCreateRequest
     {
         public required Guid UserId { get; set; }
+        
+        public required Guid CreatingUserId { get; set; }
 
         public bool IsEmailActive { get; set; } = true; 
 

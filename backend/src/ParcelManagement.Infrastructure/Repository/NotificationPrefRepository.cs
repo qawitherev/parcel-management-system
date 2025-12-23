@@ -9,12 +9,13 @@ namespace ParcelManagement.Infrastructure.Repository
     {
         public NotificationPrefRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
-            
+            // nothing yet 
         }
 
-        public Task<NotificationPref> CreateNotificationPrefAsync(NotificationPref np)
+        public async Task<NotificationPref> CreateNotificationPrefAsync(NotificationPref np)
         {
-            throw new NotImplementedException();
+            await CreateAsync(np);
+            return np;
         }
 
         public Task DeleteNotificationPrefAsync(Guid id)
@@ -22,29 +23,30 @@ namespace ParcelManagement.Infrastructure.Repository
             throw new NotImplementedException();
         }
 
-        public Task<NotificationPref> GetNotificationPrefAsync(Guid id)
+        public async Task<NotificationPref?> GetNotificationPrefAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return await FindByIdAsync(id);
+
         }
 
-        public Task<NotificationPref> GetNotificationPrefBySpecification(ISpecification<NotificationPref> specification)
+        public async Task<NotificationPref?> GetNotificationPrefBySpecification(ISpecification<NotificationPref> specification)
         {
-            throw new NotImplementedException();
+            return await GetOneBySpecificationAsync(specification);
         }
 
-        public Task<int> GetNotificationPrefCountBySpecification(ISpecification<NotificationPref> specification)
+        public async Task<int> GetNotificationPrefCountBySpecification(ISpecification<NotificationPref> specification)
         {
-            throw new NotImplementedException();
+            return await GetCountBySpecificationAsync(specification);
         }
 
-        public Task<IReadOnlyList<NotificationPref>> GetNotificationPrefsBySpecification(ISpecification<NotificationPref> specification)
+        public async Task<IReadOnlyList<NotificationPref>> GetNotificationPrefsBySpecification(ISpecification<NotificationPref> specification)
         {
-            throw new NotImplementedException();
+            return await GetBySpecificationAsync(specification);
         }
 
-        public Task UpdateNotificationPrefAsync(NotificationPref np)
+        public async Task UpdateNotificationPrefAsync(NotificationPref np)
         {
-            throw new NotImplementedException();
+            await UpdateAsync(np);
         }
     }
 }

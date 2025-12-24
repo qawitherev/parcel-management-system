@@ -106,8 +106,9 @@ export const routes: Routes = [
         component: NormalLayout, 
         children: [
             {
-                path: '', loadChildren: () => import('./features/system-settings/system-settings-module').then(m => m.SystemSettingsModule),
-                data: { title: 'Settings'}
+                path: 'notifications', loadChildren: () => import('./features/system-settings/notification-prefs/notification-prefs-module').then(m => m.NotificationPrefsModule),
+                data: { title: 'Notifications'}, 
+                canActivate: [isLoggedInGuard]
             }
         ]
     }

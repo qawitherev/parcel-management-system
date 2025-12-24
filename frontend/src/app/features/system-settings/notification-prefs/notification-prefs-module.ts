@@ -1,14 +1,14 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { SystemSettingsRoutingModule } from './system-settings-routing-module';
+import { NotificationPrefsRoutingModule } from './notification-prefs-routing-module';
 
 
 @NgModule({
   declarations: [],
   imports: [
     CommonModule,
-    SystemSettingsRoutingModule
+    NotificationPrefsRoutingModule
   ]
 })
-export class SystemSettingsModule { }
+export class NotificationPrefsModule { }

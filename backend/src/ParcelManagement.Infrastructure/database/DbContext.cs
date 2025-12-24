@@ -26,6 +26,8 @@ namespace ParcelManagement.Infrastructure.Database
 
         public virtual DbSet<Locker> Lockers { get; set; }
 
+        public virtual DbSet<NotificationPref> NotificationPref { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

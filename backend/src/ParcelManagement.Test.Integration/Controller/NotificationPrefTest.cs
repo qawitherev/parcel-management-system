@@ -27,7 +27,6 @@ namespace ParcelManagement.Test.Integration
 
             var payload = new NotificationPrefCreateRequestDto
             {
-                UserId = userId,
                 IsEmailActive = true,
                 IsWhatsAppActive = false,
                 IsOnCheckInActive = true,
@@ -78,7 +77,6 @@ namespace ParcelManagement.Test.Integration
 
             var payload = new NotificationPrefCreateRequestDto
             {
-                UserId = userId,
                 IsEmailActive = false,
                 IsWhatsAppActive = false,
                 IsOnCheckInActive = true,
@@ -99,7 +97,6 @@ namespace ParcelManagement.Test.Integration
 
             var payload = new NotificationPrefCreateRequestDto
             {
-                UserId = Guid.NewGuid(),
                 IsEmailActive = true,
                 IsWhatsAppActive = true,
                 IsOnCheckInActive = true,
@@ -255,7 +252,6 @@ namespace ParcelManagement.Test.Integration
 
             var payload = new NotificationPrefCreateRequestDto
             {
-                UserId = userId,
                 IsEmailActive = true,
                 IsWhatsAppActive = true,
                 IsOnCheckInActive = true,
@@ -285,7 +281,6 @@ namespace ParcelManagement.Test.Integration
 
             var payload = new NotificationPrefCreateRequestDto
             {
-                UserId = userId,
                 IsEmailActive = false,
                 IsWhatsAppActive = false,
                 IsOnCheckInActive = false,

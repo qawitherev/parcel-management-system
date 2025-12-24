@@ -15,7 +15,6 @@ namespace ParcelManagement.Api.DTO.V1
 
     public class NotificationPrefCreateRequestDto
     {
-        public Guid UserId { get; set; }
         public bool IsEmailActive { get; set; } = true;
         public bool IsWhatsAppActive { get; set; } = true;
         public bool IsOnCheckInActive { get; set; } = true;

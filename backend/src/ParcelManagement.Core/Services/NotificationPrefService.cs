@@ -72,7 +72,7 @@ namespace ParcelManagement.Core.Services
         public async Task UpdateNotificationPrefs(NotificationPrefUpdateRequest np)
         {
             var existing = await _npRepo.GetNotificationPrefByIdAsync(np.NotificationPrefId) ?? 
-                throw new KeyNotFoundException($"Invalid data");
+                throw new KeyNotFoundException($"Notification preferences not found");
             existing.IsEmailActive = np.IsEmailActive;
             existing.IsWhatsAppActive = np.IsWhatsAppActive;
             existing.IsOnCheckInActive = np.IsOnCheckInActive;

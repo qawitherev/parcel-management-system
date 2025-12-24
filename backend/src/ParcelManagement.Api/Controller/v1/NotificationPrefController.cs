@@ -37,8 +37,8 @@ namespace ParcelManagement.Api.Controller.V1
                 IsOnCheckInActive = notiPref.IsOnCheckInActive,
                 IsOnClaimActive = notiPref.IsOnClaimActive,
                 IsOverdueActive = notiPref.IsOverdueActive,
-                QuiteHoursFrom = notiPref.QuiteHoursFrom,
-                QuiteHoursTo = notiPref.QuiteHoursTo
+                QuietHoursFrom = notiPref.QuietHoursFrom,
+                QuietHoursTo = notiPref.QuietHoursTo
             };
             return Ok(returnDto);
         }
@@ -61,8 +61,8 @@ namespace ParcelManagement.Api.Controller.V1
                 IsOnCheckInActive = payload.IsOnCheckInActive,
                 IsOnClaimActive = payload.IsOnClaimActive,
                 IsOverdueActive = payload.IsOverdueActive,
-                QuiteHoursFrom = payload.QuietHoursFrom,
-                QuiteHoursTo = payload.QuietHoursTo
+                QuietHoursFrom = payload.QuietHoursFrom,
+                QuietHoursTo = payload.QuietHoursTo
             };
             var newNp = await _notiPrefService.CreateNotificationPrefAsync(np);
             return CreatedAtAction(nameof(GetNotificationPrefById), new { id = newNp.Id}, newNp);
@@ -83,8 +83,8 @@ namespace ParcelManagement.Api.Controller.V1
                 IsOnCheckInActive = np.IsOnCheckInActive,
                 IsOnClaimActive = np.IsOnClaimActive,
                 IsOverdueActive = np.IsOverdueActive,
-                QuiteHoursFrom = np.QuiteHoursFrom,
-                QuiteHoursTo = np.QuiteHoursTo
+                QuietHoursFrom = np.QuietHoursFrom,
+                QuietHoursTo = np.QuietHoursTo
             };
             return Ok(returnDto);
         }

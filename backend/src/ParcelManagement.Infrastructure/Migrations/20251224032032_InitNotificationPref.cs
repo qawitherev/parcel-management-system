@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ParcelManagement.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class NotificationPrefInit : Migration
+    public partial class InitNotificationPref : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -22,8 +22,8 @@ namespace ParcelManagement.Infrastructure.Migrations
                     IsOnCheckInActive = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     IsOnClaimActive = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     IsOverdueActive = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    QuiteHoursFrom = table.Column<DateTimeOffset>(type: "datetime(6)", nullable: true),
-                    QuiteHoursTo = table.Column<DateTimeOffset>(type: "datetime(6)", nullable: true),
+                    QuietHoursFrom = table.Column<DateTimeOffset>(type: "datetime(6)", nullable: true),
+                    QuietHoursTo = table.Column<DateTimeOffset>(type: "datetime(6)", nullable: true),
                     CreatedBy = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     CreatedOn = table.Column<DateTimeOffset>(type: "datetime(6)", nullable: false),
                     UpdatedBy = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
@@ -60,8 +60,7 @@ namespace ParcelManagement.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_NotificationPref_UpdatedBy",
                 table: "NotificationPref",
-                column: "UpdatedBy",
-                unique: true);
+                column: "UpdatedBy");
 
             migrationBuilder.CreateIndex(
                 name: "IX_NotificationPref_UserId",

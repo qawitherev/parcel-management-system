@@ -90,8 +90,8 @@ namespace ParcelManagement.Test.Service
                 IsOnCheckInActive = true,
                 IsOnClaimActive = true,
                 IsOverdueActive = false,
-                QuiteHoursFrom = DateTimeOffset.UtcNow.AddHours(-2),
-                QuiteHoursTo = DateTimeOffset.UtcNow.AddHours(6)
+                QuietHoursFrom = DateTimeOffset.UtcNow.AddHours(-2),
+                QuietHoursTo = DateTimeOffset.UtcNow.AddHours(6)
             };
 
             // Act
@@ -105,8 +105,8 @@ namespace ParcelManagement.Test.Service
             Assert.True(result.IsOnCheckInActive);
             Assert.True(result.IsOnClaimActive);
             Assert.False(result.IsOverdueActive);
-            Assert.NotNull(result.QuiteHoursFrom);
-            Assert.NotNull(result.QuiteHoursTo);
+            Assert.NotNull(result.QuietHoursFrom);
+            Assert.NotNull(result.QuietHoursTo);
 
             // Verify it's actually in the database
             var specification = new NotificationPrefByUserIdSpecification(userId);
@@ -305,8 +305,8 @@ namespace ParcelManagement.Test.Service
                 IsOnCheckInActive = true,
                 IsOnClaimActive = false,
                 IsOverdueActive = true,
-                QuiteHoursFrom = null,
-                QuiteHoursTo = null,
+                QuietHoursFrom = null,
+                QuietHoursTo = null,
                 CreatedBy = userId,
                 CreatedOn = DateTimeOffset.UtcNow
             };
@@ -325,8 +325,8 @@ namespace ParcelManagement.Test.Service
                 IsOnCheckInActive = false,
                 IsOnClaimActive = true,
                 IsOverdueActive = false,
-                QuiteHoursFrom = DateTimeOffset.UtcNow.AddHours(-3),
-                QuiteHoursTo = DateTimeOffset.UtcNow.AddHours(5)
+                QuietHoursFrom = DateTimeOffset.UtcNow.AddHours(-3),
+                QuietHoursTo = DateTimeOffset.UtcNow.AddHours(5)
             };
 
             // Act
@@ -340,8 +340,8 @@ namespace ParcelManagement.Test.Service
             Assert.False(updatedNp.IsOnCheckInActive);
             Assert.True(updatedNp.IsOnClaimActive);
             Assert.False(updatedNp.IsOverdueActive);
-            Assert.NotNull(updatedNp.QuiteHoursFrom);
-            Assert.NotNull(updatedNp.QuiteHoursTo);
+            Assert.NotNull(updatedNp.QuietHoursFrom);
+            Assert.NotNull(updatedNp.QuietHoursTo);
             Assert.Equal(updatingUserId, updatedNp.UpdatedBy);
             Assert.NotNull(updatedNp.UpdatedOn);
         }

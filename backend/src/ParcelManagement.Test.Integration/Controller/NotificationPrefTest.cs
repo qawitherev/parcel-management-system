@@ -149,8 +149,8 @@ namespace ParcelManagement.Test.Integration
             Assert.Equal(userId, responseDto.UserId);
             Assert.True(responseDto.IsEmailActive);
             Assert.False(responseDto.IsWhatsAppActive);
-            Assert.NotNull(responseDto.QuiteHoursFrom);
-            Assert.NotNull(responseDto.QuiteHoursTo);
+            Assert.NotNull(responseDto.QuietHoursFrom);
+            Assert.NotNull(responseDto.QuietHoursTo);
         }
 
         [Fact]

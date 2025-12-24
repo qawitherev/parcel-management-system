@@ -12,8 +12,8 @@ using ParcelManagement.Infrastructure.Database;
 namespace ParcelManagement.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251222124502_NotificationPrefInit")]
-    partial class NotificationPrefInit
+    [Migration("20251224032032_InitNotificationPref")]
+    partial class InitNotificationPref
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -89,10 +89,10 @@ namespace ParcelManagement.Infrastructure.Migrations
                     b.Property<bool>("IsWhatsAppActive")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<DateTimeOffset?>("QuiteHoursFrom")
+                    b.Property<DateTimeOffset?>("QuietHoursFrom")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<DateTimeOffset?>("QuiteHoursTo")
+                    b.Property<DateTimeOffset?>("QuietHoursTo")
                         .HasColumnType("datetime(6)");
 
                     b.Property<Guid?>("UpdatedBy")
@@ -108,8 +108,7 @@ namespace ParcelManagement.Infrastructure.Migrations
 
                     b.HasIndex("CreatedBy");
 
-                    b.HasIndex("UpdatedBy")
-                        .IsUnique();
+                    b.HasIndex("UpdatedBy");
 
                     b.HasIndex("UserId")
                         .IsUnique();
@@ -335,8 +334,8 @@ namespace ParcelManagement.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("ParcelManagement.Core.Entities.User", "UpdatingUser")
-                        .WithOne()
-                        .HasForeignKey("ParcelManagement.Core.Entities.NotificationPref", "UpdatedBy");
+                        .WithMany()
+                        .HasForeignKey("UpdatedBy");
 
                     b.HasOne("ParcelManagement.Core.Entities.User", "User")
                         .WithOne("NotificationPref")

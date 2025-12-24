@@ -44,8 +44,8 @@ namespace ParcelManagement.Core.Services
                 IsOnCheckInActive = np.IsOnCheckInActive, 
                 IsOnClaimActive = np.IsOnClaimActive, 
                 IsOverdueActive = np.IsOverdueActive, 
-                QuiteHoursFrom = np.QuiteHoursFrom, 
-                QuiteHoursTo = np.QuiteHoursTo, 
+                QuietHoursFrom = np.QuietHoursFrom, 
+                QuietHoursTo = np.QuietHoursTo, 
                 CreatedBy = np.CreatingUserId, 
                 CreatedOn = DateTimeOffset.UtcNow, 
             };
@@ -78,8 +78,8 @@ namespace ParcelManagement.Core.Services
             existing.IsOnCheckInActive = np.IsOnCheckInActive;
             existing.IsOnClaimActive = np.IsOnClaimActive;
             existing.IsOverdueActive = np.IsOverdueActive;
-            existing.QuiteHoursFrom = np.QuiteHoursFrom;
-            existing.QuiteHoursTo = np.QuiteHoursTo;
+            existing.QuietHoursFrom = np.QuietHoursFrom;
+            existing.QuietHoursTo = np.QuietHoursTo;
             existing.UpdatedBy = np.UpdatingUserId;
             existing.UpdatedOn = DateTimeOffset.UtcNow;
 

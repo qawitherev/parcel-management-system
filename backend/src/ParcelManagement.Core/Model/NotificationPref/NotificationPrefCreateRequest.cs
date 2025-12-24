@@ -16,8 +16,8 @@ namespace ParcelManagement.Core.Model.NotificationPref
 
         public bool IsOverdueActive { get; set; } = true; 
 
-        public DateTimeOffset? QuiteHoursFrom { get; set; }
+        public DateTimeOffset? QuietHoursFrom { get; set; }
 
-        public DateTimeOffset? QuiteHoursTo { get; set; }
+        public DateTimeOffset? QuietHoursTo { get; set; }
     }
 }

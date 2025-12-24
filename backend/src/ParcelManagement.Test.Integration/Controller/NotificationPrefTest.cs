@@ -131,8 +131,8 @@ namespace ParcelManagement.Test.Integration
                 IsOnCheckInActive = true,
                 IsOnClaimActive = false,
                 IsOverdueActive = true,
-                QuiteHoursFrom = DateTimeOffset.UtcNow.AddHours(-3),
-                QuiteHoursTo = DateTimeOffset.UtcNow.AddHours(5),
+                QuietHoursFrom = DateTimeOffset.UtcNow.AddHours(-3),
+                QuietHoursTo = DateTimeOffset.UtcNow.AddHours(5),
                 CreatedBy = userId,
                 CreatedOn = DateTimeOffset.UtcNow
             };
@@ -196,8 +196,8 @@ namespace ParcelManagement.Test.Integration
                 IsOnCheckInActive = false,
                 IsOnClaimActive = true,
                 IsOverdueActive = false,
-                QuiteHoursFrom = DateTimeOffset.UtcNow.AddHours(-1),
-                QuiteHoursTo = DateTimeOffset.UtcNow.AddHours(7),
+                QuietHoursFrom = DateTimeOffset.UtcNow.AddHours(-1),
+                QuietHoursTo = DateTimeOffset.UtcNow.AddHours(7),
                 CreatedBy = userId,
                 CreatedOn = DateTimeOffset.UtcNow
             };
@@ -271,8 +271,8 @@ namespace ParcelManagement.Test.Integration
             Assert.Equal(System.Net.HttpStatusCode.Created, response.StatusCode);
             var responseDto = await response.Content.ReadFromJsonAsync<NotificationPref>(IntegrationMisc.GetJsonSerializerOptions());
             Assert.NotNull(responseDto);
-            Assert.NotNull(responseDto.QuiteHoursFrom);
-            Assert.NotNull(responseDto.QuiteHoursTo);
+            Assert.NotNull(responseDto.QuietHoursFrom);
+            Assert.NotNull(responseDto.QuietHoursTo);
         }
 
         [Fact]

@@ -120,7 +120,7 @@ builder.Services.AddScoped<ILockerRepository, LockerRepository>();
 builder.Services.AddScoped<ILockerService, LockerService>();
 
 builder.Services.AddScoped<INotificationPrefRepository, NotificationPrefRepository>();
-builder.Services.AddScoped<INotificationPrefService, NotificationService>();
+builder.Services.AddScoped<INotificationPrefService, NotificationPrefService>();
 
 builder.Services.AddScoped<IUserContextService, UserContextService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();

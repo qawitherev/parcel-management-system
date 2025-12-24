@@ -16,12 +16,12 @@ namespace ParcelManagement.Core.Services
         Task<NotificationPref?> GetNotificationPrefByUserId(Guid userId);
     }
 
-    public class NotificationService : INotificationPrefService
+    public class NotificationPrefService : INotificationPrefService
     {
         private readonly INotificationPrefRepository _npRepo;
         private readonly IUserRepository _userRepo;
 
-        public NotificationService(INotificationPrefRepository npRepo, IUserRepository userRepo)
+        public NotificationPrefService(INotificationPrefRepository npRepo, IUserRepository userRepo)
         {
             _npRepo = npRepo;
             _userRepo = userRepo;
@@ -29,6 +29,12 @@ namespace ParcelManagement.Core.Services
 
         public async Task<NotificationPref> CreateNotificationPrefAsync(NotificationPrefCreateRequest np)
         {
+            var specification = new NotificationPrefByUserIdSpecification(np.UserId);
+            var existing = await _npRepo.GetNotificationPrefBySpecification(specification);
+            if (existing != null)
+            {
+                throw new InvalidOperationException($"User already has notification preferences");
+            }
             var notificationPref = new NotificationPref
             {
                 Id = Guid.NewGuid(), 
@@ -49,7 +55,8 @@ namespace ParcelManagement.Core.Services
 
         public async Task<NotificationPref?> GetNotificationPrefByIdAsync(Guid id)
         {
-            var np = await _npRepo.GetNotificationPrefByIdAsync(id);
+            var np = await _npRepo.GetNotificationPrefByIdAsync(id) ?? 
+                throw new KeyNotFoundException($"Notification preferences not found");
             return np;
         }
 

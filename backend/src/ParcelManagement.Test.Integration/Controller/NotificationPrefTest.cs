@@ -33,8 +33,8 @@ namespace ParcelManagement.Test.Integration
                 IsOnCheckInActive = true,
                 IsOnClaimActive = true,
                 IsOverdueActive = false,
-                QuiteHoursFrom = DateTimeOffset.UtcNow.AddHours(-2),
-                QuiteHoursTo = DateTimeOffset.UtcNow.AddHours(6)
+                QuietHoursFrom = DateTimeOffset.UtcNow.AddHours(-2),
+                QuietHoursTo = DateTimeOffset.UtcNow.AddHours(6)
             };
 
             var body = IntegrationMisc.ConvertToStringContent(payload);
@@ -261,8 +261,8 @@ namespace ParcelManagement.Test.Integration
                 IsOnCheckInActive = true,
                 IsOnClaimActive = false,
                 IsOverdueActive = true,
-                QuiteHoursFrom = quietStart,
-                QuiteHoursTo = quietEnd
+                QuietHoursFrom = quietStart,
+                QuietHoursTo = quietEnd
             };
 
             var body = IntegrationMisc.ConvertToStringContent(payload);

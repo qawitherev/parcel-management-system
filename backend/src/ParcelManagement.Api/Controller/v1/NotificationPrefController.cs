@@ -61,8 +61,8 @@ namespace ParcelManagement.Api.Controller.V1
                 IsOnCheckInActive = payload.IsOnCheckInActive,
                 IsOnClaimActive = payload.IsOnClaimActive,
                 IsOverdueActive = payload.IsOverdueActive,
-                QuiteHoursFrom = payload.QuiteHoursFrom,
-                QuiteHoursTo = payload.QuiteHoursTo
+                QuiteHoursFrom = payload.QuietHoursFrom,
+                QuiteHoursTo = payload.QuietHoursTo
             };
             var newNp = await _notiPrefService.CreateNotificationPrefAsync(np);
             return CreatedAtAction(nameof(GetNotificationPrefById), new { id = newNp.Id}, newNp);

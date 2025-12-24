@@ -27,6 +27,7 @@ namespace ParcelManagement.Core.Specifications
 
     public interface ISpecification<T>
     {
+        // TODO: to remove IncludeExpressions
         List<IncludeExpression<T>> IncludeExpressions { get; }
         List<IncludeExpressionString> IncludeExpressionsString { get; }
         Expression<Func<T, bool>> ToExpression();

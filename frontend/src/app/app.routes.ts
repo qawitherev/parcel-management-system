@@ -99,5 +99,16 @@ export const routes: Routes = [
             }
         ], 
         canActivate: [isLoggedInGuard, isAdminAndManagerAuthed]
+    }, 
+
+    {
+        path: 'settings', 
+        component: NormalLayout, 
+        children: [
+            {
+                path: '', loadChildren: () => import('./features/system-settings/system-settings-module').then(m => m.SystemSettingsModule),
+                data: { title: 'Settings'}
+            }
+        ]
     }
 ];

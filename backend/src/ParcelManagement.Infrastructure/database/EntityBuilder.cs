@@ -83,7 +83,7 @@ namespace ParcelManagement.Infrastructure.Database
                 .WithMany()
                 .HasForeignKey(np => np.CreatedBy);
             builder.HasOne(np => np.UpdatingUser)
-                .WithOne()
+                .WithMany()
                 .HasForeignKey<NotificationPref>(np => np.UpdatedBy);
         }
     }

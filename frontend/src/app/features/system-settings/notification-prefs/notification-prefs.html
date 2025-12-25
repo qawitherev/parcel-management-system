@@ -1,1 +1,77 @@
-<p>notification-prefs works!</p>
+@let notificationPref = notificationPref$ | async;
+
+<div class="text-[var(--clr-dark-a0)]">
+  <div class="flex flex-row gap-1 items-center mb-5">
+    <i class="fa-solid fa-bell"></i>
+    <div class="text-2xl font-bold">Notification Preferences</div>
+  </div>
+
+  @if (notificationPref && 'id' in notificationPref) {
+  <div class="w-full bg-[var(--clr-surface-tonal-a20)] flex-col rounded-2xl h-1/2 p-4 mb-5">
+    <div class="text-xl font-bold mb-4">Primary Channel</div>
+    <div class="flex flex-row justify-between mb-3">
+      <div class="">Email Notifications</div>
+      <app-my-switch [isPositive]="notificationPref.isEmailActive"></app-my-switch>
+    </div>
+    <div class="flex flex-row justify-between mb-3">
+      <div class="">WhatsApp Notifications</div>
+      <app-my-switch [isPositive]="notificationPref.isWhatsAppActive"></app-my-switch>
+    </div>
+  </div>
+
+  <div class="w-full bg-[var(--clr-surface-tonal-a20)] flex-col rounded-2xl h-1/2 p-4 mb-5">
+    <div class="text-xl font-bold mb-4">Event Preferences</div>
+    <div class="flex flex-row justify-between mb-3">
+      <div class="">Parcel Arrival</div>
+      <app-my-switch [isPositive]="notificationPref.isOnCheckInActive"></app-my-switch>
+    </div>
+    <div class="flex flex-row justify-between mb-3">
+      <div class="">Parcel Claim</div>
+      <app-my-switch [isPositive]="notificationPref.isOnClaimActive"></app-my-switch>
+    </div>
+    <div class="flex flex-row justify-between mb-3">
+      <div class="">Parcel Overdue</div>
+      <app-my-switch [isPositive]="notificationPref.isOverdueActive"></app-my-switch>
+    </div>
+  </div>
+
+  <div class="w-full bg-[var(--clr-surface-tonal-a20)] flex-col rounded-2xl h-1/2 p-4 mb-5">
+    <div class="flex flex-row justify-between items-center mb-4">
+      <div class="text-xl font-bold">Quiet Hours</div>
+      <app-my-switch [willShowLabel]="false" [isPositive]="isQuietHoursEnabled!" (toggled)="onToggleQuietHours()"></app-my-switch>
+    </div>
+    <div class="flex flex-row gap-10">
+      <div class="flex flex-col flex-1">
+        <label class="text-[var(--clr-dark-a0)] text-sm">From</label>
+        <input
+          [disabled]="!isQuietHoursEnabled"
+          [(ngModel)]="prefState!.quietHoursFrom"
+          type="time"
+          class="bg-[var(--clr-surface-a50)] mt-1 text-[var(--clr-dark-a0)] px-4 py-2 border border-[var(--clr-surface-tonal-a20)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--clr-surface-tonal-a0)] focus:border-[var(--clr-surface-tonal-a50)]"
+        />
+      </div>
+      <div class="flex flex-col flex-1">
+        <label class="text-[var(--clr-dark-a0)] text-sm">To</label>
+        <input
+          [disabled]="!isQuietHoursEnabled"
+          [(ngModel)]="prefState!.quietHoursTo"
+          type="time"
+          class="bg-[var(--clr-surface-a50)] mt-1 text-[var(--clr-dark-a0)] px-4 py-2 border border-[var(--clr-surface-tonal-a20)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--clr-surface-tonal-a0)] focus:border-[var(--clr-surface-tonal-a50)]"
+        />
+      </div>
+    </div>
+  </div>
+
+  <div class="flex flex-row justify-end">
+    <div class="w-1/6">
+      <app-my-button
+        [disabled]="!isCanApply"
+        variant="primary"
+        label="Apply"
+        type="button"
+        [isLoading]="isLoading"
+      ></app-my-button>
+    </div>
+  </div>
+  }
+</div>

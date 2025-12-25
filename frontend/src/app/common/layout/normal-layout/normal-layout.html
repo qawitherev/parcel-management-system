@@ -57,9 +57,9 @@
       <div class="flex gap-3">
         <app-my-switch
         class="flex"
-        labelPositive="Dark Mode"
-        labelNegative="Dark Mode"
-        [isPositive]="!isDarkMode"
+        labelOn="Dark Mode"
+        labelOff="Dark Mode"
+        [isPositive]="isDarkMode"
         (toggled)="onThemeToggle()"
             ></app-my-switch>
         

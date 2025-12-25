@@ -11,7 +11,7 @@ namespace ParcelManagement.Core.Services
 
         Task<NotificationPref?> GetNotificationPrefByIdAsync(Guid id);
 
-        Task UpdateNotificationPrefs (NotificationPrefUpdateRequest np);
+        Task UpdateNotificationPrefs (NotificationPrefUpdateRequest np, Guid updatingUserId);
 
         Task<NotificationPref?> GetNotificationPrefByUserId(Guid userId);
     }
@@ -69,15 +69,19 @@ namespace ParcelManagement.Core.Services
             return notiPrefs;
         }
 
-        public async Task UpdateNotificationPrefs(NotificationPrefUpdateRequest np)
+        public async Task UpdateNotificationPrefs(NotificationPrefUpdateRequest np, Guid updatingUserId)
         {
             var existing = await _npRepo.GetNotificationPrefByIdAsync(np.NotificationPrefId) ?? 
                 throw new KeyNotFoundException($"Notification preferences not found");
-            existing.IsEmailActive = np.IsEmailActive;
-            existing.IsWhatsAppActive = np.IsWhatsAppActive;
-            existing.IsOnCheckInActive = np.IsOnCheckInActive;
-            existing.IsOnClaimActive = np.IsOnClaimActive;
-            existing.IsOverdueActive = np.IsOverdueActive;
+            if (updatingUserId != existing.UserId)
+            {
+                throw new InvalidOperationException("Notification preference cannot be updated");
+            }
+            existing.IsEmailActive = np.IsEmailActive ?? existing.IsEmailActive;
+            existing.IsWhatsAppActive = np.IsWhatsAppActive ?? existing.IsWhatsAppActive;
+            existing.IsOnCheckInActive = np.IsOnCheckInActive ?? existing.IsOnCheckInActive;
+            existing.IsOnClaimActive = np.IsOnClaimActive ?? existing.IsOnClaimActive;
+            existing.IsOverdueActive = np.IsOverdueActive ?? existing.IsOverdueActive;
             existing.QuietHoursFrom = np.QuietHoursFrom;
             existing.QuietHoursTo = np.QuietHoursTo;
             existing.UpdatedBy = np.UpdatingUserId;

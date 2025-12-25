@@ -88,6 +88,27 @@ namespace ParcelManagement.Api.Controller.V1
             };
             return Ok(returnDto);
         }
-        
+
+        [HttpPatch("{id}")]
+        [Authorize(Roles = "Resident")]
+        public async Task<IActionResult> UpdateNotificationPref(Guid id, [FromBody] NotificationPrefUpdateRequestDto requestDto )
+        {
+            var updatingUserId = _userContextService.GetUserId();
+            var payload = new NotificationPrefUpdateRequest
+            {
+                NotificationPrefId = id,
+                UserId = updatingUserId,
+                UpdatingUserId = updatingUserId,
+                IsEmailActive = requestDto.IsEmailActive,
+                IsWhatsAppActive = requestDto.IsWhatsAppActive,
+                IsOnCheckInActive = requestDto.IsOnCheckInActive,
+                IsOnClaimActive = requestDto.IsOnClaimActive,
+                IsOverdueActive = requestDto.IsOverdueActive,
+                QuietHoursFrom = requestDto.QuietHoursFrom,
+                QuietHoursTo = requestDto.QuietHoursTo
+            };
+            await _notiPrefService.UpdateNotificationPrefs(payload, updatingUserId);
+            return NoContent();
+        }
     }
 }

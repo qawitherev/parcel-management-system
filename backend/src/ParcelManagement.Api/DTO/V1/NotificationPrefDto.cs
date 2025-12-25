@@ -12,6 +12,16 @@ namespace ParcelManagement.Api.DTO.V1
         public DateTimeOffset? QuietHoursFrom { get; set; }
         public DateTimeOffset? QuietHoursTo { get; set; }
     }
+    public class NotificationPrefUpdateRequestDto
+    {
+        public bool? IsEmailActive { get; set; }
+        public bool? IsWhatsAppActive { get; set; }
+        public bool? IsOnCheckInActive { get; set; }
+        public bool? IsOnClaimActive { get; set; }
+        public bool? IsOverdueActive { get; set; }
+        public DateTimeOffset? QuietHoursFrom { get; set; }
+        public DateTimeOffset? QuietHoursTo { get; set; }
+    }
 
     public class NotificationPrefCreateRequestDto
     {

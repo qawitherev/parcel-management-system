@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ParcelManagement.Api.AuthenticationAndAuthorization;
 using ParcelManagement.Api.DTO.V1;
@@ -335,6 +336,198 @@ namespace ParcelManagement.Test.Integration
 
             // Admin role should not be authorized for this endpoint (requires Resident role)
             Assert.Equal(System.Net.HttpStatusCode.Forbidden, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task UpdateNotificationPref_NotFound_ShouldReturn404()
+        {
+            await ResetDatabaseAsync();
+            var userId = Guid.NewGuid();
+            var token = await Seeder.GetLoginToken(userId, "ResidentTest", "Resident");
+            Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            var nonExistentId = Guid.NewGuid();
+            var updatePayload = new NotificationPrefUpdateRequestDto
+            {
+                IsEmailActive = false,
+                IsWhatsAppActive = false,
+                IsOnCheckInActive = true,
+                IsOnClaimActive = true,
+                IsOverdueActive = true
+            };
+
+            var body = IntegrationMisc.ConvertToStringContent(updatePayload);
+            var response = await Client.PatchAsync($"api/v1/notificationpref/{nonExistentId}", body);
+
+            Assert.Equal(System.Net.HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task UpdateNotificationPref_WithoutAuth_ShouldReturn401()
+        {
+            await ResetDatabaseAsync();
+
+            var npId = Guid.NewGuid();
+            var updatePayload = new NotificationPrefUpdateRequestDto
+            {
+                IsEmailActive = false,
+                IsWhatsAppActive = false,
+                IsOnCheckInActive = true,
+                IsOnClaimActive = true,
+                IsOverdueActive = true
+            };
+
+            var body = IntegrationMisc.ConvertToStringContent(updatePayload);
+            var response = await Client.PatchAsync($"api/v1/notificationpref/{npId}", body);
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task UpdateNotificationPref_RemoveQuietHours_ShouldSetToNull()
+        {
+            await ResetDatabaseAsync();
+            var userId = Guid.NewGuid();
+            var npId = Guid.NewGuid();
+            var token = await Seeder.GetLoginToken(userId, "ResidentTest", "Resident");
+            Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            // Create existing notification preference with quiet hours
+            var existingNp = new NotificationPref
+            {
+                Id = npId,
+                UserId = userId,
+                IsEmailActive = true,
+                IsWhatsAppActive = true,
+                IsOnCheckInActive = true,
+                IsOnClaimActive = false,
+                IsOverdueActive = true,
+                QuietHoursFrom = DateTimeOffset.UtcNow.AddHours(-2),
+                QuietHoursTo = DateTimeOffset.UtcNow.AddHours(6),
+                CreatedBy = userId,
+                CreatedOn = DateTimeOffset.UtcNow
+            };
+
+            await DbContext.NotificationPref.AddAsync(existingNp);
+            await DbContext.SaveChangesAsync();
+
+            // Update to remove quiet hours
+            var updatePayload = new NotificationPrefUpdateRequestDto
+            {
+                IsEmailActive = true,
+                IsWhatsAppActive = true,
+                IsOnCheckInActive = true,
+                IsOnClaimActive = false,
+                IsOverdueActive = true,
+                QuietHoursFrom = null,
+                QuietHoursTo = null
+            };
+
+            var body = IntegrationMisc.ConvertToStringContent(updatePayload);
+            var response = await Client.PatchAsync($"api/v1/notificationpref/{npId}", body);
+
+            Assert.Equal(System.Net.HttpStatusCode.NoContent, response.StatusCode);
+
+            // Verify quiet hours are removed
+            DbContext.ChangeTracker.Clear();
+            var updatedNp = await DbContext.NotificationPref.FindAsync(npId);
+            Assert.NotNull(updatedNp);
+            Assert.Null(updatedNp.QuietHoursFrom);
+            Assert.Null(updatedNp.QuietHoursTo);
+        }
+
+        [Fact]
+        public async Task UpdateNotificationPref_AsWrongRole_ShouldReturn403()
+        {
+            await ResetDatabaseAsync();
+            var userId = Guid.NewGuid();
+            var adminId = Guid.NewGuid();
+            var npId = Guid.NewGuid();
+
+            // Create user with notification preferences
+            await Seeder.GetLoginToken(userId, "ResidentUser", "Resident");
+            var notificationPref = new NotificationPref
+            {
+                Id = npId,
+                UserId = userId,
+                IsEmailActive = true,
+                IsWhatsAppActive = true,
+                IsOnCheckInActive = true,
+                IsOnClaimActive = false,
+                IsOverdueActive = true,
+                CreatedBy = userId,
+                CreatedOn = DateTimeOffset.UtcNow
+            };
+
+            await DbContext.NotificationPref.AddAsync(notificationPref);
+            await DbContext.SaveChangesAsync();
+
+            // Try to update with Admin token
+            var adminToken = await Seeder.GetLoginToken(adminId, "AdminUser", "Admin");
+            Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", adminToken);
+
+            var updatePayload = new NotificationPrefUpdateRequestDto
+            {
+                IsEmailActive = false
+            };
+
+            var body = IntegrationMisc.ConvertToStringContent(updatePayload);
+            var response = await Client.PatchAsync($"api/v1/notificationpref/{npId}", body);
+
+            // Admin role should not be authorized for this endpoint (requires Resident role)
+            Assert.Equal(System.Net.HttpStatusCode.Forbidden, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task UpdateNotificationPref_AllNotificationsDisabled_ShouldUpdate()
+        {
+            await ResetDatabaseAsync();
+            var userId = Guid.NewGuid();
+            var npId = Guid.NewGuid();
+            var token = await Seeder.GetLoginToken(userId, "ResidentTest", "Resident");
+            Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            // Create existing notification preference
+            var existingNp = new NotificationPref
+            {
+                Id = npId,
+                UserId = userId,
+                IsEmailActive = true,
+                IsWhatsAppActive = true,
+                IsOnCheckInActive = true,
+                IsOnClaimActive = true,
+                IsOverdueActive = true,
+                CreatedBy = userId,
+                CreatedOn = DateTimeOffset.UtcNow
+            };
+
+            await DbContext.NotificationPref.AddAsync(existingNp);
+            await DbContext.SaveChangesAsync();
+
+            // Disable all notifications
+            var updatePayload = new NotificationPrefUpdateRequestDto
+            {
+                IsEmailActive = false,
+                IsWhatsAppActive = false,
+                IsOnCheckInActive = false,
+                IsOnClaimActive = false,
+                IsOverdueActive = false
+            };
+
+            var body = IntegrationMisc.ConvertToStringContent(updatePayload);
+            var response = await Client.PatchAsync($"api/v1/notificationpref/{npId}", body);
+
+            Assert.Equal(System.Net.HttpStatusCode.NoContent, response.StatusCode);
+
+            // Verify all notifications are disabled
+            DbContext.ChangeTracker.Clear();
+            var updatedNp = await DbContext.NotificationPref.FindAsync(npId);
+            Assert.NotNull(updatedNp);
+            Assert.False(updatedNp.IsEmailActive);
+            Assert.False(updatedNp.IsWhatsAppActive);
+            Assert.False(updatedNp.IsOnCheckInActive);
+            Assert.False(updatedNp.IsOnClaimActive);
+            Assert.False(updatedNp.IsOverdueActive);
         }
     }
 }

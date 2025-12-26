@@ -14,6 +14,8 @@ namespace ParcelManagement.Core.Services
         Task UpdateNotificationPrefs (NotificationPrefUpdateRequest np, Guid updatingUserId);
 
         Task<NotificationPref?> GetNotificationPrefByUserId(Guid userId);
+
+        Task EnsureUserHasNotificationPref(Guid userId);
     }
 
     public class NotificationPrefService : INotificationPrefService
@@ -88,6 +90,29 @@ namespace ParcelManagement.Core.Services
             existing.UpdatedOn = DateTimeOffset.UtcNow;
 
             await _npRepo.UpdateNotificationPrefAsync(existing);
+        }
+
+        public async Task EnsureUserHasNotificationPref(Guid userId)
+        {
+            var specification = new NotificationPrefByUserIdSpecification(userId);
+            var existing = await _npRepo.GetNotificationPrefBySpecification(specification);
+            if (existing != null)
+            {
+                return;
+            }
+            var np = new NotificationPref
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                IsEmailActive = true,
+                IsWhatsAppActive = true,
+                IsOnCheckInActive = true,
+                IsOnClaimActive = false,
+                IsOverdueActive = true,
+                CreatedBy = userId,
+                CreatedOn = DateTimeOffset.UtcNow
+            };
+            await _npRepo.CreateNotificationPrefAsync(np);
         }
     }
 }

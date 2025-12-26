@@ -1,5 +1,5 @@
-@let notificationPref = notificationPref$ | async; 
-@let createUpdateResponse = notificationPrefUpdateResponse$ | async;
+@let notificationPref = notificationPref$ | async; @let createUpdateResponse =
+notificationPrefUpdateResponse$ | async;
 
 <div class="text-[var(--clr-dark-a0)]">
   <div class="flex flex-row gap-1 items-center mb-5">
@@ -30,26 +30,28 @@
 
   <div class="w-full bg-[var(--clr-surface-tonal-a20)] flex-col rounded-2xl h-1/2 p-4 mb-5">
     <div class="text-xl font-bold mb-4">Event Preferences</div>
-    <div class="flex flex-row justify-between mb-3">
-      <div class="">Parcel Arrival</div>
-      <app-my-switch
-        [isPositive]="prefState!.isOnCheckInActive"
-        (toggled)="onToggleOnCheckIn()"
-      ></app-my-switch>
-    </div>
-    <div class="flex flex-row justify-between mb-3">
-      <div class="">Parcel Claim</div>
-      <app-my-switch
-        [isPositive]="prefState!.isOnClaimActive"
-        (toggled)="onToggleOnClaim()"
-      ></app-my-switch>
-    </div>
-    <div class="flex flex-row justify-between mb-3">
-      <div class="">Parcel Overdue</div>
-      <app-my-switch
-        [isPositive]="prefState!.isOverdueActive"
-        (toggled)="onToggleOverdue()"
-      ></app-my-switch>
+    <div class="ml-5">
+      <div class="flex flex-row justify-between mb-3">
+        <div class="">Parcel Arrival</div>
+        <app-my-switch
+          [isPositive]="prefState!.isOnCheckInActive"
+          (toggled)="onToggleOnCheckIn()"
+        ></app-my-switch>
+      </div>
+      <div class="flex flex-row justify-between mb-3">
+        <div class="">Parcel Claim</div>
+        <app-my-switch
+          [isPositive]="prefState!.isOnClaimActive"
+          (toggled)="onToggleOnClaim()"
+        ></app-my-switch>
+      </div>
+      <div class="flex flex-row justify-between mb-3">
+        <div class="">Parcel Overdue</div>
+        <app-my-switch
+          [isPositive]="prefState!.isOverdueActive"
+          (toggled)="onToggleOverdue()"
+        ></app-my-switch>
+      </div>
     </div>
   </div>
 
@@ -62,7 +64,7 @@
         (toggled)="onToggleQuietHours()"
       ></app-my-switch>
     </div>
-    <div class="flex flex-row gap-10">
+    <div class="flex flex-row gap-10 mb-4">
       <div class="flex flex-col flex-1">
         <label class="text-[var(--clr-dark-a0)] text-sm">From</label>
         <input
@@ -84,7 +86,7 @@
     </div>
   </div>
 
-  <div class="flex flex-row justify-end">
+  <div class="flex flex-row justify-end mb-3  ">
     <div class="w-1/6">
       <app-my-button
         [disabled]="!isCanApply"
@@ -97,6 +99,8 @@
     </div>
   </div>
   @if (createUpdateResponse && 'success' in createUpdateResponse && createUpdateResponse.success) {
-  <div class="text-sm text-green-500">Preferences Saved!</div>
+  <div class="flex flex-row justify-end">
+    <div class="text-sm text-green-500">Preferences Saved!</div>
+  </div>
   } }
 </div>

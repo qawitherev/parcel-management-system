@@ -45,7 +45,7 @@ namespace ParcelManagement.Core.Services
                 IsOnClaimActive = np.IsOnClaimActive, 
                 IsOverdueActive = np.IsOverdueActive, 
                 QuietHoursFrom = np.QuietHoursFrom, 
-                QuietHoursTo = np.QuietHoursTo, 
+                QuietHoursTo = np.QuietHoursTo,
                 CreatedBy = np.CreatingUserId, 
                 CreatedOn = DateTimeOffset.UtcNow, 
             };

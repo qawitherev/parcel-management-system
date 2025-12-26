@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import {
   NotificationPrefResponse,
@@ -11,6 +11,9 @@ import { AsyncPipe } from '@angular/common';
 import { MySwitch } from '../../../common/components/switch/my-switch/my-switch';
 import { MyButton } from '../../../common/components/buttons/my-button/my-button';
 import { FormsModule } from '@angular/forms';
+import { AppConsole } from '../../../utils/app-console';
+import { HttpParamsBuilder } from '../../../utils/param-builder';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-notification-prefs',
@@ -20,11 +23,12 @@ import { FormsModule } from '@angular/forms';
 })
 export class NotificationPrefs implements OnInit {
   notificationPref$?: Observable<NotificationPrefResponse | ApiError>;
+  notificationPrefUpdateResponse$?: Observable<{ success: boolean } | ApiError>;
   isQuietHoursEnabled?: boolean;
   isLoading: boolean = false;
   prefState?: NotificationPrefResponse;
 
-  constructor(private npService: NotificationPrefsService) {}
+  constructor(private npService: NotificationPrefsService, private router: Router) {}
 
   ngOnInit(): void {
     this.notificationPref$ = this.npService.getNotificationPrefByUser().pipe(
@@ -33,6 +37,8 @@ export class NotificationPrefs implements OnInit {
           this.prefState = res;
           if (res.quietHoursFrom === null || res.quietHoursTo === null) {
             this.isQuietHoursEnabled = false;
+          } else {
+            this.isQuietHoursEnabled = true;
           }
         }
       })
@@ -40,7 +46,7 @@ export class NotificationPrefs implements OnInit {
   }
 
   onToggleEmail(): void {
-    if (this.prefState?.isEmailActive) {
+    if (this.prefState?.isEmailActive !== undefined) {
       this.prefState.isEmailActive = !this.prefState.isEmailActive;
     }
   }
@@ -89,6 +95,11 @@ export class NotificationPrefs implements OnInit {
       quietHoursFrom: this.prefState?.quietHoursFrom,
       quietHoursTo: this.prefState?.quietHoursTo,
     };
-    this.npService.updateNotificationPref(this.prefState?.id!, payload);
+    if (!this.isQuietHoursEnabled) {
+      payload.quietHoursFrom = null;
+      payload.quietHoursTo = null;
+    }
+    AppConsole.log(`payload: ${JSON.stringify(payload)}`)
+    this.notificationPrefUpdateResponse$ = this.npService.updateNotificationPref(this.prefState!.id, payload);
   }
 }

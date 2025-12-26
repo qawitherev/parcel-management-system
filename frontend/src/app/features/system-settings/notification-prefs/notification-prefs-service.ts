@@ -1,9 +1,10 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, Observable } from 'rxjs';
+import { catchError, map, Observable, tap } from 'rxjs';
 import { ApiError, handleApiError } from '../../../core/error-handling/api-catch-error';
 import { HttpParamsBuilder } from '../../../utils/param-builder';
 import { notificationPrefEndpoints } from '../../../core/endpoints/notification-prefs-endpoints';
+import { AppConsole } from '../../../utils/app-console';
 
 export interface NotificationPrefCreateRequest {
   isEmailActive?: boolean;
@@ -74,11 +75,20 @@ export class NotificationPrefsService {
   updateNotificationPref(
     npId: string,
     updatePayload: NotificationPrefUpdateRequest
-  ): Observable<NotificationPrefResponse | ApiError> {
-    const body: HttpParams = HttpParamsBuilder(updatePayload);
-    return this.http.patch<NotificationPrefResponse | ApiError>(
+  ): Observable<{ success: boolean } | ApiError> {
+    return this.http.patch<void | ApiError>(
       `${notificationPrefEndpoints.updateNotificationPref}/${npId}`,
-      { body }
-    );
+      updatePayload,
+      { observe: 'response'}
+    ).pipe(
+      map(res => {
+        if (res.status == 204) {
+          return { success: true};
+        } else {
+          return { success: false};
+        }
+      }),
+      catchError(handleApiError)
+    )
   }
 }

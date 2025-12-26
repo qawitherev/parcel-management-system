@@ -1,4 +1,5 @@
-@let notificationPref = notificationPref$ | async;
+@let notificationPref = notificationPref$ | async; @let createUpdateResponse =
+notificationPrefUpdateResponse$ | async;
 
 <div class="text-[var(--clr-dark-a0)]">
   <div class="flex flex-row gap-1 items-center mb-5">
@@ -11,11 +12,17 @@
     <div class="text-xl font-bold mb-4">Primary Channel</div>
     <div class="flex flex-row justify-between mb-3">
       <div class="">Email Notifications</div>
-      <app-my-switch [isPositive]="notificationPref.isEmailActive"></app-my-switch>
+      <app-my-switch
+        [isPositive]="prefState!.isEmailActive"
+        (toggled)="onToggleEmail()"
+      ></app-my-switch>
     </div>
     <div class="flex flex-row justify-between mb-3">
       <div class="">WhatsApp Notifications</div>
-      <app-my-switch [isPositive]="notificationPref.isWhatsAppActive"></app-my-switch>
+      <app-my-switch
+        [isPositive]="prefState!.isWhatsAppActive"
+        (toggled)="onToggleWhatsApp()"
+      ></app-my-switch>
     </div>
   </div>
 
@@ -23,22 +30,35 @@
     <div class="text-xl font-bold mb-4">Event Preferences</div>
     <div class="flex flex-row justify-between mb-3">
       <div class="">Parcel Arrival</div>
-      <app-my-switch [isPositive]="notificationPref.isOnCheckInActive"></app-my-switch>
+      <app-my-switch
+        [isPositive]="prefState!.isOnCheckInActive"
+        (toggled)="onToggleOnCheckIn()"
+      ></app-my-switch>
     </div>
     <div class="flex flex-row justify-between mb-3">
       <div class="">Parcel Claim</div>
-      <app-my-switch [isPositive]="notificationPref.isOnClaimActive"></app-my-switch>
+      <app-my-switch
+        [isPositive]="prefState!.isOnClaimActive"
+        (toggled)="onToggleOnClaim()"
+      ></app-my-switch>
     </div>
     <div class="flex flex-row justify-between mb-3">
       <div class="">Parcel Overdue</div>
-      <app-my-switch [isPositive]="notificationPref.isOverdueActive"></app-my-switch>
+      <app-my-switch
+        [isPositive]="prefState!.isOverdueActive"
+        (toggled)="onToggleOverdue()"
+      ></app-my-switch>
     </div>
   </div>
 
   <div class="w-full bg-[var(--clr-surface-tonal-a20)] flex-col rounded-2xl h-1/2 p-4 mb-5">
     <div class="flex flex-row justify-between items-center mb-4">
       <div class="text-xl font-bold">Quiet Hours</div>
-      <app-my-switch [willShowLabel]="false" [isPositive]="isQuietHoursEnabled!" (toggled)="onToggleQuietHours()"></app-my-switch>
+      <app-my-switch
+        [willShowLabel]="false"
+        [isPositive]="isQuietHoursEnabled!"
+        (toggled)="onToggleQuietHours()"
+      ></app-my-switch>
     </div>
     <div class="flex flex-row gap-10">
       <div class="flex flex-col flex-1">
@@ -70,8 +90,11 @@
         label="Apply"
         type="button"
         [isLoading]="isLoading"
+        (clicked)="onClickUpdateNotificationPref()"
       ></app-my-button>
     </div>
   </div>
-  }
+  @if (createUpdateResponse && 'success' in createUpdateResponse && createUpdateResponse.success) {
+  <div class="text-sm text-green-500">Preferences Saved!</div>
+  } }
 </div>

@@ -9,7 +9,7 @@ namespace ParcelManagement.Core.Model.NotificationPref
         public bool IsOnCheckInActive { get; set; } = true; 
         public bool IsOnClaimActive { get; set; } = false; 
         public bool IsOverdueActive { get; set; } = true; 
-        public TimeOnly? QuietHoursFrom {get; set; }
-        public TimeOnly? QuietHoursTo {get; set; }
+        public TimeOnly? QuietHoursFrom { get; set; }
+        public TimeOnly? QuietHoursTo { get; set; }
     }
 }

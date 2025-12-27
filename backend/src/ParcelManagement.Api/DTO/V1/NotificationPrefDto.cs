@@ -9,8 +9,8 @@ namespace ParcelManagement.Api.DTO.V1
         public bool IsOnCheckInActive { get; set; }
         public bool IsOnClaimActive { get; set; }
         public bool IsOverdueActive { get; set; }
-        public TimeOnly? QuietHoursFrom {get; set; }
-        public TimeOnly? QuietHoursTo {get; set; }
+        public TimeOnly? QuietHoursFrom { get; set; }
+        public TimeOnly? QuietHoursTo { get; set; }
     }
     public class NotificationPrefUpdateRequestDto
     {

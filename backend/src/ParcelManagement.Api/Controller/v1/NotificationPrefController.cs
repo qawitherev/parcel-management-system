@@ -37,7 +37,7 @@ namespace ParcelManagement.Api.Controller.V1
                 IsOnCheckInActive = notiPref.IsOnCheckInActive,
                 IsOnClaimActive = notiPref.IsOnClaimActive,
                 IsOverdueActive = notiPref.IsOverdueActive,
-                QuietHoursFrom = notiPref.QuietHoursFrom,
+                QuietHoursFrom = notiPref.QuietHoursFrom, 
                 QuietHoursTo = notiPref.QuietHoursTo
             };
             return Ok(returnDto);
@@ -61,7 +61,7 @@ namespace ParcelManagement.Api.Controller.V1
                 IsOnCheckInActive = payload.IsOnCheckInActive,
                 IsOnClaimActive = payload.IsOnClaimActive,
                 IsOverdueActive = payload.IsOverdueActive,
-                QuietHoursFrom = payload.QuietHoursFrom,
+                QuietHoursFrom = payload.QuietHoursFrom, 
                 QuietHoursTo = payload.QuietHoursTo
             };
             var newNp = await _notiPrefService.CreateNotificationPrefAsync(np);
@@ -83,11 +83,37 @@ namespace ParcelManagement.Api.Controller.V1
                 IsOnCheckInActive = np.IsOnCheckInActive,
                 IsOnClaimActive = np.IsOnClaimActive,
                 IsOverdueActive = np.IsOverdueActive,
-                QuietHoursFrom = np.QuietHoursFrom,
+                QuietHoursFrom = np.QuietHoursFrom, 
                 QuietHoursTo = np.QuietHoursTo
             };
             return Ok(returnDto);
         }
-        
+
+        [HttpPatch("{id}")]
+        [Authorize(Roles = "Resident")]
+        public async Task<IActionResult> UpdateNotificationPref(Guid id, [FromBody] NotificationPrefUpdateRequestDto requestDto )
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var updatingUserId = _userContextService.GetUserId();
+            var payload = new NotificationPrefUpdateRequest
+            {
+                NotificationPrefId = id,
+                UserId = updatingUserId,
+                UpdatingUserId = updatingUserId,
+                IsEmailActive = requestDto.IsEmailActive,
+                IsWhatsAppActive = requestDto.IsWhatsAppActive,
+                IsOnCheckInActive = requestDto.IsOnCheckInActive,
+                IsOnClaimActive = requestDto.IsOnClaimActive,
+                IsOverdueActive = requestDto.IsOverdueActive,
+                QuietHoursFrom = requestDto.QuietHoursFrom, 
+                QuietHoursTo = requestDto.QuietHoursTo
+            };
+            await _notiPrefService.UpdateNotificationPrefs(payload, updatingUserId);
+            return NoContent();
+        }
     }
 }

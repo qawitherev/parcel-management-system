@@ -11,9 +11,11 @@ namespace ParcelManagement.Core.Services
 
         Task<NotificationPref?> GetNotificationPrefByIdAsync(Guid id);
 
-        Task UpdateNotificationPrefs (NotificationPrefUpdateRequest np);
+        Task UpdateNotificationPrefs (NotificationPrefUpdateRequest np, Guid updatingUserId);
 
         Task<NotificationPref?> GetNotificationPrefByUserId(Guid userId);
+
+        Task EnsureUserHasNotificationPref(Guid userId);
     }
 
     public class NotificationPrefService : INotificationPrefService
@@ -45,7 +47,7 @@ namespace ParcelManagement.Core.Services
                 IsOnClaimActive = np.IsOnClaimActive, 
                 IsOverdueActive = np.IsOverdueActive, 
                 QuietHoursFrom = np.QuietHoursFrom, 
-                QuietHoursTo = np.QuietHoursTo, 
+                QuietHoursTo = np.QuietHoursTo,
                 CreatedBy = np.CreatingUserId, 
                 CreatedOn = DateTimeOffset.UtcNow, 
             };
@@ -69,21 +71,48 @@ namespace ParcelManagement.Core.Services
             return notiPrefs;
         }
 
-        public async Task UpdateNotificationPrefs(NotificationPrefUpdateRequest np)
+        public async Task UpdateNotificationPrefs(NotificationPrefUpdateRequest np, Guid updatingUserId)
         {
             var existing = await _npRepo.GetNotificationPrefByIdAsync(np.NotificationPrefId) ?? 
                 throw new KeyNotFoundException($"Notification preferences not found");
-            existing.IsEmailActive = np.IsEmailActive;
-            existing.IsWhatsAppActive = np.IsWhatsAppActive;
-            existing.IsOnCheckInActive = np.IsOnCheckInActive;
-            existing.IsOnClaimActive = np.IsOnClaimActive;
-            existing.IsOverdueActive = np.IsOverdueActive;
+            if (updatingUserId != existing.UserId)
+            {
+                throw new InvalidOperationException("Notification preference cannot be updated");
+            }
+            existing.IsEmailActive = np.IsEmailActive ?? existing.IsEmailActive;
+            existing.IsWhatsAppActive = np.IsWhatsAppActive ?? existing.IsWhatsAppActive;
+            existing.IsOnCheckInActive = np.IsOnCheckInActive ?? existing.IsOnCheckInActive;
+            existing.IsOnClaimActive = np.IsOnClaimActive ?? existing.IsOnClaimActive;
+            existing.IsOverdueActive = np.IsOverdueActive ?? existing.IsOverdueActive;
             existing.QuietHoursFrom = np.QuietHoursFrom;
             existing.QuietHoursTo = np.QuietHoursTo;
             existing.UpdatedBy = np.UpdatingUserId;
             existing.UpdatedOn = DateTimeOffset.UtcNow;
 
             await _npRepo.UpdateNotificationPrefAsync(existing);
+        }
+
+        public async Task EnsureUserHasNotificationPref(Guid userId)
+        {
+            var specification = new NotificationPrefByUserIdSpecification(userId);
+            var existing = await _npRepo.GetNotificationPrefBySpecification(specification);
+            if (existing != null)
+            {
+                return;
+            }
+            var np = new NotificationPref
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                IsEmailActive = true,
+                IsWhatsAppActive = true,
+                IsOnCheckInActive = true,
+                IsOnClaimActive = false,
+                IsOverdueActive = true,
+                CreatedBy = userId,
+                CreatedOn = DateTimeOffset.UtcNow
+            };
+            await _npRepo.CreateNotificationPrefAsync(np);
         }
     }
 }

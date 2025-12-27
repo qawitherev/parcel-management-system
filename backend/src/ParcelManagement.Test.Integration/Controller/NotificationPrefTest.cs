@@ -431,7 +431,7 @@ namespace ParcelManagement.Test.Integration
         }
 
         [Fact]
-        public async Task UpdateNotificationPref_DifferentUser_ShouldReturn500()
+        public async Task UpdateNotificationPref_DifferentUser_ShouldReturn409()
         {
             await ResetDatabaseAsync();
             var userId = Guid.NewGuid();

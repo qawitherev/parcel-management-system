@@ -20,7 +20,6 @@ export class MySwitch {
   onSwitchToggled(event: Event) {
     const checked = (event.target as HTMLInputElement).checked;
     this.isPositive = checked;
-    AppConsole.log(`switch state is ${this.isPositive}\nchecked is : ${checked}`)
     this.toggled.emit();
   }
 

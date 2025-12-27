@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, map, Observable, tap } from 'rxjs';
+import { catchError, map, Observable } from 'rxjs';
 import { ApiError, handleApiError } from '../../../core/error-handling/api-catch-error';
 import { HttpParamsBuilder } from '../../../utils/param-builder';
 import { notificationPrefEndpoints } from '../../../core/endpoints/notification-prefs-endpoints';

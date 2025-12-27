@@ -4,7 +4,6 @@ import { catchError, map, Observable } from 'rxjs';
 import { ApiError, handleApiError } from '../../../core/error-handling/api-catch-error';
 import { HttpParamsBuilder } from '../../../utils/param-builder';
 import { notificationPrefEndpoints } from '../../../core/endpoints/notification-prefs-endpoints';
-import { AppConsole } from '../../../utils/app-console';
 
 export interface NotificationPrefCreateRequest {
   isEmailActive?: boolean;

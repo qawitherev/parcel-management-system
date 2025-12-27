@@ -80,6 +80,17 @@ const MENU_ITEMS: MenuItem[] = [
         roles: ['ParcelRoomManager', 'Admin']
       }
     ]
+  }, 
+  {
+    label: 'Settings', 
+    roles: ['Resident'], 
+    children: [
+      {
+        label: 'Notifications', 
+        route: '/settings/notifications', 
+        roles: ['Resident']
+      }
+    ]
   }
 ];
 

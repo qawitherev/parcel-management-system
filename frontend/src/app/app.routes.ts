@@ -99,5 +99,17 @@ export const routes: Routes = [
             }
         ], 
         canActivate: [isLoggedInGuard, isAdminAndManagerAuthed]
+    }, 
+
+    {
+        path: 'settings', 
+        component: NormalLayout, 
+        children: [
+            {
+                path: 'notifications', loadChildren: () => import('./features/system-settings/notification-prefs/notification-prefs-module').then(m => m.NotificationPrefsModule),
+                data: { title: 'Notifications'}, 
+                canActivate: [isLoggedInGuard]
+            }
+        ]
     }
 ];

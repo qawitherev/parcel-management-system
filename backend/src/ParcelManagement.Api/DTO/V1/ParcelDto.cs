@@ -103,4 +103,18 @@ namespace ParcelManagement.Api.DTO.V1
         public required int Row { get; set; }
         public required string ErrorDetail { get; set; }
     }
+
+    public class BulkClaimRequestDto
+    {
+        [Required]
+        public required List<string> TrackingNumber { get; set; }
+    }
+
+    public class BulkClaimResponseDto
+    {
+        public required string Status { get; set; }
+        public required int ParcelsClaimed { get; set; }
+        public required string Message { get; set; }
+        public List<string>? InvalidTrackingNumbers { get; set; }
+    }
 }

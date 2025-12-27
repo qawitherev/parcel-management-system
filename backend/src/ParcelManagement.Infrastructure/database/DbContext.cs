@@ -26,6 +26,8 @@ namespace ParcelManagement.Infrastructure.Database
 
         public virtual DbSet<Locker> Lockers { get; set; }
 
+        public virtual DbSet<NotificationPref> NotificationPref { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -36,6 +38,7 @@ namespace ParcelManagement.Infrastructure.Database
             modelBuilder.ApplyConfiguration(new ResidentUnitEntityConfiguration());
             modelBuilder.ApplyConfiguration(new LockerEntityConfiguration());
             modelBuilder.ApplyConfiguration(new ParcelEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new NotificationPrefEntityConfiguration());
 
             // making composite primary key for bridge table 
             modelBuilder.Entity<UserResidentUnit>()

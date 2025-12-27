@@ -54,7 +54,9 @@ namespace ParcelManagement.Core.Services
 
         Task<Parcel> GetParcelHistoriesAsync(string trackingNumber, Guid inquiringUserId, UserRole role);
 
-        Task<(IReadOnlyCollection<Parcel>, int count)> GetRecentlyPickedUp(); 
+        Task<(IReadOnlyCollection<Parcel>, int count)> GetRecentlyPickedUp();
+
+        Task<BulkClaimResponse> BulkClaimAsync(IEnumerable<string> trackingNumbers, Guid performedByUser);
     }
 
     public class ParcelService(
@@ -196,7 +198,7 @@ namespace ParcelManagement.Core.Services
                     }
                     var newParcel = await CheckInHelper(
                         trackingNumber, existingResidentUnitDict[residentUnit].Id, existingLockerDict[locker!].Id, weight, dimensions, performedByUser,
-                        isV2 ? 2 : 1);
+                        isV2 ? 2 : 1, isBulk: true);
                     existingParcelsDict[trackingNumber] = newParcel;
                 }
                 if (response.Items.Any(i => i.IsError))
@@ -357,7 +359,7 @@ namespace ParcelManagement.Core.Services
 
         // helpers 
         private async Task<Parcel> CheckInHelper(string trackingNumber, Guid residentUnitId, Guid? lockerId, decimal? weight, string? dimensions, Guid performedByUser, 
-            int version = 1
+            int version = 1, bool isBulk = false
         )
         {
             var newParcel = new Parcel
@@ -377,7 +379,7 @@ namespace ParcelManagement.Core.Services
             {
                 Id = Guid.NewGuid(),
                 ParcelId = newParcel.Id,
-                TrackingEventType = TrackingEventType.CheckIn,
+                TrackingEventType = isBulk ? TrackingEventType.BulkCheckIn : TrackingEventType.CheckIn,
                 EventTime = DateTimeOffset.UtcNow,
                 PerformedByUser = performedByUser
             };
@@ -392,6 +394,75 @@ namespace ParcelManagement.Core.Services
             var parcelWithDetails = await _parcelRepo.GetOneParcelBySpecificationAsync(spec) ??
                 throw new KeyNotFoundException($"Parcel not found");
             return parcelWithDetails;
+        }
+
+        public async Task<BulkClaimResponse> BulkClaimAsync(IEnumerable<string> trackingNumbers, Guid performedByUser)
+        {
+            var response = new BulkClaimResponse
+            {
+                InvalidTrackingNumbers = []
+            };
+
+            var trackingNumberList = trackingNumbers.ToList();
+            if (trackingNumberList.Count == 0)
+            {
+                response.IsSuccess = false;
+                return response;
+            }
+
+            // Get all parcels that belong to the user
+            var userParcelsSpec = new ParcelByUserSpecification(performedByUser);
+            var userParcels = await _parcelRepo.GetParcelsBySpecificationAsync(userParcelsSpec);
+            var userParcelsDict = userParcels
+                .Where(p => p != null)
+                .ToDictionary(p => p!.TrackingNumber, StringComparer.OrdinalIgnoreCase);
+
+            // Validate all tracking numbers first (all-or-nothing strategy)
+            var parcelsToClaimList = new List<Parcel>();
+            foreach (var trackingNumber in trackingNumberList)
+            {
+                if (!userParcelsDict.TryGetValue(trackingNumber, out var parcel))
+                {
+                    response.InvalidTrackingNumbers.Add(trackingNumber);
+                    continue;
+                }
+
+                if (parcel!.Status == ParcelStatus.Claimed)
+                {
+                    response.InvalidTrackingNumbers.Add(trackingNumber);
+                    continue;
+                }
+
+                parcelsToClaimList.Add(parcel);
+            }
+
+            // If any tracking number is invalid, return error (all-or-nothing)
+            if (response.InvalidTrackingNumbers.Count > 0)
+            {
+                response.IsSuccess = false;
+                return response;
+            }
+
+            // All validations passed, proceed with claiming
+            foreach (var parcel in parcelsToClaimList)
+            {
+                parcel.Status = ParcelStatus.Claimed;
+                parcel.ExitDate = DateTimeOffset.UtcNow;
+
+                await _parcelRepo.UpdateParcelAsync(parcel);
+                await _trackingEventRepo.CreateAsync(new TrackingEvent
+                {
+                    Id = Guid.NewGuid(),
+                    ParcelId = parcel.Id,
+                    TrackingEventType = TrackingEventType.BulkClaim,
+                    EventTime = DateTimeOffset.UtcNow,
+                    PerformedByUser = performedByUser
+                });
+            }
+
+            response.IsSuccess = true;
+            response.ParcelsClaimed = parcelsToClaimList.Count;
+            return response;
         }
     }
 }

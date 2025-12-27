@@ -2,9 +2,9 @@
   <div class="flex items-center justify-between px-6 py-4 border border-[var(--clr-surface-a30)]">
     <span class="text-lg text-[var(--clr-dark-a0)] font-semibold">Parcel Management System</span>
     <app-my-switch 
-      labelPositive="Dark Mode" 
-      labelNegative="Dark Mode"
-      [isPositive]="!isDarkMode"
+      labelOn="Dark Mode" 
+      labelOff="Dark Mode"
+      [isPositive]="isDarkMode"
       (toggled)="onThemeToggle()"
     ></app-my-switch>
   </div>

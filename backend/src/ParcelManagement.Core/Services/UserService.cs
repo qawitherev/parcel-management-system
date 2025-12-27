@@ -29,13 +29,15 @@ namespace ParcelManagement.Core.Services
         IUserRepository userRepository,
         IUserResidentUnitRepository userResidentUnitRepo,
         IResidentUnitRepository residentUnitRepo, 
-        IParcelRepository parcelRepo
+        IParcelRepository parcelRepo, 
+        INotificationPrefService npService
         ) : IUserService
     {
         private readonly IUserRepository _userRepository = userRepository;
         private readonly IUserResidentUnitRepository _userResidentUnitRepo = userResidentUnitRepo;
         private readonly IResidentUnitRepository _residentUnitRepo = residentUnitRepo;
         private readonly IParcelRepository _parcelRepo = parcelRepo;
+        private readonly INotificationPrefService _npService = npService;
         public async Task<List<string>> UserLoginAsync(string username, string password)
         {
             var userByUsernameSpec = new UserByUsernameSpecification(username);
@@ -46,6 +48,10 @@ namespace ParcelManagement.Core.Services
                 throw new InvalidCredentialException("Invalid login credentials");
             }
             var userRole = possibleUser.Role;
+            if (possibleUser.Role == UserRole.Resident)
+            {
+                await _npService.EnsureUserHasNotificationPref(possibleUser.Id);
+            }
             return [possibleUser!.Id.ToString(), userRole.ToString()];
         }
 
@@ -87,6 +93,8 @@ namespace ParcelManagement.Core.Services
                     CreatedAt = DateTimeOffset.UtcNow
                 }
             );
+
+            await _npService.EnsureUserHasNotificationPref(newUser.Id);
             return theNewUser;
         }
 

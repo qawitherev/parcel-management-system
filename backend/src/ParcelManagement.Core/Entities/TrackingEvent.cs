@@ -7,7 +7,9 @@ namespace ParcelManagement.Core.Entities
         CheckIn,
         Claim,
         Exception,
-        Custom
+        Custom, 
+        BulkCheckIn, 
+        BulkClaim
     }
 
     public class TrackingEvent: IEntity

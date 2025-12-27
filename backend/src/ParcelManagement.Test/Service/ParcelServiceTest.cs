@@ -261,5 +261,272 @@ namespace ParcelManagement.Test.Service
             }
             await _parcelFixture.ResetDb();
         }
+
+        [Fact]
+        public async Task BulkClaimAsync_EmptyList_ShouldReturnFailure()
+        {
+            var result = await _parcelFixture.ParcelService.BulkClaimAsync([], Guid.NewGuid());
+            Assert.False(result.IsSuccess);
+            Assert.Equal(0, result.ParcelsClaimed);
+            await _parcelFixture.ResetDb();
+        }
+
+        [Fact]
+        public async Task BulkClaimAsync_InvalidTrackingNumbers_ShouldReturnFailure()
+        {
+            var dbContext = _parcelFixture.DbContext;
+            var userId = Guid.NewGuid();
+            var theUser = new User
+            {
+                Id = userId,
+                Username = "testUser",
+                Email = "email@email.com",
+                PasswordHash = "####"
+            };
+            await dbContext.Users.AddAsync(theUser);
+            await dbContext.SaveChangesAsync();
+
+            var result = await _parcelFixture.ParcelService.BulkClaimAsync(
+                ["INVALID001", "INVALID002"], userId);
+            
+            Assert.False(result.IsSuccess);
+            Assert.Equal(0, result.ParcelsClaimed);
+            Assert.Contains("INVALID001", result.InvalidTrackingNumbers);
+            Assert.Contains("INVALID002", result.InvalidTrackingNumbers);
+            await _parcelFixture.ResetDb();
+        }
+
+        [Fact]
+        public async Task BulkClaimAsync_MixedValidInvalid_ShouldReturnFailure()
+        {
+            var dbContext = _parcelFixture.DbContext;
+            var userId = Guid.NewGuid();
+            var theUser = new User
+            {
+                Id = userId,
+                Username = "testUser",
+                Email = "email@email.com",
+                PasswordHash = "####"
+            };
+            var theResidentUnit = new ResidentUnit
+            {
+                Id = Guid.NewGuid(),
+                UnitName = "RU001"
+            };
+            var theUserResidentUnit = new UserResidentUnit
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                ResidentUnitId = theResidentUnit.Id
+            };
+            var parcel = new Parcel
+            {
+                Id = Guid.NewGuid(),
+                TrackingNumber = "TN001",
+                Status = ParcelStatus.AwaitingPickup,
+                ResidentUnitId = theResidentUnit.Id
+            };
+            await dbContext.Users.AddAsync(theUser);
+            await dbContext.ResidentUnits.AddAsync(theResidentUnit);
+            await dbContext.UserResidentUnits.AddAsync(theUserResidentUnit);
+            await dbContext.Parcels.AddAsync(parcel);
+            await dbContext.SaveChangesAsync();
+
+            var result = await _parcelFixture.ParcelService.BulkClaimAsync(
+                ["TN001", "INVALID001"], userId);
+            
+            Assert.False(result.IsSuccess);
+            Assert.Equal(0, result.ParcelsClaimed);
+            Assert.Contains("INVALID001", result.InvalidTrackingNumbers);
+            
+            // Verify original parcel is not claimed (all-or-nothing)
+            await dbContext.Entry(parcel).ReloadAsync();
+            Assert.Equal(ParcelStatus.AwaitingPickup, parcel.Status);
+            await _parcelFixture.ResetDb();
+        }
+
+        [Fact]
+        public async Task BulkClaimAsync_AlreadyClaimedParcel_ShouldReturnFailure()
+        {
+            var dbContext = _parcelFixture.DbContext;
+            var userId = Guid.NewGuid();
+            var theUser = new User
+            {
+                Id = userId,
+                Username = "testUser",
+                Email = "email@email.com",
+                PasswordHash = "####"
+            };
+            var theResidentUnit = new ResidentUnit
+            {
+                Id = Guid.NewGuid(),
+                UnitName = "RU001"
+            };
+            var theUserResidentUnit = new UserResidentUnit
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                ResidentUnitId = theResidentUnit.Id
+            };
+            var claimedParcel = new Parcel
+            {
+                Id = Guid.NewGuid(),
+                TrackingNumber = "TN001",
+                Status = ParcelStatus.Claimed,
+                ResidentUnitId = theResidentUnit.Id
+            };
+            await dbContext.Users.AddAsync(theUser);
+            await dbContext.ResidentUnits.AddAsync(theResidentUnit);
+            await dbContext.UserResidentUnits.AddAsync(theUserResidentUnit);
+            await dbContext.Parcels.AddAsync(claimedParcel);
+            await dbContext.SaveChangesAsync();
+
+            var result = await _parcelFixture.ParcelService.BulkClaimAsync(
+                ["TN001"], userId);
+            
+            Assert.False(result.IsSuccess);
+            Assert.Equal(0, result.ParcelsClaimed);
+            Assert.Contains("TN001", result.InvalidTrackingNumbers);
+            await _parcelFixture.ResetDb();
+        }
+
+        [Fact]
+        public async Task BulkClaimAsync_AllValidParcels_ShouldClaimAllSuccessfully()
+        {
+            var dbContext = _parcelFixture.DbContext;
+            var userId = Guid.NewGuid();
+            var theUser = new User
+            {
+                Id = userId,
+                Username = "testUser",
+                Email = "email@email.com",
+                PasswordHash = "####"
+            };
+            var theResidentUnit = new ResidentUnit
+            {
+                Id = Guid.NewGuid(),
+                UnitName = "RU001"
+            };
+            var theUserResidentUnit = new UserResidentUnit
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                ResidentUnitId = theResidentUnit.Id
+            };
+            var parcel1 = new Parcel
+            {
+                Id = Guid.NewGuid(),
+                TrackingNumber = "TN001",
+                Status = ParcelStatus.AwaitingPickup,
+                ResidentUnitId = theResidentUnit.Id
+            };
+            var parcel2 = new Parcel
+            {
+                Id = Guid.NewGuid(),
+                TrackingNumber = "TN002",
+                Status = ParcelStatus.AwaitingPickup,
+                ResidentUnitId = theResidentUnit.Id
+            };
+            await dbContext.Users.AddAsync(theUser);
+            await dbContext.ResidentUnits.AddAsync(theResidentUnit);
+            await dbContext.UserResidentUnits.AddAsync(theUserResidentUnit);
+            await dbContext.Parcels.AddRangeAsync(parcel1, parcel2);
+            await dbContext.SaveChangesAsync();
+
+            var result = await _parcelFixture.ParcelService.BulkClaimAsync(
+                ["TN001", "TN002"], userId);
+            
+            Assert.True(result.IsSuccess);
+            Assert.Equal(2, result.ParcelsClaimed);
+            Assert.Empty(result.InvalidTrackingNumbers);
+
+            // Verify parcels are now claimed
+            await dbContext.Entry(parcel1).ReloadAsync();
+            await dbContext.Entry(parcel2).ReloadAsync();
+            Assert.Equal(ParcelStatus.Claimed, parcel1.Status);
+            Assert.Equal(ParcelStatus.Claimed, parcel2.Status);
+
+            // Verify tracking events were created
+            var trackingEvents = dbContext.TrackingEvents.Where(te => 
+                te.ParcelId == parcel1.Id || te.ParcelId == parcel2.Id).ToList();
+            Assert.Equal(2, trackingEvents.Count);
+            Assert.All(trackingEvents, te => Assert.Equal(TrackingEventType.BulkClaim, te.TrackingEventType));
+            await _parcelFixture.ResetDb();
+        }
+
+        [Fact]
+        public async Task BulkClaimAsync_ParcelNotBelongingToUser_ShouldReturnFailure()
+        {
+            var dbContext = _parcelFixture.DbContext;
+            var userId = Guid.NewGuid();
+            var otherUserId = Guid.NewGuid();
+            var theUser = new User
+            {
+                Id = userId,
+                Username = "testUser",
+                Email = "email@email.com",
+                PasswordHash = "####"
+            };
+            var otherUser = new User
+            {
+                Id = otherUserId,
+                Username = "otherUser",
+                Email = "other@email.com",
+                PasswordHash = "####"
+            };
+            var theResidentUnit = new ResidentUnit
+            {
+                Id = Guid.NewGuid(),
+                UnitName = "RU001"
+            };
+            var otherResidentUnit = new ResidentUnit
+            {
+                Id = Guid.NewGuid(),
+                UnitName = "RU002"
+            };
+            var theUserResidentUnit = new UserResidentUnit
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                ResidentUnitId = theResidentUnit.Id
+            };
+            var otherUserResidentUnit = new UserResidentUnit
+            {
+                Id = Guid.NewGuid(),
+                UserId = otherUserId,
+                ResidentUnitId = otherResidentUnit.Id
+            };
+            var parcelBelongingToUser = new Parcel
+            {
+                Id = Guid.NewGuid(),
+                TrackingNumber = "TN001",
+                Status = ParcelStatus.AwaitingPickup,
+                ResidentUnitId = theResidentUnit.Id
+            };
+            var parcelBelongingToOther = new Parcel
+            {
+                Id = Guid.NewGuid(),
+                TrackingNumber = "TN002",
+                Status = ParcelStatus.AwaitingPickup,
+                ResidentUnitId = otherResidentUnit.Id
+            };
+            await dbContext.Users.AddRangeAsync(theUser, otherUser);
+            await dbContext.ResidentUnits.AddRangeAsync(theResidentUnit, otherResidentUnit);
+            await dbContext.UserResidentUnits.AddRangeAsync(theUserResidentUnit, otherUserResidentUnit);
+            await dbContext.Parcels.AddRangeAsync(parcelBelongingToUser, parcelBelongingToOther);
+            await dbContext.SaveChangesAsync();
+
+            var result = await _parcelFixture.ParcelService.BulkClaimAsync(
+                ["TN001", "TN002"], userId);
+            
+            Assert.False(result.IsSuccess);
+            Assert.Equal(0, result.ParcelsClaimed);
+            Assert.Contains("TN002", result.InvalidTrackingNumbers);
+            
+            // Verify the user's parcel is not claimed (all-or-nothing)
+            await dbContext.Entry(parcelBelongingToUser).ReloadAsync();
+            Assert.Equal(ParcelStatus.AwaitingPickup, parcelBelongingToUser.Status);
+            await _parcelFixture.ResetDb();
+        }
     }
 }

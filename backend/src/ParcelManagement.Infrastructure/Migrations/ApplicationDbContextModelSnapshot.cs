@@ -59,6 +59,60 @@ namespace ParcelManagement.Infrastructure.Migrations
                     b.ToTable("Lockers");
                 });
 
+            modelBuilder.Entity("ParcelManagement.Core.Entities.NotificationPref", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsEmailActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsOnCheckInActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsOnClaimActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsOverdueActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsWhatsAppActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<TimeOnly?>("QuietHoursFrom")
+                        .HasColumnType("time(6)");
+
+                    b.Property<TimeOnly?>("QuietHoursTo")
+                        .HasColumnType("time(6)");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTimeOffset?>("UpdatedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("UpdatedBy");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("NotificationPref");
+                });
+
             modelBuilder.Entity("ParcelManagement.Core.Entities.Parcel", b =>
                 {
                     b.Property<Guid>("Id")
@@ -268,6 +322,31 @@ namespace ParcelManagement.Infrastructure.Migrations
                     b.Navigation("UpdatedByUser");
                 });
 
+            modelBuilder.Entity("ParcelManagement.Core.Entities.NotificationPref", b =>
+                {
+                    b.HasOne("ParcelManagement.Core.Entities.User", "CreatingUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedBy")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ParcelManagement.Core.Entities.User", "UpdatingUser")
+                        .WithMany()
+                        .HasForeignKey("UpdatedBy");
+
+                    b.HasOne("ParcelManagement.Core.Entities.User", "User")
+                        .WithOne("NotificationPref")
+                        .HasForeignKey("ParcelManagement.Core.Entities.NotificationPref", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreatingUser");
+
+                    b.Navigation("UpdatingUser");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("ParcelManagement.Core.Entities.Parcel", b =>
                 {
                     b.HasOne("ParcelManagement.Core.Entities.Locker", "Locker")
@@ -357,6 +436,8 @@ namespace ParcelManagement.Infrastructure.Migrations
 
             modelBuilder.Entity("ParcelManagement.Core.Entities.User", b =>
                 {
+                    b.Navigation("NotificationPref");
+
                     b.Navigation("UserResidentUnits");
                 });
 #pragma warning restore 612, 618

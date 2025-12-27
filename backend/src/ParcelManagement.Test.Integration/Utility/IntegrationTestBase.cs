@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ParcelManagement.Api.AuthenticationAndAuthorization;
 using ParcelManagement.Infrastructure.Database;
@@ -27,6 +28,11 @@ namespace ParcelManagement.Test.Integration
             Scope?.Dispose();
             Client?.Dispose();
             GC.SuppressFinalize(this);
+        }
+
+        public void ClearChangeTracker()
+        {
+            DbContext.ChangeTracker.Clear();
         }
 
         protected async Task  ResetDatabaseAsync()

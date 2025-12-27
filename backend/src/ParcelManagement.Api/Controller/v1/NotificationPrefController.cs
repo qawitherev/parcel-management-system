@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using ParcelManagement.Api.DTO.V1;
 using ParcelManagement.Api.Utility;
 using ParcelManagement.Core.Model.NotificationPref;

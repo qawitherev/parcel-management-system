@@ -4,7 +4,7 @@ import { NotificationPrefs } from './notification-prefs';
 
 const routes: Routes = [
   {
-    path: '' ,component: NotificationPrefs
+    path: '', component: NotificationPrefs
   }
 ];
 

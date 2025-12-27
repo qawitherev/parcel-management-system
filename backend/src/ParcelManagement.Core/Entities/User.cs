@@ -46,5 +46,7 @@ namespace ParcelManagement.Core.Entities
 
         // navigation property
         public ICollection<UserResidentUnit> UserResidentUnits { get; set; } = [];
+
+        public NotificationPref? NotificationPref { get; set; }
     }
 }

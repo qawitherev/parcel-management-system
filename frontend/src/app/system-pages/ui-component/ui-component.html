@@ -25,4 +25,11 @@
   <app-my-searchbar
     (onKeywordChange)="onSearchBarChanged($event)"
   ></app-my-searchbar>
+  
+  <app-my-form
+    [myFormGroup]="formGroup"
+    [myFields]="formFields"
+    submitLabel="Submit"
+    (submitted)="onFormSubmit($event)"
+  ></app-my-form>
 </div>

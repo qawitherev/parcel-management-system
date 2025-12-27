@@ -1,6 +1,7 @@
 import * as XLSX from 'xlsx';
 import { CheckInPayload } from '../../features/parcel/check-in/check-in-service';
 import { AppConsole } from '../../utils/app-console';
+import { ClaimPayload } from '../../features/parcel/claim/claim-service';
 
 export function excelToJson<T>(file: File, mapper: (data: any) => T): Promise<T[]> {
   return new Promise((resolve, reject) => {
@@ -51,4 +52,10 @@ export function mapperCheckInPayload(data: any): CheckInPayload{
         weight: data.Weight ? data.Weight : undefined, 
         dimension: data.Dimension ? data.Dimension : undefined
     }
+}
+
+export function mapperClaimPayload(data: any): ClaimPayload {
+  return {
+    trackingNumber: data.trackingNumber
+  }
 }

@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ThemeService } from '../../../../core/theme/theme-service';
 import { NgClass } from '@angular/common';
+import { AppConsole } from '../../../../utils/app-console';
 
 @Component({
   selector: 'app-my-switch',
@@ -9,14 +10,16 @@ import { NgClass } from '@angular/common';
   styleUrl: './my-switch.css'
 })
 export class MySwitch {
-  @Input() labelPositive: string = "Positive"
-  @Input() labelNegative: string = "Negative"
+  @Input() labelOn: string = "On"
+  @Input() labelOff: string = "Off"
   @Input() isPositive: boolean = true;
+  @Input() willShowLabel: boolean = true;
 
-  @Output() toggled = new EventEmitter<void>();
+  @Output() toggled = new EventEmitter<boolean>();
 
-  onSwitchToggled() {
-    this.isPositive = !this.isPositive
+  onSwitchToggled(event: Event) {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.isPositive = checked;
     this.toggled.emit();
   }
 

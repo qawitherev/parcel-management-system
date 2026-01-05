@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ParcelManagement.Infrastructure.Database;
 
@@ -11,9 +12,11 @@ using ParcelManagement.Infrastructure.Database;
 namespace ParcelManagement.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260105083745_AddUserRefreshTokenCol")]
+    partial class AddUserRefreshTokenCol
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -259,9 +262,6 @@ namespace ParcelManagement.Infrastructure.Migrations
 
                     b.Property<string>("RefreshToken")
                         .HasColumnType("longtext");
-
-                    b.Property<DateTimeOffset?>("RefreshTokenExpiry")
-                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("ResidentUnitDeprecated")
                         .HasMaxLength(50)

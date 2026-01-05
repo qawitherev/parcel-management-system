@@ -31,7 +31,7 @@ namespace ParcelManagement.Test.Integration.Utility
             await _dbContext.Users.AddAsync(user);
             await _dbContext.SaveChangesAsync();
 
-            var token = _tokenService.GenerateToken(user.Id.ToString(), user.Username, role);
+            var token = _tokenService.GenerateAccessToken(user.Id.ToString(), user.Username, role);
             return token;
         }
 

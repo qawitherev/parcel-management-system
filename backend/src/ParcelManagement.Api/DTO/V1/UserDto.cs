@@ -11,6 +11,13 @@ namespace ParcelManagement.Api.DTO.V1
         public required string PlainPassword { get; set; }
     }
 
+    public class LoginResponseDto
+    {
+        [Required]
+        public required string AccessToken { get; set; }
+        public required string RefreshToken {get; set; }
+    }
+
     public class RegisterResidentDto
     {
         [Required]

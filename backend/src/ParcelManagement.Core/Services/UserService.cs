@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using ParcelManagement.Core.Entities;
 using ParcelManagement.Core.Misc;
 using ParcelManagement.Core.Model.Helper;
+using ParcelManagement.Core.Model.User;
 using ParcelManagement.Core.Repositories;
 using ParcelManagement.Core.Specifications;
 
@@ -14,7 +15,7 @@ namespace ParcelManagement.Core.Services
 
         Task<User> ParcelRoomManagerRegisterAsync(string username, string password, string email);
 
-        Task<List<string>> UserLoginAsync(string username, string password);
+        Task<List<string>> UserLoginAsync(UserLoginRequest loginRequest);
 
         Task<User> GetUserById(Guid id);
 
@@ -38,20 +39,28 @@ namespace ParcelManagement.Core.Services
         private readonly IResidentUnitRepository _residentUnitRepo = residentUnitRepo;
         private readonly IParcelRepository _parcelRepo = parcelRepo;
         private readonly INotificationPrefService _npService = npService;
-        public async Task<List<string>> UserLoginAsync(string username, string password)
+        public async Task<List<string>> UserLoginAsync(UserLoginRequest loginRequest)
         {
-            var userByUsernameSpec = new UserByUsernameSpecification(username);
-            var possibleUser = await _userRepository.GetOneUserBySpecification(userByUsernameSpec) ?? throw new InvalidCredentialException($"Invalid login credential - username");
-            var isCredentialValid = PasswordService.VerifyPassword(possibleUser, possibleUser.PasswordHash, password);
+            var userByUsernameSpec = new UserByUsernameSpecification(loginRequest.Username);
+            var possibleUser = await _userRepository.GetOneUserBySpecification(userByUsernameSpec) ?? 
+                throw new InvalidCredentialException($"Invalid login credential - username");
+
+            var isCredentialValid = PasswordService.VerifyPassword(possibleUser, possibleUser.PasswordHash, loginRequest.Password);
             if (!isCredentialValid)
             {
                 throw new InvalidCredentialException("Invalid login credentials");
             }
+            
             var userRole = possibleUser.Role;
             if (possibleUser.Role == UserRole.Resident)
             {
                 await _npService.EnsureUserHasNotificationPref(possibleUser.Id);
             }
+
+            possibleUser.RefreshToken = loginRequest.RefreshToken;
+            possibleUser.RefreshTokenExpiry = loginRequest.RefreshTokenExpiry;
+
+            await _userRepository.UpdateUserAsync(possibleUser);
             return [possibleUser!.Id.ToString(), userRole.ToString()];
         }
 

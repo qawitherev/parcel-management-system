@@ -45,5 +45,10 @@ namespace ParcelManagement.Infrastructure.Repository
                 .Select(user => user.Id).ToListAsync();
             return [.. userIds.Except(validUserIds)];     
         }
+
+        public async Task UpdateUserAsync(User user)
+        {
+            await UpdateAsync(user);
+        }
     }
 }

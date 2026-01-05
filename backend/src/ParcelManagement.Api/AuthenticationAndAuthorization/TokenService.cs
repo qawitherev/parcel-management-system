@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -10,13 +11,17 @@ namespace ParcelManagement.Api.AuthenticationAndAuthorization
     {
         //TODO
         // To include role for authorization
-        string GenerateToken(string id, string username, string role);
+        string GenerateAccessToken(string id, string username, string role);
+
+        string GenerateRefreshToken();
+
+        DateTimeOffset GetRefreshTokenExpiry(int days);
     }
 
     public class TokenService(IOptions<JWTSettings> jwtSettings_iOptions) : ITokenService
     {
         private readonly JWTSettings jwtSettings = jwtSettings_iOptions.Value;
-        public string GenerateToken(string id, string username, string role)
+        public string GenerateAccessToken(string id, string username, string role)
         {
             if (jwtSettings.SecretKey == null)
             {
@@ -40,6 +45,16 @@ namespace ParcelManagement.Api.AuthenticationAndAuthorization
             );
             var tokenHandler = new JwtSecurityTokenHandler();
             return tokenHandler.WriteToken(tokenRaw);
+        }
+
+        public string GenerateRefreshToken()
+        {
+            return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        }
+
+        public DateTimeOffset GetRefreshTokenExpiry(int days)
+        {
+            return DateTime.UtcNow.AddDays(days);
         }
     }
 }

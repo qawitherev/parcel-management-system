@@ -52,4 +52,9 @@ namespace ParcelManagement.Api.DTO.V1
         public required string Username { get; set; }
         public required string Role { get; set; }
     }
+
+    public class RefreshTokenDto
+    {
+        public required string RefreshToken { get; set; }
+    }
 }

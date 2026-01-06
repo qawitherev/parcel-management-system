@@ -2,6 +2,7 @@ using System.Security.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using ParcelManagement.Core.Entities;
 using ParcelManagement.Core.Misc;
+using ParcelManagement.Core.Model;
 using ParcelManagement.Core.Model.Helper;
 using ParcelManagement.Core.Model.User;
 using ParcelManagement.Core.Repositories;
@@ -24,6 +25,8 @@ namespace ParcelManagement.Core.Services
         Task<string> GetUserRole(Guid userId);
 
         Task<(IReadOnlyList<User>, int count)> GetUserForViewAsync(FilterPaginationRequest<UserSortableColumn> filter);
+
+        Task<User?> GetUserByRefreshTokenAsync(string refreshToken);
     }
 
     public class UserService(
@@ -50,7 +53,7 @@ namespace ParcelManagement.Core.Services
             {
                 throw new InvalidCredentialException("Invalid login credentials");
             }
-            
+
             var userRole = possibleUser.Role;
             if (possibleUser.Role == UserRole.Resident)
             {
@@ -154,6 +157,21 @@ namespace ParcelManagement.Core.Services
             var users = await _userRepository.GetUsersBySpecificationAsync(specification);
             var count = await _userRepository.GetUsersCountBySpecification(specification);
             return (users, count);
+        }
+
+        public async Task<User?> GetUserByRefreshTokenAsync(string refreshToken)
+        {
+            var spec = new UserByRefreshTokenSpecification(refreshToken);
+            var userByRefreshToken = await _userRepository.GetOneUserBySpecification(spec);
+            var now = DateTimeOffset.UtcNow;
+            if (userByRefreshToken == null ||
+                    userByRefreshToken.RefreshToken == "" ||
+                    now > userByRefreshToken.RefreshTokenExpiry
+                )
+            {
+                return null;
+            }
+            return userByRefreshToken;
         }
     }
 }

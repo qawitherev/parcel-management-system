@@ -28,6 +28,8 @@ namespace ParcelManagement.Infrastructure.Database
 
         public virtual DbSet<NotificationPref> NotificationPref { get; set; }
 
+        public virtual DbSet<Session> Sessions { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

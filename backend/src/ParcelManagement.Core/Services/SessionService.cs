@@ -1,12 +1,15 @@
 using ParcelManagement.Core.Entities;
 using ParcelManagement.Core.Model;
 using ParcelManagement.Core.Repositories;
+using ParcelManagement.Core.Specifications;
 
 namespace ParcelManagement.Core.Services
 {
     public interface ISessionService
     {
         Task<Session> CreateSessionAsync(CreateSessionRequest sessionRequest);
+        Task<Session?> GetSessionBySpecification(ISpecification<Session> specification);
+        Task UpdateSession(Session session);
 
     }
 
@@ -28,6 +31,16 @@ namespace ParcelManagement.Core.Services
             };
             return await _sessionRepo.CreateSessionAsync(session);
 
+        }
+
+        public async Task<Session?> GetSessionBySpecification(ISpecification<Session> specification)
+        {
+            return await _sessionRepo.GetSessionBySpecification(specification);
+        }
+
+        public async Task UpdateSession(Session session)
+        {
+            await _sessionRepo.UpdateSessionAsync(session);
         }
     }
 }

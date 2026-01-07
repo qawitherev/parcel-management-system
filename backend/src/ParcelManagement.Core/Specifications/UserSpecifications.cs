@@ -60,24 +60,4 @@ namespace ParcelManagement.Core.Specifications
             };
         }
     }
-
-    public class UserByRefreshTokenSpecification(string refreshToken) : ISpecification<User>
-    {
-        public List<IncludeExpressionString> IncludeExpressionsString => [];
-
-        public Expression<Func<User, object>>? OrderBy => null;
-
-        public Expression<Func<User, object>>? OrderByDesc => null;
-
-        public int? Page => null;
-
-        public int? Take => null;
-
-        List<IncludeExpression<User>> ISpecification<User>.IncludeExpressions => [];
-
-        public Expression<Func<User, bool>> ToExpression()
-        {
-            return u => u.RefreshToken == refreshToken;
-        }
-    }
 }

@@ -1,5 +1,6 @@
 using System.Security.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ParcelManagement.Core.Entities;
 using ParcelManagement.Core.Misc;
 using ParcelManagement.Core.Model;
@@ -27,8 +28,6 @@ namespace ParcelManagement.Core.Services
         Task<(IReadOnlyList<User>, int count)> GetUserForViewAsync(FilterPaginationRequest<UserSortableColumn> filter);
 
         Task<User?> GetUserByRefreshTokenAsync(string refreshToken);
-
-        Task<User?> GetUserByRefreshTokenAsyncV2(string refreshToken);
     }
 
     public class UserService(
@@ -169,22 +168,18 @@ namespace ParcelManagement.Core.Services
 
         public async Task<User?> GetUserByRefreshTokenAsync(string refreshToken)
         {
-            var spec = new UserByRefreshTokenSpecification(refreshToken);
-            var userByRefreshToken = await _userRepository.GetOneUserBySpecification(spec);
+            var spec = new SessionByRefreshTokenSpecification(refreshToken);
+            var session = await _sessionService.GetSessionBySpecification(spec);
+
             var now = DateTimeOffset.UtcNow;
-            if (userByRefreshToken == null ||
-                    userByRefreshToken.RefreshToken == "" ||
-                    now > userByRefreshToken.RefreshTokenExpiry
-                )
+            if (session == null || session.RefreshToken == "" || now > session.ExpiresAt)
             {
                 return null;
             }
-            return userByRefreshToken;
-        }
 
-        public Task<User?> GetUserByRefreshTokenAsyncV2(string refreshToken)
-        {
-            throw new NotImplementedException();
+            session.LastActive = DateTimeOffset.UtcNow;
+            await _sessionService.UpdateSession(session);
+            return session.User;
         }
     }
 }

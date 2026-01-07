@@ -38,8 +38,11 @@ namespace ParcelManagement.Core.Entities
         public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow; // Default to current time
         public string? RefreshToken { get; set; }
         public DateTimeOffset? RefreshTokenExpiry { get; set; }
-        // navigation property
+
+
+        // navigational properties
         public ICollection<UserResidentUnit> UserResidentUnits { get; set; } = [];
         public NotificationPref? NotificationPref { get; set; }
+        public ICollection<Session> Sessions { get; set; } = [];
     }
 }

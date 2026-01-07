@@ -21,7 +21,7 @@ namespace ParcelManagement.Infrastructure.Repository
 
         public async Task<User?> GetUserByIdAsync(Guid id)
         {
-            return await FindByIdAsync(id);
+            return await GetByIdAsync(id);
         }
 
         public async Task<IReadOnlyList<User>> GetUsersBySpecificationAsync(ISpecification<User> spec)

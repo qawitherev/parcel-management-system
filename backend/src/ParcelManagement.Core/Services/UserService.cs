@@ -27,26 +27,28 @@ namespace ParcelManagement.Core.Services
         Task<(IReadOnlyList<User>, int count)> GetUserForViewAsync(FilterPaginationRequest<UserSortableColumn> filter);
 
         Task<User?> GetUserByRefreshTokenAsync(string refreshToken);
+
+        Task<User?> GetUserByRefreshTokenAsyncV2(string refreshToken);
     }
 
     public class UserService(
         IUserRepository userRepository,
         IUserResidentUnitRepository userResidentUnitRepo,
         IResidentUnitRepository residentUnitRepo, 
-        IParcelRepository parcelRepo, 
-        INotificationPrefService npService
+        INotificationPrefService npService, 
+        ISessionService sessionService
         ) : IUserService
     {
         private readonly IUserRepository _userRepository = userRepository;
         private readonly IUserResidentUnitRepository _userResidentUnitRepo = userResidentUnitRepo;
         private readonly IResidentUnitRepository _residentUnitRepo = residentUnitRepo;
-        private readonly IParcelRepository _parcelRepo = parcelRepo;
         private readonly INotificationPrefService _npService = npService;
+        private readonly ISessionService _sessionService = sessionService;
         public async Task<List<string>> UserLoginAsync(UserLoginRequest loginRequest)
         {
             var userByUsernameSpec = new UserByUsernameSpecification(loginRequest.Username);
             var possibleUser = await _userRepository.GetOneUserBySpecification(userByUsernameSpec) ?? 
-                throw new InvalidCredentialException($"Invalid login credential - username");
+                throw new InvalidCredentialException($"Invalid login credential");
 
             var isCredentialValid = PasswordService.VerifyPassword(possibleUser, possibleUser.PasswordHash, loginRequest.Password);
             if (!isCredentialValid)
@@ -59,11 +61,17 @@ namespace ParcelManagement.Core.Services
             {
                 await _npService.EnsureUserHasNotificationPref(possibleUser.Id);
             }
-            var hashedRefreshToken = PasswordService.HashPlainPasswordOrToken(possibleUser, loginRequest.RefreshToken);
-            possibleUser.RefreshToken = hashedRefreshToken;
-            possibleUser.RefreshTokenExpiry = loginRequest.RefreshTokenExpiry;
 
-            await _userRepository.UpdateUserAsync(possibleUser);
+            var hashedRefreshToken = PasswordService.HashPlainPasswordOrToken(possibleUser, loginRequest.RefreshToken);
+            var createSessionRequest = new CreateSessionRequest
+            {
+                UserId = possibleUser.Id, 
+                RefreshToken = hashedRefreshToken, 
+                DeviceInfo = loginRequest.DeviceInfo, 
+                IpAddress = loginRequest.IpAddress
+            };
+            await _sessionService.CreateSessionAsync(createSessionRequest);
+
             return [possibleUser!.Id.ToString(), userRole.ToString()];
         }
 
@@ -172,6 +180,11 @@ namespace ParcelManagement.Core.Services
                 return null;
             }
             return userByRefreshToken;
+        }
+
+        public Task<User?> GetUserByRefreshTokenAsyncV2(string refreshToken)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -6,5 +6,7 @@ namespace ParcelManagement.Core.Model.User
         public required string Password { get; set; }
         public string RefreshToken { get; set; } = "";
         public DateTimeOffset? RefreshTokenExpiry { get; set; }
+        public string? DeviceInfo { get; set; }
+        public string? IpAddress { get; set; }
     }
 }

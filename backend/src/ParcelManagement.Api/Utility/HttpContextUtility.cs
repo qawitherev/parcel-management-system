@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using ParcelManagement.Core.Entities;
+using UAParser;
 
 namespace ParcelManagement.Api.Utility
 {
@@ -45,4 +46,30 @@ namespace ParcelManagement.Api.Utility
             return role;
         }
     }
+
+    public static class HttpContextUtilities
+    {
+        public static string GetDeviceInfo(HttpContext context)
+        {
+            var nonParsed = context.Request.Headers.UserAgent.ToString();
+            var parser = Parser.GetDefault();
+            var client = parser.Parse(nonParsed);
+            if (client != null)
+            {
+                return $"{client.UA.Family} on {client.OS.Family}";
+            }
+            return "";
+        }
+
+        public static string GetDeviceIp(HttpContext context)
+        {
+            var ip = context.Request.Headers["X-Forwarded-For"].FirstOrDefault();
+            if (!string.IsNullOrEmpty(ip))
+            {
+                return ip.Split(",")[0].Trim();
+            }
+            return context.Connection.RemoteIpAddress?.ToString() ?? "";
+        }
+    }
+
 }

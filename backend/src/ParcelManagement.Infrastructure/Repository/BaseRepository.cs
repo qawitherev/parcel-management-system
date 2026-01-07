@@ -74,7 +74,7 @@ namespace ParcelManagement.Infrastructure.Repository
             return objs;
         }
 
-        public async Task<T?> FindByIdAsync(Guid id)
+        public async Task<T?> GetByIdAsync(Guid id)
         {
             return await _dbContext.Set<T>().FindAsync(id);
         }
@@ -106,6 +106,13 @@ namespace ParcelManagement.Infrastructure.Repository
                 throw new KeyNotFoundException($"{obj.GetType().Name} with key {obj.Id} not found");
             _dbContext.Entry(existing).CurrentValues.SetValues(obj);
             await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<int> DeleteAsync(Guid id)
+        {
+            var rowsUpdated = await _dbContext.Set<T>().Where(t => t.Id == id)
+                .ExecuteDeleteAsync();
+            return rowsUpdated;
         }
     }
 

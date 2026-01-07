@@ -103,7 +103,9 @@ namespace ParcelManagement.Api.Controller
                 Username = dto.Username, 
                 Password = dto.PlainPassword, 
                 RefreshToken = refreshToken, 
-                RefreshTokenExpiry = RefreshTokenExpiry
+                RefreshTokenExpiry = RefreshTokenExpiry, 
+                DeviceInfo = HttpContextUtilities.GetDeviceInfo(HttpContext), 
+                IpAddress = HttpContextUtilities.GetDeviceIp(HttpContext)
             };
             var loginRes = await _userService.UserLoginAsync(loginRequest);
             var jwt = _tokenService.GenerateAccessToken(loginRes[0], dto.Username, loginRes[1]);

@@ -15,10 +15,12 @@ namespace ParcelManagement.Core.Repositories
 
         Task<IReadOnlyList<T>> CreateRangeAsync(List<T> objs);
 
-        Task<T?> FindByIdAsync(Guid id);
+        Task<T?> GetByIdAsync(Guid id);
 
         Task<ICollection<T>>? GetAllAsync();
 
         Task<IDbContextTransaction> BeginTransactionAsync();
+
+        Task<int> DeleteAsync(Guid id);
     }
 }

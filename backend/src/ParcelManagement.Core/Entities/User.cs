@@ -36,8 +36,6 @@ namespace ParcelManagement.Core.Entities
         public string? PasswordSalt { get; set; }
         public UserRole Role { get; set; } // Enum for user roles
         public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow; // Default to current time
-        public string? RefreshToken { get; set; }
-        public DateTimeOffset? RefreshTokenExpiry { get; set; }
 
 
         // navigational properties

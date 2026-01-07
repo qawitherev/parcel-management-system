@@ -116,7 +116,7 @@ namespace ParcelManagement.Test.Service
                 PasswordHash = "####",
                 PasswordSalt = "salt",
             };
-            var hashedPassword = PasswordService.HashPassword(registeredUser, plainPassword);
+            var hashedPassword = PasswordService.HashPlainPasswordOrToken(registeredUser, plainPassword);
             registeredUser.PasswordHash = hashedPassword;
             await _fixture.DbContext.Users.AddAsync(registeredUser);
             await _fixture.DbContext.SaveChangesAsync();

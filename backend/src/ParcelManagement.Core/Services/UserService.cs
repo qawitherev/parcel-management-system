@@ -59,8 +59,8 @@ namespace ParcelManagement.Core.Services
             {
                 await _npService.EnsureUserHasNotificationPref(possibleUser.Id);
             }
-
-            possibleUser.RefreshToken = loginRequest.RefreshToken;
+            var hashedRefreshToken = PasswordService.HashPlainPasswordOrToken(possibleUser, loginRequest.RefreshToken);
+            possibleUser.RefreshToken = hashedRefreshToken;
             possibleUser.RefreshTokenExpiry = loginRequest.RefreshTokenExpiry;
 
             await _userRepository.UpdateUserAsync(possibleUser);
@@ -92,7 +92,7 @@ namespace ParcelManagement.Core.Services
                 CreatedAt = DateTimeOffset.UtcNow
             };
 
-            var hashedPassword = PasswordService.HashPassword(newUser, password);
+            var hashedPassword = PasswordService.HashPlainPasswordOrToken(newUser, password);
             newUser.PasswordHash = hashedPassword;
             var theNewUser = await _userRepository.CreateUserAsync(newUser);
             await _userResidentUnitRepo.CreateUserResidentUnitAsync(
@@ -137,7 +137,7 @@ namespace ParcelManagement.Core.Services
                 CreatedAt = DateTimeOffset.UtcNow, 
                 Role = UserRole.ParcelRoomManager
             };
-            registeringUser.PasswordHash = PasswordService.HashPassword(registeringUser, password);
+            registeringUser.PasswordHash = PasswordService.HashPlainPasswordOrToken(registeringUser, password);
             await _userRepository.CreateUserAsync(registeringUser);
             return registeringUser;
         }

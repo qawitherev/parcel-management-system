@@ -40,7 +40,7 @@ namespace ParcelManagement.Infrastructure.Database
                     PasswordHash = "####",
                     Role = UserRole.Admin
                 };
-                adminUser.PasswordHash = PasswordService.HashPassword(adminUser, password);
+                adminUser.PasswordHash = PasswordService.HashPlainPasswordOrToken(adminUser, password);
                 await _dbContext.Users.AddAsync(adminUser);
                 await _dbContext.SaveChangesAsync();
             }

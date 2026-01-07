@@ -35,9 +35,9 @@ namespace ParcelManagement.Core.Specifications
             new IncludeExpressionString("User")
         ];
 
-        public Expression<Func<Session, object>>? OrderBy => s => s.LastActive!;
+        public Expression<Func<Session, object>>? OrderBy => null;
 
-        public Expression<Func<Session, object>>? OrderByDesc => null;
+        public Expression<Func<Session, object>>? OrderByDesc => s => s.LastActive!;
 
         public int? Page => null;
 

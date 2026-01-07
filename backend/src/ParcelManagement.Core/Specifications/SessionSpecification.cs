@@ -3,9 +3,8 @@ using ParcelManagement.Core.Entities;
 
 namespace ParcelManagement.Core.Specifications
 {
-    public class SessionByRefreshTokenSpecification(string refreshToken) : ISpecification<Session>
+    public class SessionByRefreshTokenSpecification(string hashedRefreshToken) : ISpecification<Session>
     {
-        private readonly string _refreshToken = refreshToken;
 
         public List<IncludeExpressionString> IncludeExpressionsString => [
             new IncludeExpressionString("User")
@@ -25,7 +24,7 @@ namespace ParcelManagement.Core.Specifications
 
         public Expression<Func<Session, bool>> ToExpression()
         {
-            return s => s.RefreshToken == _refreshToken;
+            return s => s.RefreshToken == hashedRefreshToken;
         }
     }
 

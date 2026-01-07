@@ -24,7 +24,7 @@ namespace ParcelManagement.Api.Controller
                 return Unauthorized($"Invalid or expired token");
             }
             var newAccessToken = _tokenService.GenerateAccessToken(userValid.Id.ToString(), userValid.Username, userValid.Role.ToString());
-            return Ok(newAccessToken);
+            return Ok(new { accessToken = newAccessToken});
         }
     }
 }

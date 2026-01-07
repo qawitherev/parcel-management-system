@@ -62,7 +62,7 @@ namespace ParcelManagement.Core.Services
                 await _npService.EnsureUserHasNotificationPref(possibleUser.Id);
             }
 
-            var hashedRefreshToken = PasswordService.HashPlainPasswordOrToken(possibleUser, loginRequest.RefreshToken);
+            var hashedRefreshToken = TokenUtility.HashToken(loginRequest.RefreshToken);
             var createSessionRequest = new CreateSessionRequest
             {
                 UserId = possibleUser.Id, 
@@ -170,7 +170,9 @@ namespace ParcelManagement.Core.Services
 
         public async Task<User?> GetUserByRefreshTokenAsync(string refreshToken)
         {
-            var spec = new SessionByRefreshTokenSpecification(refreshToken);
+            var hashedToken = TokenUtility.HashToken(refreshToken);
+            Console.WriteLine(hashedToken);
+            var spec = new SessionByRefreshTokenSpecification(hashedToken);
             var session = await _sessionService.GetSessionBySpecification(spec);
 
             var now = DateTimeOffset.UtcNow;

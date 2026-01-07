@@ -26,11 +26,17 @@ namespace ParcelManagement.Infrastructure.Repository
 
             // we probably have to check for null for safety here 
             query = query.Where(specification.ToExpression());
+
             if (specification.Page.HasValue && specification.Take.HasValue)
             {
                 var skip = (specification.Page.Value - 1) * specification.Take.Value;
                 query = query.Skip(skip);
                 query = query.Take(specification.Take.Value);
+            }
+
+            if (specification.Skip.HasValue)
+            {
+                query = query.Skip(specification.Skip.Value);
             }
 
             if (specification.OrderBy != null)
@@ -110,9 +116,15 @@ namespace ParcelManagement.Infrastructure.Repository
 
         public async Task<int> DeleteAsync(Guid id)
         {
-            var rowsUpdated = await _dbContext.Set<T>().Where(t => t.Id == id)
+            var rowsDeleted = await _dbContext.Set<T>().Where(t => t.Id == id)
                 .ExecuteDeleteAsync();
-            return rowsUpdated;
+            return rowsDeleted;
+        }
+
+        public async Task<int> DeleteRangeAsync(IEnumerable<Guid> ids)
+        {
+            var rowsDeleted = await _dbContext.Set<T>().Where(t => ids.Contains(t.Id)).ExecuteDeleteAsync();
+            return rowsDeleted;
         }
     }
 

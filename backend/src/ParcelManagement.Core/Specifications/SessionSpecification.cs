@@ -19,11 +19,37 @@ namespace ParcelManagement.Core.Specifications
 
         public int? Take => null;
 
+        public int? Skip => null;
+
         List<IncludeExpression<Session>> ISpecification<Session>.IncludeExpressions => [];
 
         public Expression<Func<Session, bool>> ToExpression()
         {
             return s => s.RefreshToken == _refreshToken;
+        }
+    }
+
+    public class SessionByUserSpecification(Guid userId, int? userMaxSession) : ISpecification<Session>
+    {
+        public List<IncludeExpressionString> IncludeExpressionsString => [
+            new IncludeExpressionString("User")
+        ];
+
+        public Expression<Func<Session, object>>? OrderBy => s => s.LastActive!;
+
+        public Expression<Func<Session, object>>? OrderByDesc => null;
+
+        public int? Page => null;
+
+        public int? Take => null;
+
+        public int? Skip => userMaxSession ?? null;
+
+        List<IncludeExpression<Session>> ISpecification<Session>.IncludeExpressions => [];
+
+        public Expression<Func<Session, bool>> ToExpression()
+        {
+            return s => s.UserId == userId;
         }
     }
 }

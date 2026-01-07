@@ -22,5 +22,7 @@ namespace ParcelManagement.Core.Repositories
         Task<IDbContextTransaction> BeginTransactionAsync();
 
         Task<int> DeleteAsync(Guid id);
+
+        Task<int> DeleteRangeAsync(IEnumerable<Guid> ids);
     }
 }

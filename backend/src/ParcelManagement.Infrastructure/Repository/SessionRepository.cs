@@ -18,6 +18,11 @@ namespace ParcelManagement.Infrastructure.Repository
             return await DeleteAsync(id);
         }
 
+        public async Task<int> DeleteSessionsAsync(IEnumerable<Guid> ids)
+        {
+            return await DeleteRangeAsync(ids);
+        }
+
         public async Task<Session?> GetSessionByIdAsync(Guid id)
         {
             return await GetByIdAsync(id);

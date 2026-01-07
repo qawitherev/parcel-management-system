@@ -15,10 +15,18 @@ namespace ParcelManagement.Core.Services
 
     public class SessionService(ISessionRepository sessionRepo) : ISessionService
     {
+
+        const int USER_MAX_SESSION = 5;
         private readonly ISessionRepository _sessionRepo = sessionRepo;
-        const int REFRESH_TOKEN_EXPIRY = 10;
+
         public async Task<Session> CreateSessionAsync(CreateSessionRequest sessionRequest)
         {
+            var sessionByUserSpec = new SessionByUserSpecification(sessionRequest.UserId, USER_MAX_SESSION-1);
+            var sessions = await _sessionRepo.GetSessionsBySpecification(sessionByUserSpec);
+
+            var sessionIds = sessions.Select(s => s.Id);
+            await _sessionRepo.DeleteSessionsAsync(sessionIds);
+            
             var session = new Session
             {
                 Id = Guid.NewGuid(), 

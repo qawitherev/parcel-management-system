@@ -43,6 +43,7 @@ namespace ParcelManagement.Core.Services
         private readonly IResidentUnitRepository _residentUnitRepo = residentUnitRepo;
         private readonly INotificationPrefService _npService = npService;
         private readonly ISessionService _sessionService = sessionService;
+
         public async Task<List<string>> UserLoginAsync(UserLoginRequest loginRequest)
         {
             var userByUsernameSpec = new UserByUsernameSpecification(loginRequest.Username);
@@ -66,8 +67,9 @@ namespace ParcelManagement.Core.Services
             {
                 UserId = possibleUser.Id, 
                 RefreshToken = hashedRefreshToken, 
-                DeviceInfo = loginRequest.DeviceInfo, 
-                IpAddress = loginRequest.IpAddress
+                DeviceInfo = loginRequest.DeviceInfo,
+                IpAddress = loginRequest.IpAddress, 
+                ExpiresAt = loginRequest.RefreshTokenExpiry
             };
             await _sessionService.CreateSessionAsync(createSessionRequest);
 

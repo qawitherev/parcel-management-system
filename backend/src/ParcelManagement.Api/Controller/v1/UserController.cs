@@ -23,7 +23,7 @@ namespace ParcelManagement.Api.Controller
         private readonly IUserService _userService = userService;
         private readonly ITokenService _tokenService = tokenService;
         private readonly IUserContextService _userContextService = userContextService;
-        // TODO: we might want to use config file for this one ☝️
+        // TODO: we might want to use config file for this one 👇🏽
         private readonly int REFRESH_TOKEN_EXPIRY_DAYS = 10;
 
         [HttpGet("{id}")]
@@ -102,8 +102,8 @@ namespace ParcelManagement.Api.Controller
             {
                 Username = dto.Username, 
                 Password = dto.PlainPassword, 
-                RefreshToken = refreshToken, 
-                RefreshTokenExpiry = RefreshTokenExpiry, 
+                RefreshToken = refreshToken,
+                RefreshTokenExpiry = RefreshTokenExpiry,
                 DeviceInfo = HttpContextUtilities.GetDeviceInfo(HttpContext), 
                 IpAddress = HttpContextUtilities.GetDeviceIp(HttpContext)
             };

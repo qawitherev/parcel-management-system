@@ -11,5 +11,6 @@ namespace ParcelManagement.Core.Repositories
         Task<Session?> GetSessionBySpecification(ISpecification<Session> specification);
         Task<IReadOnlyList<Session>> GetSessionsBySpecification(ISpecification<Session> specification);
         Task<int> DeleteSessionAsync(Guid id);
+        Task<int> DeleteSessionsAsync(IEnumerable<Guid> ids);
     }
 }

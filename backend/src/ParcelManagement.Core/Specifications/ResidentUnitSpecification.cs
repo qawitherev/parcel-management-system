@@ -11,6 +11,8 @@ namespace ParcelManagement.Core.Specifications
 
         public int? Take => throw new NotImplementedException();
 
+        public int? Skip => null;
+
         List<IncludeExpressionString> ISpecification<ResidentUnit>.IncludeExpressionsString => [];
 
         public Expression<Func<ResidentUnit, object>> OrderBy => throw new NotImplementedException();
@@ -57,6 +59,8 @@ namespace ParcelManagement.Core.Specifications
 
         public int? Take => _take;
 
+        public int? Skip => null;
+
         public Expression<Func<ResidentUnit, bool>> ToExpression()
         {
             return ru =>
@@ -96,6 +100,8 @@ namespace ParcelManagement.Core.Specifications
         public int? Page => null;
 
         public int? Take => null;
+
+        public int? Skip => null;
 
         public Expression<Func<ResidentUnit, bool>> ToExpression()
         {

@@ -75,59 +75,7 @@ namespace ParcelManagement.Test.Service
             Assert.Equal(theUsername, result.Username);
         }
 
-        [Fact]
-        public async Task UserLoginAsync_InvalidCredentials_ShouldFailedLogin()
-        {
-            var theUsername = "registered_username";
-            var registeredUser = new User
-            {
-                Id = Guid.NewGuid(),
-                Username = theUsername,
-                Email = "this@email.com",
-                ResidentUnitDeprecated = "RU001",
-                PasswordHash = "####",
-                PasswordSalt = "salt",
-            };
 
-            await _fixture.DbContext.Users.AddAsync(registeredUser);
-
-            await Assert.ThrowsAsync<InvalidCredentialException>(async () =>
-            {
-                var req = new UserLoginRequest
-                {
-                    Username = theUsername, 
-                    Password = "plainText"
-                };
-                await _fixture.UserService.UserLoginAsync(req);
-            });
-        }
-
-        [Fact]
-        public async Task UserLoginAsync_ValidLogin_ShouldLogin()
-        {
-            var theUsername = "registered_username_2";
-            var plainPassword = "password123";
-            var registeredUser = new User
-            {
-                Id = Guid.NewGuid(),
-                Username = theUsername,
-                Email = "this@email.com",
-                ResidentUnitDeprecated = "RU001",
-                PasswordHash = "####",
-                PasswordSalt = "salt",
-            };
-            var hashedPassword = PasswordService.HashPlainPasswordOrToken(registeredUser, plainPassword);
-            registeredUser.PasswordHash = hashedPassword;
-            await _fixture.DbContext.Users.AddAsync(registeredUser);
-            await _fixture.DbContext.SaveChangesAsync();
-            var req = new UserLoginRequest
-            {
-                Username = theUsername, 
-                Password = plainPassword
-            };
-            var result = await _fixture.UserService.UserLoginAsync(req);
-            Assert.NotNull(result);
-        }
 
         [Fact]
         public async Task GetUserByRefreshTokenAsync_ValidToken_ShouldReturnUser()

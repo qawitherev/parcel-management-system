@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using ParcelManagement.Core.Entities;
 using UAParser;
@@ -9,6 +10,7 @@ namespace ParcelManagement.Api.Utility
         Guid GetUserId();
         UserRole GetUserRole();
         string? GetClaimByClaimType(string claimType);
+        string? GetTokenId();
     }
 
     public class UserContextService : IUserContextService
@@ -44,6 +46,11 @@ namespace ParcelManagement.Api.Utility
                 throw new InvalidOperationException($"Invalid role found in claim");
             }
             return role;
+        }
+
+        public string? GetTokenId()
+        {
+            return _httpContextAccessor.HttpContext?.User?.FindFirstValue(JwtRegisteredClaimNames.Jti);
         }
     }
 

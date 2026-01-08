@@ -19,7 +19,7 @@ namespace ParcelManagement.Core.Services
 
         Task<List<string>> UserLoginAsync(UserLoginRequest loginRequest);
 
-        Task UserLogoutAsync(Guid userId);
+        Task UserLogoutAsync(UserLogoutRequest request);
 
         Task<User> GetUserById(Guid id);
 
@@ -37,7 +37,8 @@ namespace ParcelManagement.Core.Services
         IUserResidentUnitRepository userResidentUnitRepo,
         IResidentUnitRepository residentUnitRepo, 
         INotificationPrefService npService, 
-        ISessionService sessionService
+        ISessionService sessionService,
+        ITokenBlacklistService tokenBlacklistService
         ) : IUserService
     {
         private readonly IUserRepository _userRepository = userRepository;
@@ -45,7 +46,7 @@ namespace ParcelManagement.Core.Services
         private readonly IResidentUnitRepository _residentUnitRepo = residentUnitRepo;
         private readonly INotificationPrefService _npService = npService;
         private readonly ISessionService _sessionService = sessionService;
-
+        private readonly ITokenBlacklistService _tokenBlacklistService = tokenBlacklistService;
         public async Task<List<string>> UserLoginAsync(UserLoginRequest loginRequest)
         {
             var userByUsernameSpec = new UserByUsernameSpecification(loginRequest.Username);
@@ -188,10 +189,11 @@ namespace ParcelManagement.Core.Services
             return session.User;
         }
 
-        public async Task UserLogoutAsync(Guid userId)
+        public async Task UserLogoutAsync(UserLogoutRequest request)
         {
-            await _sessionService.RemoveSession(userId);
+            await _sessionService.RemoveSession(request.UserId);
             //TODO: blacklist access token 
+            await _tokenBlacklistService.BlacklistAccessToken(request.JwtId);
         }
     }
 }

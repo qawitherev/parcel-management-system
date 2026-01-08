@@ -5,6 +5,7 @@ using ParcelManagement.Api.DTO;
 using ParcelManagement.Api.DTO.V1;
 using ParcelManagement.Api.Utility;
 using ParcelManagement.Core.Entities;
+using ParcelManagement.Core.Model;
 using ParcelManagement.Core.Model.Helper;
 using ParcelManagement.Core.Model.User;
 using ParcelManagement.Core.Services;
@@ -123,7 +124,13 @@ namespace ParcelManagement.Api.Controller
         public async Task<IActionResult> UserLogout()
         {
             var userId = _userContextService.GetUserId();
-            await _userService.UserLogoutAsync(userId);
+            var jwtId = _userContextService.GetTokenId();
+            var request = new UserLogoutRequest
+            {
+                UserId = userId, 
+                JwtId = jwtId ?? ""
+            };
+            await _userService.UserLogoutAsync(request);
             return Ok();
         }
 

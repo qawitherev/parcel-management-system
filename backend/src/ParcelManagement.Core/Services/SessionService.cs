@@ -10,6 +10,7 @@ namespace ParcelManagement.Core.Services
         Task<Session> CreateSessionAsync(CreateSessionRequest sessionRequest);
         Task<Session?> GetSessionBySpecification(ISpecification<Session> specification);
         Task UpdateSession(Session session);
+        Task RemoveSession(Guid id);
 
     }
 
@@ -44,6 +45,14 @@ namespace ParcelManagement.Core.Services
         public async Task<Session?> GetSessionBySpecification(ISpecification<Session> specification)
         {
             return await _sessionRepo.GetSessionBySpecification(specification);
+        }
+
+        public async Task RemoveSession(Guid userId)
+        {
+            var spec = new SessionByUserSpecification(userId, null);
+            var session = await _sessionRepo.GetSessionBySpecification(spec) ?? 
+                throw new InvalidOperationException($"Session not found");
+            await _sessionRepo.DeleteSessionAsync(session.Id);
         }
 
         public async Task UpdateSession(Session session)

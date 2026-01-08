@@ -119,6 +119,14 @@ namespace ParcelManagement.Api.Controller
             return Ok(loginReponseDto);
         }
 
+        [HttpGet("logout")]
+        public async Task<IActionResult> UserLogout()
+        {
+            var userId = _userContextService.GetUserId();
+            await _userService.UserLogoutAsync(userId);
+            return Ok();
+        }
+
         [HttpGet("")]
         [Authorize(Roles = "ParcelRoomManager, Admin")]
         public async Task<IActionResult> GetUsersForView([FromQuery] BaseFilterDto dto)

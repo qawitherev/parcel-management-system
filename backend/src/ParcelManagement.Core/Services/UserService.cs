@@ -19,6 +19,8 @@ namespace ParcelManagement.Core.Services
 
         Task<List<string>> UserLoginAsync(UserLoginRequest loginRequest);
 
+        Task UserLogoutAsync(Guid userId);
+
         Task<User> GetUserById(Guid id);
 
         Task<IReadOnlyList<Parcel?>> GetParcelsByUserAsync(Guid userId, ParcelStatus? parcelStatus);
@@ -184,6 +186,12 @@ namespace ParcelManagement.Core.Services
             session.LastActive = DateTimeOffset.UtcNow;
             await _sessionService.UpdateSession(session);
             return session.User;
+        }
+
+        public async Task UserLogoutAsync(Guid userId)
+        {
+            await _sessionService.RemoveSession(userId);
+            //TODO: blacklist access token 
         }
     }
 }

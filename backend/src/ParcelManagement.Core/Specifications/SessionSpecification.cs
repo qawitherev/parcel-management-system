@@ -28,6 +28,15 @@ namespace ParcelManagement.Core.Specifications
         }
     }
 
+    /// <summary>
+    /// Specification for querying <see cref="Session"/> entities by a specific user ID,
+    /// with optional support for limiting the maximum number of sessions to skip.
+    /// Includes the related <see cref="User"/> entity in the query.
+    /// </summary>
+    /// <param name="userId">The unique identifier of the user whose sessions are being queried.</param>
+    /// <param name="userMaxSession">
+    /// Optional. The maximum number of sessions to skip for the user. If not provided, no sessions are skipped.
+    /// </param>
     public class SessionByUserSpecification(Guid userId, int? userMaxSession) : ISpecification<Session>
     {
         public List<IncludeExpressionString> IncludeExpressionsString => [

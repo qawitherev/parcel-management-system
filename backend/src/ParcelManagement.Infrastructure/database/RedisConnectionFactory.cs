@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Options;
+using ParcelManagement.Core.Model;
 using StackExchange.Redis;
 
 namespace ParcelManagement.Infrastructure.Database
@@ -11,9 +13,9 @@ namespace ParcelManagement.Infrastructure.Database
     {
         private readonly Lazy<ConnectionMultiplexer> _connection;
 
-        public RedisConnectionFactory(string redisConnectionString)
+        public RedisConnectionFactory(IOptions<RedisSettings> options)
         {
-            _connection = new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(redisConnectionString));
+            _connection = new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(options.Value.ConnectionString));
         }
 
         public void Dispose()

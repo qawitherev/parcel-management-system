@@ -30,6 +30,7 @@ namespace ParcelManagement.Api.AuthenticationAndAuthorization
             // make claim
             var claims = new List<Claim>
             {
+                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new(ClaimTypes.NameIdentifier, id),
                 new(ClaimTypes.Name, username),
                 new(ClaimTypes.Role, role)

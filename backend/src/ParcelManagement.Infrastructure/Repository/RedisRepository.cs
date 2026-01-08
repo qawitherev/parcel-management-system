@@ -19,6 +19,11 @@ namespace ParcelManagement.Infrastructure.Repository
             return val.ToString();
         }
 
+        public async Task<bool> KeyExistAsync(string key)
+        {
+            return await _redis.KeyExistsAsync(key);
+        }
+
         public async Task<bool> SetValueAsync(string key, string value, TimeSpan timeToLive)
         {
             return await _redis.StringSetAsync(key, value, timeToLive);

@@ -4,5 +4,6 @@ namespace ParcelManagement.Core.Repositories
     {
         Task<bool> SetValueAsync(string key, string value, TimeSpan timeToLive);
         Task<string?> GetValueAsync(string key);
+        Task<bool> KeyExistAsync(string key);
     }
 }

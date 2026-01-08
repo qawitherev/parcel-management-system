@@ -22,7 +22,6 @@ namespace ParcelManagement.Infrastructure.Database
             builder.ToTable(t => t.HasCheckConstraint("CK_Parcels_LockerRequired",
             "(`Version` = 1) OR (`Version` > 1 AND `LockerId` IS NOT NULL)"
             ));
-
         }
     }
 

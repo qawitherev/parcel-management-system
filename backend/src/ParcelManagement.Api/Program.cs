@@ -219,6 +219,8 @@ if (builder.Environment.IsDevelopment())
 
 app.UseMiddleware<ApiExceptionMiddelware>();
 
+app.UseMiddleware<BlacklistCheckMiddleware>();
+
 using (var scope = app.Services.CreateScope())
 {
     var seeder = scope.ServiceProvider.GetRequiredService<AdminDataSeeder>();

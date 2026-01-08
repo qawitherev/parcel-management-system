@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using ParcelManagement.Api.AuthenticationAndAuthorization;
+using ParcelManagement.Api.CustomAttribute;
 using ParcelManagement.Api.DTO.V1;
 using ParcelManagement.Api.Utility;
 using ParcelManagement.Core.Services;
@@ -10,6 +11,7 @@ namespace ParcelManagement.Api.Controller
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [Consumes("application/json")]
+    [SkipBlacklistCheck]
     public class TokenController(IUserService userService, ITokenService tokenService): ControllerBase
     {
         private readonly IUserService _userService = userService;

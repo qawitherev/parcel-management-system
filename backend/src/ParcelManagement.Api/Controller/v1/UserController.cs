@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ParcelManagement.Api.AuthenticationAndAuthorization;
+using ParcelManagement.Api.CustomAttribute;
 using ParcelManagement.Api.DTO;
 using ParcelManagement.Api.DTO.V1;
 using ParcelManagement.Api.Utility;
@@ -91,6 +92,7 @@ namespace ParcelManagement.Api.Controller
 
 
         [HttpPost("login")]
+        [SkipBlacklistCheck]
         public async Task<IActionResult> UserLogin([FromBody] LoginDto dto)
         {
             if (!ModelState.IsValid)

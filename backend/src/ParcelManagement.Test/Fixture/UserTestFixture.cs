@@ -1,6 +1,7 @@
 using System.Data.Common;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using ParcelManagement.Core.Repositories;
 using ParcelManagement.Core.Services;
 using ParcelManagement.Infrastructure.Database;
@@ -10,12 +11,7 @@ using Xunit;
 namespace ParcelManagement.Test.Fixture
 {
 
-    // HOW TO USE 
-    // Use this class when you want to have a shared database context across all tests 
-    // in your test class 
-    // HOW IT WORKS 
-    // Conctructor will run once - setting up the fixtures you need for your test 
-    // Dispose() will run once at the end of the test; hence the shared dbContext 
+    // DEPRECATED
     public class UserTestFixture : IDisposable
     {
         public ApplicationDbContext DbContext { get; private set; }
@@ -38,7 +34,7 @@ namespace ParcelManagement.Test.Fixture
             var sessionRepo = new SessionRepository(DbContext);
             var sessionService = new SessionService(sessionRepo);
 
-            UserService = new UserService(UserRepo, userResidentUnitRepo, residentUnitRepo, npService, sessionService);
+            // UserService = new UserService(UserRepo, userResidentUnitRepo, residentUnitRepo, npService, sessionService);
         }
         public void Dispose()
         {
@@ -55,8 +51,9 @@ namespace ParcelManagement.Test.Fixture
     public class UserTestAsyncLifetimeFixture : IAsyncLifetime
     {
         public ApplicationDbContext DbContext { get; private set; } = null!;
-        public UserRepository UserRepo { get; private set; } = null!;
-        public UserService UserService { get; private set; } = null!;
+        public UserRepository? UserRepo { get; private set; } = null;
+        public UserService? UserService { get; private set; } = null;
+        public Mock<IRedisRepository> MockedRedisRepo { get; private set;} = null!;
 
         public Task InitializeAsync()
         {
@@ -64,18 +61,9 @@ namespace ParcelManagement.Test.Fixture
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()).Options;
             DbContext = new ApplicationDbContext(dbContextOptions);
 
-            var userResidentUnitRepo = new UserResidentUnitRepository(DbContext);
-            var residentUnitRepo = new ResidentUnitRepository(DbContext);
-            var npRepo = new NotificationPrefRepository(DbContext);
-            var userRepo = new UserRepository(DbContext);
-            var npService = new NotificationPrefService(npRepo, userRepo);
-            UserRepo = new UserRepository(DbContext);
-            
-            var sessionRepo = new SessionRepository(DbContext);
-            var sessionService = new SessionService(sessionRepo);
+            MockedRedisRepo = new Mock<IRedisRepository>();
 
-            UserService = new UserService(UserRepo, userResidentUnitRepo, residentUnitRepo, npService, sessionService);
-            return Task.CompletedTask;
+           return Task.CompletedTask;
         }
 
         public async Task DisposeAsync()

@@ -1,9 +1,15 @@
 using System.Security.Authentication;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Moq;
+using ParcelManagement.Api.AuthenticationAndAuthorization;
 using ParcelManagement.Core.Entities;
 using ParcelManagement.Core.Misc;
 using ParcelManagement.Core.Model.User;
+using ParcelManagement.Core.Repositories;
+using ParcelManagement.Core.Services;
 using ParcelManagement.Core.Specifications;
+using ParcelManagement.Infrastructure.Repository;
 using ParcelManagement.Test.Fixture;
 using Xunit;
 
@@ -12,6 +18,36 @@ namespace ParcelManagement.Test.Service
     public class UserServiceTest(UserTestAsyncLifetimeFixture fixture) : IClassFixture<UserTestAsyncLifetimeFixture>
     {
         private readonly UserTestAsyncLifetimeFixture _fixture = fixture;
+
+        private UserService GetService(Mock<IRedisRepository>? mockedRedisRepo = null)
+        {
+            var userRepo = new UserRepository(_fixture.DbContext);
+            var userResidentUnitRepo = new UserResidentUnitRepository(_fixture.DbContext);
+            var residentUnitRepo = new ResidentUnitRepository(_fixture.DbContext);
+            
+            var notificationPrefRepo = new NotificationPrefRepository(_fixture.DbContext);
+            var notificationPrefService = new NotificationPrefService(notificationPrefRepo, userRepo);
+
+            var sessionRepo = new SessionRepository(_fixture.DbContext);
+            var sessionService = new SessionService(sessionRepo);
+            
+            var redisRepoToUse = mockedRedisRepo ?? _fixture.MockedRedisRepo;
+            var jwtSettings = new JWTSettings
+            {
+                ExpirationMinutes = 10
+            };
+            var jwtOptions = Options.Create(jwtSettings);
+            var tokenBlacklistService = new TokenBlacklistService(redisRepoToUse.Object, jwtOptions);
+
+            return new UserService(
+                userRepo, 
+                userResidentUnitRepo,
+                residentUnitRepo,
+                notificationPrefService, 
+                sessionService, 
+                tokenBlacklistService
+            );
+        }
 
         [Fact]
         public async Task UserRegisterAsync_UsernameAlreadyExist_ShouldThrowError()

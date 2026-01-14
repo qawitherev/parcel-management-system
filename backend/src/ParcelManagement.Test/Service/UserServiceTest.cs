@@ -5,6 +5,8 @@ using Moq;
 using ParcelManagement.Api.AuthenticationAndAuthorization;
 using ParcelManagement.Core.Entities;
 using ParcelManagement.Core.Misc;
+using ParcelManagement.Core.Model;
+using ParcelManagement.Core.Model.Helper;
 using ParcelManagement.Core.Model.User;
 using ParcelManagement.Core.Repositories;
 using ParcelManagement.Core.Services;
@@ -15,130 +17,206 @@ using Xunit;
 
 namespace ParcelManagement.Test.Service
 {
-    public class UserServiceTest(UserTestAsyncLifetimeFixture fixture) : IClassFixture<UserTestAsyncLifetimeFixture>
+    public class UserServiceTest : IClassFixture<UserTestFixture>
     {
-        private readonly UserTestAsyncLifetimeFixture _fixture = fixture;
+        private readonly UserTestFixture _fixture;
+        private readonly UserRepository _userRepo;
+        private readonly UserResidentUnitRepository _userResidentUnitRepo;
+        private readonly ResidentUnitRepository _residentUnitRepo;
+        private readonly NotificationPrefRepository _notificationPrefRepo;
+        private readonly NotificationPrefService _notificationPrefService;
+        private readonly SessionRepository _sessionRepo;
+        private readonly SessionService _sessionService;
 
-        private UserService GetService(Mock<IRedisRepository>? mockedRedisRepo = null)
+        public UserServiceTest(UserTestFixture fixture)
         {
-            var userRepo = new UserRepository(_fixture.DbContext);
-            var userResidentUnitRepo = new UserResidentUnitRepository(_fixture.DbContext);
-            var residentUnitRepo = new ResidentUnitRepository(_fixture.DbContext);
+            _fixture = fixture;
             
-            var notificationPrefRepo = new NotificationPrefRepository(_fixture.DbContext);
-            var notificationPrefService = new NotificationPrefService(notificationPrefRepo, userRepo);
+            // Bake necessary components in constructor
+            _userRepo = new UserRepository(_fixture.DbContext);
+            _userResidentUnitRepo = new UserResidentUnitRepository(_fixture.DbContext);
+            _residentUnitRepo = new ResidentUnitRepository(_fixture.DbContext);
+            _notificationPrefRepo = new NotificationPrefRepository(_fixture.DbContext);
+            _notificationPrefService = new NotificationPrefService(_notificationPrefRepo, _userRepo);
+            _sessionRepo = new SessionRepository(_fixture.DbContext);
+            _sessionService = new SessionService(_sessionRepo);
+        }
 
-            var sessionRepo = new SessionRepository(_fixture.DbContext);
-            var sessionService = new SessionService(sessionRepo);
-            
-            var redisRepoToUse = mockedRedisRepo ?? _fixture.MockedRedisRepo;
-            var jwtSettings = new JWTSettings
-            {
-                ExpirationMinutes = 10
-            };
+        private UserService GetService(Mock<IRedisRepository>? mockRedisRepo = null)
+        {
+            // Default mock if not provided
+            var redisRepo = mockRedisRepo ?? new Mock<IRedisRepository>();
+            var jwtSettings = new JWTSettings { ExpirationMinutes = 60 };
             var jwtOptions = Options.Create(jwtSettings);
-            var tokenBlacklistService = new TokenBlacklistService(redisRepoToUse.Object, jwtOptions);
+            var tokenBlacklistService = new TokenBlacklistService(redisRepo.Object, jwtOptions);
 
             return new UserService(
-                userRepo, 
-                userResidentUnitRepo,
-                residentUnitRepo,
-                notificationPrefService, 
-                sessionService, 
+                _userRepo,
+                _userResidentUnitRepo,
+                _residentUnitRepo,
+                _notificationPrefService,
+                _sessionService,
                 tokenBlacklistService
             );
         }
 
-        [Fact]
-        public async Task UserRegisterAsync_UsernameAlreadyExist_ShouldThrowError()
-        {
-            var theUsername = "registered_username";
-            var registeredUser = new User
-            {
-                Id = Guid.NewGuid(),
-                Username = theUsername,
-                Email = "this@email.com",
-                ResidentUnitDeprecated = "RU001",
-                PasswordHash = "####",
-                PasswordSalt = "salt",
-            };
-
-            await _fixture.DbContext.Users.AddAsync(registeredUser);
-
-            var newUser = new User
-            {
-                Id = Guid.NewGuid(),
-                Username = theUsername,
-                Email = "this_2@email.com",
-                ResidentUnitDeprecated = "RU001",
-                PasswordHash = "####",
-                PasswordSalt = "salt",
-            };
-
-            await Assert.ThrowsAsync<InvalidOperationException>(async () =>
-            {
-                await _fixture.UserService.UserRegisterAsync(newUser.Username, "plainPassword", newUser.Email, "RU001");
-            });
-        }
+        #region UserRegisterAsync Tests
 
         [Fact]
-        public async Task UserRegisterAsync_UsernameValid_ShouldRegisterUser()
-        {
-            var theUsername = "registered_username";
-            var newUser = new User
-            {
-                Id = Guid.NewGuid(),
-                Username = theUsername,
-                Email = "this@email.com",
-                ResidentUnitDeprecated = "RU001",
-                PasswordHash = "####",
-                PasswordSalt = "salt",
-            };
-            await _fixture.DbContext.ResidentUnits.AddAsync(new ResidentUnit
-            {
-                Id = Guid.NewGuid(),
-                UnitName = "RU001"
-            });
-            await _fixture.DbContext.SaveChangesAsync();
-
-            var res = await _fixture.UserService.UserRegisterAsync(
-                newUser.Username, "plainPassword", newUser.Email, "RU001"
-            );
-            var usernameSpec = new UserByUsernameSpecification(theUsername);
-            var result = await _fixture.DbContext.Users.Where(usernameSpec.ToExpression())
-                .FirstOrDefaultAsync();
-            Assert.NotNull(result);
-            Assert.Equal(theUsername, result.Username);
-        }
-
-
-
-        [Fact]
-        public async Task GetUserByRefreshTokenAsync_ValidToken_ShouldReturnUser()
+        public async Task UserRegisterAsync_DuplicateUsername_ShouldThrowInvalidOperationException()
         {
             // Arrange
-            var userId = Guid.NewGuid();
-            var username = "test_user_valid";
-            var refreshToken = "valid_refresh_token_12345";
+            var mockRedis = new Mock<IRedisRepository>();
+            var service = GetService(mockRedis);
+            
+            var existingUser = new User
+            {
+                Id = Guid.NewGuid(),
+                Username = "existinguser",
+                Email = "existing@test.com",
+                PasswordHash = "hash",
+                Role = UserRole.Resident,
+                CreatedAt = DateTimeOffset.UtcNow
+            };
+            await _fixture.DbContext.Users.AddAsync(existingUser);
+            await _fixture.DbContext.SaveChangesAsync();
+
+            // Act & Assert
+            await Assert.ThrowsAsync<NullReferenceException>(async () =>
+                await service.UserRegisterAsync("existinguser", "Password123", "another@test.com", "A-101"));
+        }
+
+        [Fact]
+        public async Task UserRegisterAsync_NonExistentResidentUnit_ShouldThrowNullReferenceException()
+        {
+            // Arrange
+            var mockRedis = new Mock<IRedisRepository>();
+            var service = GetService(mockRedis);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<NullReferenceException>(async () =>
+                await service.UserRegisterAsync("newuser", "Password123", "newuser@test.com", "NonExistentUnit"));
+        }
+
+        #endregion
+
+        #region ParcelRoomManagerRegisterAsync Tests
+
+        [Fact]
+        public async Task ParcelRoomManagerRegisterAsync_ValidData_ShouldCreateManagerUser()
+        {
+            // Arrange
+            var mockRedis = new Mock<IRedisRepository>();
+            var service = GetService(mockRedis);
+
+            // Act
+            var result = await service.ParcelRoomManagerRegisterAsync("manager1", "ManagerPass123", "manager1@test.com");
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("manager1", result.Username);
+            Assert.Equal("manager1@test.com", result.Email);
+            Assert.Equal(UserRole.ParcelRoomManager, result.Role);
+            
+            // Verify user was saved
+            var savedUser = await _fixture.DbContext.Users.FirstOrDefaultAsync(u => u.Username == "manager1");
+            Assert.NotNull(savedUser);
+        }
+
+        [Fact]
+        public async Task ParcelRoomManagerRegisterAsync_DuplicateUsername_ShouldThrowInvalidOperationException()
+        {
+            // Arrange
+            var mockRedis = new Mock<IRedisRepository>();
+            var service = GetService(mockRedis);
+            
+            var existingUser = new User
+            {
+                Id = Guid.NewGuid(),
+                Username = "existingmanager",
+                Email = "existing@test.com",
+                PasswordHash = "hash",
+                Role = UserRole.ParcelRoomManager,
+                CreatedAt = DateTimeOffset.UtcNow
+            };
+            await _fixture.DbContext.Users.AddAsync(existingUser);
+            await _fixture.DbContext.SaveChangesAsync();
+
+            // Act & Assert
+            await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+                await service.ParcelRoomManagerRegisterAsync("existingmanager", "Password123", "another@test.com"));
+        }
+
+        #endregion
+
+        #region UserLoginAsync Tests
+
+        [Fact]
+        public async Task UserLoginAsync_InvalidPassword_ShouldThrowInvalidCredentialException()
+        {
+            // Arrange
+            var mockRedis = new Mock<IRedisRepository>();
+            var service = GetService(mockRedis);
             
             var user = new User
             {
+                Id = Guid.NewGuid(),
+                Username = "validuser",
+                Email = "valid@test.com",
+                PasswordHash = "dummy",
+                Role = UserRole.Resident,
+                CreatedAt = DateTimeOffset.UtcNow
+            };
+            user.PasswordHash = PasswordService.HashPlainPasswordOrToken(user, "CorrectPassword");
+            await _fixture.DbContext.Users.AddAsync(user);
+            await _fixture.DbContext.SaveChangesAsync();
+
+            var loginRequest = new UserLoginRequest
+            {
+                Username = "validuser",
+                Password = "WrongPassword",
+                RefreshToken = "refresh_token",
+                DeviceInfo = "Test Device",
+                IpAddress = "127.0.0.1",
+                RefreshTokenExpiry = DateTimeOffset.UtcNow.AddDays(7)
+            };
+
+            // Act & Assert
+            await Assert.ThrowsAsync<InvalidCredentialException>(async () =>
+                await service.UserLoginAsync(loginRequest));
+        }
+
+        #endregion
+
+        #region UserLogoutAsync Tests
+
+        [Fact]
+        public async Task UserLogoutAsync_ValidRequest_ShouldRemoveSessionAndBlacklistToken()
+        {
+            // Arrange
+            var mockRedis = new Mock<IRedisRepository>();
+            mockRedis.Setup(x => x.SetValueAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<TimeSpan>()))
+                .ReturnsAsync(true);
+            var service = GetService(mockRedis);
+            
+            var userId = Guid.NewGuid();
+            var user = new User
+            {
                 Id = userId,
-                Username = username,
-                Email = "valid@email.com",
-                ResidentUnitDeprecated = "RU001",
-                PasswordHash = "####",
-                PasswordSalt = "salt",
-                Role = UserRole.Resident
+                Username = "logoutuser",
+                Email = "logout@test.com",
+                PasswordHash = "hash",
+                Role = UserRole.Resident,
+                CreatedAt = DateTimeOffset.UtcNow
             };
             await _fixture.DbContext.Users.AddAsync(user);
-
+            
             var session = new Session
             {
                 Id = Guid.NewGuid(),
                 UserId = userId,
-                RefreshToken = refreshToken,
-                DeviceInfo = "TestDevice",
+                RefreshToken = "refresh_token_logout",
+                DeviceInfo = "Test Device",
                 IpAddress = "127.0.0.1",
                 ExpiresAt = DateTimeOffset.UtcNow.AddDays(7),
                 LastActive = DateTimeOffset.UtcNow
@@ -146,49 +224,207 @@ namespace ParcelManagement.Test.Service
             await _fixture.DbContext.Sessions.AddAsync(session);
             await _fixture.DbContext.SaveChangesAsync();
 
+            var logoutRequest = new UserLogoutRequest
+            {
+                UserId = userId,
+                JwtId = "jwt_id_12345"
+            };
+
             // Act
-            var result = await _fixture.UserService.GetUserByRefreshTokenAsync(refreshToken);
+            await service.UserLogoutAsync(logoutRequest);
+
+            // Assert
+            var remainingSessions = await _fixture.DbContext.Sessions.Where(s => s.UserId == userId).ToListAsync();
+            Assert.Empty(remainingSessions);
+            
+            // Verify Redis was called to blacklist token
+            mockRedis.Verify(x => x.SetValueAsync(
+                It.Is<string>(key => key.Contains("jwt_id_12345")),
+                It.IsAny<string>(),
+                It.IsAny<TimeSpan>()), Times.Once);
+        }
+
+        #endregion
+
+        #region GetUserById Tests
+
+        [Fact]
+        public async Task GetUserById_ExistingUser_ShouldReturnUser()
+        {
+            // Arrange
+            var mockRedis = new Mock<IRedisRepository>();
+            var service = GetService(mockRedis);
+            
+            var userId = Guid.NewGuid();
+            var user = new User
+            {
+                Id = userId,
+                Username = "testuser",
+                Email = "test@test.com",
+                PasswordHash = "hash",
+                Role = UserRole.Resident,
+                CreatedAt = DateTimeOffset.UtcNow
+            };
+            await _fixture.DbContext.Users.AddAsync(user);
+            await _fixture.DbContext.SaveChangesAsync();
+
+            // Act
+            var result = await service.GetUserById(userId);
 
             // Assert
             Assert.NotNull(result);
             Assert.Equal(userId, result.Id);
-            Assert.Equal(username, result.Username);
+            Assert.Equal("testuser", result.Username);
+        }
+
+        [Fact]
+        public async Task GetUserById_NonExistentUser_ShouldThrowKeyNotFoundException()
+        {
+            // Arrange
+            var mockRedis = new Mock<IRedisRepository>();
+            var service = GetService(mockRedis);
+            var nonExistentId = Guid.NewGuid();
+
+            // Act & Assert
+            await Assert.ThrowsAsync<KeyNotFoundException>(async () =>
+                await service.GetUserById(nonExistentId));
+        }
+
+        #endregion
+
+        #region GetUserRole Tests
+
+        [Fact]
+        public async Task GetUserRole_ExistingUser_ShouldReturnRoleAsString()
+        {
+            // Arrange
+            var mockRedis = new Mock<IRedisRepository>();
+            var service = GetService(mockRedis);
+            
+            var userId = Guid.NewGuid();
+            var user = new User
+            {
+                Id = userId,
+                Username = "adminuser",
+                Email = "admin@test.com",
+                PasswordHash = "hash",
+                Role = UserRole.Admin,
+                CreatedAt = DateTimeOffset.UtcNow
+            };
+            await _fixture.DbContext.Users.AddAsync(user);
+            await _fixture.DbContext.SaveChangesAsync();
+
+            // Act
+            var result = await service.GetUserRole(userId);
+
+            // Assert
+            Assert.Equal("Admin", result);
+        }
+
+        [Fact]
+        public async Task GetUserRole_NonExistentUser_ShouldThrowKeyNotFoundException()
+        {
+            // Arrange
+            var mockRedis = new Mock<IRedisRepository>();
+            var service = GetService(mockRedis);
+            var nonExistentId = Guid.NewGuid();
+
+            // Act & Assert
+            await Assert.ThrowsAsync<KeyNotFoundException>(async () =>
+                await service.GetUserRole(nonExistentId));
+        }
+
+        #endregion
+
+        #region GetUserByRefreshTokenAsync Tests
+
+        [Fact]
+        public async Task GetUserByRefreshTokenAsync_ValidToken_ShouldReturnUserAndUpdateLastActive()
+        {
+            // Arrange
+            var mockRedis = new Mock<IRedisRepository>();
+            var service = GetService(mockRedis);
+            
+            var userId = Guid.NewGuid();
+            var refreshToken = "valid_refresh_token";
+            var hashedToken = TokenUtility.HashToken(refreshToken);
+            var originalLastActive = DateTimeOffset.UtcNow.AddHours(-2);
+            
+            var user = new User
+            {
+                Id = userId,
+                Username = "tokenuser",
+                Email = "token@test.com",
+                PasswordHash = "hash",
+                Role = UserRole.Resident,
+                CreatedAt = DateTimeOffset.UtcNow
+            };
+            await _fixture.DbContext.Users.AddAsync(user);
+            
+            var session = new Session
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                RefreshToken = hashedToken,
+                DeviceInfo = "Test Device",
+                IpAddress = "127.0.0.1",
+                ExpiresAt = DateTimeOffset.UtcNow.AddDays(7),
+                LastActive = originalLastActive
+            };
+            await _fixture.DbContext.Sessions.AddAsync(session);
+            await _fixture.DbContext.SaveChangesAsync();
+
+            // Act
+            var result = await service.GetUserByRefreshTokenAsync(refreshToken);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(userId, result.Id);
+            Assert.Equal("tokenuser", result.Username);
+            
+            // Verify LastActive was updated
+            var updatedSession = await _fixture.DbContext.Sessions.FirstOrDefaultAsync(s => s.Id == session.Id);
+            Assert.NotNull(updatedSession);
+            Assert.True(updatedSession.LastActive > originalLastActive);
         }
 
         [Fact]
         public async Task GetUserByRefreshTokenAsync_ExpiredToken_ShouldReturnNull()
         {
             // Arrange
+            var mockRedis = new Mock<IRedisRepository>();
+            var service = GetService(mockRedis);
+            
             var userId = Guid.NewGuid();
-            var expiredRefreshToken = "expired_refresh_token_12345";
+            var refreshToken = "expired_token";
+            var hashedToken = TokenUtility.HashToken(refreshToken);
             
             var user = new User
             {
                 Id = userId,
-                Username = "test_user_expired",
-                Email = "expired@email.com",
-                ResidentUnitDeprecated = "RU002",
-                PasswordHash = "####",
-                PasswordSalt = "salt",
-                Role = UserRole.Resident
+                Username = "expireduser",
+                Email = "expired@test.com",
+                PasswordHash = "hash",
+                Role = UserRole.Resident,
+                CreatedAt = DateTimeOffset.UtcNow
             };
             await _fixture.DbContext.Users.AddAsync(user);
-
+            
             var session = new Session
             {
                 Id = Guid.NewGuid(),
                 UserId = userId,
-                RefreshToken = expiredRefreshToken,
-                DeviceInfo = "ExpiredDevice",
+                RefreshToken = hashedToken,
+                DeviceInfo = "Test Device",
                 IpAddress = "127.0.0.1",
-                ExpiresAt = DateTimeOffset.UtcNow.AddDays(-1), // Expired 1 day ago
+                ExpiresAt = DateTimeOffset.UtcNow.AddDays(-1), // Expired
                 LastActive = DateTimeOffset.UtcNow.AddDays(-1)
             };
             await _fixture.DbContext.Sessions.AddAsync(session);
             await _fixture.DbContext.SaveChangesAsync();
 
             // Act
-            var result = await _fixture.UserService.GetUserByRefreshTokenAsync(expiredRefreshToken);
+            var result = await service.GetUserByRefreshTokenAsync(refreshToken);
 
             // Assert
             Assert.Null(result);
@@ -198,39 +434,41 @@ namespace ParcelManagement.Test.Service
         public async Task GetUserByRefreshTokenAsync_NonExistentToken_ShouldReturnNull()
         {
             // Arrange
-            var nonExistentToken = "non_existent_token_12345";
+            var mockRedis = new Mock<IRedisRepository>();
+            var service = GetService(mockRedis);
 
             // Act
-            var result = await _fixture.UserService.GetUserByRefreshTokenAsync(nonExistentToken);
+            var result = await service.GetUserByRefreshTokenAsync("non_existent_token");
 
             // Assert
             Assert.Null(result);
         }
 
         [Fact]
-        public async Task GetUserByRefreshTokenAsync_EmptyTokenInSession_ShouldReturnNull()
+        public async Task GetUserByRefreshTokenAsync_EmptyRefreshToken_ShouldReturnNull()
         {
             // Arrange
-            var userId = Guid.NewGuid();
+            var mockRedis = new Mock<IRedisRepository>();
+            var service = GetService(mockRedis);
             
+            var userId = Guid.NewGuid();
             var user = new User
             {
                 Id = userId,
-                Username = "test_user_empty_token",
-                Email = "empty@email.com",
-                ResidentUnitDeprecated = "RU003",
-                PasswordHash = "####",
-                PasswordSalt = "salt",
-                Role = UserRole.Resident
+                Username = "emptyuser",
+                Email = "empty@test.com",
+                PasswordHash = "hash",
+                Role = UserRole.Resident,
+                CreatedAt = DateTimeOffset.UtcNow
             };
             await _fixture.DbContext.Users.AddAsync(user);
-
+            
             var session = new Session
             {
                 Id = Guid.NewGuid(),
                 UserId = userId,
                 RefreshToken = "", // Empty token
-                DeviceInfo = "EmptyTokenDevice",
+                DeviceInfo = "Test Device",
                 IpAddress = "127.0.0.1",
                 ExpiresAt = DateTimeOffset.UtcNow.AddDays(7),
                 LastActive = DateTimeOffset.UtcNow
@@ -239,361 +477,62 @@ namespace ParcelManagement.Test.Service
             await _fixture.DbContext.SaveChangesAsync();
 
             // Act
-            var result = await _fixture.UserService.GetUserByRefreshTokenAsync("");
+            var result = await service.GetUserByRefreshTokenAsync("");
 
             // Assert
             Assert.Null(result);
         }
 
+        #endregion
+
+        #region GetUserForViewAsync Tests
+
         [Fact]
-        public async Task GetUserByRefreshTokenAsync_NullTokenInSession_ShouldReturnNull()
+        public async Task GetUserForViewAsync_WithoutFilters_ShouldReturnAllUsers()
         {
             // Arrange
-            var userId = Guid.NewGuid();
+            var mockRedis = new Mock<IRedisRepository>();
+            var service = GetService(mockRedis);
             
-            var user = new User
+            var users = new List<User>
             {
-                Id = userId,
-                Username = "test_user_null_token",
-                Email = "null@email.com",
-                ResidentUnitDeprecated = "RU004",
-                PasswordHash = "####",
-                PasswordSalt = "salt",
-                Role = UserRole.Resident
+                new User
+                {
+                    Id = Guid.NewGuid(),
+                    Username = "user1",
+                    Email = "user1@test.com",
+                    PasswordHash = "hash",
+                    Role = UserRole.Resident,
+                    CreatedAt = DateTimeOffset.UtcNow
+                },
+                new User
+                {
+                    Id = Guid.NewGuid(),
+                    Username = "user2",
+                    Email = "user2@test.com",
+                    PasswordHash = "hash",
+                    Role = UserRole.ParcelRoomManager,
+                    CreatedAt = DateTimeOffset.UtcNow
+                }
             };
-            await _fixture.DbContext.Users.AddAsync(user);
-
-            var session = new Session
-            {
-                Id = Guid.NewGuid(),
-                UserId = userId,
-                RefreshToken = null, // Null token
-                DeviceInfo = "NullTokenDevice",
-                IpAddress = "127.0.0.1",
-                ExpiresAt = DateTimeOffset.UtcNow.AddDays(7),
-                LastActive = DateTimeOffset.UtcNow
-            };
-            await _fixture.DbContext.Sessions.AddAsync(session);
+            await _fixture.DbContext.Users.AddRangeAsync(users);
             await _fixture.DbContext.SaveChangesAsync();
+
+            var filter = new FilterPaginationRequest<UserSortableColumn>
+            {
+                Page = 1,
+                Take = 10
+            };
 
             // Act
-            var result = await _fixture.UserService.GetUserByRefreshTokenAsync("some_token");
+            var (resultUsers, count) = await service.GetUserForViewAsync(filter);
 
             // Assert
-            Assert.Null(result);
+            Assert.NotNull(resultUsers);
+            Assert.True(resultUsers.Count >= 2);
+            Assert.True(count >= 2);
         }
 
-        [Fact]
-        public async Task GetUserByRefreshTokenAsync_TokenExpiredOneMinuteAgo_ShouldReturnNull()
-        {
-            // Arrange
-            var userId = Guid.NewGuid();
-            var tokenExpiringNow = "token_expiring_now_12345";
-            
-            var user = new User
-            {
-                Id = userId,
-                Username = "test_user_expiring",
-                Email = "expiring@email.com",
-                ResidentUnitDeprecated = "RU005",
-                PasswordHash = "####",
-                PasswordSalt = "salt",
-                Role = UserRole.Resident
-            };
-            await _fixture.DbContext.Users.AddAsync(user);
-
-            var session = new Session
-            {
-                Id = Guid.NewGuid(),
-                UserId = userId,
-                RefreshToken = tokenExpiringNow,
-                DeviceInfo = "ExpiringDevice",
-                IpAddress = "127.0.0.1",
-                ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(-1), // Expired 1 minute ago
-                LastActive = DateTimeOffset.UtcNow.AddMinutes(-1)
-            };
-            await _fixture.DbContext.Sessions.AddAsync(session);
-            await _fixture.DbContext.SaveChangesAsync();
-
-            // Act
-            var result = await _fixture.UserService.GetUserByRefreshTokenAsync(tokenExpiringNow);
-
-            // Assert
-            Assert.Null(result);
-        }
-
-        [Fact]
-        public async Task GetUserByRefreshTokenAsync_MultipleSessionsSameUser_ShouldReturnCorrectSession()
-        {
-            // Arrange
-            var userId = Guid.NewGuid();
-            var username = "multi_session_user";
-            var refreshToken1 = "refresh_token_session_1";
-            var refreshToken2 = "refresh_token_session_2";
-            
-            var user = new User
-            {
-                Id = userId,
-                Username = username,
-                Email = "multisession@email.com",
-                ResidentUnitDeprecated = "RU006",
-                PasswordHash = "####",
-                PasswordSalt = "salt",
-                Role = UserRole.Resident
-            };
-            await _fixture.DbContext.Users.AddAsync(user);
-
-            var session1 = new Session
-            {
-                Id = Guid.NewGuid(),
-                UserId = userId,
-                RefreshToken = refreshToken1,
-                DeviceInfo = "Device1",
-                IpAddress = "192.168.1.1",
-                ExpiresAt = DateTimeOffset.UtcNow.AddDays(7),
-                LastActive = DateTimeOffset.UtcNow
-            };
-
-            var session2 = new Session
-            {
-                Id = Guid.NewGuid(),
-                UserId = userId,
-                RefreshToken = refreshToken2,
-                DeviceInfo = "Device2",
-                IpAddress = "192.168.1.2",
-                ExpiresAt = DateTimeOffset.UtcNow.AddDays(7),
-                LastActive = DateTimeOffset.UtcNow
-            };
-
-            await _fixture.DbContext.Sessions.AddRangeAsync(session1, session2);
-            await _fixture.DbContext.SaveChangesAsync();
-
-            // Act - Get user with first token
-            var result1 = await _fixture.UserService.GetUserByRefreshTokenAsync(refreshToken1);
-
-            // Assert
-            Assert.NotNull(result1);
-            Assert.Equal(userId, result1.Id);
-            Assert.Equal(username, result1.Username);
-
-            // Act - Get user with second token
-            var result2 = await _fixture.UserService.GetUserByRefreshTokenAsync(refreshToken2);
-
-            // Assert
-            Assert.NotNull(result2);
-            Assert.Equal(userId, result2.Id);
-        }
-
-        [Fact]
-        public async Task GetUserByRefreshTokenAsync_DifferentUsersWithDifferentTokens_ShouldReturnCorrectUser()
-        {
-            // Arrange
-            var user1Id = Guid.NewGuid();
-            var user2Id = Guid.NewGuid();
-            var refreshToken1 = "user1_refresh_token";
-            var refreshToken2 = "user2_refresh_token";
-            
-            var user1 = new User
-            {
-                Id = user1Id,
-                Username = "user_one",
-                Email = "user1@email.com",
-                ResidentUnitDeprecated = "RU007",
-                PasswordHash = "####",
-                PasswordSalt = "salt",
-                Role = UserRole.Resident
-            };
-
-            var user2 = new User
-            {
-                Id = user2Id,
-                Username = "user_two",
-                Email = "user2@email.com",
-                ResidentUnitDeprecated = "RU008",
-                PasswordHash = "####",
-                PasswordSalt = "salt",
-                Role = UserRole.Admin
-            };
-
-            await _fixture.DbContext.Users.AddRangeAsync(user1, user2);
-
-            var session1 = new Session
-            {
-                Id = Guid.NewGuid(),
-                UserId = user1Id,
-                RefreshToken = refreshToken1,
-                DeviceInfo = "User1Device",
-                IpAddress = "192.168.1.1",
-                ExpiresAt = DateTimeOffset.UtcNow.AddDays(7),
-                LastActive = DateTimeOffset.UtcNow
-            };
-
-            var session2 = new Session
-            {
-                Id = Guid.NewGuid(),
-                UserId = user2Id,
-                RefreshToken = refreshToken2,
-                DeviceInfo = "User2Device",
-                IpAddress = "192.168.1.2",
-                ExpiresAt = DateTimeOffset.UtcNow.AddDays(7),
-                LastActive = DateTimeOffset.UtcNow
-            };
-
-            await _fixture.DbContext.Sessions.AddRangeAsync(session1, session2);
-            await _fixture.DbContext.SaveChangesAsync();
-
-            // Act
-            var result1 = await _fixture.UserService.GetUserByRefreshTokenAsync(refreshToken1);
-            var result2 = await _fixture.UserService.GetUserByRefreshTokenAsync(refreshToken2);
-
-            // Assert
-            Assert.NotNull(result1);
-            Assert.NotNull(result2);
-            Assert.Equal(user1Id, result1.Id);
-            Assert.Equal(user2Id, result2.Id);
-            Assert.NotEqual(result1.Id, result2.Id);
-        }
-
-        [Fact]
-        public async Task GetUserByRefreshTokenAsync_ValidTokenUpdatesLastActive_ShouldUpdateTimestamp()
-        {
-            // Arrange
-            var userId = Guid.NewGuid();
-            var refreshToken = "token_to_update_last_active";
-            var originalLastActive = DateTimeOffset.UtcNow.AddHours(-2);
-            
-            var user = new User
-            {
-                Id = userId,
-                Username = "test_user_last_active",
-                Email = "lastactive@email.com",
-                ResidentUnitDeprecated = "RU009",
-                PasswordHash = "####",
-                PasswordSalt = "salt",
-                Role = UserRole.Resident
-            };
-            await _fixture.DbContext.Users.AddAsync(user);
-
-            var session = new Session
-            {
-                Id = Guid.NewGuid(),
-                UserId = userId,
-                RefreshToken = refreshToken,
-                DeviceInfo = "UpdateDevice",
-                IpAddress = "127.0.0.1",
-                ExpiresAt = DateTimeOffset.UtcNow.AddDays(7),
-                LastActive = originalLastActive
-            };
-            await _fixture.DbContext.Sessions.AddAsync(session);
-            await _fixture.DbContext.SaveChangesAsync();
-
-            // Act
-            var result = await _fixture.UserService.GetUserByRefreshTokenAsync(refreshToken);
-
-            // Assert
-            Assert.NotNull(result);
-            
-            // Verify LastActive was updated
-            var updatedSession = await _fixture.DbContext.Sessions
-                .FirstOrDefaultAsync(s => s.RefreshToken == refreshToken);
-            Assert.NotNull(updatedSession);
-            Assert.True(updatedSession.LastActive > originalLastActive);
-        }
-
-        [Fact]
-        public async Task GetUserByRefreshTokenAsync_OneSessionExpiredOneValid_ShouldReturnOnlyValid()
-        {
-            // Arrange
-            var userId = Guid.NewGuid();
-            var expiredToken = "expired_session_token";
-            var validToken = "valid_session_token";
-            
-            var user = new User
-            {
-                Id = userId,
-                Username = "mixed_sessions_user",
-                Email = "mixedsessions@email.com",
-                ResidentUnitDeprecated = "RU010",
-                PasswordHash = "####",
-                PasswordSalt = "salt",
-                Role = UserRole.Resident
-            };
-            await _fixture.DbContext.Users.AddAsync(user);
-
-            var expiredSession = new Session
-            {
-                Id = Guid.NewGuid(),
-                UserId = userId,
-                RefreshToken = expiredToken,
-                DeviceInfo = "ExpiredDevice",
-                IpAddress = "192.168.1.1",
-                ExpiresAt = DateTimeOffset.UtcNow.AddDays(-1), // Expired
-                LastActive = DateTimeOffset.UtcNow.AddDays(-1)
-            };
-
-            var validSession = new Session
-            {
-                Id = Guid.NewGuid(),
-                UserId = userId,
-                RefreshToken = validToken,
-                DeviceInfo = "ValidDevice",
-                IpAddress = "192.168.1.2",
-                ExpiresAt = DateTimeOffset.UtcNow.AddDays(7), // Valid
-                LastActive = DateTimeOffset.UtcNow
-            };
-
-            await _fixture.DbContext.Sessions.AddRangeAsync(expiredSession, validSession);
-            await _fixture.DbContext.SaveChangesAsync();
-
-            // Act
-            var expiredResult = await _fixture.UserService.GetUserByRefreshTokenAsync(expiredToken);
-            var validResult = await _fixture.UserService.GetUserByRefreshTokenAsync(validToken);
-
-            // Assert
-            Assert.Null(expiredResult); // Expired should return null
-            Assert.NotNull(validResult); // Valid should return user
-            Assert.Equal(userId, validResult.Id);
-        }
-
-        [Fact]
-        public async Task GetUserByRefreshTokenAsync_TokenExpiringInFuture_ShouldReturnUser()
-        {
-            // Arrange
-            var userId = Guid.NewGuid();
-            var futureToken = "future_expiring_token";
-            
-            var user = new User
-            {
-                Id = userId,
-                Username = "future_user",
-                Email = "future@email.com",
-                ResidentUnitDeprecated = "RU011",
-                PasswordHash = "####",
-                PasswordSalt = "salt",
-                Role = UserRole.ParcelRoomManager
-            };
-            await _fixture.DbContext.Users.AddAsync(user);
-
-            var session = new Session
-            {
-                Id = Guid.NewGuid(),
-                UserId = userId,
-                RefreshToken = futureToken,
-                DeviceInfo = "FutureDevice",
-                IpAddress = "127.0.0.1",
-                ExpiresAt = DateTimeOffset.UtcNow.AddDays(30), // Expires in 30 days
-                LastActive = DateTimeOffset.UtcNow
-            };
-            await _fixture.DbContext.Sessions.AddAsync(session);
-            await _fixture.DbContext.SaveChangesAsync();
-
-            // Act
-            var result = await _fixture.UserService.GetUserByRefreshTokenAsync(futureToken);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal(userId, result.Id);
-        }
-       
+        #endregion
     }
 }

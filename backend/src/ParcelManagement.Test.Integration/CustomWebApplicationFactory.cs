@@ -17,8 +17,7 @@ namespace ParcelManagement.Test.Integration
 
         public CustomWebApplicationFactory()
         {
-            _mySqlContainer = new MySqlBuilder()
-                .WithImage("mysql:8.0")
+            _mySqlContainer = new MySqlBuilder("mysql:8.0")
                 .WithDatabase("integrationTestDB")
                 .WithUsername("TestAdmin")
                 .WithPassword("AdminPassword123")

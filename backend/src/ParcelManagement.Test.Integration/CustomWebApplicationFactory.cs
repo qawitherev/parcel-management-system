@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ParcelManagement.Infrastructure.Database;
 using Testcontainers.MySql;
+using Testcontainers.Redis;
 
 namespace ParcelManagement.Test.Integration
 {
@@ -12,6 +13,7 @@ namespace ParcelManagement.Test.Integration
     {
 
         private readonly MySqlContainer _mySqlContainer;
+        private readonly RedisContainer _redisContainer; 
 
         public CustomWebApplicationFactory()
         {
@@ -22,11 +24,15 @@ namespace ParcelManagement.Test.Integration
                 .WithPassword("AdminPassword123")
                 .WithCleanUp(true)
                 .Build();
+
+            _redisContainer = new RedisBuilder("redis:7.0")
+                .Build();
         }
 
         public async Task InitializeAsync()
         {
             await _mySqlContainer.StartAsync(); // --> will spin up a docker container 
+            await _redisContainer.StartAsync();
         }
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -64,7 +70,8 @@ namespace ParcelManagement.Test.Integration
                     ["JWTSettings:Audience"] = "test-audience",
                     ["JWTSettings:ExpirationMinutes"] = "60",
                     ["Admin:Email"] = "admin@parcelSystem.com",
-                    ["Admin:Password"] = "this-is-admin-password"
+                    ["Admin:Password"] = "this-is-admin-password", 
+                    ["RedisSettings:ConnectionString"] = _redisContainer.GetConnectionString()
                 });
             });
         }
@@ -72,6 +79,7 @@ namespace ParcelManagement.Test.Integration
         async Task IAsyncLifetime.DisposeAsync()
         {
             await _mySqlContainer.DisposeAsync();
+            await _redisContainer.DisposeAsync();
         }
     }
 }

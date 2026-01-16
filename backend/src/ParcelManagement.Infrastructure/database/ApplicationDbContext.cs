@@ -3,6 +3,7 @@
 // SEE TRACKING EVENT TABLE CONFIG FOR EXAMPLE 
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ParcelManagement.Core.Entities;
 
 namespace ParcelManagement.Infrastructure.Database
@@ -34,6 +35,24 @@ namespace ParcelManagement.Infrastructure.Database
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            // if we are running unit test, convert any datetimeoffset column into long 
+            // because sqlite that we use during unit test does not support DateTimeOffset
+            if (Database.IsSqlite())
+            {
+                foreach (var entity in modelBuilder.Model.GetEntityTypes())
+                {
+                    var dateTimeOffsetProperties = entity.ClrType.GetProperties()
+                        .Where(p => p.PropertyType == typeof(DateTimeOffset) ||
+                                p.PropertyType == typeof(DateTimeOffset?));
+                    foreach (var property in dateTimeOffsetProperties)
+                    {
+                        modelBuilder.Entity(entity.Name)
+                            .Property(property.Name)
+                            .HasConversion(new DateTimeOffsetToBinaryConverter());
+                    }
+                }
+            }
 
             modelBuilder.ApplyConfiguration(new TrackingEventEntityConfiguration());
             modelBuilder.ApplyConfiguration(new UserEntityConfiguration());

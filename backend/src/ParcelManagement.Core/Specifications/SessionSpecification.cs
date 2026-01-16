@@ -79,7 +79,7 @@ namespace ParcelManagement.Core.Specifications
 
         public Expression<Func<Session, bool>> ToExpression()
         {
-            return s => s.ExpiresAt > startTime;
+            return s => s.ExpiresAt < startTime;
         }
     }
 }

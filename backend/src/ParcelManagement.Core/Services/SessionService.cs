@@ -11,6 +11,7 @@ namespace ParcelManagement.Core.Services
         Task<Session?> GetSessionBySpecification(ISpecification<Session> specification);
         Task UpdateSession(Session session);
         Task RemoveSession(Guid id);
+        Task<int> RemoveExpiredSessions();
 
     }
 
@@ -53,6 +54,15 @@ namespace ParcelManagement.Core.Services
             var session = await _sessionRepo.GetSessionBySpecification(spec) ?? 
                 throw new InvalidOperationException($"Session not found");
             await _sessionRepo.DeleteSessionAsync(session.Id);
+        }
+
+        public async Task<int> RemoveExpiredSessions()
+        {
+            var specification = new SessionExpiredRefreshTokenSpecification(DateTimeOffset.Now);
+            var expiredSessions = await _sessionRepo.GetSessionsBySpecification(specification);
+            var sessionsIds = expiredSessions.Select(s => s.Id);
+            var deletedRows = await _sessionRepo.DeleteSessionsAsync(sessionsIds);
+            return deletedRows;
         }
 
         public async Task UpdateSession(Session session)

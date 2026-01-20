@@ -55,7 +55,7 @@ namespace ParcelManagement.Api.AuthenticationAndAuthorization
 
         public DateTimeOffset GetRefreshTokenExpiry(int days)
         {
-            return DateTime.UtcNow.AddDays(days);
+            return DateTimeOffset.UtcNow.AddDays(days);
         }
     }
 }

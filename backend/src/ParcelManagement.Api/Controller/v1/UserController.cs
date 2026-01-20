@@ -123,6 +123,7 @@ namespace ParcelManagement.Api.Controller
         }
 
         [HttpPost("logout")]
+        [Authorize]
         public async Task<IActionResult> UserLogout()
         {
             var userId = _userContextService.GetUserId();

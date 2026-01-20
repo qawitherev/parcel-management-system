@@ -115,9 +115,16 @@ namespace ParcelManagement.Api.Controller
             
             var loginReponseDto = new LoginResponseDto
             {
-                AccessToken = jwt, 
-                RefreshToken = refreshToken
+                AccessToken = jwt
             };
+            
+            var cookieOption = new CookieOptions
+            {
+                HttpOnly = true, 
+                SameSite = SameSiteMode.Strict, 
+                Expires = DateTimeOffset.UtcNow.AddDays(REFRESH_TOKEN_EXPIRY_DAYS)
+            };
+            Response.Cookies.Append("refreshToken", refreshToken, cookieOption);
 
             return Ok(loginReponseDto);
         }
@@ -134,6 +141,13 @@ namespace ParcelManagement.Api.Controller
                 JwtId = jwtId ?? ""
             };
             await _userService.UserLogoutAsync(request);
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true, 
+                SameSite = SameSiteMode.Strict, 
+                Expires = DateTimeOffset.UtcNow.AddDays(-1 * REFRESH_TOKEN_EXPIRY_DAYS)
+            };
+            Response.Cookies.Append("refreshToken", "", cookieOptions);
             return Ok();
         }
 

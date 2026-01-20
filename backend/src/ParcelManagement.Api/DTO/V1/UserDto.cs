@@ -15,7 +15,6 @@ namespace ParcelManagement.Api.DTO.V1
     {
         [Required]
         public required string AccessToken { get; set; }
-        public required string RefreshToken {get; set; }
     }
 
     public class RegisterResidentDto

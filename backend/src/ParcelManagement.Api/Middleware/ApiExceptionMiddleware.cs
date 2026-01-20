@@ -16,29 +16,41 @@ namespace ParcelManagement.Api.Middleware
             {
                 await _next(httpContext);
             }
+            catch (OperationCanceledException ex)
+            {
+                if (httpContext.RequestAborted.IsCancellationRequested)
+                {
+                    return;
+                }
+                await HandleExceptionAsync(httpContext, ex, HttpStatusCode.GatewayTimeout);
+            }
+
             catch (Exception ex)
             {
-                var response = httpContext.Response;
-                response.ContentType = "application/json";
-                response.StatusCode = ex switch
-                {
-                    ApiException e => e.StatusCode,
+                await HandleExceptionAsync(httpContext, ex, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        private async Task HandleExceptionAsync(HttpContext httpContext, Exception ex, HttpStatusCode defaultCode)
+        {
+            if (httpContext.Response.HasStarted) return;
+            
+            httpContext.Response.ContentType = "application/json";
+            httpContext.Response.StatusCode = ex switch
+            {
+                ApiException e => e.StatusCode,
                     KeyNotFoundException => (int)HttpStatusCode.NotFound,
                     NullReferenceException => (int)HttpStatusCode.NotFound,
                     InvalidOperationException => (int)HttpStatusCode.Conflict,
                     InvalidCredentialException => (int)HttpStatusCode.Unauthorized,
-                    _ => (int)HttpStatusCode.InternalServerError
-                };
+                    _ => (int)defaultCode
+            };
 
-                var result = JsonSerializer.Serialize(new
-                {
-                    message = ex.Message,
-                    statusCode = response.StatusCode
-                });
-
-                _logger.LogError(ex, ex.Message);
-                await response.WriteAsync(result);
-            }
+            var responseBody = JsonSerializer.Serialize(new
+            {
+                message = ex.Message
+            });
+            await httpContext.Response.WriteAsync(responseBody);
         }
     }
 }

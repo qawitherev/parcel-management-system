@@ -1,8 +1,11 @@
 using System.Security.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ParcelManagement.Core.Entities;
 using ParcelManagement.Core.Misc;
+using ParcelManagement.Core.Model;
 using ParcelManagement.Core.Model.Helper;
+using ParcelManagement.Core.Model.User;
 using ParcelManagement.Core.Repositories;
 using ParcelManagement.Core.Specifications;
 
@@ -14,7 +17,9 @@ namespace ParcelManagement.Core.Services
 
         Task<User> ParcelRoomManagerRegisterAsync(string username, string password, string email);
 
-        Task<List<string>> UserLoginAsync(string username, string password);
+        Task<List<string>> UserLoginAsync(UserLoginRequest loginRequest);
+
+        Task UserLogoutAsync(UserLogoutRequest request);
 
         Task<User> GetUserById(Guid id);
 
@@ -23,35 +28,54 @@ namespace ParcelManagement.Core.Services
         Task<string> GetUserRole(Guid userId);
 
         Task<(IReadOnlyList<User>, int count)> GetUserForViewAsync(FilterPaginationRequest<UserSortableColumn> filter);
+
+        Task<User?> GetUserByRefreshTokenAsync(string refreshToken);
     }
 
     public class UserService(
         IUserRepository userRepository,
         IUserResidentUnitRepository userResidentUnitRepo,
         IResidentUnitRepository residentUnitRepo, 
-        IParcelRepository parcelRepo, 
-        INotificationPrefService npService
+        INotificationPrefService npService, 
+        ISessionService sessionService,
+        ITokenBlacklistService tokenBlacklistService
         ) : IUserService
     {
         private readonly IUserRepository _userRepository = userRepository;
         private readonly IUserResidentUnitRepository _userResidentUnitRepo = userResidentUnitRepo;
         private readonly IResidentUnitRepository _residentUnitRepo = residentUnitRepo;
-        private readonly IParcelRepository _parcelRepo = parcelRepo;
         private readonly INotificationPrefService _npService = npService;
-        public async Task<List<string>> UserLoginAsync(string username, string password)
+        private readonly ISessionService _sessionService = sessionService;
+        private readonly ITokenBlacklistService _tokenBlacklistService = tokenBlacklistService;
+        public async Task<List<string>> UserLoginAsync(UserLoginRequest loginRequest)
         {
-            var userByUsernameSpec = new UserByUsernameSpecification(username);
-            var possibleUser = await _userRepository.GetOneUserBySpecification(userByUsernameSpec) ?? throw new InvalidCredentialException($"Invalid login credential - username");
-            var isCredentialValid = PasswordService.VerifyPassword(possibleUser, possibleUser.PasswordHash, password);
+            var userByUsernameSpec = new UserByUsernameSpecification(loginRequest.Username);
+            var possibleUser = await _userRepository.GetOneUserBySpecification(userByUsernameSpec) ?? 
+                throw new InvalidCredentialException($"Invalid login credential");
+
+            var isCredentialValid = PasswordService.VerifyPassword(possibleUser, possibleUser.PasswordHash, loginRequest.Password);
             if (!isCredentialValid)
             {
                 throw new InvalidCredentialException("Invalid login credentials");
             }
+
             var userRole = possibleUser.Role;
             if (possibleUser.Role == UserRole.Resident)
             {
                 await _npService.EnsureUserHasNotificationPref(possibleUser.Id);
             }
+
+            var hashedRefreshToken = TokenUtility.HashToken(loginRequest.RefreshToken);
+            var createSessionRequest = new CreateSessionRequest
+            {
+                UserId = possibleUser.Id, 
+                RefreshToken = hashedRefreshToken, 
+                DeviceInfo = loginRequest.DeviceInfo,
+                IpAddress = loginRequest.IpAddress, 
+                ExpiresAt = loginRequest.RefreshTokenExpiry
+            };
+            await _sessionService.CreateSessionAsync(createSessionRequest);
+
             return [possibleUser!.Id.ToString(), userRole.ToString()];
         }
 
@@ -80,7 +104,7 @@ namespace ParcelManagement.Core.Services
                 CreatedAt = DateTimeOffset.UtcNow
             };
 
-            var hashedPassword = PasswordService.HashPassword(newUser, password);
+            var hashedPassword = PasswordService.HashPlainPasswordOrToken(newUser, password);
             newUser.PasswordHash = hashedPassword;
             var theNewUser = await _userRepository.CreateUserAsync(newUser);
             await _userResidentUnitRepo.CreateUserResidentUnitAsync(
@@ -125,7 +149,7 @@ namespace ParcelManagement.Core.Services
                 CreatedAt = DateTimeOffset.UtcNow, 
                 Role = UserRole.ParcelRoomManager
             };
-            registeringUser.PasswordHash = PasswordService.HashPassword(registeringUser, password);
+            registeringUser.PasswordHash = PasswordService.HashPlainPasswordOrToken(registeringUser, password);
             await _userRepository.CreateUserAsync(registeringUser);
             return registeringUser;
         }
@@ -145,6 +169,30 @@ namespace ParcelManagement.Core.Services
             var users = await _userRepository.GetUsersBySpecificationAsync(specification);
             var count = await _userRepository.GetUsersCountBySpecification(specification);
             return (users, count);
+        }
+
+        public async Task<User?> GetUserByRefreshTokenAsync(string refreshToken)
+        {
+            var hashedToken = TokenUtility.HashToken(refreshToken);
+            var spec = new SessionByRefreshTokenSpecification(hashedToken);
+            var session = await _sessionService.GetSessionBySpecification(spec);
+
+            var now = DateTimeOffset.UtcNow;
+            if (session == null || session.RefreshToken == "" || now > session.ExpiresAt)
+            {
+                return null;
+            }
+
+            session.LastActive = DateTimeOffset.UtcNow;
+            await _sessionService.UpdateSession(session);
+            return session.User;
+        }
+
+        public async Task UserLogoutAsync(UserLogoutRequest request)
+        {
+            await _sessionService.RemoveSession(request.UserId);
+            //TODO: blacklist access token 
+            await _tokenBlacklistService.BlacklistAccessToken(request.JwtId);
         }
     }
 }

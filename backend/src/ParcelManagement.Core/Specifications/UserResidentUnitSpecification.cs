@@ -12,6 +12,8 @@ namespace ParcelManagement.Core.Specifications
 
         public int? Take => throw new NotImplementedException();
 
+        public int? Skip => null;
+
         public List<IncludeExpressionString> IncludeExpressionsString => throw new NotImplementedException();
 
         public Expression<Func<UserResidentUnit, object>>? OrderBy => throw new NotImplementedException();
@@ -29,6 +31,8 @@ namespace ParcelManagement.Core.Specifications
         public int? Page => throw new NotImplementedException();
 
         public int? Take => throw new NotImplementedException();
+
+        public int? Skip => null;
 
         public List<IncludeExpressionString> IncludeExpressionsString => throw new NotImplementedException();
 
@@ -71,6 +75,8 @@ namespace ParcelManagement.Core.Specifications
         public int? Page => _filterPaginationRequest.Page;
 
         public int? Take => _filterPaginationRequest.Take;
+
+        public int? Skip => null;
 
         public Expression<Func<UserResidentUnit, bool>> ToExpression()
         {

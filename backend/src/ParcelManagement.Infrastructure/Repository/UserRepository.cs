@@ -21,7 +21,7 @@ namespace ParcelManagement.Infrastructure.Repository
 
         public async Task<User?> GetUserByIdAsync(Guid id)
         {
-            return await FindByIdAsync(id);
+            return await GetByIdAsync(id);
         }
 
         public async Task<IReadOnlyList<User>> GetUsersBySpecificationAsync(ISpecification<User> spec)
@@ -44,6 +44,11 @@ namespace ParcelManagement.Infrastructure.Repository
             var validUserIds = await _dbContext.Users.Where(user => userIds.Contains(user.Id))
                 .Select(user => user.Id).ToListAsync();
             return [.. userIds.Except(validUserIds)];     
+        }
+
+        public async Task UpdateUserAsync(User user)
+        {
+            await UpdateAsync(user);
         }
     }
 }

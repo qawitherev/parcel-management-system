@@ -17,7 +17,7 @@ namespace ParcelManagement.Api.Controller
         private readonly IUserService _userService = userService;
         private readonly ITokenService _tokenService = tokenService;
 
-        [HttpGet("refresh")]
+        [HttpPost("refresh")]
         public async Task<IActionResult> TokenRefresh([FromBody] RefreshTokenDto dto) 
         {
             var userValid = await _userService.GetUserByRefreshTokenAsync(dto.RefreshToken);

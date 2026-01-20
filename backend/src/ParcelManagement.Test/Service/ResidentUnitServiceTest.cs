@@ -2,6 +2,7 @@ using ParcelManagement.Core.Entities;
 using ParcelManagement.Test.Fixture;
 using Xunit;
 
+
 namespace ParcelManagement.Test.Service
 {
     public class ResidentUnitServiceTest(

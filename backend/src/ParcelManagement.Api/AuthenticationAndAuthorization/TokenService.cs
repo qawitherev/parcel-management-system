@@ -52,7 +52,6 @@ namespace ParcelManagement.Api.AuthenticationAndAuthorization
         {
             return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
         }
-
         public DateTimeOffset GetRefreshTokenExpiry(int days)
         {
             return DateTimeOffset.UtcNow.AddDays(days);

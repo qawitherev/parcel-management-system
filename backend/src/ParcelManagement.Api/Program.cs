@@ -187,6 +187,8 @@ if (builder.Environment.EnvironmentName != "Testing")
 
 var app = builder.Build();
 
+app.UseMiddleware<ApiExceptionMiddelware>();
+
 // search all route defined 
 app.UseRouting();
 
@@ -216,8 +218,6 @@ if (builder.Environment.IsDevelopment())
         option.SwaggerEndpoint("/swagger/v2/swagger.json", "Parcel API v2");
     });
 }
-
-app.UseMiddleware<ApiExceptionMiddelware>();
 
 app.UseMiddleware<BlacklistCheckMiddleware>();
 

@@ -50,7 +50,7 @@ namespace ParcelManagement.Core.Services
 
         public async Task RemoveSession(Guid userId)
         {
-            var spec = new SessionByUserSpecification(userId, null);
+            var spec = new SessionByUserSpecification(userId, USER_MAX_SESSION);
             var session = await _sessionRepo.GetSessionBySpecification(spec) ?? 
                 throw new InvalidOperationException($"Session not found");
             await _sessionRepo.DeleteSessionAsync(session.Id);

@@ -174,7 +174,6 @@ namespace ParcelManagement.Core.Services
         public async Task<User?> GetUserByRefreshTokenAsync(string refreshToken)
         {
             var hashedToken = TokenUtility.HashToken(refreshToken);
-            Console.WriteLine(hashedToken);
             var spec = new SessionByRefreshTokenSpecification(hashedToken);
             var session = await _sessionService.GetSessionBySpecification(spec);
 

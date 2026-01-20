@@ -17,8 +17,8 @@ namespace ParcelManagement.Api.Middleware
                 await _next(context);
                 return;
             }
-            var jit = userContextService1.GetTokenId();
-            var isBlacklisted = await tokenBlacklistService1.IsTokenBlacklisted(jit ?? "");
+            var jti = userContextService1.GetTokenId();
+            var isBlacklisted = await tokenBlacklistService1.IsTokenBlacklisted(jti ?? "");
             if (isBlacklisted)
             {
                 throw new InvalidCredentialException($"Unauthorized access");

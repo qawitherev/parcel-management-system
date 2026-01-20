@@ -122,7 +122,7 @@ namespace ParcelManagement.Api.Controller
             return Ok(loginReponseDto);
         }
 
-        [HttpGet("logout")]
+        [HttpPost("logout")]
         public async Task<IActionResult> UserLogout()
         {
             var userId = _userContextService.GetUserId();

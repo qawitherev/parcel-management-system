@@ -4,7 +4,7 @@ import { LayoutService, SidebarService } from '../layout-service.ts';
 import { RoleService, RoleWithExp } from '../../../core/roles/role-service';
 import { BehaviorSubject, combineLatest, map, Observable, pipe, Subject, takeUntil } from 'rxjs';
 import { AsyncPipe, NgIf } from '@angular/common';
-import { Auth } from '../../../features/auth/auth';
+import { AuthService } from '../../../features/auth/auth-service';
 import { MyButton } from "../../components/buttons/my-button/my-button";
 import { ThemeService } from '../../../core/theme/theme-service';
 import { MySwitch } from "../../components/switch/my-switch/my-switch";
@@ -105,7 +105,7 @@ export class NormalLayout implements OnInit, OnDestroy {
     private layoutService: LayoutService,
     private roleService: RoleService,
     private sidebarService: SidebarService, 
-    private authService: Auth, 
+    private authService: AuthService, 
     private themeService: ThemeService
   ) {}
 

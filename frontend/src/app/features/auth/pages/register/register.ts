@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { NgClass, AsyncPipe } from '@angular/common';
-import { Auth } from '../../auth';
+import { AuthService } from '../../auth-service';
 import { Observable, tap } from 'rxjs';
 import { NgIf } from '@angular/common';
 import { AppConsole } from '../../../../utils/app-console';
@@ -24,7 +24,7 @@ export class Register {
   // registerResponse$?: Observable<any>
 
 
-  constructor(private fb: FormBuilder, private authService: Auth, private router: Router) {
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       username: ['', [Validators.required, Validators.maxLength(10)]],

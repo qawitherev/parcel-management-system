@@ -9,7 +9,7 @@ import {
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { NgClass, AsyncPipe } from '@angular/common';
 import { Observable, tap, map, Subject, takeUntil } from 'rxjs';
-import { Auth } from '../../auth';
+import { AuthService } from '../../auth-service';
 import { NgIf } from '@angular/common';
 import { AppConsole } from '../../../../utils/app-console';
 import { httpResource } from '@angular/common/http';
@@ -41,7 +41,7 @@ export class Login implements OnInit, OnDestroy {
 
   constructor(
     private fb: FormBuilder,
-    private authService: Auth,
+    private authService: AuthService,
     private route: ActivatedRoute,
     private router: Router,
     private roleService: RoleService, 

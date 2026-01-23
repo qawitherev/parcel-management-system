@@ -9,8 +9,6 @@ namespace ParcelManagement.Api.AuthenticationAndAuthorization
 {
     public interface ITokenService
     {
-        //TODO
-        // To include role for authorization
         string GenerateAccessToken(string id, string username, string role);
 
         string GenerateRefreshToken();

@@ -8,14 +8,10 @@ export const isLoggedInGuard: CanActivateFn = (route, state) => {
   AppConsole.log(`isLoggedIn guard accessed`)
   const guardService = inject(GuardsService)
   const router = inject(Router)
-  if (guardService.isLoggedIn()) {
+  if (guardService.isAccessTokenExist()) {
     return true
   } 
-  return router.createUrlTree(['/login'], 
-    {
-      queryParams : {returnUrl: state.url}
-    }
-  )
+  return false;
 };
 
 export const isAdminAuthed: CanActivateFn = (route, state) => {

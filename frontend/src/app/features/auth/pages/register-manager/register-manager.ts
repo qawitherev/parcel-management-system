@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ɵInternalFormsSharedModule } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { passwordMatchValidator } from '../../../../utils/custom-validators';
-import { Auth } from '../../auth';
+import { AuthService } from '../../auth-service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgIf, AsyncPipe, NgClass } from '@angular/common';
 import { AppConsole } from '../../../../utils/app-console';
@@ -17,7 +17,7 @@ export class RegisterManager {
   formGroup: FormGroup
   errorMessage: string | null = null
 
-  constructor(private fb: FormBuilder, private authService: Auth, 
+  constructor(private fb: FormBuilder, private authService: AuthService, 
     private router: Router
   ) {
     this.formGroup = fb.group({

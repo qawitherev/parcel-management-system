@@ -62,7 +62,7 @@ export const routes: Routes = [
                 data: {title: 'Dashboard'}
             }
         ], 
-        canActivate: [isLoggedInGuard]
+        // canActivate: [isLoggedInGuard]
     },
 
     {

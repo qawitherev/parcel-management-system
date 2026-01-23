@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { Auth } from './auth';
+import { AuthService } from './auth-service';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { RoleService } from '../../core/roles/role-service';
@@ -8,7 +8,7 @@ import { AuthEndpoints } from '../../core/endpoints/auth-endpoints';
 import { provideZonelessChangeDetection } from '@angular/core';
 
 fdescribe('Auth', () => {
-  let service: Auth;
+  let service: AuthService;
   let httpMock: HttpTestingController;
 
   beforeEach(() => {
@@ -23,7 +23,7 @@ fdescribe('Auth', () => {
         { provide: Router, useValue: routerSpy },
       ],
     });
-    service = TestBed.inject(Auth);
+    service = TestBed.inject(AuthService);
     httpMock = TestBed.inject(HttpTestingController);
   });
 

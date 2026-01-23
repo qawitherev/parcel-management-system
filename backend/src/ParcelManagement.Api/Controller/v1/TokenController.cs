@@ -18,9 +18,10 @@ namespace ParcelManagement.Api.Controller
         private readonly ITokenService _tokenService = tokenService;
 
         [HttpPost("refresh")]
-        public async Task<IActionResult> TokenRefresh([FromBody] RefreshTokenDto dto) 
+        public async Task<IActionResult> TokenRefresh() 
         {
-            var userValid = await _userService.GetUserByRefreshTokenAsync(dto.RefreshToken);
+            var refreshToken = Request.Cookies["refreshToken"];
+            var userValid = await _userService.GetUserByRefreshTokenAsync(refreshToken ?? "");
             if (userValid == null)
             {
                 return Unauthorized($"Invalid or expired token");

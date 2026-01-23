@@ -102,8 +102,6 @@ namespace ParcelManagement.Test.Integration
             Assert.NotNull(loginResponse);
             Assert.NotNull(loginResponse.AccessToken);
             Assert.NotEmpty(loginResponse.AccessToken);
-            Assert.NotNull(loginResponse.RefreshToken);
-            Assert.NotEmpty(loginResponse.RefreshToken);
         }
 
         [Fact]
@@ -445,7 +443,6 @@ namespace ParcelManagement.Test.Integration
             Assert.NotNull(loginResponse1);
             Assert.NotNull(loginResponse2);
             Assert.NotEqual(loginResponse1.AccessToken, loginResponse2.AccessToken);
-            Assert.NotEqual(loginResponse1.RefreshToken, loginResponse2.RefreshToken);
         }
 
         [Fact]

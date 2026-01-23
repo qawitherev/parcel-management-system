@@ -40,13 +40,14 @@ jobs:
 
         - name: create .env file 
           run: | 
-            cat <<EOF > ./backend/src/.env
+            cat <<EOF > ./backend/src/ParcelManagement.Api/.env
             JWTSettings__SecretKey=${{ secrets.JWTSETTINGS__SECRETKEY }}
             JWTSettings__Issuer=${{ secrets.JWTSETTINGS__ISSUER }}
             JWTSettings__ExpirationMinutes=${{ secrets.JWTSETTINGS__EXPIRATIONMINUTES }}
             JWTSettings__Audience=${{ secrets.JWTSETTINGS__AUDIENCE }}
             ConnectionStrings__DefaultConnection=${{ secrets.CONNECTIONSTRINGS__DEFAULTCONNECTION }}
             Admin__Password=${{ secrets.ADMIN__PASSWORD }}
+            RedisSettings__ConnectionString=${{ secrets.REDISSETTINGS__CONNECTIONSTRING }}
             EOF
 
         - name: run docker compose with built image 

@@ -123,7 +123,7 @@ namespace ParcelManagement.Api.Controller
                 HttpOnly = true, 
                 SameSite = SameSiteMode.Lax, 
                 Secure = false,
-                Expires = DateTimeOffset.UtcNow.AddDays(REFRESH_TOKEN_EXPIRY_DAYS)
+                Expires = RefreshTokenExpiry
             };
             Response.Cookies.Append("refreshToken", refreshToken, cookieOption);
 
@@ -145,8 +145,9 @@ namespace ParcelManagement.Api.Controller
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true, 
-                SameSite = SameSiteMode.Strict, 
-                Expires = DateTimeOffset.UtcNow.AddDays(-1 * REFRESH_TOKEN_EXPIRY_DAYS)
+                SameSite = SameSiteMode.Lax, 
+                Secure = false,
+                Expires = DateTimeOffset.UtcNow.AddDays(-(double)REFRESH_TOKEN_EXPIRY_DAYS)
             };
             Response.Cookies.Append("refreshToken", "", cookieOptions);
             return Ok();

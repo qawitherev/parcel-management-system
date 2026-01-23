@@ -187,11 +187,11 @@ var app = builder.Build();
 
 app.UseMiddleware<ApiExceptionMiddelware>();
 
-// apply CORS
-app.UseCors("Allow-Angular-FrontEnd");
-
 // search all route defined 
 app.UseRouting();
+
+// apply CORS
+app.UseCors("Allow-Angular-FrontEnd");
 
 // authentication to populate HttpContext.User
 app.UseAuthentication();

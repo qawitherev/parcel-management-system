@@ -15,7 +15,7 @@ interface JwtExp {
 })
 export class GuardsService {
   private _cachedRole: string | null = null;
-  constructor(private http: HttpClient, private roleService: RoleService, private authService: AuthService) {}
+  constructor(private roleService: RoleService) {}
 
   isAccessTokenExist(): boolean {
     const token = localStorage.getItem(TOKEN_STORAGE_KEY);

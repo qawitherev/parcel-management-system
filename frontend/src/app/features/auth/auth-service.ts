@@ -89,7 +89,7 @@ export class AuthService {
   }
 
   refreshToken(): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>('/api/v1/token/refresh', null, {
+    return this.http.post<LoginResponse>(`${AuthEndpoints.refreshToken}`, null, {
       withCredentials: true
     });
   }

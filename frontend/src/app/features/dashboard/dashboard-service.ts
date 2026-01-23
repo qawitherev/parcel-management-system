@@ -28,14 +28,15 @@ export interface UserResponse {
   providedIn: 'root'
 })
 export class DashboardService {
-
   constructor(private http: HttpClient) {
 
   }
 
   getAwaitingPickup(): Observable<any> {
     AppConsole.log(`Fetching getAwaitingPickup`)
-    return this.http.get<ParcelResponseDtoList>(parcelEndpoints.getAwaitingPickup)
+    return this.http.get<ParcelResponseDtoList>(parcelEndpoints.getAwaitingPickup, {
+      withCredentials: true
+    })
   }
 
   getRecentlyPickedUp(): Observable<any> {
@@ -48,7 +49,9 @@ export class DashboardService {
   }
 
   getUserDetails(): Observable<UserResponse | ApiError> {
-    return this.http.get<UserResponse | ApiError>(`${UserEndpoints.me}`).pipe(
+    return this.http.get<UserResponse | ApiError>(`${UserEndpoints.me}`, {
+      withCredentials: true
+    }).pipe(
       catchError(handleApiError)
     )
   }

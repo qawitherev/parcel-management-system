@@ -121,7 +121,8 @@ namespace ParcelManagement.Api.Controller
             var cookieOption = new CookieOptions
             {
                 HttpOnly = true, 
-                SameSite = SameSiteMode.Strict, 
+                SameSite = SameSiteMode.Lax, 
+                Secure = false,
                 Expires = DateTimeOffset.UtcNow.AddDays(REFRESH_TOKEN_EXPIRY_DAYS)
             };
             Response.Cookies.Append("refreshToken", refreshToken, cookieOption);

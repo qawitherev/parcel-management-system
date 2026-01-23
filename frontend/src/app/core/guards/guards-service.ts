@@ -17,32 +17,10 @@ export class GuardsService {
   private _cachedRole: string | null = null;
   constructor(private http: HttpClient, private roleService: RoleService, private authService: AuthService) {}
 
-  isLoggedIn(): boolean {
+  isAccessTokenExist(): boolean {
     const token = localStorage.getItem(TOKEN_STORAGE_KEY);
     if (!token) {
       return false;
-    }
-    var decoded: any
-    try {
-      decoded = jwtDecode<JwtExp>(token);
-    } catch {
-      return false
-    }
-    const now = Math.floor(Date.now() / 1000); 
-    if (now <= decoded.exp) {
-      const newAccessToken = this.authService.refreshToken().pipe(
-        map(response => {
-          if (response && 'accessToken' in response) {
-            localStorage.setItem(TOKEN_STORAGE_KEY, response.accessToken); 
-            return true;
-          }
-          return false;
-        }), 
-        catchError(() => {
-          localStorage.removeItem(TOKEN_STORAGE_KEY);
-          return of(false);
-        })
-      )
     }
     return true;
   }

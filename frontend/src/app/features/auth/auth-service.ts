@@ -89,7 +89,9 @@ export class AuthService {
   }
 
   refreshToken(): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(AuthEndpoints.refreshToken, "");
+    return this.http.post<LoginResponse>('/api/v1/token/refresh', null, {
+      withCredentials: true
+    });
   }
 
   handleExpiredToken(req: HttpRequest<any>, next: any): Observable<any> {

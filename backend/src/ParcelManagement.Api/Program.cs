@@ -23,9 +23,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddEnvironmentVariables();
 
-// while we can do if (... || builder.Environment.IsEnvironment("Testing"))
-// we shouldn't do that because testing should have their own config 
-// so we init the settings in factory
 if (builder.Environment.IsDevelopment())
 {
     builder.Configuration.AddUserSecrets<Program>();
@@ -67,7 +64,8 @@ builder.Services.AddCors(options =>
     {   // we'll change the origin later 
         policy.WithOrigins("http://localhost:4200")
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
@@ -189,11 +187,11 @@ var app = builder.Build();
 
 app.UseMiddleware<ApiExceptionMiddelware>();
 
-// search all route defined 
-app.UseRouting();
-
 // apply CORS
 app.UseCors("Allow-Angular-FrontEnd");
+
+// search all route defined 
+app.UseRouting();
 
 // authentication to populate HttpContext.User
 app.UseAuthentication();

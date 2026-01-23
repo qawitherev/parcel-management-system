@@ -1,6 +1,7 @@
 using System.Data.Common;
 using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ParcelManagement.Core.Entities;
 using ParcelManagement.Core.Misc;
@@ -21,7 +22,6 @@ namespace ParcelManagement.Infrastructure.Database
             builder.ToTable(t => t.HasCheckConstraint("CK_Parcels_LockerRequired",
             "(`Version` = 1) OR (`Version` > 1 AND `LockerId` IS NOT NULL)"
             ));
-
         }
     }
 
@@ -85,6 +85,17 @@ namespace ParcelManagement.Infrastructure.Database
             builder.HasOne(np => np.UpdatingUser)
                 .WithMany()
                 .HasForeignKey(np => np.UpdatedBy);
+        }
+    }
+
+    public class SessionEntityConfiguration : IEntityTypeConfiguration<Session>
+    {
+        public void Configure(EntityTypeBuilder<Session> builder)
+        {
+            builder.HasKey(s => s.Id);
+            builder.HasOne(s => s.User)
+                .WithMany(u => u.Sessions)
+                .HasForeignKey(s => s.UserId);
         }
     }
 }

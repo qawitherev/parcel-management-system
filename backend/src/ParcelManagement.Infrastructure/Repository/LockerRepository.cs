@@ -22,7 +22,7 @@ namespace ParcelManagement.Infrastructure.Repository
 
         public async Task<Locker?> GetLockerByIdAsync(Guid id)
         {
-            return await FindByIdAsync(id);
+            return await GetByIdAsync(id);
         }
 
         public async Task<int> GetLockerCountBySpecification(ISpecification<Locker> specification)

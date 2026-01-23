@@ -26,6 +26,8 @@ namespace ParcelManagement.Core.Specifications
 
         public int? Take => null;
 
+        public int? Skip => null;
+
         public List<IncludeExpressionString> IncludeExpressionsString { get; }
 
         public Expression<Func<Locker, bool>> ToExpression()
@@ -59,6 +61,8 @@ namespace ParcelManagement.Core.Specifications
         public int? Page => _filterRequest.Page;
 
         public int? Take => _filterRequest.Take;
+
+        public int? Skip => null;
 
         public Expression<Func<Locker, bool>> ToExpression()
         {

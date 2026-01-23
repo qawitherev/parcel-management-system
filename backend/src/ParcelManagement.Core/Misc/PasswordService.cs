@@ -5,7 +5,7 @@ namespace ParcelManagement.Core.Misc
 {
     public class PasswordService
     {
-        public static string HashPassword(User user, string plainPassword)
+        public static string HashPlainPasswordOrToken(User user, string plainPassword)
         {
             var hasher = new PasswordHasher<User>();
             return hasher.HashPassword(user, plainPassword);

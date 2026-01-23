@@ -1,8 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { jwtDecode } from 'jwt-decode';
-import { map, Observable, of } from 'rxjs';
+import { catchError, map, Observable, of } from 'rxjs';
 import { RoleService } from '../roles/role-service';
+import { AuthService, TOKEN_STORAGE_KEY } from '../../features/auth/auth-service';
+import { handleApiError } from '../error-handling/api-catch-error';
 
 interface JwtExp {
   exp: number;
@@ -13,22 +15,14 @@ interface JwtExp {
 })
 export class GuardsService {
   private _cachedRole: string | null = null;
-  constructor(private http: HttpClient, private roleService: RoleService) {}
+  constructor(private roleService: RoleService) {}
 
-  isLoggedIn(): boolean {
-    const token = localStorage.getItem(`parcel-management-system-token`);
+  isAccessTokenExist(): boolean {
+    const token = localStorage.getItem(TOKEN_STORAGE_KEY);
     if (!token) {
       return false;
     }
-    var decoded: any
-    try {
-      decoded = jwtDecode<JwtExp>(token);
-    } catch {
-      return false
-    }
-    const now = Math.floor(Date.now() / 1000); // -> because exp is in second since epoch
-    // and Date.now() return mili since epoch, thats why divide 1000
-    return now <= decoded.exp; // -> so we compare if now bigger than exp
+    return true;
   }
 
   isRoleAuthorized$(roles: string[]): Observable<boolean> {

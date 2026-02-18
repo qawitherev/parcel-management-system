@@ -12,6 +12,8 @@ namespace ParcelManagement.Core.Specifications
 
         public int? Take => null;
 
+        public int? Skip => null;
+
         public List<IncludeExpressionString> IncludeExpressionsString => [];
 
         public Expression<Func<User, object>>? OrderBy => null;
@@ -40,6 +42,8 @@ namespace ParcelManagement.Core.Specifications
         public int? Page => _filter.Page;
 
         public int? Take => _filter.Take;
+
+        public int? Skip => null;
 
         List<IncludeExpression<User>> ISpecification<User>.IncludeExpressions => throw new NotImplementedException();
 

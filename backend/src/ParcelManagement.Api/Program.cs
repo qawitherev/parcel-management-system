@@ -13,16 +13,16 @@ using ParcelManagement.Core.UnitOfWork;
 using ParcelManagement.Infrastructure.UnitOfWork;
 using ParcelManagement.Api.Filter;
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using ParcelManagement.Api.Swagger;
-using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using ParcelManagement.Core.Model;
+
+DotNetEnv.Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
-// while we can do if (... || builder.Environment.IsEnvironment("Testing"))
-// we shouldn't do that because testing should have their own config 
-// so we init the settings in factory
+builder.Configuration.AddEnvironmentVariables();
+
 if (builder.Environment.IsDevelopment())
 {
     builder.Configuration.AddUserSecrets<Program>();
@@ -64,7 +64,8 @@ builder.Services.AddCors(options =>
     {   // we'll change the origin later 
         policy.WithOrigins("http://localhost:4200")
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
@@ -87,6 +88,8 @@ builder.Services.Configure<SystemAdmin>(
     builder.Configuration.GetSection("Admin")
 );
 
+builder.Services.Configure<RedisSettings>(builder.Configuration.GetSection("RedisSettings"));
+
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(option =>
 {
@@ -98,6 +101,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 });
 
 builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddSingleton<IRedisConnectionFactory, RedisConnectionFactory>();
 
 builder.Services.AddScoped<IParcelRepository, ParcelRepository>();
 builder.Services.AddScoped<IParcelService, ParcelService>();
@@ -121,6 +126,12 @@ builder.Services.AddScoped<ILockerService, LockerService>();
 
 builder.Services.AddScoped<INotificationPrefRepository, NotificationPrefRepository>();
 builder.Services.AddScoped<INotificationPrefService, NotificationPrefService>();
+
+builder.Services.AddScoped<ISessionRepository, SessionRepository>();
+builder.Services.AddScoped<ISessionService, SessionService>();
+
+builder.Services.AddScoped<IRedisRepository, RedisRepository>();
+builder.Services.AddScoped<ITokenBlacklistService, TokenBlacklistService>();
 
 builder.Services.AddScoped<IUserContextService, UserContextService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -174,6 +185,8 @@ if (builder.Environment.EnvironmentName != "Testing")
 
 var app = builder.Build();
 
+app.UseMiddleware<ApiExceptionMiddelware>();
+
 // search all route defined 
 app.UseRouting();
 
@@ -204,7 +217,7 @@ if (builder.Environment.IsDevelopment())
     });
 }
 
-app.UseMiddleware<ApiExceptionMiddelware>();
+app.UseMiddleware<BlacklistCheckMiddleware>();
 
 using (var scope = app.Services.CreateScope())
 {

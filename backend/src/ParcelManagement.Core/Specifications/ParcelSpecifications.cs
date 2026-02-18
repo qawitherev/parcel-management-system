@@ -12,6 +12,8 @@ namespace ParcelManagement.Core.Specifications
 
         public int? Take => null;
 
+        public int? Skip => null;
+
         List<IncludeExpressionString> ISpecification<Parcel>.IncludeExpressionsString => [];
 
         Expression<Func<Parcel, object>>? ISpecification<Parcel>.OrderBy => null;
@@ -35,6 +37,8 @@ namespace ParcelManagement.Core.Specifications
 
         public int? Take => null;
 
+        public int? Skip => null;
+
         public Expression<Func<Parcel, object>>? OrderBy => null;
 
         public Expression<Func<Parcel, object>>? OrderByDesc => null;
@@ -57,6 +61,8 @@ namespace ParcelManagement.Core.Specifications
         public int? Page => null;
 
         public int? Take => null;
+
+        public int? Skip => null;
 
         public Expression<Func<Parcel, object>>? OrderBy => null;
 
@@ -92,6 +98,8 @@ namespace ParcelManagement.Core.Specifications
         public int? Page => null;
 
         public int? Take => null;
+
+        public int? Skip => null;
 
         public List<IncludeExpressionString> IncludeExpressionsString { get; }
 
@@ -129,6 +137,8 @@ namespace ParcelManagement.Core.Specifications
 
         public int? Take => null;
 
+        public int? Skip => null;
+
         public List<IncludeExpressionString> IncludeExpressionsString { get; }
 
         public Expression<Func<Parcel, object>> OrderBy => throw new NotImplementedException();
@@ -148,6 +158,8 @@ namespace ParcelManagement.Core.Specifications
         public int? Page => null;
 
         public int? Take => null;
+
+        public int? Skip => null;
 
         public List<IncludeExpressionString> IncludeExpressionsString => throw new NotImplementedException();
 
@@ -195,6 +207,8 @@ namespace ParcelManagement.Core.Specifications
         public int? Page => _filterPaginationRequest.Page;
 
         public int? Take => _filterPaginationRequest.Take;
+
+        public int? Skip => null;
 
         public Expression<Func<Parcel, object>>? OrderBy => _filterPaginationRequest.IsAscending ? GetSortExpression() : null;
 
@@ -244,6 +258,8 @@ namespace ParcelManagement.Core.Specifications
         int? ISpecification<Parcel>.Page => null;
 
         int? ISpecification<Parcel>.Take => null;
+
+        public int? Skip => null;
 
         public Expression<Func<Parcel, bool>> ToExpression()
         {

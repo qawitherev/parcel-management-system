@@ -1,12 +1,14 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ParcelManagement.Api.AuthenticationAndAuthorization;
+using ParcelManagement.Api.CustomAttribute;
 using ParcelManagement.Api.DTO;
 using ParcelManagement.Api.DTO.V1;
 using ParcelManagement.Api.Utility;
 using ParcelManagement.Core.Entities;
+using ParcelManagement.Core.Model;
 using ParcelManagement.Core.Model.Helper;
+using ParcelManagement.Core.Model.User;
 using ParcelManagement.Core.Services;
 
 namespace ParcelManagement.Api.Controller
@@ -23,6 +25,8 @@ namespace ParcelManagement.Api.Controller
         private readonly IUserService _userService = userService;
         private readonly ITokenService _tokenService = tokenService;
         private readonly IUserContextService _userContextService = userContextService;
+        // TODO: we might want to use config file for this one 👇🏽
+        private readonly int REFRESH_TOKEN_EXPIRY_DAYS = 10;
 
         [HttpGet("{id}")]
         [Authorize]
@@ -88,15 +92,65 @@ namespace ParcelManagement.Api.Controller
 
 
         [HttpPost("login")]
+        [SkipBlacklistCheck]
         public async Task<IActionResult> UserLogin([FromBody] LoginDto dto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var loginRes = await _userService.UserLoginAsync(dto.Username, dto.PlainPassword);
-            var jwt = _tokenService.GenerateToken(loginRes[0], dto.Username, loginRes[1]);
-            return Ok(new { Token = jwt });
+            var refreshToken = _tokenService.GenerateRefreshToken();
+            var RefreshTokenExpiry = _tokenService.GetRefreshTokenExpiry(REFRESH_TOKEN_EXPIRY_DAYS);
+            var loginRequest = new UserLoginRequest
+            {
+                Username = dto.Username, 
+                Password = dto.PlainPassword, 
+                RefreshToken = refreshToken,
+                RefreshTokenExpiry = RefreshTokenExpiry,
+                DeviceInfo = HttpContextUtilities.GetDeviceInfo(HttpContext), 
+                IpAddress = HttpContextUtilities.GetDeviceIp(HttpContext)
+            };
+            var loginRes = await _userService.UserLoginAsync(loginRequest);
+            var jwt = _tokenService.GenerateAccessToken(loginRes[0], dto.Username, loginRes[1]);
+            
+            var loginReponseDto = new LoginResponseDto
+            {
+                AccessToken = jwt
+            };
+            
+            var cookieOption = new CookieOptions
+            {
+                HttpOnly = true, 
+                SameSite = SameSiteMode.Lax, 
+                Secure = false,
+                Expires = RefreshTokenExpiry
+            };
+            Response.Cookies.Append("refreshToken", refreshToken, cookieOption);
+
+            return Ok(loginReponseDto);
+        }
+
+        [HttpPost("logout")]
+        [Authorize]
+        public async Task<IActionResult> UserLogout()
+        {
+            var userId = _userContextService.GetUserId();
+            var jwtId = _userContextService.GetTokenId();
+            var request = new UserLogoutRequest
+            {
+                UserId = userId, 
+                JwtId = jwtId ?? ""
+            };
+            await _userService.UserLogoutAsync(request);
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true, 
+                SameSite = SameSiteMode.Lax, 
+                Secure = false,
+                Expires = DateTimeOffset.UtcNow.AddDays(-(double)REFRESH_TOKEN_EXPIRY_DAYS)
+            };
+            Response.Cookies.Append("refreshToken", "", cookieOptions);
+            return Ok();
         }
 
         [HttpGet("")]

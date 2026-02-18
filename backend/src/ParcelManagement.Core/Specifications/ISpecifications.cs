@@ -37,5 +37,7 @@ namespace ParcelManagement.Core.Specifications
         int? Page { get; }
 
         int? Take { get; }
+
+        int? Skip { get; }
     }
 }

@@ -11,6 +11,8 @@ namespace ParcelManagement.Core.Repositories
 
         Task<User> CreateUserAsync(User newUser);
 
+        Task UpdateUserAsync(User user);
+
         Task<IReadOnlyList<User>> GetUsersBySpecificationAsync(ISpecification<User> spec);
 
         Task<User?> GetOneUserBySpecification(ISpecification<User> spec);

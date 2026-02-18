@@ -26,11 +26,17 @@ namespace ParcelManagement.Infrastructure.Repository
 
             // we probably have to check for null for safety here 
             query = query.Where(specification.ToExpression());
+
             if (specification.Page.HasValue && specification.Take.HasValue)
             {
                 var skip = (specification.Page.Value - 1) * specification.Take.Value;
                 query = query.Skip(skip);
                 query = query.Take(specification.Take.Value);
+            }
+
+            if (specification.Skip.HasValue)
+            {
+                query = query.Skip(specification.Skip.Value);
             }
 
             if (specification.OrderBy != null)
@@ -74,7 +80,7 @@ namespace ParcelManagement.Infrastructure.Repository
             return objs;
         }
 
-        public async Task<T?> FindByIdAsync(Guid id)
+        public async Task<T?> GetByIdAsync(Guid id)
         {
             return await _dbContext.Set<T>().FindAsync(id);
         }
@@ -106,6 +112,19 @@ namespace ParcelManagement.Infrastructure.Repository
                 throw new KeyNotFoundException($"{obj.GetType().Name} with key {obj.Id} not found");
             _dbContext.Entry(existing).CurrentValues.SetValues(obj);
             await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<int> DeleteAsync(Guid id)
+        {
+            var rowsDeleted = await _dbContext.Set<T>().Where(t => t.Id == id)
+                .ExecuteDeleteAsync();
+            return rowsDeleted;
+        }
+
+        public async Task<int> DeleteRangeAsync(IEnumerable<Guid> ids)
+        {
+            var rowsDeleted = await _dbContext.Set<T>().Where(t => ids.Contains(t.Id)).ExecuteDeleteAsync();
+            return rowsDeleted;
         }
     }
 

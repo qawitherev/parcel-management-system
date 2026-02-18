@@ -24,6 +24,8 @@ namespace ParcelManagement.Core.Specifications
 
         public int? Take => null;
 
+        public int? Skip => null;
+
         public Expression<Func<NotificationPref, bool>> ToExpression()
         {
             return np => np.UserId == _userId;

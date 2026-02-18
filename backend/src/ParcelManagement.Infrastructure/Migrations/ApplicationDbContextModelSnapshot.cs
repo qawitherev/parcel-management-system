@@ -204,6 +204,37 @@ namespace ParcelManagement.Infrastructure.Migrations
                     b.ToTable("ResidentUnits");
                 });
 
+            modelBuilder.Entity("ParcelManagement.Core.Entities.Session", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("DeviceInfo")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset?>("ExpiresAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("IpAddress")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset?>("LastActive")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Sessions");
+                });
+
             modelBuilder.Entity("ParcelManagement.Core.Entities.TrackingEvent", b =>
                 {
                     b.Property<Guid>("Id")
@@ -381,6 +412,17 @@ namespace ParcelManagement.Infrastructure.Migrations
                     b.Navigation("UpdatedByUser");
                 });
 
+            modelBuilder.Entity("ParcelManagement.Core.Entities.Session", b =>
+                {
+                    b.HasOne("ParcelManagement.Core.Entities.User", "User")
+                        .WithMany("Sessions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("ParcelManagement.Core.Entities.TrackingEvent", b =>
                 {
                     b.HasOne("ParcelManagement.Core.Entities.Parcel", "Parcel")
@@ -437,6 +479,8 @@ namespace ParcelManagement.Infrastructure.Migrations
             modelBuilder.Entity("ParcelManagement.Core.Entities.User", b =>
                 {
                     b.Navigation("NotificationPref");
+
+                    b.Navigation("Sessions");
 
                     b.Navigation("UserResidentUnits");
                 });

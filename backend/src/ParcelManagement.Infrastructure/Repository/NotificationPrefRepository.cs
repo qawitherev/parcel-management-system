@@ -25,7 +25,7 @@ namespace ParcelManagement.Infrastructure.Repository
 
         public async Task<NotificationPref?> GetNotificationPrefByIdAsync(Guid id)
         {
-            return await FindByIdAsync(id);
+            return await GetByIdAsync(id);
 
         }
 

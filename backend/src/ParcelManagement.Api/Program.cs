@@ -69,6 +69,9 @@ builder.Services.AddCors(options =>
     });
 });
 
+// register add limiter from the extension class to service 
+builder.Services.AddRateLimit();
+
 // Dependency Injection 
 // THE HOLY GRAIL OF ASP.NET CORE
 if (!builder.Environment.IsEnvironment("Testing")) // --> if we're not doing integration testing, connect to real mySQL, else dbContext is created in CustomWebApplicationFactory.cs
@@ -192,6 +195,9 @@ app.UseRouting();
 
 // apply CORS
 app.UseCors("Allow-Angular-FrontEnd");
+
+// use registered rate limit 
+app.UseRateLimiter();
 
 // authentication to populate HttpContext.User
 app.UseAuthentication();

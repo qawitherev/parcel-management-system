@@ -1,5 +1,6 @@
 
 
+using System.Security.Claims;
 using System.Threading.RateLimiting;
 
 
@@ -26,7 +27,31 @@ namespace ParcelManagement.Api.Middleware
                     {
                         PermitLimit = 100, 
                         Window = TimeSpan.FromMinutes(1), 
-                        SegmentsPerWindow = 5
+                        SegmentsPerWindow = 10
+                    })
+                );
+
+                // user based rate limit
+                options.AddPolicy("UserPolicy", httpContext =>
+                {
+                    var userId = httpContext.User.FindFirstValue(ClaimTypes.Name) 
+                        ?? httpContext.Connection.RemoteIpAddress?.ToString()
+                        ?? "Anonymous";
+                    return RateLimitPartition.GetSlidingWindowLimiter(userId, _ => new SlidingWindowRateLimiterOptions
+                    {
+                        PermitLimit = 10, 
+                        Window = TimeSpan.FromMinutes(1), 
+                        SegmentsPerWindow = 10
+                    });
+                });
+
+                // endpoint based Rate limit 
+                options.AddPolicy("StrictEndpointPolicy", httpContext => 
+                    RateLimitPartition.GetSlidingWindowLimiter("Strict", _ => new SlidingWindowRateLimiterOptions
+                    {
+                        PermitLimit = 75, 
+                        Window = TimeSpan.FromMinutes(1), 
+                        SegmentsPerWindow = 3
                     })
                 );
             });

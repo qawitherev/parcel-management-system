@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using ParcelManagement.Core.Model.Configuration;
 
 namespace ParcelManagement.Api.AuthenticationAndAuthorization
 {

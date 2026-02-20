@@ -15,7 +15,7 @@ using ParcelManagement.Api.Filter;
 using Microsoft.OpenApi.Models;
 using ParcelManagement.Api.Swagger;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using ParcelManagement.Core.Model;
+using ParcelManagement.Core.Model.Configuration;
 
 DotNetEnv.Env.Load();
 

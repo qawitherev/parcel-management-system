@@ -16,6 +16,7 @@ using Microsoft.OpenApi.Models;
 using ParcelManagement.Api.Swagger;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using ParcelManagement.Core.Model.Configuration;
+using ParcelManagement.Api.Extension;
 
 DotNetEnv.Env.Load();
 
@@ -110,42 +111,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddSingleton<IRedisConnectionFactory, RedisConnectionFactory>();
-
-builder.Services.AddScoped<IParcelRepository, ParcelRepository>();
-builder.Services.AddScoped<IParcelService, ParcelService>();
-
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IUserService, UserService>();
-
-builder.Services.AddScoped<ITokenService, TokenService>();
-
-builder.Services.AddScoped<IResidentUnitRepository, ResidentUnitRepository>();
-builder.Services.AddScoped<IResidentUnitService, ResidentUnitService>();
-
-builder.Services.AddScoped<IUserResidentUnitRepository, UserResidentUnitRepository>();
-builder.Services.AddScoped<IUserResidentUnitService, UserResidentUnitService>();
-
-builder.Services.AddScoped<ITrackingEventRepository, TrackingEventRepository>();
-builder.Services.AddScoped<ITrackingEventService, TrackingEventService>();
-
-builder.Services.AddScoped<ILockerRepository, LockerRepository>();
-builder.Services.AddScoped<ILockerService, LockerService>();
-
-builder.Services.AddScoped<INotificationPrefRepository, NotificationPrefRepository>();
-builder.Services.AddScoped<INotificationPrefService, NotificationPrefService>();
-
-builder.Services.AddScoped<ISessionRepository, SessionRepository>();
-builder.Services.AddScoped<ISessionService, SessionService>();
-
-builder.Services.AddScoped<IRedisRepository, RedisRepository>();
-builder.Services.AddScoped<ITokenBlacklistService, TokenBlacklistService>();
-
-builder.Services.AddScoped<IUserContextService, UserContextService>();
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<TransactionFilter>();
-
-builder.Services.AddScoped<AdminDataSeeder>();
+// register application services 
+builder.Services.AddApplicationServices();
 
 if (builder.Environment.EnvironmentName != "Testing")
 {

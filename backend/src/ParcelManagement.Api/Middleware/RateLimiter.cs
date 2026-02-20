@@ -32,6 +32,8 @@ namespace ParcelManagement.Api.Middleware
         {
             options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 
+                // TODO: to log warning when one of the valuen inside RateLimitSettings is 0
+
                 // global rate limit 
                 options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext => 
                     RateLimitPartition.GetSlidingWindowLimiter("Global", _  => new SlidingWindowRateLimiterOptions

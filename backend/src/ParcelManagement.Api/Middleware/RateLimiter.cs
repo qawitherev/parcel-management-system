@@ -2,6 +2,9 @@
 
 using System.Security.Claims;
 using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Options;
+using ParcelManagement.Core.Model.Configuration;
 
 
 /**
@@ -13,21 +16,29 @@ using System.Threading.RateLimiting;
 **/
 namespace ParcelManagement.Api.Middleware
 {
-    public static class RateLimitExtensions
+    public class RateLimiterConfiguration : IConfigureOptions<RateLimiterOptions>
     {
-        public static IServiceCollection AddRateLimit(this IServiceCollection services)
+        const int LIMIT_FALLBACK = 10;
+        const int WINDOW_TIME_FALLBACK = 1; // in minutes 
+        const int SEGMENTS_FALLBACK = 10;
+
+        private readonly RateLimitSettings _settings; 
+
+        public RateLimiterConfiguration(IOptions<RateLimitSettings> options)
         {
-            services.AddRateLimiter(options =>
-            {
-                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+            _settings = options.Value;
+        }
+        public void Configure(RateLimiterOptions options)
+        {
+            options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 
                 // global rate limit 
                 options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext => 
                     RateLimitPartition.GetSlidingWindowLimiter("Global", _  => new SlidingWindowRateLimiterOptions
                     {
-                        PermitLimit = 100, 
-                        Window = TimeSpan.FromMinutes(1), 
-                        SegmentsPerWindow = 10
+                        PermitLimit = _settings.Global.PermitLimit == 0 ? LIMIT_FALLBACK : _settings.Global.PermitLimit, 
+                        Window = TimeSpan.FromMinutes(_settings.Global.WindowMinutes == 0 ? WINDOW_TIME_FALLBACK : _settings.Global.WindowMinutes), 
+                        SegmentsPerWindow = _settings.Global.SegmentsPerWindow == 0 ? SEGMENTS_FALLBACK : _settings.Global.SegmentsPerWindow
                     })
                 );
 
@@ -38,24 +49,20 @@ namespace ParcelManagement.Api.Middleware
                         ?? httpContext.Connection.RemoteIpAddress?.ToString()
                         ?? "Anonymous";
                     return RateLimitPartition.GetSlidingWindowLimiter(userId, _ => new SlidingWindowRateLimiterOptions
-                    {
-                        PermitLimit = 10, 
-                        Window = TimeSpan.FromMinutes(1), 
-                        SegmentsPerWindow = 10
-                    });
-                });
+                                        {
+                                            PermitLimit = _settings.User.PermitLimit == 0 ? LIMIT_FALLBACK : _settings.User.PermitLimit,
+                                            Window = TimeSpan.FromMinutes(_settings.User.WindowMinutes == 0 ? WINDOW_TIME_FALLBACK : _settings.User.WindowMinutes),
+                                            SegmentsPerWindow = _settings.User.SegmentsPerWindow == 0 ? SEGMENTS_FALLBACK : _settings.User.SegmentsPerWindow
+                                        });  });
 
                 // endpoint based Rate limit 
                 options.AddPolicy("StrictEndpointPolicy", httpContext => 
                     RateLimitPartition.GetSlidingWindowLimiter("Strict", _ => new SlidingWindowRateLimiterOptions
                     {
-                        PermitLimit = 75, 
-                        Window = TimeSpan.FromMinutes(1), 
-                        SegmentsPerWindow = 3
+                        PermitLimit = _settings.StrictEndpoint.PermitLimit == 0 ? LIMIT_FALLBACK : _settings.StrictEndpoint.PermitLimit,
+                        Window = TimeSpan.FromMinutes(_settings.StrictEndpoint.WindowMinutes == 0 ? WINDOW_TIME_FALLBACK : _settings.StrictEndpoint.WindowMinutes),
+                        SegmentsPerWindow = _settings.StrictEndpoint.SegmentsPerWindow == 0 ? SEGMENTS_FALLBACK : _settings.StrictEndpoint.SegmentsPerWindow
                     })
-                );
-            });
-            return services; 
-        }
+                );  }
     }
 }

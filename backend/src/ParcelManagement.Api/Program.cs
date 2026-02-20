@@ -69,9 +69,6 @@ builder.Services.AddCors(options =>
     });
 });
 
-// register add limiter from the extension class to service 
-builder.Services.AddRateLimit();
-
 // Dependency Injection 
 // THE HOLY GRAIL OF ASP.NET CORE
 if (!builder.Environment.IsEnvironment("Testing")) // --> if we're not doing integration testing, connect to real mySQL, else dbContext is created in CustomWebApplicationFactory.cs
@@ -91,8 +88,16 @@ builder.Services.Configure<SystemAdmin>(
     builder.Configuration.GetSection("Admin")
 );
 
-builder.Services.Configure<RedisSettings>(builder.Configuration.GetSection("RedisSettings"));
+builder.Services.Configure<RedisSettings>(
+    builder.Configuration.GetSection("RedisSettings")
+);
 
+builder.Services.Configure<RateLimitSettings>(
+    builder.Configuration.GetSection("RateLimitSettings")
+);
+
+builder.Services.ConfigureOptions<RateLimiterConfiguration>();
+builder.Services.AddRateLimiter();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(option =>
 {

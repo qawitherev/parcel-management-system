@@ -24,7 +24,7 @@ namespace ParcelManagement.Api.Middleware
 
         private readonly RateLimitSettings _settings; 
 
-        public RateLimiterConfiguration(IOptions<RateLimitSettings> options)
+        public RateLimiterConfiguration(IOptionsSnapshot<RateLimitSettings> options)
         {
             _settings = options.Value;
         }

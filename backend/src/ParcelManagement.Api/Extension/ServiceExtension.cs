@@ -8,6 +8,13 @@ using ParcelManagement.Infrastructure.Database;
 using ParcelManagement.Infrastructure.Repository;
 using ParcelManagement.Infrastructure.UnitOfWork;
 
+/**
+    extension in c# requirements 
+    1. static class 
+    2. class constructor receive the type to be extended with 'this' keyword 
+    3. static method 
+**/
+
 namespace ParcelManagement.Api.Extension
 {
     public static class ServiceExtensions

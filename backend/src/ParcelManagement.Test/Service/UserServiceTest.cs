@@ -2,7 +2,6 @@ using System.Security.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Moq;
-using ParcelManagement.Api.AuthenticationAndAuthorization;
 using ParcelManagement.Core.Entities;
 using ParcelManagement.Core.Misc;
 using ParcelManagement.Core.Model;
@@ -46,7 +45,7 @@ namespace ParcelManagement.Test.Service
         {
             // Default mock if not provided
             var redisRepo = mockRedisRepo ?? new Mock<IRedisRepository>();
-            var jwtSettings = new JWTSettings { ExpirationMinutes = 60 };
+            var jwtSettings = new Core.Model.Configuration.JWTSettings { ExpirationMinutes = 60 };
             var jwtOptions = Options.Create(jwtSettings);
             var tokenBlacklistService = new TokenBlacklistService(redisRepo.Object, jwtOptions);
 

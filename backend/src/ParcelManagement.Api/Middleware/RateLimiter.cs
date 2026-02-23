@@ -47,7 +47,7 @@ namespace ParcelManagement.Api.Middleware
                 // user based rate limit
                 options.AddPolicy("UserPolicy", httpContext =>
                 {
-                    var userId = httpContext.User.FindFirstValue(ClaimTypes.Name) 
+                    var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) 
                         ?? httpContext.Connection.RemoteIpAddress?.ToString()
                         ?? "Anonymous";
                     return RateLimitPartition.GetSlidingWindowLimiter(userId, _ => new SlidingWindowRateLimiterOptions

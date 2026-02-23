@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ParcelManagement.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class aivenmysqlinit : Migration
+    public partial class AivenMySqlInit : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

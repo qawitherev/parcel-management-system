@@ -13,7 +13,7 @@ namespace ParcelManagement.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20260223031518_aiven-mysql-init")]
-    partial class aivenmysqlinit
+    partial class AivenMySqlInit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -2,15 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using ParcelManagement.Api.Middleware;
 using ParcelManagement.Api.AuthenticationAndAuthorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using ParcelManagement.Core.Repositories;
-using ParcelManagement.Core.Services;
 using ParcelManagement.Infrastructure.Database;
-using ParcelManagement.Infrastructure.Repository;
 using System.Text.Json.Serialization;
-using ParcelManagement.Api.Utility;
 using Microsoft.AspNetCore.Mvc;
-using ParcelManagement.Core.UnitOfWork;
-using ParcelManagement.Infrastructure.UnitOfWork;
 using ParcelManagement.Api.Filter;
 using Microsoft.OpenApi.Models;
 using ParcelManagement.Api.Swagger;
@@ -18,7 +12,8 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using ParcelManagement.Core.Model.Configuration;
 using ParcelManagement.Api.Extension;
 
-DotNetEnv.Env.Load();
+var root = Directory.GetCurrentDirectory();
+DotNetEnv.Env.Load(Path.Combine(root, ".env"));
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -24,9 +24,9 @@ namespace ParcelManagement.Api.Middleware
 
         private readonly RateLimitSettings _settings; 
 
-        public RateLimiterConfiguration(IOptionsSnapshot<RateLimitSettings> options)
+        public RateLimiterConfiguration(IOptionsMonitor<RateLimitSettings> options)
         {
-            _settings = options.Value;
+            _settings = options.CurrentValue;
         }
         public void Configure(RateLimiterOptions options)
         {
@@ -35,8 +35,8 @@ namespace ParcelManagement.Api.Middleware
                 // TODO: to log warning when one of the valuen inside RateLimitSettings is 0
 
                 // global rate limit 
-                options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext => 
-                    RateLimitPartition.GetSlidingWindowLimiter("Global", _  => new SlidingWindowRateLimiterOptions
+                options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+                RateLimitPartition.GetSlidingWindowLimiter("Global", _  => new SlidingWindowRateLimiterOptions
                     {
                         PermitLimit = _settings.Global.PermitLimit == 0 ? LIMIT_FALLBACK : _settings.Global.PermitLimit, 
                         Window = TimeSpan.FromMinutes(_settings.Global.WindowMinutes == 0 ? WINDOW_TIME_FALLBACK : _settings.Global.WindowMinutes), 

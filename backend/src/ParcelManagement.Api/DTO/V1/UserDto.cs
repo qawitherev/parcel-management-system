@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using ParcelManagement.Core.Specifications;
 
 namespace ParcelManagement.Api.DTO.V1
 {

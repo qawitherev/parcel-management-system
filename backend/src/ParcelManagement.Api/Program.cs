@@ -2,22 +2,18 @@ using Microsoft.EntityFrameworkCore;
 using ParcelManagement.Api.Middleware;
 using ParcelManagement.Api.AuthenticationAndAuthorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using ParcelManagement.Core.Repositories;
-using ParcelManagement.Core.Services;
 using ParcelManagement.Infrastructure.Database;
-using ParcelManagement.Infrastructure.Repository;
 using System.Text.Json.Serialization;
-using ParcelManagement.Api.Utility;
 using Microsoft.AspNetCore.Mvc;
-using ParcelManagement.Core.UnitOfWork;
-using ParcelManagement.Infrastructure.UnitOfWork;
 using ParcelManagement.Api.Filter;
 using Microsoft.OpenApi.Models;
 using ParcelManagement.Api.Swagger;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using ParcelManagement.Core.Model;
+using ParcelManagement.Core.Model.Configuration;
+using ParcelManagement.Api.Extension;
 
-DotNetEnv.Env.Load();
+var root = Directory.GetCurrentDirectory();
+DotNetEnv.Env.Load(Path.Combine(root, ".env"));
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -88,8 +84,16 @@ builder.Services.Configure<SystemAdmin>(
     builder.Configuration.GetSection("Admin")
 );
 
-builder.Services.Configure<RedisSettings>(builder.Configuration.GetSection("RedisSettings"));
+builder.Services.Configure<RedisSettings>(
+    builder.Configuration.GetSection("RedisSettings")
+);
 
+builder.Services.Configure<RateLimitSettings>(
+    builder.Configuration.GetSection("RateLimitSettings")
+);
+
+builder.Services.ConfigureOptions<RateLimiterConfiguration>();
+builder.Services.AddRateLimiter();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(option =>
 {
@@ -102,42 +106,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddSingleton<IRedisConnectionFactory, RedisConnectionFactory>();
-
-builder.Services.AddScoped<IParcelRepository, ParcelRepository>();
-builder.Services.AddScoped<IParcelService, ParcelService>();
-
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IUserService, UserService>();
-
-builder.Services.AddScoped<ITokenService, TokenService>();
-
-builder.Services.AddScoped<IResidentUnitRepository, ResidentUnitRepository>();
-builder.Services.AddScoped<IResidentUnitService, ResidentUnitService>();
-
-builder.Services.AddScoped<IUserResidentUnitRepository, UserResidentUnitRepository>();
-builder.Services.AddScoped<IUserResidentUnitService, UserResidentUnitService>();
-
-builder.Services.AddScoped<ITrackingEventRepository, TrackingEventRepository>();
-builder.Services.AddScoped<ITrackingEventService, TrackingEventService>();
-
-builder.Services.AddScoped<ILockerRepository, LockerRepository>();
-builder.Services.AddScoped<ILockerService, LockerService>();
-
-builder.Services.AddScoped<INotificationPrefRepository, NotificationPrefRepository>();
-builder.Services.AddScoped<INotificationPrefService, NotificationPrefService>();
-
-builder.Services.AddScoped<ISessionRepository, SessionRepository>();
-builder.Services.AddScoped<ISessionService, SessionService>();
-
-builder.Services.AddScoped<IRedisRepository, RedisRepository>();
-builder.Services.AddScoped<ITokenBlacklistService, TokenBlacklistService>();
-
-builder.Services.AddScoped<IUserContextService, UserContextService>();
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<TransactionFilter>();
-
-builder.Services.AddScoped<AdminDataSeeder>();
+// register application services 
+builder.Services.AddApplicationServices();
 
 if (builder.Environment.EnvironmentName != "Testing")
 {
@@ -192,6 +162,9 @@ app.UseRouting();
 
 // apply CORS
 app.UseCors("Allow-Angular-FrontEnd");
+
+// use registered rate limit 
+app.UseRateLimiter();
 
 // authentication to populate HttpContext.User
 app.UseAuthentication();

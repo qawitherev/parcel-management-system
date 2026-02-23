@@ -6,7 +6,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
     env_file:
-      - ./backend/src/.env
+      - ./backend/src/ParcelManagement.Api/.env
     networks:
       - app-network
 

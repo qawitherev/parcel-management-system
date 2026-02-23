@@ -1,4 +1,4 @@
-namespace ParcelManagement.Api.AuthenticationAndAuthorization {
+namespace ParcelManagement.Core.Model.Configuration {
     public class JWTSettings
     {
         public string? SecretKey { get; set; }

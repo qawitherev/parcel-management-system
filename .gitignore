@@ -60,3 +60,6 @@ yarn-error.log*
 crash.log
 terraform.tfvars
 *.auto.tfvars
+
+# certs and stuff 
+*.pem

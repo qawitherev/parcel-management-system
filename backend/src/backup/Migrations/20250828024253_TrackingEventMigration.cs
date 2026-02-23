@@ -11,25 +11,25 @@ namespace ParcelManagement.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Parcels_ResidentUnit_ResidentUnitId",
-                table: "Parcels");
+            // migrationBuilder.DropForeignKey(
+            //     name: "FK_Parcels_ResidentUnit_ResidentUnitId",
+            //     table: "Parcels");
 
-            migrationBuilder.DropForeignKey(
-                name: "FK_UserResidentUnit_ResidentUnit_ResidentUnitId",
-                table: "UserResidentUnit");
+            // migrationBuilder.DropForeignKey(
+            //     name: "FK_UserResidentUnit_ResidentUnit_ResidentUnitId",
+            //     table: "UserResidentUnit");
 
-            migrationBuilder.DropForeignKey(
-                name: "FK_UserResidentUnit_Users_UserId",
-                table: "UserResidentUnit");
+            // migrationBuilder.DropForeignKey(
+            //     name: "FK_UserResidentUnit_Users_UserId",
+            //     table: "UserResidentUnit");
 
             migrationBuilder.DropPrimaryKey(
                 name: "PK_UserResidentUnit",
                 table: "UserResidentUnit");
 
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_ResidentUnit",
-                table: "ResidentUnit");
+            // migrationBuilder.DropPrimaryKey(
+            //     name: "PK_ResidentUnit",
+            //     table: "ResidentUnit");
 
             migrationBuilder.RenameTable(
                 name: "UserResidentUnit",

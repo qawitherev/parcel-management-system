@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Options;
 using ParcelManagement.Core.Model;
+using ParcelManagement.Core.Model.Configuration;
 using StackExchange.Redis;
 
 namespace ParcelManagement.Infrastructure.Database

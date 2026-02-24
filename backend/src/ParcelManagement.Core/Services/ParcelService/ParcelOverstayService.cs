@@ -14,7 +14,8 @@ namespace ParcelManagement.Core.Services
             foreach (var parcel in overstayedParcels)
             {
                 parcel.OverstayDays += 1;
-                parcel.Status = ParcelStatus.Overstayed;
+                parcel.Status = parcel.OverstayDays > 30 ? ParcelStatus.Unclaimed
+                    : ParcelStatus.Overstayed;
             }
             await _uow.SaveChangesAsync();
             return overstayedParcels.Count;

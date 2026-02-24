@@ -266,4 +266,35 @@ namespace ParcelManagement.Core.Specifications
             return p => p.Id == _id;
         }
     }
+
+    public class ParcelOverstaySpecification : ISpecification<Parcel>
+    {
+        private readonly int _overstayDayThreshold;
+        public ParcelOverstaySpecification(int overstayDayThreshold)
+        {
+            _overstayDayThreshold = overstayDayThreshold;
+        }
+        
+        public List<IncludeExpressionString> IncludeExpressionsString => [];
+
+        List<IncludeExpression<Parcel>> ISpecification<Parcel>.IncludeExpressions => [];
+
+        Expression<Func<Parcel, object>>? ISpecification<Parcel>.OrderBy => p => p.EntryDate;
+
+        Expression<Func<Parcel, object>>? ISpecification<Parcel>.OrderByDesc => null;
+
+        int? ISpecification<Parcel>.Page => null;
+
+        int? ISpecification<Parcel>.Take => null;
+
+        public int? Skip => null;
+
+        public Expression<Func<Parcel, bool>> ToExpression()
+        {
+            var hoursThreshold = _overstayDayThreshold * 24; 
+            var overstayEntry = DateTimeOffset.UtcNow.AddHours(-hoursThreshold);
+            return p => p.Status == ParcelStatus.AwaitingPickup && 
+                p.EntryDate > overstayEntry;
+        }
+    }
 }

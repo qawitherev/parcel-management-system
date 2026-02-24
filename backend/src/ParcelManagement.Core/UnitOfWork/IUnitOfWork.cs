@@ -5,6 +5,7 @@ namespace ParcelManagement.Core.UnitOfWork
     public interface IUnitOfWork
     {
         Task<IDisposableTransaction> BeginTransaction();
+        Task SaveChangesAsync(); 
     }
 
     public interface IDisposableTransaction: IDisposable, IAsyncDisposable

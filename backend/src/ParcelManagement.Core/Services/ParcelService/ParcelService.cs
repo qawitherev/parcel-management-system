@@ -5,6 +5,7 @@ using ParcelManagement.Core.Model.Helper;
 using ParcelManagement.Core.Model.Parcel;
 using ParcelManagement.Core.Repositories;
 using ParcelManagement.Core.Specifications;
+using ParcelManagement.Core.UnitOfWork;
 
 namespace ParcelManagement.Core.Services
 {
@@ -57,20 +58,24 @@ namespace ParcelManagement.Core.Services
         Task<(IReadOnlyCollection<Parcel>, int count)> GetRecentlyPickedUp();
 
         Task<BulkClaimResponse> BulkClaimAsync(IEnumerable<string> trackingNumbers, Guid performedByUser);
+
+        Task<int> UpdateOverstayedParcel(); 
     }
 
-    public class ParcelService(
+    public partial class ParcelService(
         IParcelRepository parcelRepo,
         IResidentUnitRepository residentUnitRepo,
         IUserRepository userRepo,
         ITrackingEventRepository trackingEventRepo,
-        ILockerRepository lockerRepo
+        ILockerRepository lockerRepo,
+        IUnitOfWork unitOfWork
         ) : IParcelService
     {
         private readonly IParcelRepository _parcelRepo = parcelRepo;
         private readonly IResidentUnitRepository _residentUnitRepo = residentUnitRepo;
         private readonly IUserRepository _userRepo = userRepo;
         private readonly ILockerRepository _lockerRepo = lockerRepo;
+        private readonly IUnitOfWork _uow = unitOfWork;
 
         private readonly ITrackingEventRepository _trackingEventRepo = trackingEventRepo;
 

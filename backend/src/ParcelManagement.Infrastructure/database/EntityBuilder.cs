@@ -98,4 +98,5 @@ namespace ParcelManagement.Infrastructure.Database
                 .HasForeignKey(s => s.UserId);
         }
     }
+    
 }

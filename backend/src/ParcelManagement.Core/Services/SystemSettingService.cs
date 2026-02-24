@@ -1,4 +1,5 @@
 using ParcelManagement.Core.Entities;
+using ParcelManagement.Core.Model.Helper;
 using ParcelManagement.Core.Repositories;
 using ParcelManagement.Core.Specifications;
 
@@ -6,8 +7,9 @@ namespace ParcelManagement.Core.Services
 {
     public interface ISystemSettingService
     {
+        Task<IReadOnlyList<SystemSetting>> GetSystemSettings(FilterPaginationRequest<SystemSettingSortableColumn> filter);
         Task<SystemSetting> CreateSystemSettingAsync(string name, string? value);
-        Task<SystemSetting?> GetSystemSettingByIdAsync(Guid id);
+        Task<SystemSetting> GetSystemSettingByIdAsync(Guid id);
         Task<SystemSetting?> GetSystemSettingByNameAsync(string name);
         Task<SystemSetting> UpdateSystemSettingAsync(Guid id, string? value);
         Task DeleteSystemSettingAsync(Guid id);
@@ -42,9 +44,10 @@ namespace ParcelManagement.Core.Services
             return setting;
         }
 
-        public async Task<SystemSetting?> GetSystemSettingByIdAsync(Guid id)
+        public async Task<SystemSetting> GetSystemSettingByIdAsync(Guid id)
         {
-            return await _settingRepo.GetSystemSettingByIdAsync(id);
+            return await _settingRepo.GetSystemSettingByIdAsync(id) 
+                ?? throw new KeyNotFoundException($"System setting not found");
         }
 
         public async Task<SystemSetting?> GetSystemSettingByNameAsync(string name)
@@ -66,6 +69,12 @@ namespace ParcelManagement.Core.Services
         public async Task DeleteSystemSettingAsync(Guid id)
         {
             await _settingRepo.DeleteSystemSettingAsync(id);
+        }
+
+        public async Task<IReadOnlyList<SystemSetting>> GetSystemSettings(FilterPaginationRequest<SystemSettingSortableColumn> filter)
+        {
+            var spec = new SystemSettingViewSpecification(filter);
+            return await _settingRepo.GetSystemSettingsBySpecification(spec);
         }
     }
 }

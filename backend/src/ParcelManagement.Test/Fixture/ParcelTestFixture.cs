@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ParcelManagement.Core.Services;
 using ParcelManagement.Infrastructure.Database;
 using ParcelManagement.Infrastructure.Repository;
+using ParcelManagement.Infrastructure.UnitOfWork;
 using Xunit;
 
 namespace ParcelManagement.Test.Fixture
@@ -23,8 +24,9 @@ namespace ParcelManagement.Test.Fixture
             var userRepo = new UserRepository(DbContext);
             var trackingEventRepo = new TrackingEventRepository(DbContext);
             var lockerRepo = new LockerRepository(DbContext);
+            var unitOfWork = new UnitOfWork(DbContext);
             ParcelRepo = new ParcelRepository(DbContext);
-            ParcelService = new ParcelService(ParcelRepo, residentUnitRepo, userRepo, trackingEventRepo, lockerRepo);
+            ParcelService = new ParcelService(ParcelRepo, residentUnitRepo, userRepo, trackingEventRepo, lockerRepo, unitOfWork);
             return Task.CompletedTask;
         }
 

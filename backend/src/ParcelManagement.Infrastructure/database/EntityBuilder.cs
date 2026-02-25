@@ -98,5 +98,14 @@ namespace ParcelManagement.Infrastructure.Database
                 .HasForeignKey(s => s.UserId);
         }
     }
-    
+
+    public class SystemSettingEntityConfiguration : IEntityTypeConfiguration<SystemSetting>
+    {
+        public void Configure(EntityTypeBuilder<SystemSetting> builder)
+        {
+            builder.HasKey(sst => sst.Id);
+            builder.HasIndex(sst => sst.Type).IsUnique();
+        }
+    }
+
 }

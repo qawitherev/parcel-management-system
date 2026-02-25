@@ -13,7 +13,7 @@ namespace ParcelManagement.Core.Repositories
         /// <summary>
         /// Convenience lookup when callers only know the name of the setting.
         /// </summary>
-        Task<SystemSetting?> GetSystemSettingByNameAsync(string name);
+        Task<SystemSetting?> GetSystemSettingByNameAsync(SystemSettingType type);
 
         Task UpdateSystemSettingAsync(SystemSetting setting);
 

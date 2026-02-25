@@ -4,14 +4,8 @@ using ParcelManagement.Core.Model.Helper;
 
 namespace ParcelManagement.Core.Specifications
 {
-    public class SystemSettingByNameSpecification : ISpecification<SystemSetting>
+    public class SystemSettingByTypeSpecification(SystemSettingType type) : ISpecification<SystemSetting>
     {
-        private readonly string _name;
-
-        public SystemSettingByNameSpecification(string name)
-        {
-            _name = name;
-        }
 
         public int? Page => null;
         public int? Take => null;
@@ -26,7 +20,7 @@ namespace ParcelManagement.Core.Specifications
 
         public Expression<Func<SystemSetting, bool>> ToExpression()
         {
-            return s => s.Name == _name;
+            return s => s.Type == type;
         }
     }
 
@@ -36,9 +30,9 @@ namespace ParcelManagement.Core.Specifications
 
         public List<IncludeExpressionString> IncludeExpressionsString => [];
 
-        public Expression<Func<SystemSetting, object>>? OrderBy => filter.IsAscending ? GetSortExpression() : null;
+        public Expression<Func<SystemSetting, object>>? OrderBy => null;
 
-        public Expression<Func<SystemSetting, object>>? OrderByDesc => !filter.IsAscending ? GetSortExpression() : null;
+        public Expression<Func<SystemSetting, object>>? OrderByDesc => null;
 
         public int? Page => filter.Page;
 
@@ -48,16 +42,7 @@ namespace ParcelManagement.Core.Specifications
 
         public Expression<Func<SystemSetting, bool>> ToExpression()
         {
-            return stm => string.IsNullOrEmpty(filter.SearchKeyword) || stm.Name.Contains(filter.SearchKeyword);
-        }
-
-        private Expression<Func<SystemSetting, object>> GetSortExpression() 
-        {
-            return filter.SortableColumn switch 
-            {
-                SystemSettingSortableColumn.Name => stm => stm.Name, 
-                _ => stm => stm.Name
-            };
+            return sst => true;
         }
     }
 }

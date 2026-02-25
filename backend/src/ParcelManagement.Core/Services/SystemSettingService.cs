@@ -8,9 +8,9 @@ namespace ParcelManagement.Core.Services
     public interface ISystemSettingService
     {
         Task<IReadOnlyList<SystemSetting>> GetSystemSettings(FilterPaginationRequest<SystemSettingSortableColumn> filter);
-        Task<SystemSetting> CreateSystemSettingAsync(string name, string? value);
+        Task<SystemSetting> CreateSystemSettingAsync(SystemSettingType type, string? value);
         Task<SystemSetting> GetSystemSettingByIdAsync(Guid id);
-        Task<SystemSetting?> GetSystemSettingByNameAsync(string name);
+        Task<SystemSetting?> GetSystemSettingByNameAsync(SystemSettingType type);
         Task<SystemSetting> UpdateSystemSettingAsync(Guid id, string? value);
         Task DeleteSystemSettingAsync(Guid id);
     }
@@ -24,19 +24,14 @@ namespace ParcelManagement.Core.Services
             _settingRepo = settingRepo;
         }
 
-        public async Task<SystemSetting> CreateSystemSettingAsync(string name, string? value)
+        public async Task<SystemSetting> CreateSystemSettingAsync(SystemSettingType type, string? value)
         {
-            var spec = new SystemSettingByNameSpecification(name);
+            var spec = new SystemSettingByTypeSpecification(type);
             var existing = await _settingRepo.GetSystemSettingBySpecification(spec);
-            if (existing != null)
-            {
-                throw new InvalidOperationException($"System setting '{name}' already exists");
-            }
 
             var setting = new SystemSetting
             {
                 Id = Guid.NewGuid(),
-                Name = name,
                 Value = value
             };
 
@@ -50,9 +45,9 @@ namespace ParcelManagement.Core.Services
                 ?? throw new KeyNotFoundException($"System setting not found");
         }
 
-        public async Task<SystemSetting?> GetSystemSettingByNameAsync(string name)
+        public async Task<SystemSetting?> GetSystemSettingByNameAsync(SystemSettingType type)
         {
-            var spec = new SystemSettingByNameSpecification(name);
+            var spec = new SystemSettingByTypeSpecification(type);
             return await _settingRepo.GetSystemSettingBySpecification(spec);
         }
 

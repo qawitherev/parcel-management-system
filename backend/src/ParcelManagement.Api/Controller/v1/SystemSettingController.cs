@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ParcelManagement.Api.DTO;
+using ParcelManagement.Api.Utility;
 using ParcelManagement.Core.Entities;
 using ParcelManagement.Core.Model.Helper;
 using ParcelManagement.Core.Services;
@@ -11,16 +12,16 @@ namespace ParcelManagement.Api.Controller
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [Consumes("application/json")]
-    public class SettingController(ISystemSettingService settingService) : ControllerBase
+    public class SettingController(ISystemSettingService settingService, IParcelService parcelService) : ControllerBase
     {
         [HttpGet("{id}")]
         public async Task<IActionResult> GetSystemSettingById(Guid id)
         {
             var systemSetting = await settingService.GetSystemSettingByIdAsync(id);
-            var dto = new SystemSettingDto
+            var dto = new SystemSettingDtoResponse
             {
                 Id = systemSetting.Id,
-                Name = systemSetting.Name, 
+                Type = systemSetting.Type,
                 Value = systemSetting.Value
             };
             return Ok(dto);
@@ -32,15 +33,14 @@ namespace ParcelManagement.Api.Controller
         {
             var filter = new FilterPaginationRequest<SystemSettingSortableColumn>
             {
-                
+                // i think no need to pass anything here 
             };
             var systemSettings = await settingService.GetSystemSettings(filter);
             var dto = new SystemSettingsDto
             {
                 Count = systemSettings.Count, 
-                SystemSettings = [.. systemSettings.Select(sst => new SystemSettingDto {
+                SystemSettings = [.. systemSettings.Select(sst => new SystemSettingDtoResponse {
                     Id = sst.Id,
-                    Name = sst.Name, 
                     Value = sst.Value
                 })]
             };
@@ -48,9 +48,10 @@ namespace ParcelManagement.Api.Controller
         }
 
         [HttpPost("")]
-        public async Task<IActionResult> CreateSetting(SystemSettingDto dto)
+        public async Task<IActionResult> CreateSetting(SystemSettingsDtoCreateRequest dto)
         {
-            var newSetting = await settingService.CreateSystemSettingAsync(dto.Name, dto.Value);
+            var type = EnumUtils.ToEnumOrNull<SystemSettingType>(dto.Type) ?? throw new InvalidCastException("Invalid setting type");
+            var newSetting = await settingService.CreateSystemSettingAsync(type, dto.Value);
             var returnDto = new SystemSetting
             {
                 Name = newSetting.Name, 
@@ -60,9 +61,10 @@ namespace ParcelManagement.Api.Controller
         }
 
         [HttpPatch("")]
-        public async Task<IActionResult> UpdateSetting(SystemSettingDto dto)
+        public async Task<IActionResult> UpdateSetting(SystemSettingDtoResponse dto)
         {
             await settingService.UpdateSystemSettingAsync(dto.Id, dto.Value);
+            await parcelService.UpdateOverstayedParcel();
             return NoContent();
         }
     }

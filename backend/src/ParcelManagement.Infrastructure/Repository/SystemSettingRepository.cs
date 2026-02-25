@@ -26,10 +26,10 @@ namespace ParcelManagement.Infrastructure.Repository
             return await GetByIdAsync(id);
         }
 
-        public async Task<SystemSetting?> GetSystemSettingByNameAsync(string name)
+        public async Task<SystemSetting?> GetSystemSettingByNameAsync(SystemSettingType type)
         {
             return await _dbContext.Set<SystemSetting>()
-                .FirstOrDefaultAsync(s => s.Name == name);
+                .FirstOrDefaultAsync(s => s.Type == type);
         }
 
         public async Task UpdateSystemSettingAsync(SystemSetting setting)

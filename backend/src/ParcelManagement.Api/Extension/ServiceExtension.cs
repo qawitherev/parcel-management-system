@@ -1,6 +1,7 @@
 using ParcelManagement.Api.AuthenticationAndAuthorization;
 using ParcelManagement.Api.Filter;
 using ParcelManagement.Api.Utility;
+using ParcelManagement.Core.BackgroundServices;
 using ParcelManagement.Core.Repositories;
 using ParcelManagement.Core.Services;
 using ParcelManagement.Core.UnitOfWork;
@@ -19,6 +20,7 @@ namespace ParcelManagement.Api.Extension
 {
     public static class ServiceExtensions
     {
+        const int QUEUE_LIMIT = 100;
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
             
@@ -50,12 +52,22 @@ namespace ParcelManagement.Api.Extension
             services.AddScoped<ISessionRepository, SessionRepository>();
             services.AddScoped<ISessionService, SessionService>();
 
+            services.AddScoped<ISystemSettingRepository, SystemSettingRepository>();
+            services.AddScoped<ISystemSettingService, SystemSettingService>();
+
             services.AddScoped<IRedisRepository, RedisRepository>();
             services.AddScoped<ITokenBlacklistService, TokenBlacklistService>();
 
             services.AddScoped<IUserContextService, UserContextService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<TransactionFilter>();
+
+            services.AddSingleton<IBackgroundTaskQueue>(new BackgroundTaskQueue(QUEUE_LIMIT));
+
+            services.AddSingleton<ParcelOverstayService>(); // concrete singleton
+            services.AddHostedService(provider  => provider.GetRequiredService<ParcelOverstayService>());
+            services.AddSingleton<IParcelOverstayEnqueuer>(provider 
+                => provider.GetRequiredService<ParcelOverstayService>());
 
             services.AddScoped<AdminDataSeeder>();
             return services;

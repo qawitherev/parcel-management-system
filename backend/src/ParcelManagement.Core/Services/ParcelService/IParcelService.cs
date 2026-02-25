@@ -54,6 +54,8 @@ namespace ParcelManagement.Core.Services
         Task<BulkClaimResponse> BulkClaimAsync(IEnumerable<string> trackingNumbers, Guid performedByUser);
 
         Task<int> UpdateOverstayedParcel(); 
+
+        Task WakeUpProcessParcelOverstay();
     }
 
 }

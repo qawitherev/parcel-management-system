@@ -5,27 +5,53 @@ using ParcelManagement.Core.Services;
 
 namespace ParcelManagement.Core.BackgroundServices
 {
-    public class ParcelOverstayService(IServiceScopeFactory serviceScopeFactory) : BackgroundService
+    public interface IParcelOverstayEnqueuer
+    {
+        ValueTask EnqueueProcessParcelOverstay();
+    }
+
+    public class ParcelOverstayService(IServiceScopeFactory serviceScopeFactory, IBackgroundTaskQueue backgroundTaskQueue) : BackgroundService, IParcelOverstayEnqueuer
     {
         private readonly CronExpression _cronExpression = CronExpression.Daily;
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            while (!stoppingToken.IsCancellationRequested)
+
+            var c = RunCronJob(stoppingToken);
+            var s = PickupJobQueue(stoppingToken);
+            await Task.WhenAll(c, s);
+        }
+
+        private async Task RunCronJob(CancellationToken ct)
+        {
+            Console.WriteLine("Cronjob activated");
+            while (!ct.IsCancellationRequested)
             {
                 try
                 {
                     var utcNow = DateTime.UtcNow;
                     var nextRun = _cronExpression.GetNextOccurrence(utcNow);
-                    
-                    if (nextRun.HasValue)
-                    {
-                        var delayAmount = nextRun.Value - utcNow;
-                        await Task.Delay(delayAmount, stoppingToken);
-                        if (stoppingToken.IsCancellationRequested) return;
-                        await ProcessParcelOverstay(stoppingToken);
-                    }
-                } catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+                    if (!nextRun.HasValue) break;
+
+                    var delayAmount = nextRun.Value - utcNow;
+                    await Task.Delay(delayAmount, ct);
+                    await backgroundTaskQueue.QueueBackgroundTaskAsync(ProcessParcelOverstay);
+                } catch (OperationCanceledException) when (ct.IsCancellationRequested)
+                {
+                    break;
+                }
+            }
+        }
+
+        private async Task PickupJobQueue(CancellationToken ct)
+        {
+            while (!ct.IsCancellationRequested)
+            {
+                try
+                {
+                    var workItem = await backgroundTaskQueue.DequeueAsync(ct);
+                    await workItem(ct);
+                } catch (OperationCanceledException) when (ct.IsCancellationRequested)
                 {
                     break;
                 }
@@ -46,5 +72,8 @@ namespace ParcelManagement.Core.BackgroundServices
                 return;
             }
         }
+
+        public ValueTask EnqueueProcessParcelOverstay() 
+            => backgroundTaskQueue.QueueBackgroundTaskAsync(ProcessParcelOverstay);
     }
 }

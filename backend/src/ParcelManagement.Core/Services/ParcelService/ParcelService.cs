@@ -1,5 +1,4 @@
-using System.Reflection.Metadata;
-using Microsoft.AspNetCore.Http.Features;
+using ParcelManagement.Core.BackgroundServices;
 using ParcelManagement.Core.Entities;
 using ParcelManagement.Core.Model.Helper;
 using ParcelManagement.Core.Model.Parcel;
@@ -15,7 +14,8 @@ namespace ParcelManagement.Core.Services
         IUserRepository userRepo,
         ITrackingEventRepository trackingEventRepo,
         ILockerRepository lockerRepo,
-        IUnitOfWork unitOfWork
+        IUnitOfWork unitOfWork, 
+        IParcelOverstayEnqueuer parcelOverstayEnqueuer
         ) : IParcelService
     {
         private readonly IParcelRepository _parcelRepo = parcelRepo;
@@ -23,6 +23,7 @@ namespace ParcelManagement.Core.Services
         private readonly IUserRepository _userRepo = userRepo;
         private readonly ILockerRepository _lockerRepo = lockerRepo;
         private readonly IUnitOfWork _uow = unitOfWork;
+        private readonly IParcelOverstayEnqueuer _parcelOverstayEnqueuer = parcelOverstayEnqueuer;
 
         private readonly ITrackingEventRepository _trackingEventRepo = trackingEventRepo;
         
@@ -277,6 +278,11 @@ namespace ParcelManagement.Core.Services
             response.IsSuccess = true;
             response.ParcelsClaimed = parcelsToClaimList.Count;
             return response;
+        }
+
+        public async Task WakeUpProcessParcelOverstay()
+        {
+            await _parcelOverstayEnqueuer.EnqueueProcessParcelOverstay();
         }
     }
 }

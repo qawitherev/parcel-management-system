@@ -22,6 +22,7 @@ namespace ParcelManagement.Core.BackgroundServices
 
         public async ValueTask<Func<CancellationToken, Task>> DequeueAsync(CancellationToken ct)
         {
+            Console.WriteLine("Item picked up for processing");
             return await _queue.Reader.ReadAsync(ct);
         }
 

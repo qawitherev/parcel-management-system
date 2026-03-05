@@ -1,3 +1,5 @@
+
+using ParcelManagement.Core.BackgroundServices;
 using ParcelManagement.Core.Entities;
 using ParcelManagement.Core.Model;
 using ParcelManagement.Core.Repositories;
@@ -12,10 +14,11 @@ namespace ParcelManagement.Core.Services
         Task UpdateSession(Session session);
         Task RemoveSession(Guid id);
         Task<int> RemoveExpiredSessions();
+        Task WakeupCleanupSession();
 
     }
 
-    public class SessionService(ISessionRepository sessionRepo) : ISessionService
+    public class SessionService(ISessionRepository sessionRepo, ISessionEnqueuer sessionEnqueuer) : ISessionService
     {
 
         const int USER_MAX_SESSION = 5;
@@ -68,6 +71,11 @@ namespace ParcelManagement.Core.Services
         public async Task UpdateSession(Session session)
         {
             await _sessionRepo.UpdateSessionAsync(session);
+        }
+
+        public async Task WakeupCleanupSession()
+        {
+            await sessionEnqueuer.EnqueueCleanupSession();
         }
     }
 }

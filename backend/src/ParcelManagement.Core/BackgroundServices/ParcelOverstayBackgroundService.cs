@@ -10,7 +10,7 @@ namespace ParcelManagement.Core.BackgroundServices
         ValueTask EnqueueProcessParcelOverstay();
     }
 
-    public class ParcelOverstayService(IServiceScopeFactory serviceScopeFactory, IBackgroundTaskQueue backgroundTaskQueue) : BackgroundService, IParcelOverstayEnqueuer
+    public class ParcelOverstayBackgroundService(IServiceScopeFactory serviceScopeFactory, IBackgroundTaskQueue backgroundTaskQueue) : BackgroundService, IParcelOverstayEnqueuer
     {
         private readonly CronExpression _cronExpression = CronExpression.Daily;
 

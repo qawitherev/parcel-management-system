@@ -8,7 +8,7 @@ namespace ParcelManagement.Core.BackgroundServices
     public class RemoveSessionBackgroundService(IServiceScopeFactory scopeFactory) : BackgroundService
     {
         private readonly IServiceScopeFactory _scopeFactory = scopeFactory;
-        // Todo: to move the cron expression into config file 
+
         private readonly CronExpression _cronExpression = CronExpression.Daily;
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {

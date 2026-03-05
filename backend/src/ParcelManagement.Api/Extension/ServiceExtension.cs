@@ -64,10 +64,14 @@ namespace ParcelManagement.Api.Extension
 
             services.AddSingleton<IBackgroundTaskQueue>(new BackgroundTaskQueue(QUEUE_LIMIT));
 
-            services.AddSingleton<ParcelOverstayService>(); // concrete singleton
-            services.AddHostedService(provider  => provider.GetRequiredService<ParcelOverstayService>());
+            services.AddSingleton<ParcelOverstayBackgroundService>(); // concrete singleton
+            services.AddHostedService(provider  => provider.GetRequiredService<ParcelOverstayBackgroundService>());
             services.AddSingleton<IParcelOverstayEnqueuer>(provider 
-                => provider.GetRequiredService<ParcelOverstayService>());
+                => provider.GetRequiredService<ParcelOverstayBackgroundService>());
+
+            services.AddSingleton<SessionBackgroundService>();
+            services.AddHostedService(provider => provider.GetRequiredService<SessionBackgroundService>());
+            services.AddSingleton<ISessionEnqueuer>(provider => provider.GetRequiredService<SessionBackgroundService>());
 
             services.AddScoped<AdminDataSeeder>();
             return services;

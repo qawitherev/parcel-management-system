@@ -17,6 +17,11 @@ namespace ParcelManagement.Infrastructure.UnitOfWork
             return new DisposableTransaction(await _dbContext.Database.BeginTransactionAsync());
         }
 
+        public async Task SaveChangesAsync()
+        {
+            await _dbContext.SaveChangesAsync();
+        }
+
         private class DisposableTransaction : IDisposableTransaction
         {
             private readonly IDbContextTransaction _transaction;

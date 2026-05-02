@@ -7,7 +7,10 @@ namespace ParcelManagement.Core.Entities
     {
         AwaitingPickup,
         Claimed,
-        Exception
+        Exception, 
+        Overstayed, 
+        Unclaimed, 
+        Disposed
     }
 
     public enum ParcelSortableColumn
@@ -39,6 +42,8 @@ namespace ParcelManagement.Core.Entities
 
         public decimal? Weight { get; set; } // Nullable
         public string? Dimensions { get; set; } // Nullable
+
+        public int OverstayDays { get; set; } = 0;
 
         public int Version { get; set; } = 1;
 

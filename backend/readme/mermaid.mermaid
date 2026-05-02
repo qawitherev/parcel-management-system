@@ -1,0 +1,44 @@
+flowchart TB
+    Dev["Developer Push / PR"] --> GH["GitHub Repository"]
+
+    %% CI
+    GH --> PR["PR to develop"]
+    PR --> CI_PR_BACKEND["ci-pr-develop-backend.yml"]
+    CI_PR_BACKEND --> B1["Build .NET"]
+    B1 --> U1["Run Unit Tests"]
+    U1 --> I1["Run Integration Tests"]
+    I1 --> A1["Upload TRX Artifacts"]
+
+    GH --> MANUAL_CI_BACKEND["Manual CI Backend"]
+    MANUAL_CI_BACKEND --> CI_BACKEND["ci-push-backend.yml"]
+    CI_BACKEND --> B2["Build .NET"]
+    B2 --> T2["Run Unit Tests"]
+    T2 --> A2["Upload Artifacts"]
+
+    GH --> MANUAL_CI_FRONTEND["Manual CI Frontend"]
+    MANUAL_CI_FRONTEND --> CI_FRONTEND["ci-push-frontend.yml"]
+    CI_FRONTEND --> F1["npm ci + frontend tests"]
+    F1 --> A3["Upload test XML"]
+
+    %% Staging CD
+    GH --> STAG_PUSH_BACKEND["Push to staging backend path"]
+    STAG_PUSH_BACKEND --> CD_STAG_BACKEND["cd-push-stag-backend.yml"]
+    CD_STAG_BACKEND --> SB1["Build backend Docker image (self-hosted)"]
+    SB1 --> SB2["Create backend .env from GitHub secrets"]
+    SB2 --> SB3["docker compose up -d"]
+    SB3 --> SB4["Health check /health"]
+    SB4 -->|fail| SB5["docker compose down"]
+
+    GH --> STAG_PUSH_FRONTEND["Push to staging frontend path"]
+    STAG_PUSH_FRONTEND --> CD_STAG_FRONTEND["cd-push-stag-frontend.yml"]
+    CD_STAG_FRONTEND --> SF1["Build frontend Docker image (self-hosted)"]
+
+    %% Production CD
+    GH --> PROD_MANUAL["Manual prod deploy"]
+    PROD_MANUAL --> CD_PROD["cd-push-prod-backend-frontend.yml"]
+    CD_PROD --> P1["Build and Push backend/frontend images to DockerHub"]
+    P1 --> P2["Terraform init and plan (production)"]
+    P2 --> P3["Upload tfplan artifact"]
+    P3 --> P4["Terraform apply"]
+    P4 --> P5["aws ecs wait services-stable"]
+    P5 --> PROD_OK["Production running on ECS/Fargate"]

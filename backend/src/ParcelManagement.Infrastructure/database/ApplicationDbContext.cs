@@ -31,6 +31,8 @@ namespace ParcelManagement.Infrastructure.Database
 
         public virtual DbSet<Session> Sessions { get; set; }
 
+        // system settings table for runtime configuration
+        public virtual DbSet<SystemSetting> SystemSettings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

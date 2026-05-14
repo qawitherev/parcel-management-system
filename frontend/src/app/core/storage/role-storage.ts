@@ -5,14 +5,14 @@ export const PERSISTENT_ROLE_KEY = 'parcel-management-system-role'
 
 export class RoleStorage {
     setStoredRole(payload: RoleWithExp) {
-        var toBeStored = JSON.stringify(payload)
+        const toBeStored = JSON.stringify(payload)
         sessionStorage.setItem(PERSISTENT_ROLE_KEY, toBeStored)
         localStorage.setItem(PERSISTENT_ROLE_KEY, toBeStored)
     }
 
     getStoredRole(): RoleWithExp | null{
-        var storedSession = sessionStorage.getItem(PERSISTENT_ROLE_KEY)
-        var storedLocal = localStorage.getItem(PERSISTENT_ROLE_KEY)
+        const storedSession = sessionStorage.getItem(PERSISTENT_ROLE_KEY)
+        const storedLocal = localStorage.getItem(PERSISTENT_ROLE_KEY)
         let roleWithExp: RoleWithExp
         if(storedSession) {
             try {

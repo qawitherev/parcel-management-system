@@ -44,7 +44,11 @@ export class FileUpload {
       this.errorMessage = 'No file found';
       return;
     }
-    this.uploadType === 'excel' ? await this.onFileUploadExcelOrCsv() : this.onFileUpload(file);
+    if (this.uploadType === 'excel') {
+      await this.onFileUploadExcelOrCsv();
+    } else {
+      this.onFileUpload(file);
+    }
   }
 
   async onFileUpload(file: File) {

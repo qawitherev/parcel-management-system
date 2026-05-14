@@ -1,6 +1,6 @@
 @let lockers = lockerList$ | async;
 <div class="relative flex justify-between items-center">
-  <app-my-searchbar placeHolder="Search lockers" (onKeywordChange)="onSearch($event)">
+  <app-my-searchbar placeHolder="Search lockers" (keywordChange)="onSearch($event)">
   </app-my-searchbar>
   <app-my-button variant="primary" label="Add Locker" (clicked)="onAddLockerClick()"></app-my-button>
 </div>

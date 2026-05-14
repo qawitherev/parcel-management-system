@@ -33,7 +33,7 @@ export class RoleService {
 
     getRole(): Observable<RoleWithExp | null> {
         AppConsole.log(`BASIC: entered get role`)
-        var storedRole = this._roleStorage.getStoredRole()
+        const storedRole = this._roleStorage.getStoredRole()
         AppConsole.log(`BASIC: stored role is ${storedRole}`)
         if (storedRole && !this.isExpired(storedRole.expiredAt)) {
             this._role = storedRole

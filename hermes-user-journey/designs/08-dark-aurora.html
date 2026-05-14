@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design 8 — Dark Aurora</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0f;
+  --surface: #13131a;
+  --surface2: #1a1a24;
+  --text: #f0f0f5;
+  --text-secondary: #8888a0;
+  --text-muted: #555570;
+  --accent1: #a855f7;
+  --accent2: #06b6d4;
+  --accent3: #f43f5e;
+  --gradient-1: linear-gradient(135deg, #a855f7, #6366f1);
+  --gradient-2: linear-gradient(135deg, #06b6d4, #3b82f6);
+  --gradient-3: linear-gradient(135deg, #f43f5e, #f97316);
+  --glow-purple: 0 0 30px rgba(168,85,247,0.3);
+  --glow-cyan: 0 0 30px rgba(6,182,212,0.3);
+  --glow-rose: 0 0 30px rgba(244,63,94,0.3);
+  --border: 1px solid rgba(255,255,255,0.06);
+  --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --radius: 16px;
+  --radius-sm: 12px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+body::before {
+  content: ''; position: fixed; top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(168,85,247,0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 30%, rgba(6,182,212,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(244,63,94,0.04) 0%, transparent 50%);
+  pointer-events: none; z-index: 0;
+}
+.tab-bar {
+  display: flex; gap: 6px; padding: 12px 20px;
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(13,13,20,0.8); backdrop-filter: blur(20px);
+  border-bottom: var(--border);
+}
+.tab {
+  padding: 8px 20px; border-radius: 9999px;
+  font-size: 13px; font-weight: 500; cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.08); background: transparent;
+  color: var(--text-secondary); transition: all 0.2s;
+  font-family: var(--font); letter-spacing: -0.1px;
+}
+.tab.active { background: rgba(168,85,247,0.15); color: #c084fc; border-color: rgba(168,85,247,0.3); }
+.tab:hover:not(.active) { border-color: rgba(255,255,255,0.15); color: var(--text); }
+/* LOGIN */
+.login-wrapper {
+  display: flex; min-height: calc(100vh - 58px);
+  align-items: center; justify-content: center; padding: 24px;
+  position: relative; z-index: 1;
+}
+.login-card {
+  width: 100%; max-width: 440px; background: var(--surface);
+  padding: 44px 40px; border-radius: var(--radius);
+  border: var(--border); position: relative; overflow: hidden;
+}
+.login-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent1), var(--accent2), transparent);
+}
+.login-card h1 {
+  font-size: 28px; font-weight: 700; letter-spacing: -0.3px;
+  margin-bottom: 8px; position: relative; z-index: 1;
+}
+.login-card .subtitle {
+  font-size: 14px; color: var(--text-secondary); margin-bottom: 30px;
+  position: relative; z-index: 1;
+}
+.field { margin-bottom: 18px; position: relative; z-index: 1; }
+.field label {
+  display: block; font-size: 12px; font-weight: 500;
+  margin-bottom: 6px; color: var(--text-secondary);
+  letter-spacing: -0.05px;
+}
+.field input {
+  width: 100%; padding: 12px 16px;
+  background: var(--surface2); border: var(--border);
+  border-radius: var(--radius-sm); font-size: 15px;
+  font-family: var(--font); color: var(--text);
+  transition: all 0.2s;
+}
+.field input:focus {
+  outline: none; border-color: var(--accent1);
+  box-shadow: var(--glow-purple);
+}
+.field input::placeholder { color: var(--text-muted); }
+.btn {
+  width: 100%; padding: 14px; border: none; border-radius: var(--radius-sm);
+  font-size: 15px; font-weight: 600; cursor: pointer;
+  font-family: var(--font); transition: all 0.2s;
+  position: relative; z-index: 1; letter-spacing: -0.1px;
+}
+.btn-primary {
+  background: var(--gradient-1); color: #fff;
+  box-shadow: var(--glow-purple);
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 0 40px rgba(168,85,247,0.5); }
+.login-footer {
+  text-align: center; margin-top: 24px; font-size: 13px;
+  color: var(--text-secondary); position: relative; z-index: 1;
+}
+.login-footer a {
+  background: var(--gradient-2); -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; background-clip: text;
+  font-weight: 600; text-decoration: none;
+}
+/* DASHBOARD */
+.dash-layout { display: flex; min-height: calc(100vh - 58px); position: relative; z-index: 1; }
+.sidebar {
+  width: 250px; background: var(--surface); border-right: var(--border);
+  padding: 24px 0; display: flex; flex-direction: column;
+}
+.sidebar-brand {
+  padding: 0 20px 20px; font-size: 18px; font-weight: 700;
+  letter-spacing: -0.2px; border-bottom: var(--border); margin-bottom: 4px;
+  background: var(--gradient-1); -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; background-clip: text;
+}
+.sidebar-nav { flex: 1; padding: 6px 10px; }
+.nav-item {
+  display: block; padding: 9px 12px; border-radius: 8px;
+  font-size: 13px; font-weight: 400; color: var(--text-secondary);
+  text-decoration: none; cursor: pointer; transition: all 0.15s;
+  margin-bottom: 1px; letter-spacing: -0.05px;
+}
+.nav-item:hover { background: rgba(168,85,247,0.06); color: var(--text); }
+.nav-item.active {
+  background: rgba(168,85,247,0.1); color: #c084fc; font-weight: 500;
+  box-shadow: inset 3px 0 0 var(--accent1);
+}
+.nav-section {
+  font-size: 10px; font-weight: 600; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.8px;
+  padding: 16px 12px 6px;
+}
+.dash-main { flex: 1; padding: 32px 36px; overflow-y: auto; }
+.dash-main h2 {
+  font-size: 28px; font-weight: 700; letter-spacing: -0.3px; margin-bottom: 4px;
+  background: var(--gradient-1); -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; background-clip: text;
+  display: inline-block;
+}
+.dash-main .welcome { font-size: 14px; color: var(--text-secondary); margin-bottom: 30px; }
+.stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
+.stat-card {
+  background: var(--surface); padding: 24px 20px;
+  border-radius: var(--radius); border: var(--border);
+  position: relative; overflow: hidden; transition: all 0.3s;
+}
+.stat-card::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+}
+.stat-card:nth-child(1):hover { border-color: rgba(168,85,247,0.3); box-shadow: var(--glow-purple); }
+.stat-card:nth-child(2):hover { border-color: rgba(6,182,212,0.3); box-shadow: var(--glow-cyan); }
+.stat-card:nth-child(3):hover { border-color: rgba(244,63,94,0.3); box-shadow: var(--glow-rose); }
+.stat-card:nth-child(1)::after { background: var(--gradient-1); }
+.stat-card:nth-child(2)::after { background: var(--gradient-2); }
+.stat-card:nth-child(3)::after { background: var(--gradient-3); }
+.stat-card .stat-label { font-size: 12px; font-weight: 500; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-card .stat-value { font-size: 40px; font-weight: 700; color: var(--text); letter-spacing: -0.5px; font-feature-settings: 'tnum'; }
+.table-section {
+  background: var(--surface); border-radius: var(--radius);
+  border: var(--border); overflow: hidden;
+}
+.table-header {
+  padding: 16px 24px; border-bottom: var(--border);
+  font-size: 15px; font-weight: 500; letter-spacing: -0.05px;
+}
+table { width: 100%; border-collapse: collapse; }
+th {
+  text-align: left; padding: 12px 24px; font-size: 11px;
+  font-weight: 500; color: var(--text-muted); text-transform: uppercase;
+  letter-spacing: 0.5px; border-bottom: var(--border);
+}
+td {
+  padding: 14px 24px; font-size: 13px; border-bottom: var(--border);
+  color: var(--text-secondary);
+}
+tr:hover td { background: rgba(255,255,255,0.02); }
+.status-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: 500;
+}
+.status-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; }
+.status-awaiting { background: rgba(250,204,21,0.1); color: #facc15; }
+.status-awaiting::before { background: #facc15; box-shadow: 0 0 6px #facc15; }
+.status-claimed { background: rgba(52,211,153,0.1); color: #34d399; }
+.status-claimed::before { background: #34d399; box-shadow: 0 0 6px #34d399; }
+</style>
+</head>
+<body>
+<div class="tab-bar">
+  <button class="tab active" onclick="switchView('login')">Login Page</button>
+  <button class="tab" onclick="switchView('dashboard')">Dashboard</button>
+</div>
+
+<div id="view-login">
+<div class="login-wrapper">
+  <div class="login-card">
+    <h1>Sign In</h1>
+    <p class="subtitle">Access your intelligent parcel system</p>
+    <div class="field">
+      <label>Email or Username</label>
+      <input type="text" placeholder="you@example.com">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" placeholder="Password">
+    </div>
+    <button class="btn btn-primary">Authenticate</button>
+    <p class="login-footer">New here? <a href="#">Create an account</a></p>
+  </div>
+</div>
+</div>
+
+<div id="view-dashboard" style="display:none">
+<div class="dash-layout">
+  <aside class="sidebar">
+    <div class="sidebar-brand">ParcelFlow</div>
+    <nav class="sidebar-nav">
+      <a class="nav-item active">Dashboard</a>
+      <div class="nav-section">Operations</div>
+      <a class="nav-item">Check In</a>
+      <a class="nav-item">Claim</a>
+      <a class="nav-item">Tracking</a>
+      <a class="nav-item">All Parcels</a>
+      <div class="nav-section">Management</div>
+      <a class="nav-item">Lockers</a>
+      <a class="nav-item">Units</a>
+      <div class="nav-section">Settings</div>
+      <a class="nav-item">Notifications</a>
+    </nav>
+  </aside>
+  <main class="dash-main">
+    <h2>Dashboard</h2>
+    <p class="welcome">Real-time parcel room intelligence</p>
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-label">Awaiting Pickup</div>
+        <div class="stat-value">14</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Picked Up Today</div>
+        <div class="stat-value">8</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Overdue</div>
+        <div class="stat-value">3</div>
+      </div>
+    </div>
+    <div class="table-section">
+      <div class="table-header">Activity Feed</div>
+      <table>
+        <thead><tr><th>Tracking #</th><th>Unit</th><th>Locker</th><th>Status</th><th>Time</th></tr></thead>
+        <tbody>
+          <tr><td>TRK-2024-0892</td><td>5B</td><td>A3</td><td><span class="status-badge status-awaiting">Awaiting</span></td><td>10:30 AM</td></tr>
+          <tr><td>TRK-2024-0891</td><td>12A</td><td>B1</td><td><span class="status-badge status-awaiting">Awaiting</span></td><td>9:15 AM</td></tr>
+          <tr><td>TRK-2024-0889</td><td>3C</td><td>A7</td><td><span class="status-badge status-claimed">Claimed</span></td><td>Yesterday</td></tr>
+          <tr><td>TRK-2024-0887</td><td>8F</td><td>C2</td><td><span class="status-badge status-claimed">Claimed</span></td><td>Yesterday</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+</div>
+<script>
+function switchView(v){
+  document.getElementById('view-login').style.display=v==='login'?'':'none';
+  document.getElementById('view-dashboard').style.display=v==='dashboard'?'':'none';
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',(i===0&&v==='login')||(i===1&&v==='dashboard')));
+}
+</script>
+</body>
+</html>

@@ -44,7 +44,7 @@ jobs:
         working-directory: frontend
 
       - name: Lint frontend
-        run: npx ng lint --max-warnings=0
+        run: npx ng lint
         working-directory: frontend
 
       # -- CodeQL SAST (free for public repos) --

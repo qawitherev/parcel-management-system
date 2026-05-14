@@ -37,7 +37,11 @@ export class ThemeService {
   }
 
   toggleMode() {
-    this.darkMode ? this.turnToLight() : this.turnToDark();
+    if (this.darkMode) {
+      this.turnToLight();
+    } else {
+      this.turnToDark();
+    }
   }
 
   getIsDarkMode() : boolean {

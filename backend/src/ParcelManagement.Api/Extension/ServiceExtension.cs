@@ -1,10 +1,12 @@
 using ParcelManagement.Api.AuthenticationAndAuthorization;
 using ParcelManagement.Api.Filter;
 using ParcelManagement.Api.Utility;
+using ParcelManagement.Core.BackgroundServices;
 using ParcelManagement.Core.Repositories;
 using ParcelManagement.Core.Services;
 using ParcelManagement.Core.UnitOfWork;
 using ParcelManagement.Infrastructure.Database;
+using ParcelManagement.Infrastructure.Notification;
 using ParcelManagement.Infrastructure.Repository;
 using ParcelManagement.Infrastructure.UnitOfWork;
 
@@ -58,6 +60,37 @@ namespace ParcelManagement.Api.Extension
             services.AddScoped<TransactionFilter>();
 
             services.AddScoped<AdminDataSeeder>();
+
+            // ── Notification services ──────────────────────────────
+
+            // SMTP email adapter (reads from configuration)
+            services.AddSingleton<INotificationSender>(sp =>
+            {
+                var config = sp.GetRequiredService<IConfiguration>();
+                return new EmailNotificationSender(
+                    smtpHost: config["Notification:Email:SmtpHost"] ?? "smtp.sendgrid.net",
+                    smtpPort: int.Parse(config["Notification:Email:SmtpPort"] ?? "587"),
+                    username: config["Notification:Email:Username"] ?? "",
+                    password: config["Notification:Email:Password"] ?? "",
+                    fromAddress: config["Notification:Email:FromAddress"]
+                        ?? "noreply@parcelmgmt.com"
+                );
+            });
+
+            services.AddScoped<IParcelNotificationService, ParcelNotificationService>();
+
+            // Channel-based background task queue
+            const int queueCapacity = 100;
+            services.AddSingleton<IBackgroundTaskQueue>(
+                new BackgroundTaskQueue(queueCapacity));
+
+            // Notification background service (enqueuer + dequeue loop)
+            services.AddSingleton<NotificationBackgroundService>();
+            services.AddHostedService(provider =>
+                provider.GetRequiredService<NotificationBackgroundService>());
+            services.AddSingleton<INotificationEnqueuer>(provider =>
+                provider.GetRequiredService<NotificationBackgroundService>());
+
             return services;
         }
     }

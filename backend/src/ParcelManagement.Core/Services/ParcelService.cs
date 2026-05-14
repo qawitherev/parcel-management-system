@@ -1,5 +1,4 @@
-using System.Reflection.Metadata;
-using Microsoft.AspNetCore.Http.Features;
+using ParcelManagement.Core.BackgroundServices;
 using ParcelManagement.Core.Entities;
 using ParcelManagement.Core.Model.Helper;
 using ParcelManagement.Core.Model.Parcel;
@@ -64,7 +63,8 @@ namespace ParcelManagement.Core.Services
         IResidentUnitRepository residentUnitRepo,
         IUserRepository userRepo,
         ITrackingEventRepository trackingEventRepo,
-        ILockerRepository lockerRepo
+        ILockerRepository lockerRepo,
+        INotificationEnqueuer notificationEnqueuer
         ) : IParcelService
     {
         private readonly IParcelRepository _parcelRepo = parcelRepo;
@@ -73,6 +73,7 @@ namespace ParcelManagement.Core.Services
         private readonly ILockerRepository _lockerRepo = lockerRepo;
 
         private readonly ITrackingEventRepository _trackingEventRepo = trackingEventRepo;
+        private readonly INotificationEnqueuer _notificationEnqueuer = notificationEnqueuer;
 
         public async Task<Parcel> CheckInParcelAsync(string trackingNumber, string residentUnit,
             decimal? weight,
@@ -385,6 +386,17 @@ namespace ParcelManagement.Core.Services
             };
             await _parcelRepo.AddParcelAsync(newParcel);
             await _trackingEventRepo.CreateAsync(newTracking);
+
+            // Fire-and-forget notification — does not block check-in response
+            string? lockerName = null;
+            if (lockerId.HasValue)
+            {
+                var locker = await _lockerRepo.GetLockerByIdAsync(lockerId.Value);
+                lockerName = locker?.LockerName;
+            }
+            _ = _notificationEnqueuer.EnqueueParcelArrivedNotification(
+                newParcel.Id, trackingNumber, residentUnitId, lockerName);
+
             return newParcel;
         }
 

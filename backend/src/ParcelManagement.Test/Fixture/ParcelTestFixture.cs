@@ -1,5 +1,7 @@
 using System.Data.Common;
 using Microsoft.EntityFrameworkCore;
+using Moq;
+using ParcelManagement.Core.BackgroundServices;
 using ParcelManagement.Core.Services;
 using ParcelManagement.Infrastructure.Database;
 using ParcelManagement.Infrastructure.Repository;
@@ -24,7 +26,8 @@ namespace ParcelManagement.Test.Fixture
             var trackingEventRepo = new TrackingEventRepository(DbContext);
             var lockerRepo = new LockerRepository(DbContext);
             ParcelRepo = new ParcelRepository(DbContext);
-            ParcelService = new ParcelService(ParcelRepo, residentUnitRepo, userRepo, trackingEventRepo, lockerRepo);
+            var notificationEnqueuerMock = new Mock<INotificationEnqueuer>();
+            ParcelService = new ParcelService(ParcelRepo, residentUnitRepo, userRepo, trackingEventRepo, lockerRepo, notificationEnqueuerMock.Object);
             return Task.CompletedTask;
         }
 

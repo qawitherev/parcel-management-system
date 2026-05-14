@@ -2,6 +2,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using ParcelManagement.Core.Model.Configuration;
 
 namespace ParcelManagement.Api.AuthenticationAndAuthorization
 {

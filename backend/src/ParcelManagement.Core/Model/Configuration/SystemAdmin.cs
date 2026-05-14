@@ -1,4 +1,4 @@
-namespace ParcelManagement.Api.Utility
+namespace ParcelManagement.Core.Model.Configuration
 {
     public class SystemAdmin
     {

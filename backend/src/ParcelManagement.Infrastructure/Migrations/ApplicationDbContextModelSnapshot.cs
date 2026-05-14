@@ -131,6 +131,9 @@ namespace ParcelManagement.Infrastructure.Migrations
                     b.Property<Guid?>("LockerId")
                         .HasColumnType("char(36)");
 
+                    b.Property<int>("OverstayDays")
+                        .HasColumnType("int");
+
                     b.Property<string>("ResidentUnitDeprecated")
                         .HasMaxLength(10)
                         .HasColumnType("varchar(10)");
@@ -233,6 +236,26 @@ namespace ParcelManagement.Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Sessions");
+                });
+
+            modelBuilder.Entity("ParcelManagement.Core.Entities.SystemSetting", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SystemSettings");
                 });
 
             modelBuilder.Entity("ParcelManagement.Core.Entities.TrackingEvent", b =>

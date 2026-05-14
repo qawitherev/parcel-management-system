@@ -34,7 +34,9 @@ namespace ParcelManagement.Core.Specifications
 
         public int? Skip => null;
 
-        public List<IncludeExpressionString> IncludeExpressionsString => throw new NotImplementedException();
+        public List<IncludeExpressionString> IncludeExpressionsString => [
+            new IncludeExpressionString("User")
+        ];
 
         public Expression<Func<UserResidentUnit, object>>? OrderBy => throw new NotImplementedException();
 

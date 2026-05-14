@@ -1,3 +1,5 @@
+using Moq;
+using ParcelManagement.Core.BackgroundServices;
 using ParcelManagement.Core.Services;
 using ParcelManagement.Infrastructure.Database;
 using ParcelManagement.Infrastructure.Repository;
@@ -13,7 +15,8 @@ namespace ParcelManagement.Test.Fixture
         public async Task InitializeAsync()
         {
             DbContext = await TestFixtureHelper.GetSqlLiteDbContext();
-            SessionService = new SessionService(new SessionRepository(DbContext));
+            var sessionEnqueuerMock = new Mock<ISessionEnqueuer>();
+            SessionService = new SessionService(new SessionRepository(DbContext), sessionEnqueuerMock.Object);
         }
 
         public async Task DisposeAsync()

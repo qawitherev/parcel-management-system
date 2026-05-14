@@ -2,6 +2,7 @@ using System.Security.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Moq;
+using ParcelManagement.Core.BackgroundServices;
 using ParcelManagement.Core.Entities;
 using ParcelManagement.Core.Misc;
 using ParcelManagement.Core.Model;
@@ -38,7 +39,8 @@ namespace ParcelManagement.Test.Service
             _notificationPrefRepo = new NotificationPrefRepository(_fixture.DbContext);
             _notificationPrefService = new NotificationPrefService(_notificationPrefRepo, _userRepo);
             _sessionRepo = new SessionRepository(_fixture.DbContext);
-            _sessionService = new SessionService(_sessionRepo);
+            var sessionEnqueuerMock = new Mock<ISessionEnqueuer>();
+            _sessionService = new SessionService(_sessionRepo, sessionEnqueuerMock.Object);
         }
 
         private UserService GetService(Mock<IRedisRepository>? mockRedisRepo = null)

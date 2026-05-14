@@ -57,6 +57,7 @@ jobs:
         uses: github/codeql-action/init@v3
         with:
           languages: csharp, javascript
+          config-file: ./.github/codeql-config.yml
 
       - name: Build for CodeQL
         run: dotnet build --no-restore

@@ -6,7 +6,7 @@ namespace ParcelManagement.Infrastructure.Repository
 {
     public class RedisRepository : IRedisRepository
     {
-        private readonly IDatabase _redis; 
+        private readonly IDatabase _redis;
 
         public RedisRepository(IRedisConnectionFactory connectionFactory)
         {

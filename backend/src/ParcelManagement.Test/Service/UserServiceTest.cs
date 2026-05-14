@@ -31,7 +31,7 @@ namespace ParcelManagement.Test.Service
         public UserServiceTest(UserTestFixture fixture)
         {
             _fixture = fixture;
-            
+
             // Bake necessary components in constructor
             _userRepo = new UserRepository(_fixture.DbContext);
             _userResidentUnitRepo = new UserResidentUnitRepository(_fixture.DbContext);
@@ -69,7 +69,7 @@ namespace ParcelManagement.Test.Service
             // Arrange
             var mockRedis = new Mock<IRedisRepository>();
             var service = GetService(mockRedis);
-            
+
             var existingUser = new User
             {
                 Id = Guid.NewGuid(),
@@ -118,7 +118,7 @@ namespace ParcelManagement.Test.Service
             Assert.Equal("manager1", result.Username);
             Assert.Equal("manager1@test.com", result.Email);
             Assert.Equal(UserRole.ParcelRoomManager, result.Role);
-            
+
             // Verify user was saved
             var savedUser = await _fixture.DbContext.Users.FirstOrDefaultAsync(u => u.Username == "manager1");
             Assert.NotNull(savedUser);
@@ -130,7 +130,7 @@ namespace ParcelManagement.Test.Service
             // Arrange
             var mockRedis = new Mock<IRedisRepository>();
             var service = GetService(mockRedis);
-            
+
             var existingUser = new User
             {
                 Id = Guid.NewGuid(),
@@ -158,7 +158,7 @@ namespace ParcelManagement.Test.Service
             // Arrange
             var mockRedis = new Mock<IRedisRepository>();
             var service = GetService(mockRedis);
-            
+
             var user = new User
             {
                 Id = Guid.NewGuid(),
@@ -199,7 +199,7 @@ namespace ParcelManagement.Test.Service
             mockRedis.Setup(x => x.SetValueAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<TimeSpan>()))
                 .ReturnsAsync(true);
             var service = GetService(mockRedis);
-            
+
             var userId = Guid.NewGuid();
             var user = new User
             {
@@ -211,7 +211,7 @@ namespace ParcelManagement.Test.Service
                 CreatedAt = DateTimeOffset.UtcNow
             };
             await _fixture.DbContext.Users.AddAsync(user);
-            
+
             var session = new Session
             {
                 Id = Guid.NewGuid(),
@@ -237,7 +237,7 @@ namespace ParcelManagement.Test.Service
             // Assert
             var remainingSessions = await _fixture.DbContext.Sessions.Where(s => s.UserId == userId).ToListAsync();
             Assert.Empty(remainingSessions);
-            
+
             // Verify Redis was called to blacklist token
             mockRedis.Verify(x => x.SetValueAsync(
                 It.Is<string>(key => key.Contains("jwt_id_12345")),
@@ -255,7 +255,7 @@ namespace ParcelManagement.Test.Service
             // Arrange
             var mockRedis = new Mock<IRedisRepository>();
             var service = GetService(mockRedis);
-            
+
             var userId = Guid.NewGuid();
             var user = new User
             {
@@ -301,7 +301,7 @@ namespace ParcelManagement.Test.Service
             // Arrange
             var mockRedis = new Mock<IRedisRepository>();
             var service = GetService(mockRedis);
-            
+
             var userId = Guid.NewGuid();
             var user = new User
             {
@@ -345,12 +345,12 @@ namespace ParcelManagement.Test.Service
             // Arrange
             var mockRedis = new Mock<IRedisRepository>();
             var service = GetService(mockRedis);
-            
+
             var userId = Guid.NewGuid();
             var refreshToken = "valid_refresh_token";
             var hashedToken = TokenUtility.HashToken(refreshToken);
             var originalLastActive = DateTimeOffset.UtcNow.AddHours(-2);
-            
+
             var user = new User
             {
                 Id = userId,
@@ -361,7 +361,7 @@ namespace ParcelManagement.Test.Service
                 CreatedAt = DateTimeOffset.UtcNow
             };
             await _fixture.DbContext.Users.AddAsync(user);
-            
+
             var session = new Session
             {
                 Id = Guid.NewGuid(),
@@ -382,7 +382,7 @@ namespace ParcelManagement.Test.Service
             Assert.NotNull(result);
             Assert.Equal(userId, result.Id);
             Assert.Equal("tokenuser", result.Username);
-            
+
             // Verify LastActive was updated
             var updatedSession = await _fixture.DbContext.Sessions.FirstOrDefaultAsync(s => s.Id == session.Id);
             Assert.NotNull(updatedSession);
@@ -395,11 +395,11 @@ namespace ParcelManagement.Test.Service
             // Arrange
             var mockRedis = new Mock<IRedisRepository>();
             var service = GetService(mockRedis);
-            
+
             var userId = Guid.NewGuid();
             var refreshToken = "expired_token";
             var hashedToken = TokenUtility.HashToken(refreshToken);
-            
+
             var user = new User
             {
                 Id = userId,
@@ -410,7 +410,7 @@ namespace ParcelManagement.Test.Service
                 CreatedAt = DateTimeOffset.UtcNow
             };
             await _fixture.DbContext.Users.AddAsync(user);
-            
+
             var session = new Session
             {
                 Id = Guid.NewGuid(),
@@ -451,7 +451,7 @@ namespace ParcelManagement.Test.Service
             // Arrange
             var mockRedis = new Mock<IRedisRepository>();
             var service = GetService(mockRedis);
-            
+
             var userId = Guid.NewGuid();
             var user = new User
             {
@@ -463,7 +463,7 @@ namespace ParcelManagement.Test.Service
                 CreatedAt = DateTimeOffset.UtcNow
             };
             await _fixture.DbContext.Users.AddAsync(user);
-            
+
             var session = new Session
             {
                 Id = Guid.NewGuid(),
@@ -494,7 +494,7 @@ namespace ParcelManagement.Test.Service
             // Arrange
             var mockRedis = new Mock<IRedisRepository>();
             var service = GetService(mockRedis);
-            
+
             var users = new List<User>
             {
                 new User

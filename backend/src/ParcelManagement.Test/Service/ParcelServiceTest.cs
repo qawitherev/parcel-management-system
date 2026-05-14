@@ -288,7 +288,7 @@ namespace ParcelManagement.Test.Service
 
             var result = await _parcelFixture.ParcelService.BulkClaimAsync(
                 ["INVALID001", "INVALID002"], userId);
-            
+
             Assert.False(result.IsSuccess);
             Assert.Equal(0, result.ParcelsClaimed);
             Assert.Contains("INVALID001", result.InvalidTrackingNumbers);
@@ -334,11 +334,11 @@ namespace ParcelManagement.Test.Service
 
             var result = await _parcelFixture.ParcelService.BulkClaimAsync(
                 ["TN001", "INVALID001"], userId);
-            
+
             Assert.False(result.IsSuccess);
             Assert.Equal(0, result.ParcelsClaimed);
             Assert.Contains("INVALID001", result.InvalidTrackingNumbers);
-            
+
             // Verify original parcel is not claimed (all-or-nothing)
             await dbContext.Entry(parcel).ReloadAsync();
             Assert.Equal(ParcelStatus.AwaitingPickup, parcel.Status);
@@ -383,7 +383,7 @@ namespace ParcelManagement.Test.Service
 
             var result = await _parcelFixture.ParcelService.BulkClaimAsync(
                 ["TN001"], userId);
-            
+
             Assert.False(result.IsSuccess);
             Assert.Equal(0, result.ParcelsClaimed);
             Assert.Contains("TN001", result.InvalidTrackingNumbers);
@@ -435,7 +435,7 @@ namespace ParcelManagement.Test.Service
 
             var result = await _parcelFixture.ParcelService.BulkClaimAsync(
                 ["TN001", "TN002"], userId);
-            
+
             Assert.True(result.IsSuccess);
             Assert.Equal(2, result.ParcelsClaimed);
             Assert.Empty(result.InvalidTrackingNumbers);
@@ -447,7 +447,7 @@ namespace ParcelManagement.Test.Service
             Assert.Equal(ParcelStatus.Claimed, parcel2.Status);
 
             // Verify tracking events were created
-            var trackingEvents = dbContext.TrackingEvents.Where(te => 
+            var trackingEvents = dbContext.TrackingEvents.Where(te =>
                 te.ParcelId == parcel1.Id || te.ParcelId == parcel2.Id).ToList();
             Assert.Equal(2, trackingEvents.Count);
             Assert.All(trackingEvents, te => Assert.Equal(TrackingEventType.BulkClaim, te.TrackingEventType));
@@ -518,11 +518,11 @@ namespace ParcelManagement.Test.Service
 
             var result = await _parcelFixture.ParcelService.BulkClaimAsync(
                 ["TN001", "TN002"], userId);
-            
+
             Assert.False(result.IsSuccess);
             Assert.Equal(0, result.ParcelsClaimed);
             Assert.Contains("TN002", result.InvalidTrackingNumbers);
-            
+
             // Verify the user's parcel is not claimed (all-or-nothing)
             await dbContext.Entry(parcelBelongingToUser).ReloadAsync();
             Assert.Equal(ParcelStatus.AwaitingPickup, parcelBelongingToUser.Status);

@@ -31,7 +31,7 @@ namespace ParcelManagement.Api.DTO.V2
         public string? ResidentUnit { get; set; }
         public ParcelStatus? Status { get; set; }
     }
-    
+
     public class BulkCheckInRequestDto
     {
         public required string TrackingNumber { get; set; }

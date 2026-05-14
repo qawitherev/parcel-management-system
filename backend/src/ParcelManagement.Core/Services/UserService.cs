@@ -35,8 +35,8 @@ namespace ParcelManagement.Core.Services
     public class UserService(
         IUserRepository userRepository,
         IUserResidentUnitRepository userResidentUnitRepo,
-        IResidentUnitRepository residentUnitRepo, 
-        INotificationPrefService npService, 
+        IResidentUnitRepository residentUnitRepo,
+        INotificationPrefService npService,
         ISessionService sessionService,
         ITokenBlacklistService tokenBlacklistService
         ) : IUserService
@@ -50,7 +50,7 @@ namespace ParcelManagement.Core.Services
         public async Task<List<string>> UserLoginAsync(UserLoginRequest loginRequest)
         {
             var userByUsernameSpec = new UserByUsernameSpecification(loginRequest.Username);
-            var possibleUser = await _userRepository.GetOneUserBySpecification(userByUsernameSpec) ?? 
+            var possibleUser = await _userRepository.GetOneUserBySpecification(userByUsernameSpec) ??
                 throw new InvalidCredentialException($"Invalid login credential");
 
             var isCredentialValid = PasswordService.VerifyPassword(possibleUser, possibleUser.PasswordHash, loginRequest.Password);
@@ -68,10 +68,10 @@ namespace ParcelManagement.Core.Services
             var hashedRefreshToken = TokenUtility.HashToken(loginRequest.RefreshToken);
             var createSessionRequest = new CreateSessionRequest
             {
-                UserId = possibleUser.Id, 
-                RefreshToken = hashedRefreshToken, 
+                UserId = possibleUser.Id,
+                RefreshToken = hashedRefreshToken,
                 DeviceInfo = loginRequest.DeviceInfo,
-                IpAddress = loginRequest.IpAddress, 
+                IpAddress = loginRequest.IpAddress,
                 ExpiresAt = loginRequest.RefreshTokenExpiry
             };
             await _sessionService.CreateSessionAsync(createSessionRequest);
@@ -146,7 +146,7 @@ namespace ParcelManagement.Core.Services
                 Username = username,
                 Email = email,
                 PasswordHash = "####",
-                CreatedAt = DateTimeOffset.UtcNow, 
+                CreatedAt = DateTimeOffset.UtcNow,
                 Role = UserRole.ParcelRoomManager
             };
             registeringUser.PasswordHash = PasswordService.HashPlainPasswordOrToken(registeringUser, password);

@@ -217,7 +217,7 @@ namespace ParcelManagement.Core.Specifications
         public Expression<Func<Parcel, bool>> ToExpression()
         {
             return p =>
-                (string.IsNullOrEmpty(_filterPaginationRequest.SearchKeyword) || p.TrackingNumber.Contains(_filterPaginationRequest.SearchKeyword) || 
+                (string.IsNullOrEmpty(_filterPaginationRequest.SearchKeyword) || p.TrackingNumber.Contains(_filterPaginationRequest.SearchKeyword) ||
                     (p.Locker != null && p.Locker.LockerName.Contains(_filterPaginationRequest.SearchKeyword)) ||
                     p.TrackingEvents.Any(te => !string.IsNullOrEmpty(te.CustomEvent) && te.CustomEvent.Contains(_filterPaginationRequest.SearchKeyword))
                 ) &&
@@ -246,7 +246,7 @@ namespace ParcelManagement.Core.Specifications
                 new IncludeExpressionString("Locker")
             ];
         }
-        
+
         public List<IncludeExpressionString> IncludeExpressionsString { get; }
 
         List<IncludeExpression<Parcel>> ISpecification<Parcel>.IncludeExpressions => [];
@@ -274,7 +274,7 @@ namespace ParcelManagement.Core.Specifications
         {
             _overstayDayThreshold = overstayDayThreshold;
         }
-        
+
         public List<IncludeExpressionString> IncludeExpressionsString => [];
 
         List<IncludeExpression<Parcel>> ISpecification<Parcel>.IncludeExpressions => [];
@@ -291,9 +291,9 @@ namespace ParcelManagement.Core.Specifications
 
         public Expression<Func<Parcel, bool>> ToExpression()
         {
-            var hoursThreshold = _overstayDayThreshold * 24; 
+            var hoursThreshold = _overstayDayThreshold * 24;
             var overstayEntry = DateTimeOffset.UtcNow.AddHours(-hoursThreshold);
-            return p => p.Status == ParcelStatus.AwaitingPickup && 
+            return p => p.Status == ParcelStatus.AwaitingPickup &&
                 p.EntryDate > overstayEntry;
         }
     }

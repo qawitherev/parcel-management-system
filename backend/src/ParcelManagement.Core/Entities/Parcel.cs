@@ -7,19 +7,19 @@ namespace ParcelManagement.Core.Entities
     {
         AwaitingPickup,
         Claimed,
-        Exception, 
-        Overstayed, 
-        Unclaimed, 
+        Exception,
+        Overstayed,
+        Unclaimed,
         Disposed
     }
 
     public enum ParcelSortableColumn
     {
         //TODO: to add more, this is just a temp fix 
-        TrackingNumber, 
+        TrackingNumber,
     }
 
-    public class Parcel: IEntity
+    public class Parcel : IEntity
     {
         public Guid Id { get; set; } // Primary Key
 
@@ -49,7 +49,7 @@ namespace ParcelManagement.Core.Entities
 
         // navigation property 
         public ResidentUnit? ResidentUnit { get; set; }
-        
+
         public Locker? Locker { get; set; }
 
         public ICollection<TrackingEvent> TrackingEvents { get; set; } = [];

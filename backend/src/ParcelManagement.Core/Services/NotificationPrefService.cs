@@ -11,7 +11,7 @@ namespace ParcelManagement.Core.Services
 
         Task<NotificationPref?> GetNotificationPrefByIdAsync(Guid id);
 
-        Task UpdateNotificationPrefs (NotificationPrefUpdateRequest np, Guid updatingUserId);
+        Task UpdateNotificationPrefs(NotificationPrefUpdateRequest np, Guid updatingUserId);
 
         Task<NotificationPref?> GetNotificationPrefByUserId(Guid userId);
 
@@ -39,17 +39,17 @@ namespace ParcelManagement.Core.Services
             }
             var notificationPref = new NotificationPref
             {
-                Id = Guid.NewGuid(), 
-                UserId = np.UserId, 
-                IsEmailActive = np.IsEmailActive, 
-                IsWhatsAppActive = np.IsWhatsAppActive, 
-                IsOnCheckInActive = np.IsOnCheckInActive, 
-                IsOnClaimActive = np.IsOnClaimActive, 
-                IsOverdueActive = np.IsOverdueActive, 
-                QuietHoursFrom = np.QuietHoursFrom, 
+                Id = Guid.NewGuid(),
+                UserId = np.UserId,
+                IsEmailActive = np.IsEmailActive,
+                IsWhatsAppActive = np.IsWhatsAppActive,
+                IsOnCheckInActive = np.IsOnCheckInActive,
+                IsOnClaimActive = np.IsOnClaimActive,
+                IsOverdueActive = np.IsOverdueActive,
+                QuietHoursFrom = np.QuietHoursFrom,
                 QuietHoursTo = np.QuietHoursTo,
-                CreatedBy = np.CreatingUserId, 
-                CreatedOn = DateTimeOffset.UtcNow, 
+                CreatedBy = np.CreatingUserId,
+                CreatedOn = DateTimeOffset.UtcNow,
             };
             var newNp = await _npRepo.CreateNotificationPrefAsync(notificationPref);
             return newNp;
@@ -57,14 +57,14 @@ namespace ParcelManagement.Core.Services
 
         public async Task<NotificationPref?> GetNotificationPrefByIdAsync(Guid id)
         {
-            var np = await _npRepo.GetNotificationPrefByIdAsync(id) ?? 
+            var np = await _npRepo.GetNotificationPrefByIdAsync(id) ??
                 throw new KeyNotFoundException($"Notification preferences not found");
             return np;
         }
 
         public async Task<NotificationPref?> GetNotificationPrefByUserId(Guid userId)
         {
-            var user = await _userRepo.GetUserByIdAsync(userId) ?? 
+            var user = await _userRepo.GetUserByIdAsync(userId) ??
                 throw new KeyNotFoundException($"User not found");
             var specification = new NotificationPrefByUserIdSpecification(user.Id);
             var notiPrefs = await _npRepo.GetNotificationPrefBySpecification(specification);
@@ -73,7 +73,7 @@ namespace ParcelManagement.Core.Services
 
         public async Task UpdateNotificationPrefs(NotificationPrefUpdateRequest np, Guid updatingUserId)
         {
-            var existing = await _npRepo.GetNotificationPrefByIdAsync(np.NotificationPrefId) ?? 
+            var existing = await _npRepo.GetNotificationPrefByIdAsync(np.NotificationPrefId) ??
                 throw new KeyNotFoundException($"Notification preferences not found");
             if (updatingUserId != existing.UserId)
             {

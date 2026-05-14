@@ -3,8 +3,8 @@ namespace ParcelManagement.Core.Entities
     public enum LockerSortableColumn
     {
         Id,
-        LockerName, 
-        CreatedAt, 
+        LockerName,
+        CreatedAt,
     }
     public class Locker : IEntity
     {

@@ -55,7 +55,7 @@ builder.Services.AddApiVersioning(option =>
 
 // CORS 
 builder.Services.AddCors(options =>
-{   
+{
     options.AddPolicy("Allow-Angular-FrontEnd", policy =>
     {   // we'll change the origin later 
         policy.WithOrigins("http://localhost:4200")
@@ -136,7 +136,8 @@ if (builder.Environment.EnvironmentName != "Testing")
                 $"Some environment secrets are missing. {string.Join(", ", issues)}",
                 data: healthData
             );
-        } else
+        }
+        else
         {
             Console.WriteLine("Environment secrets check passed");
             return HealthCheckResult.Healthy(

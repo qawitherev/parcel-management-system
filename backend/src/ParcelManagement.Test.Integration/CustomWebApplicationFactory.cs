@@ -13,7 +13,7 @@ namespace ParcelManagement.Test.Integration
     {
 
         private readonly MySqlContainer _mySqlContainer;
-        private readonly RedisContainer _redisContainer; 
+        private readonly RedisContainer _redisContainer;
 
         public CustomWebApplicationFactory()
         {
@@ -69,7 +69,7 @@ namespace ParcelManagement.Test.Integration
                     ["JWTSettings:Audience"] = "test-audience",
                     ["JWTSettings:ExpirationMinutes"] = "60",
                     ["Admin:Email"] = "admin@parcelSystem.com",
-                    ["Admin:Password"] = "this-is-admin-password", 
+                    ["Admin:Password"] = "this-is-admin-password",
                     ["RedisSettings:ConnectionString"] = _redisContainer.GetConnectionString()
                 });
             });

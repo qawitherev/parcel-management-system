@@ -3,7 +3,7 @@ using ParcelManagement.Core.Model.Parcel;
 
 namespace ParcelManagement.Core.Services
 {
-        public interface IParcelService
+    public interface IParcelService
     {
         Task<Parcel> GetParcelByIdAsync(Guid id);
 
@@ -30,7 +30,7 @@ namespace ParcelManagement.Core.Services
             ParcelStatus? status,
             string? customEvent,
             ParcelSortableColumn? column,
-            int? page, int? take = 20, 
+            int? page, int? take = 20,
             bool isAsc = true
         );
 
@@ -53,7 +53,7 @@ namespace ParcelManagement.Core.Services
 
         Task<BulkClaimResponse> BulkClaimAsync(IEnumerable<string> trackingNumbers, Guid performedByUser);
 
-        Task<int> UpdateOverstayedParcel(); 
+        Task<int> UpdateOverstayedParcel();
 
         Task WakeUpProcessParcelOverstay();
     }

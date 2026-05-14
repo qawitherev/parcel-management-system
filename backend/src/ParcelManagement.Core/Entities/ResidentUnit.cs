@@ -5,11 +5,11 @@ namespace ParcelManagement.Core.Entities
 {
     public enum ResidentUnitSortableColumn
     {
-        UnitName, 
+        UnitName,
         CreatedAt
     }
 
-    public class ResidentUnit: IEntity
+    public class ResidentUnit : IEntity
     {
         [Required]
         public Guid Id { set; get; }

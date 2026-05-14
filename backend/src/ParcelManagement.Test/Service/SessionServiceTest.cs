@@ -36,7 +36,7 @@ namespace ParcelManagement.Test.Service
             // Arrange
             var service = GetService();
             var userId = Guid.NewGuid();
-            
+
             var user = new User
             {
                 Id = userId,
@@ -67,7 +67,7 @@ namespace ParcelManagement.Test.Service
             Assert.Equal("refresh_token_123", result.RefreshToken);
             Assert.Equal("Test Device", result.DeviceInfo);
             Assert.Equal("127.0.0.1", result.IpAddress);
-            
+
             // Verify session was saved
             var savedSessions = await _fixture.DbContext.Sessions.Where(s => s.UserId == userId).ToListAsync();
             Assert.Single(savedSessions);
@@ -79,7 +79,7 @@ namespace ParcelManagement.Test.Service
             // Arrange
             var service = GetService();
             var userId = Guid.NewGuid();
-            
+
             var user = new User
             {
                 Id = userId,
@@ -142,7 +142,7 @@ namespace ParcelManagement.Test.Service
             // Arrange
             var service = GetService();
             var userId = Guid.NewGuid();
-            
+
             var user = new User
             {
                 Id = userId,
@@ -188,7 +188,7 @@ namespace ParcelManagement.Test.Service
             var remainingSessions = await _fixture.DbContext.Sessions.Where(s => s.UserId == userId).ToListAsync();
             Assert.Equal(5, remainingSessions.Count); // Should stay at max 5
             Assert.Contains(remainingSessions, s => s.RefreshToken == "new_token");
-            
+
             // The oldest session (token5 with LastActive -5 hours) should be deleted
         }
 
@@ -203,7 +203,7 @@ namespace ParcelManagement.Test.Service
             var service = GetService();
             var userId = Guid.NewGuid();
             var refreshToken = "test_refresh_token";
-            
+
             var user = new User
             {
                 Id = userId,
@@ -263,7 +263,7 @@ namespace ParcelManagement.Test.Service
             // Arrange
             var service = GetService();
             var userId = Guid.NewGuid();
-            
+
             var user = new User
             {
                 Id = userId,
@@ -319,7 +319,7 @@ namespace ParcelManagement.Test.Service
             var service = GetService();
             var userId1 = Guid.NewGuid();
             var userId2 = Guid.NewGuid();
-            
+
             var users = new List<User>
             {
                 new User
@@ -383,7 +383,7 @@ namespace ParcelManagement.Test.Service
 
             // Assert
             Assert.Equal(2, deletedCount);
-            
+
             var remainingSessions = await _fixture.DbContext.Sessions.ToListAsync();
             Assert.Equal("valid_token", remainingSessions[0].RefreshToken);
         }
@@ -394,7 +394,7 @@ namespace ParcelManagement.Test.Service
             // Arrange
             var service = GetService();
             var userId = Guid.NewGuid();
-            
+
             var user = new User
             {
                 Id = userId,
@@ -424,7 +424,7 @@ namespace ParcelManagement.Test.Service
 
             // Assert
             Assert.Equal(0, deletedCount);
-            
+
             var remainingSessions = await _fixture.DbContext.Sessions.ToListAsync();
             Assert.Single(remainingSessions);
         }
@@ -440,7 +440,7 @@ namespace ParcelManagement.Test.Service
             var service = GetService();
             var userId = Guid.NewGuid();
             var originalLastActive = DateTimeOffset.UtcNow.AddHours(-2);
-            
+
             var user = new User
             {
                 Id = userId,
@@ -490,7 +490,7 @@ namespace ParcelManagement.Test.Service
             var service = GetService();
             var user1Id = Guid.NewGuid();
             var user2Id = Guid.NewGuid();
-            
+
             var users = new List<User>
             {
                 new User
@@ -546,7 +546,7 @@ namespace ParcelManagement.Test.Service
             // Assert
             var user1Sessions_after = await _fixture.DbContext.Sessions.Where(s => s.UserId == user1Id).ToListAsync();
             var user2Sessions_after = await _fixture.DbContext.Sessions.Where(s => s.UserId == user2Id).ToListAsync();
-            
+
             Assert.Equal(5, user1Sessions_after.Count); // User1 should still have 5 sessions
             Assert.Single(user2Sessions_after); // User2 should have 1 session
         }

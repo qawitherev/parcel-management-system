@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component, EventEmitter, Input, input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-my-button',
@@ -18,7 +18,7 @@ export class MyButton {
 
   get buttonClasses() : string {
     const base = " text-sm px-4 py-2 rounded-lg transition-all duration-200 text-[var(--clr-surface-a0)] w-full"
-    const variants : any = {
+    const variants: Record<string, string> = {
       primary : 'bg-[var(--clr-primary-a20)] hover:bg-[var(--clr-primary-a0)]', 
       secondary: 'bg-[var(--clr-surface-a20)] hover:bg-[var(--clr-surface-a10)]',
       success: 'bg-[var(--clr-success-a20)] hover:bg-[var(--clr-success-a10)]',

@@ -103,25 +103,25 @@ namespace ParcelManagement.Api.Controller
             var RefreshTokenExpiry = _tokenService.GetRefreshTokenExpiry(REFRESH_TOKEN_EXPIRY_DAYS);
             var loginRequest = new UserLoginRequest
             {
-                Username = dto.Username, 
-                Password = dto.PlainPassword, 
+                Username = dto.Username,
+                Password = dto.PlainPassword,
                 RefreshToken = refreshToken,
                 RefreshTokenExpiry = RefreshTokenExpiry,
-                DeviceInfo = HttpContextUtilities.GetDeviceInfo(HttpContext), 
+                DeviceInfo = HttpContextUtilities.GetDeviceInfo(HttpContext),
                 IpAddress = HttpContextUtilities.GetDeviceIp(HttpContext)
             };
             var loginRes = await _userService.UserLoginAsync(loginRequest);
             var jwt = _tokenService.GenerateAccessToken(loginRes[0], dto.Username, loginRes[1]);
-            
+
             var loginReponseDto = new LoginResponseDto
             {
                 AccessToken = jwt
             };
-            
+
             var cookieOption = new CookieOptions
             {
-                HttpOnly = true, 
-                SameSite = SameSiteMode.Lax, 
+                HttpOnly = true,
+                SameSite = SameSiteMode.Lax,
                 Secure = false,
                 Expires = RefreshTokenExpiry
             };
@@ -138,14 +138,14 @@ namespace ParcelManagement.Api.Controller
             var jwtId = _userContextService.GetTokenId();
             var request = new UserLogoutRequest
             {
-                UserId = userId, 
+                UserId = userId,
                 JwtId = jwtId ?? ""
             };
             await _userService.UserLogoutAsync(request);
             var cookieOptions = new CookieOptions
             {
-                HttpOnly = true, 
-                SameSite = SameSiteMode.Lax, 
+                HttpOnly = true,
+                SameSite = SameSiteMode.Lax,
                 Secure = false,
                 Expires = DateTimeOffset.UtcNow.AddDays(-(double)REFRESH_TOKEN_EXPIRY_DAYS)
             };
@@ -178,7 +178,7 @@ namespace ParcelManagement.Api.Controller
             };
             return Ok(responseDto);
         }
-        
+
     }
-    
+
 }

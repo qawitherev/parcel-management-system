@@ -14,7 +14,7 @@ namespace ParcelManagement.Core.Services
         IUserRepository userRepo,
         ITrackingEventRepository trackingEventRepo,
         ILockerRepository lockerRepo,
-        IUnitOfWork unitOfWork, 
+        IUnitOfWork unitOfWork,
         IParcelOverstayEnqueuer parcelOverstayEnqueuer,
         INotificationEnqueuer notificationEnqueuer
         ) : IParcelService
@@ -28,7 +28,7 @@ namespace ParcelManagement.Core.Services
         private readonly INotificationEnqueuer _notificationEnqueuer = notificationEnqueuer;
 
         private readonly ITrackingEventRepository _trackingEventRepo = trackingEventRepo;
-        
+
         public async Task ClaimParcelAsync(string trackingNumber, Guid performedByUser)
         {
             var spec = new ParcelByTrackingNumberSpecification(trackingNumber);
@@ -133,7 +133,7 @@ namespace ParcelManagement.Core.Services
             };
             var spec = new ParcelViewSpecification(
                 filterPaginationRequest,
-                role, 
+                role,
                 userId,
                 status
             );
@@ -171,7 +171,7 @@ namespace ParcelManagement.Core.Services
 
 
         // helpers 
-        private async Task<Parcel> CheckInHelper(string trackingNumber, Guid residentUnitId, Guid? lockerId, decimal? weight, string? dimensions, Guid performedByUser, 
+        private async Task<Parcel> CheckInHelper(string trackingNumber, Guid residentUnitId, Guid? lockerId, decimal? weight, string? dimensions, Guid performedByUser,
             int version = 1, bool isBulk = false
         )
         {
@@ -185,7 +185,7 @@ namespace ParcelManagement.Core.Services
                 Status = ParcelStatus.AwaitingPickup,
                 Weight = weight ?? 0,
                 Dimensions = dimensions ?? "",
-                EntryDate = DateTimeOffset.UtcNow, 
+                EntryDate = DateTimeOffset.UtcNow,
                 Version = version
             };
             var newTracking = new TrackingEvent

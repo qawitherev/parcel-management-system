@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { GetAllResidentUnitsResponse, GetAllUnitsParams, ResidentUnit, UnitsService } from '../../units-service';
 import { BehaviorSubject, combineLatest, debounce, debounceTime, distinctUntilChanged, map, Observable, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
@@ -20,7 +20,7 @@ import { MyButton } from "../../../../../common/components/buttons/my-button/my-
   templateUrl: './units.html',
   styleUrl: './units.css',
 })
-export class Units implements OnInit, OnDestroy {
+export class Units implements OnDestroy {
   destroy$ = new Subject<void>();
 
   // pagination state
@@ -76,10 +76,6 @@ export class Units implements OnInit, OnDestroy {
   constructor(private unitsService: UnitsService, private router: Router,
     private route: ActivatedRoute
   ) { }
-
-  ngOnInit(): void {
-    // do nothing
-  }
 
   ngOnDestroy(): void {
     this.destroy$.next();

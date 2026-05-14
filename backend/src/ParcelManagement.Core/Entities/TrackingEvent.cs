@@ -7,12 +7,12 @@ namespace ParcelManagement.Core.Entities
         CheckIn,
         Claim,
         Exception,
-        Custom, 
-        BulkCheckIn, 
+        Custom,
+        BulkCheckIn,
         BulkClaim
     }
 
-    public class TrackingEvent: IEntity
+    public class TrackingEvent : IEntity
     {
         [Required]
         public required Guid Id { get; set; }

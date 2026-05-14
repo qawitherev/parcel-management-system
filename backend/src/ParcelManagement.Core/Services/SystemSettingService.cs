@@ -41,7 +41,7 @@ namespace ParcelManagement.Core.Services
 
         public async Task<SystemSetting> GetSystemSettingByIdAsync(Guid id)
         {
-            return await _settingRepo.GetSystemSettingByIdAsync(id) 
+            return await _settingRepo.GetSystemSettingByIdAsync(id)
                 ?? throw new KeyNotFoundException($"System setting not found");
         }
 

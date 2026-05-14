@@ -12,7 +12,7 @@ namespace ParcelManagement.Test.Integration
     {
         private readonly CustomWebApplicationFactory _factory;
 
-        public NotificationPrefControllerTest(CustomWebApplicationFactory factory) 
+        public NotificationPrefControllerTest(CustomWebApplicationFactory factory)
             : base(factory, factory.Services.GetRequiredService<ITokenService>())
         {
             _factory = factory;

@@ -12,13 +12,13 @@ namespace ParcelManagement.Api.Controller
     [Route("api/v{version:apiVersion}/[controller]")]
     [Consumes("application/json")]
     [SkipBlacklistCheck]
-    public class TokenController(IUserService userService, ITokenService tokenService): ControllerBase
+    public class TokenController(IUserService userService, ITokenService tokenService) : ControllerBase
     {
         private readonly IUserService _userService = userService;
         private readonly ITokenService _tokenService = tokenService;
 
         [HttpPost("refresh")]
-        public async Task<IActionResult> TokenRefresh() 
+        public async Task<IActionResult> TokenRefresh()
         {
             var refreshToken = Request.Cookies["refreshToken"];
             var userValid = await _userService.GetUserByRefreshTokenAsync(refreshToken ?? "");
@@ -27,7 +27,7 @@ namespace ParcelManagement.Api.Controller
                 return Unauthorized($"Invalid or expired token");
             }
             var newAccessToken = _tokenService.GenerateAccessToken(userValid.Id.ToString(), userValid.Username, userValid.Role.ToString());
-            return Ok(new { accessToken = newAccessToken});
+            return Ok(new { accessToken = newAccessToken });
         }
     }
 }

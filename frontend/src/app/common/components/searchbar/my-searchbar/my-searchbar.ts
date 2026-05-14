@@ -11,7 +11,7 @@ export class MySearchbar {
   @Input() placeHolder: string = "Search..."
   @Input() delayTime: number = 300;
 
-  @Output() onKeywordChange = new EventEmitter<string>();
+  @Output() keywordChange = new EventEmitter<string>();
 
   private searchSubject = new Subject<string>(); 
 
@@ -20,7 +20,7 @@ export class MySearchbar {
       debounceTime(this.delayTime), 
       distinctUntilChanged()
     )
-    .subscribe(keyword => this.onKeywordChange.emit(keyword));
+    .subscribe(keyword => this.keywordChange.emit(keyword));
   }
 
   onChange(data: string) {

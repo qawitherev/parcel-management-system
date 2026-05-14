@@ -50,7 +50,7 @@ namespace ParcelManagement.Api.Controller.V2
 
             return CreatedAtAction(nameof(GetParcelById), new { id = newParcel.Id }, parcelDto);
         }
-        
-        
+
+
     }
 }

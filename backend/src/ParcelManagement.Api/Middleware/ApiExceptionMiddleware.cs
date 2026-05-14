@@ -34,16 +34,16 @@ namespace ParcelManagement.Api.Middleware
         private async Task HandleExceptionAsync(HttpContext httpContext, Exception ex, HttpStatusCode defaultCode)
         {
             if (httpContext.Response.HasStarted) return;
-            
+
             httpContext.Response.ContentType = "application/json";
             httpContext.Response.StatusCode = ex switch
             {
                 ApiException e => e.StatusCode,
-                    KeyNotFoundException => (int)HttpStatusCode.NotFound,
-                    NullReferenceException => (int)HttpStatusCode.NotFound,
-                    InvalidOperationException => (int)HttpStatusCode.Conflict,
-                    InvalidCredentialException => (int)HttpStatusCode.Unauthorized,
-                    _ => (int)defaultCode
+                KeyNotFoundException => (int)HttpStatusCode.NotFound,
+                NullReferenceException => (int)HttpStatusCode.NotFound,
+                InvalidOperationException => (int)HttpStatusCode.Conflict,
+                InvalidCredentialException => (int)HttpStatusCode.Unauthorized,
+                _ => (int)defaultCode
             };
 
             var responseBody = JsonSerializer.Serialize(new

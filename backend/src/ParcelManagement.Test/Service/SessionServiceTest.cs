@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Moq;
+using ParcelManagement.Core.BackgroundServices;
 using ParcelManagement.Core.Entities;
 using ParcelManagement.Core.Model;
 using ParcelManagement.Core.Services;
@@ -22,7 +24,8 @@ namespace ParcelManagement.Test.Service
 
         private SessionService GetService()
         {
-            return new SessionService(_sessionRepo);
+            var sessionEnqueuerMock = new Mock<ISessionEnqueuer>();
+            return new SessionService(_sessionRepo, sessionEnqueuerMock.Object);
         }
 
         #region CreateSessionAsync Tests

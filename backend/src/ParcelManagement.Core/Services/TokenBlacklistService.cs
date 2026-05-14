@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Options;
-using ParcelManagement.Api.AuthenticationAndAuthorization;
-using ParcelManagement.Core.Model;
+using ParcelManagement.Core.Model.Configuration;
 using ParcelManagement.Core.Repositories;
 
 namespace ParcelManagement.Core.Services

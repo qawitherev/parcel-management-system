@@ -1,0 +1,107 @@
+using ParcelManagement.Api.AuthenticationAndAuthorization;
+using ParcelManagement.Api.Filter;
+using ParcelManagement.Api.Utility;
+using ParcelManagement.Core.BackgroundServices;
+using ParcelManagement.Core.Repositories;
+using ParcelManagement.Core.Services;
+using ParcelManagement.Core.UnitOfWork;
+using ParcelManagement.Infrastructure.Database;
+using ParcelManagement.Infrastructure.Notification;
+using ParcelManagement.Infrastructure.Repository;
+using ParcelManagement.Infrastructure.UnitOfWork;
+
+/**
+    extension in c# requirements 
+    1. static class 
+    2. class constructor receive the type to be extended with 'this' keyword 
+    3. static method 
+**/
+
+namespace ParcelManagement.Api.Extension
+{
+    public static class ServiceExtensions
+    {
+        const int QUEUE_LIMIT = 100;
+        public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+        {
+            
+            services.AddSingleton<IRedisConnectionFactory, RedisConnectionFactory>();
+
+            services.AddScoped<IParcelRepository, ParcelRepository>();
+            services.AddScoped<IParcelService, ParcelService>();
+
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IUserService, UserService>();
+
+            services.AddScoped<ITokenService, TokenService>();
+
+            services.AddScoped<IResidentUnitRepository, ResidentUnitRepository>();
+            services.AddScoped<IResidentUnitService, ResidentUnitService>();
+
+            services.AddScoped<IUserResidentUnitRepository, UserResidentUnitRepository>();
+            services.AddScoped<IUserResidentUnitService, UserResidentUnitService>();
+
+            services.AddScoped<ITrackingEventRepository, TrackingEventRepository>();
+            services.AddScoped<ITrackingEventService, TrackingEventService>();
+
+            services.AddScoped<ILockerRepository, LockerRepository>();
+            services.AddScoped<ILockerService, LockerService>();
+
+            services.AddScoped<INotificationPrefRepository, NotificationPrefRepository>();
+            services.AddScoped<INotificationPrefService, NotificationPrefService>();
+
+            services.AddScoped<ISessionRepository, SessionRepository>();
+            services.AddScoped<ISessionService, SessionService>();
+
+            services.AddScoped<ISystemSettingRepository, SystemSettingRepository>();
+            services.AddScoped<ISystemSettingService, SystemSettingService>();
+
+            services.AddScoped<IRedisRepository, RedisRepository>();
+            services.AddScoped<ITokenBlacklistService, TokenBlacklistService>();
+
+            services.AddScoped<IUserContextService, UserContextService>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<TransactionFilter>();
+
+            services.AddSingleton<IBackgroundTaskQueue>(new BackgroundTaskQueue(QUEUE_LIMIT));
+
+            services.AddSingleton<ParcelOverstayBackgroundService>(); // concrete singleton
+            services.AddHostedService(provider  => provider.GetRequiredService<ParcelOverstayBackgroundService>());
+            services.AddSingleton<IParcelOverstayEnqueuer>(provider 
+                => provider.GetRequiredService<ParcelOverstayBackgroundService>());
+
+            services.AddSingleton<SessionBackgroundService>();
+            services.AddHostedService(provider => provider.GetRequiredService<SessionBackgroundService>());
+            services.AddSingleton<ISessionEnqueuer>(provider => provider.GetRequiredService<SessionBackgroundService>());
+
+            services.AddScoped<AdminDataSeeder>();
+
+            // ── Notification services ──────────────────────────────
+
+            // SMTP email adapter (reads from configuration)
+            services.AddSingleton<INotificationSender>(sp =>
+            {
+                var config = sp.GetRequiredService<IConfiguration>();
+                return new EmailNotificationSender(
+                    smtpHost: config["Notification:Email:SmtpHost"] ?? "smtp.sendgrid.net",
+                    smtpPort: int.Parse(config["Notification:Email:SmtpPort"] ?? "587"),
+                    username: config["Notification:Email:Username"] ?? "",
+                    password: config["Notification:Email:Password"] ?? "",
+                    fromAddress: config["Notification:Email:FromAddress"]
+                        ?? "noreply@parcelmgmt.com"
+                );
+            });
+
+            services.AddScoped<IParcelNotificationService, ParcelNotificationService>();
+
+            // Notification background service (enqueuer + dequeue loop)
+            services.AddSingleton<NotificationBackgroundService>();
+            services.AddHostedService(provider =>
+                provider.GetRequiredService<NotificationBackgroundService>());
+            services.AddSingleton<INotificationEnqueuer>(provider =>
+                provider.GetRequiredService<NotificationBackgroundService>());
+
+            return services;
+        }
+    }
+}

@@ -1,4 +1,4 @@
-namespace ParcelManagement.Core.Model
+namespace ParcelManagement.Core.Model.Configuration
 {
     public class RedisSettings
     {

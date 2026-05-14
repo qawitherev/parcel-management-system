@@ -15,7 +15,8 @@ namespace ParcelManagement.Core.Services
         ITrackingEventRepository trackingEventRepo,
         ILockerRepository lockerRepo,
         IUnitOfWork unitOfWork, 
-        IParcelOverstayEnqueuer parcelOverstayEnqueuer
+        IParcelOverstayEnqueuer parcelOverstayEnqueuer,
+        INotificationEnqueuer notificationEnqueuer
         ) : IParcelService
     {
         private readonly IParcelRepository _parcelRepo = parcelRepo;
@@ -24,6 +25,7 @@ namespace ParcelManagement.Core.Services
         private readonly ILockerRepository _lockerRepo = lockerRepo;
         private readonly IUnitOfWork _uow = unitOfWork;
         private readonly IParcelOverstayEnqueuer _parcelOverstayEnqueuer = parcelOverstayEnqueuer;
+        private readonly INotificationEnqueuer _notificationEnqueuer = notificationEnqueuer;
 
         private readonly ITrackingEventRepository _trackingEventRepo = trackingEventRepo;
         
@@ -50,8 +52,6 @@ namespace ParcelManagement.Core.Services
             });
         }
 
-        // why we use nullable here is because this isnt the place to handle it
-        // we'll handle it inside controller, to return 404 🫡
         public async Task<IReadOnlyList<Parcel?>> GetAllParcelAsync()
         {
             return await _parcelRepo.GetAllParcelsAsync();
@@ -96,7 +96,6 @@ namespace ParcelManagement.Core.Services
 
         public async Task<Parcel> GetParcelHistoriesAsync(string trackingNumber, Guid inquiringUserId, UserRole role)
         {
-            // check if the parcel belongs to the accessing user 
             var user = await _userRepo.GetUserByIdAsync(inquiringUserId) ??
                 throw new KeyNotFoundException("User not found");
             var p = await _parcelRepo.GetOneParcelBySpecificationAsync(new ParcelByTrackingNumberSpecification(trackingNumber)) ??
@@ -153,7 +152,6 @@ namespace ParcelManagement.Core.Services
 
         public async Task<Parcel> CheckInParcelWithLockerAsync(string trackingNumber, string residentUnit, string locker, decimal? weight, string? dimensions, Guid performedByUser)
         {
-            // check for trackingNumber, residentUnit, locker legitimacy
             var parcelByTrackingNumberSpec = new ParcelByTrackingNumberSpecification(trackingNumber);
             var existingParcel = await _parcelRepo.GetOneParcelBySpecificationAsync(parcelByTrackingNumberSpec);
             if (existingParcel != null)
@@ -200,6 +198,17 @@ namespace ParcelManagement.Core.Services
             };
             await _parcelRepo.AddParcelAsync(newParcel);
             await _trackingEventRepo.CreateAsync(newTracking);
+
+            // Fire-and-forget notification — does not block check-in response
+            string? lockerName = null;
+            if (lockerId.HasValue)
+            {
+                var locker = await _lockerRepo.GetLockerByIdAsync(lockerId.Value);
+                lockerName = locker?.LockerName;
+            }
+            _ = _notificationEnqueuer.EnqueueParcelArrivedNotification(
+                newParcel.Id, trackingNumber, residentUnitId, lockerName);
+
             return newParcel;
         }
 
@@ -225,14 +234,12 @@ namespace ParcelManagement.Core.Services
                 return response;
             }
 
-            // Get all parcels that belong to the user
             var userParcelsSpec = new ParcelByUserSpecification(performedByUser);
             var userParcels = await _parcelRepo.GetParcelsBySpecificationAsync(userParcelsSpec);
             var userParcelsDict = userParcels
                 .Where(p => p != null)
                 .ToDictionary(p => p!.TrackingNumber, StringComparer.OrdinalIgnoreCase);
 
-            // Validate all tracking numbers first (all-or-nothing strategy)
             var parcelsToClaimList = new List<Parcel>();
             foreach (var trackingNumber in trackingNumberList)
             {
@@ -251,14 +258,12 @@ namespace ParcelManagement.Core.Services
                 parcelsToClaimList.Add(parcel);
             }
 
-            // If any tracking number is invalid, return error (all-or-nothing)
             if (response.InvalidTrackingNumbers.Count > 0)
             {
                 response.IsSuccess = false;
                 return response;
             }
 
-            // All validations passed, proceed with claiming
             foreach (var parcel in parcelsToClaimList)
             {
                 parcel.Status = ParcelStatus.Claimed;

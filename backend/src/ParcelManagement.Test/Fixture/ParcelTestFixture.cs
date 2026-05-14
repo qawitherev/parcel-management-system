@@ -29,7 +29,8 @@ namespace ParcelManagement.Test.Fixture
             var unitOfWork = new UnitOfWork(DbContext);
             ParcelRepo = new ParcelRepository(DbContext);
             var parcelOverstayEnqueuerMock = new Mock<IParcelOverstayEnqueuer>();
-            ParcelService = new ParcelService(ParcelRepo, residentUnitRepo, userRepo, trackingEventRepo, lockerRepo, unitOfWork, parcelOverstayEnqueuerMock.Object);
+            var notificationEnqueuerMock = new Mock<INotificationEnqueuer>();
+            ParcelService = new ParcelService(ParcelRepo, residentUnitRepo, userRepo, trackingEventRepo, lockerRepo, unitOfWork, parcelOverstayEnqueuerMock.Object, notificationEnqueuerMock.Object);
             return Task.CompletedTask;
         }
 

@@ -1,12 +1,8 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
-import { excelToJson, mapperCheckInPayload } from '../../../core/bulk-action/excel-to-json';
-import { CheckInPayload } from '../../../features/parcel/check-in/check-in-service';
+import { excelToJson } from '../../../core/bulk-action/excel-to-json';
 import { AppConsole } from '../../../utils/app-console';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MyButton } from '../buttons/my-button/my-button';
-
-const EXCEL_FILE = 'excel'
-const CSV_FILE = 'csv'
 
 @Component({
   selector: 'app-file-upload',

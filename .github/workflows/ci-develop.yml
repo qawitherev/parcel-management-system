@@ -8,8 +8,6 @@ name: CI - Develop
 on:
   pull_request:
     branches: [develop]
-  push:
-    branches: [develop]
   workflow_dispatch:
 
 jobs:

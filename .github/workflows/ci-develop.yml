@@ -2,7 +2,6 @@ name: CI - Develop
 
 # Tiered strategy:
 #   PR → develop:    full gate (lint + build + unit + integration + docker)
-#   Push → develop:   fast gate (lint + build + unit only)
 #   workflow_dispatch: full gate
 
 on:

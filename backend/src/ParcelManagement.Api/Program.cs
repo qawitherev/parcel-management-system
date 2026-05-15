@@ -88,12 +88,16 @@ builder.Services.Configure<RedisSettings>(
     builder.Configuration.GetSection("RedisSettings")
 );
 
-builder.Services.Configure<RateLimitSettings>(
-    builder.Configuration.GetSection("RateLimitSettings")
-);
+// Rate limiting — disabled in Testing (integration tests test business logic, not infra)
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.Configure<RateLimitSettings>(
+        builder.Configuration.GetSection("RateLimitSettings")
+    );
 
-builder.Services.ConfigureOptions<RateLimiterConfiguration>();
-builder.Services.AddRateLimiter();
+    builder.Services.ConfigureOptions<RateLimiterConfiguration>();
+    builder.Services.AddRateLimiter();
+}
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(option =>
 {
@@ -164,8 +168,11 @@ app.UseRouting();
 // apply CORS
 app.UseCors("Allow-Angular-FrontEnd");
 
-// use registered rate limit 
-app.UseRateLimiter();
+// Rate limiting — disabled in Testing
+if (!app.Environment.IsEnvironment("Testing"))
+{
+    app.UseRateLimiter();
+}
 
 // authentication to populate HttpContext.User
 app.UseAuthentication();

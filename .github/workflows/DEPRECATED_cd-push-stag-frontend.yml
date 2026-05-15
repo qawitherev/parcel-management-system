@@ -1,0 +1,29 @@
+name: cd-push-stag-frontend
+on: 
+    push: 
+        branches: [staging] 
+        paths: ['./frontend']
+    workflow_dispatch:
+jobs: 
+    build-docker-image: 
+        runs-on: self-hosted 
+        steps: 
+            - name: checkout code 
+              uses: actions/checkout@v5
+
+            - name: build docker image 
+              uses: docker/build-push-action@v6
+              with: 
+                context: ./frontend
+                file: ./frontend/Dockerfile
+                tags: |
+                    frontend-image:staging
+                    frontend-image:${{ github.sha }}
+                push: false 
+                cache-from: type=local,src=/tmp/.buildx-cache
+                cache-to: type=local,dest=/tmp/.buildx-cache-new
+
+            - name: transfer new cache 
+              run: |
+                rm -rf /tmp/.buildx-cache 
+                mv /tmp/.buildx-cache-new /tmp/.buildx-cache

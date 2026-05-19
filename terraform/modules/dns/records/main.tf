@@ -17,7 +17,6 @@ resource "aws_route53_record" "api" {
 }
 
 resource "aws_route53_record" "app" {
-  count   = var.cloudfront_domain_name != null ? 1 : 0
   zone_id = var.zone_id
   name    = local.app_domain
   type    = "A"

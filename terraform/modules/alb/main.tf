@@ -11,7 +11,7 @@ resource "aws_lb" "this" {
 }
 
 resource "aws_lb_target_group" "backend" {
-  name        = "parcel-management-${var.environment}-backend"
+  name        = "pm-${var.environment}-backend"
   port        = var.backend_port
   protocol    = "HTTP"
   vpc_id      = var.vpc_id
@@ -28,7 +28,7 @@ resource "aws_lb_target_group" "backend" {
   }
 
   tags = merge(var.tags, {
-    Name = "parcel-management-${var.environment}-backend"
+    Name = "pm-${var.environment}-backend"
   })
 }
 

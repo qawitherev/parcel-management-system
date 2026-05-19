@@ -5,5 +5,5 @@ output "api_fqdn" {
 
 output "app_fqdn" {
   description = "App fully qualified domain name"
-  value       = length(aws_route53_record.app) > 0 ? aws_route53_record.app[0].fqdn : null
+  value       = aws_route53_record.app.fqdn
 }

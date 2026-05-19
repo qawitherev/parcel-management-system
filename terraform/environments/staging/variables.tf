@@ -33,12 +33,6 @@ variable "task_memory" {
   type        = string
 }
 
-variable "task_enable_fault_injection" {
-  description = "Enable ECS fault injection"
-  type        = bool
-  default     = false
-}
-
 variable "ecs_service_name" {
   description = "ECS service name"
   type        = string

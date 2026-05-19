@@ -25,12 +25,6 @@ variable "task_memory" {
   default = "512"
 }
 
-variable "task_enable_fault_injection" {
-  description = "flag to enable fault injection"
-  type = bool
-  default = false
-}
-
 variable "task_execution_role_arn" {
   description = "arn for execution role"
   type = string
@@ -48,6 +42,7 @@ variable "ecs_service_name" {
 
 variable "ecs_service_desired_count" {
   description = "desired running service instance count"
+  type        = number
 }
 
 variable "ecs_service_subnets" {

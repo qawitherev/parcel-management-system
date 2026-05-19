@@ -111,7 +111,6 @@ module "ecs" {
   github_sha                  = var.github_sha
   task_cpu                    = var.task_cpu
   task_memory                 = var.task_memory
-  task_enable_fault_injection = var.task_enable_fault_injection
   task_execution_role_arn     = module.security.task_execution_role_arn
   task_role_arn               = module.security.task_role_arn
   ecs_service_name            = var.ecs_service_name

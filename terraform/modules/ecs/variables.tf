@@ -60,7 +60,24 @@ variable "ecs_service_security_groups" {
   type = set(string)
 }
 
+variable "ecr_repository_url" {
+  description = "ECR repository URL for the backend image"
+  type        = string
+}
+
 variable "github_sha" {
   description = "sha value from git commit. Enforce uniqueness"
   type = string
+}
+
+variable "assign_public_ip" {
+  description = "Assign public IP to ECS tasks"
+  type        = bool
+  default     = false
+}
+
+variable "alb_target_group_arn" {
+  description = "ALB target group ARN for service registration"
+  type        = string
+  default     = null
 }

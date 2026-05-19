@@ -22,7 +22,8 @@ resource "aws_ecs_task_definition" "this" {
 
 
   container_definitions = templatefile("${path.module}/templates/container_definition.json", {
-    github_sha = var.github_sha
+    github_sha         = var.github_sha
+    ecr_repository_url = var.ecr_repository_url
   })
 }
 
@@ -37,7 +38,15 @@ resource "aws_ecs_service" "this" {
   network_configuration {
     subnets = var.ecs_service_subnets
     security_groups = var.ecs_service_security_groups
-    assign_public_ip = true
+    assign_public_ip = var.assign_public_ip
   }
 
+  dynamic "load_balancer" {
+    for_each = var.alb_target_group_arn != null ? [1] : []
+    content {
+      target_group_arn = var.alb_target_group_arn
+      container_name   = "backend"
+      container_port   = 5163
+    }
+  }
 }

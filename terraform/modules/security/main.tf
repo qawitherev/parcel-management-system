@@ -132,23 +132,21 @@ resource "aws_iam_role" "task" {
   tags = var.tags
 }
 
-resource "aws_iam_role_policy" "task_app" {
-  name = "parcel-management-${var.environment}-task-app"
-  role = aws_iam_role.task.name
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = []
-    # Minimal — add S3, SES, SQS permissions here as the app grows.
-    # Example:
-    # {
-    #   Effect = "Allow"
-    #   Action = ["ses:SendEmail", "ses:SendRawEmail"]
-    #   Resource = "*"
-    # }
-  })
-
-}
+# Task role starts with no inline policies. Add S3, SES, SQS permissions
+# here as the app needs them. Template:
+#
+# resource "aws_iam_role_policy" "task_ses" {
+#   name = "parcel-management-${var.environment}-task-ses"
+#   role = aws_iam_role.task.name
+#   policy = jsonencode({
+#     Version = "2012-10-17"
+#     Statement = [{
+#       Effect   = "Allow"
+#       Action   = ["ses:SendEmail", "ses:SendRawEmail"]
+#       Resource = "*"
+#     }]
+#   })
+# }
 
 # ============================================================
 # IAM — CI/CD Deployment User

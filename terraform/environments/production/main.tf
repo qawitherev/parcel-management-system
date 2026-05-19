@@ -27,10 +27,9 @@ provider "aws" {
 
 data "aws_caller_identity" "current" {}
 
-# Hosted zone created once — production owns it.
-resource "aws_route53_zone" "root" {
+# Hosted zone already created manually. Both environments read it.
+data "aws_route53_zone" "root" {
   name = "qawitherev.com"
-  tags = var.tags
 }
 
 module "networking" {
@@ -66,7 +65,7 @@ module "ssm" {
 module "dns_certificate" {
   source      = "../../modules/dns/certificate"
   environment = var.environment
-  zone_id     = aws_route53_zone.root.zone_id
+  zone_id     = data.aws_route53_zone.root.zone_id
   tags        = var.tags
 }
 
@@ -78,7 +77,7 @@ module "cdn" {
   }
   environment = var.environment
   app_domain  = module.dns_certificate.app_domain
-  zone_id     = aws_route53_zone.root.zone_id
+  zone_id     = data.aws_route53_zone.root.zone_id
   tags        = var.tags
 }
 
@@ -95,7 +94,7 @@ module "alb" {
 module "dns_records" {
   source                   = "../../modules/dns/records"
   environment              = var.environment
-  zone_id                  = aws_route53_zone.root.zone_id
+  zone_id                  = data.aws_route53_zone.root.zone_id
   alb_dns_name             = module.alb.dns_name
   alb_zone_id              = module.alb.zone_id
   cloudfront_domain_name   = module.cdn.cloudfront_domain_name

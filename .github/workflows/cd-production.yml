@@ -8,3 +8,6 @@ jobs:
     uses: ./.github/workflows/cd.yml
     with:
       environment: production
+    permissions:
+      id-token: write
+      contents: read

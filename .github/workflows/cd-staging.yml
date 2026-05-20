@@ -10,3 +10,6 @@ jobs:
     uses: ./.github/workflows/cd.yml
     with:
       environment: staging
+    permissions:
+      id-token: write
+      contents: read

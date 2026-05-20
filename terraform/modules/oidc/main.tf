@@ -43,6 +43,8 @@ data "aws_iam_policy_document" "assume_role" {
       values = [
         "repo:${var.github_repo}:ref:refs/heads/${var.allowed_branch}",
         "repo:${var.github_repo}:ref:refs/heads/${var.allowed_branch}:*",
+        "repo:${var.github_repo}:environment:${var.environment}",
+        "repo:${var.github_repo}:environment:${var.environment}:*",
       ]
     }
 

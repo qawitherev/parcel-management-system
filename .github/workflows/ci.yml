@@ -2,9 +2,7 @@ name: CI
 
 on:
   pull_request:
-    branches: [develop, main]
-  push:
-    branches: [develop, staging, main]
+    branches: [develop]
   workflow_dispatch:
 
 jobs:
@@ -28,6 +26,8 @@ jobs:
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
 
       - name: Restore
         run: dotnet restore
@@ -57,6 +57,8 @@ jobs:
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 9.0.x
 
       - name: Download build artifact
         uses: actions/download-artifact@v5
@@ -85,6 +87,8 @@ jobs:
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 9.0.x
 
       - name: Download build artifact
         uses: actions/download-artifact@v5

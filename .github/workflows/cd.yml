@@ -1,0 +1,205 @@
+name: CD — Reusable
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+        description: "staging or production"
+
+jobs:
+  # ============================================================
+  # Backend tests — gate before Docker build
+  # ============================================================
+  backend-test:
+    name: Backend — Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore
+        run: dotnet restore
+        working-directory: backend
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore --warnaserror
+        working-directory: backend
+
+      - name: Unit tests
+        run: dotnet test --configuration Release --no-build --logger "trx;LogFileName=unit-test-report.trx"
+        working-directory: backend/src/ParcelManagement.Test
+
+      - name: Integration tests
+        run: dotnet test --configuration Release --no-build --logger "trx;LogFileName=integration-test-report.trx"
+        working-directory: backend/src/ParcelManagement.Test.Integration
+
+  # ============================================================
+  # Build & push backend Docker image to ECR
+  # ============================================================
+  build-and-push:
+    name: Build & Push Backend
+    runs-on: ubuntu-latest
+    needs: backend-test
+    environment: ${{ inputs.environment }}
+    permissions:
+      id-token: write
+      contents: read
+    outputs:
+      image_tag: ${{ steps.meta.outputs.image_tag }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ap-southeast-1
+
+      - name: Login to ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set image tag
+        id: meta
+        run: echo "image_tag=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend/src
+          file: ./backend/src/Dockerfile
+          tags: ${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.ap-southeast-1.amazonaws.com/parcel-management-${{ inputs.environment }}-backend:${{ steps.meta.outputs.image_tag }}
+          push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ============================================================
+  # Terraform — plan + apply infrastructure changes
+  # ============================================================
+  terraform:
+    name: Terraform Apply
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    environment: ${{ inputs.environment }}
+    defaults:
+      run:
+        working-directory: terraform/environments/${{ inputs.environment }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9"
+
+      - name: Terraform init
+        run: terraform init
+
+      - name: Terraform plan
+        env:
+          TF_VAR_github_sha: ${{ needs.build-and-push.outputs.image_tag }}
+        run: terraform plan -no-color -out=tfplan
+
+      - name: Terraform apply
+        run: terraform apply -auto-approve tfplan
+
+  # ============================================================
+  # Frontend — build, upload to S3, invalidate CloudFront
+  # ============================================================
+  deploy-frontend:
+    name: Deploy Frontend
+    runs-on: ubuntu-latest
+    needs: terraform
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: frontend
+
+      - name: Build
+        run: npm run build -- --configuration=${{ inputs.environment }}
+        working-directory: frontend
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ap-southeast-1
+
+      - name: Compute domain
+        id: domain
+        run: |
+          if [ "${{ inputs.environment }}" = "production" ]; then
+            echo "app_domain=parcel-management.qawitherev.com" >> $GITHUB_OUTPUT
+            echo "api_domain=api.parcel-management.qawitherev.com" >> $GITHUB_OUTPUT
+          else
+            echo "app_domain=${{ inputs.environment }}.parcel-management.qawitherev.com" >> $GITHUB_OUTPUT
+            echo "api_domain=api.${{ inputs.environment }}.parcel-management.qawitherev.com" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Sync to S3
+        run: |
+          aws s3 sync dist/frontend/browser/ s3://parcel-management-${{ inputs.environment }}-frontend/ --delete
+
+      - name: Invalidate CloudFront
+        run: |
+          DISTRIBUTION_ID=$(aws cloudfront list-distributions --query "Items[?Aliases.Items[?ends_with(@, '${{ steps.domain.outputs.app_domain }}')]].Id" --output text)
+          aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
+
+  # ============================================================
+  # Smoke test — verify the API is healthy after deploy
+  # ============================================================
+  smoke-test:
+    name: Smoke Test
+    runs-on: ubuntu-latest
+    needs: deploy-frontend
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Compute API domain
+        id: domain
+        run: |
+          if [ "${{ inputs.environment }}" = "production" ]; then
+            echo "api_domain=api.parcel-management.qawitherev.com" >> $GITHUB_OUTPUT
+          else
+            echo "api_domain=api.${{ inputs.environment }}.parcel-management.qawitherev.com" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Health check
+        run: |
+          URL="https://${{ steps.domain.outputs.api_domain }}/health"
+          echo "Polling $URL..."
+          for i in $(seq 1 30); do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$URL" || echo "000")
+            if [ "$STATUS" = "200" ]; then
+              echo "Attempt $i: HTTP $STATUS — healthy"
+              exit 0
+            fi
+            echo "Attempt $i: HTTP $STATUS, retrying in 10s..."
+            sleep 10
+          done
+          echo "Health check failed after 30 attempts (5 minutes)"
+          exit 1

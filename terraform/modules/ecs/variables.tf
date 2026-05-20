@@ -76,3 +76,18 @@ variable "alb_target_group_arn" {
   type        = string
   default     = null
 }
+
+variable "ssm_prefix" {
+  description = "SSM parameter path prefix (e.g. /staging/backend)"
+  type        = string
+}
+
+variable "aws_region" {
+  description = "AWS region for SSM parameter ARN construction"
+  type        = string
+}
+
+variable "aws_account_id" {
+  description = "AWS account ID for SSM parameter ARN construction"
+  type        = string
+}

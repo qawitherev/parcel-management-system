@@ -23,6 +23,25 @@ resource "aws_ecs_task_definition" "this" {
   container_definitions = templatefile("${path.module}/templates/container_definition.json", {
     github_sha         = var.github_sha
     ecr_repository_url = var.ecr_repository_url
+    ssm_param_arns = jsonencode([
+      for name in [
+        "ConnectionStrings__DefaultConnection",
+        "JWTSettings__SecretKey",
+        "JWTSettings__Issuer",
+        "JWTSettings__ExpirationMinutes",
+        "JWTSettings__Audience",
+        "RedisSettings__ConnectionString",
+        "Admin__Email",
+        "Admin__Password",
+        "Notification__Email__Username",
+        "Notification__Email__Password",
+        "Notification__Email__SmtpHost",
+        "Notification__Email__SmtpPort",
+        "Notification__Email__FromAddress",
+      ] : {
+        name      = name
+        valueFrom = "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:parameter/${var.ssm_prefix}/${name}"
+    }])
   })
 }
 

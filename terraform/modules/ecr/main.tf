@@ -23,11 +23,12 @@ resource "aws_ecr_lifecycle_policy" "cleanup" {
     rules = [
       {
         rulePriority = 1
-        description  = "Keep last ${var.max_images} images"
+        description  = "Expire untagged images after ${var.untagged_expiry_days} days"
         selection = {
-          tagStatus   = "any"
-          countType   = "imageCountMoreThan"
-          countNumber = var.max_images
+          tagStatus   = "untagged"
+          countType   = "sinceImagePushed"
+          countUnit   = "days"
+          countNumber = var.untagged_expiry_days
         }
         action = {
           type = "expire"
@@ -35,12 +36,11 @@ resource "aws_ecr_lifecycle_policy" "cleanup" {
       },
       {
         rulePriority = 2
-        description  = "Expire untagged images after ${var.untagged_expiry_days} days"
+        description  = "Keep last ${var.max_images} images"
         selection = {
-          tagStatus   = "untagged"
-          countType   = "sinceImagePushed"
-          countUnit   = "days"
-          countNumber = var.untagged_expiry_days
+          tagStatus   = "any"
+          countType   = "imageCountMoreThan"
+          countNumber = var.max_images
         }
         action = {
           type = "expire"

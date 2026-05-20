@@ -4,7 +4,7 @@
 
 resource "aws_security_group" "alb" {
   name        = "parcel-management-${var.environment}-alb"
-  description = "ALB security group — allows HTTPS from internet"
+  description = "ALB security group - allows HTTPS from internet"
   vpc_id      = var.vpc_id
 
   ingress {
@@ -38,7 +38,7 @@ resource "aws_security_group" "alb" {
 
 resource "aws_security_group" "ecs_tasks" {
   name        = "parcel-management-${var.environment}-ecs-tasks"
-  description = "ECS tasks security group — accepts traffic only from ALB"
+  description = "ECS tasks security group - accepts traffic only from ALB"
   vpc_id      = var.vpc_id
 
   ingress {

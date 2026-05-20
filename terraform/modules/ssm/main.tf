@@ -1,25 +1,13 @@
 # ============================================================
 # SSM Parameters — Application Runtime Configuration
 # ============================================================
-#
-# HOW TO SET REAL VALUES (one-time, after terraform apply):
-#
-#   aws ssm put-parameter \
-#     --name "/{env}/backend/ConnectionStrings__DefaultConnection" \
-#     --value "Server=...;Database=...;User=...;Password=..." \
-#     --type SecureString --overwrite
-#
-#   Or use AWS Console → Systems Manager → Parameter Store.
-#
-# Terraform will NOT overwrite manually-set values (ignore_changes).
-# ============================================================
 
 locals {
   prefix = "/${var.environment}/backend"
 }
 
 # ============================================================
-# SecureString — secrets (set real values after first apply)
+# SecureString — secrets
 # ============================================================
 
 resource "aws_ssm_parameter" "db_connection" {
@@ -50,33 +38,7 @@ resource "aws_ssm_parameter" "jwt_secret" {
 
 resource "aws_ssm_parameter" "email_password" {
   name        = "${local.prefix}/Notification__Email__Password"
-  description = "SendGrid API key or SMTP password"
-  type        = "SecureString"
-  value       = "PLACEHOLDER"
-
-  lifecycle {
-    ignore_changes = [value]
-  }
-
-  tags = var.tags
-}
-
-resource "aws_ssm_parameter" "whatsapp_sid" {
-  name        = "${local.prefix}/Notification__WhatsApp__AccountSid"
-  description = "Twilio account SID"
-  type        = "SecureString"
-  value       = "PLACEHOLDER"
-
-  lifecycle {
-    ignore_changes = [value]
-  }
-
-  tags = var.tags
-}
-
-resource "aws_ssm_parameter" "whatsapp_token" {
-  name        = "${local.prefix}/Notification__WhatsApp__AuthToken"
-  description = "Twilio auth token"
+  description = "SendGrid API key"
   type        = "SecureString"
   value       = "PLACEHOLDER"
 
@@ -121,7 +83,11 @@ resource "aws_ssm_parameter" "jwt_issuer" {
   name        = "${local.prefix}/JWTSettings__Issuer"
   description = "JWT issuer"
   type        = "String"
-  value       = "parcel-management-${var.environment}"
+  value       = "PLACEHOLDER"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 
   tags = var.tags
 }
@@ -129,24 +95,6 @@ resource "aws_ssm_parameter" "jwt_issuer" {
 resource "aws_ssm_parameter" "jwt_audience" {
   name        = "${local.prefix}/JWTSettings__Audience"
   description = "JWT audience"
-  type        = "String"
-  value       = "parcel-management-api"
-
-  tags = var.tags
-}
-
-resource "aws_ssm_parameter" "jwt_expiry" {
-  name        = "${local.prefix}/JWTSettings__ExpirationMinutes"
-  description = "JWT token expiry in minutes"
-  type        = "String"
-  value       = "60"
-
-  tags = var.tags
-}
-
-resource "aws_ssm_parameter" "email_username" {
-  name        = "${local.prefix}/Notification__Email__Username"
-  description = "SMTP username"
   type        = "String"
   value       = "PLACEHOLDER"
 
@@ -157,9 +105,61 @@ resource "aws_ssm_parameter" "email_username" {
   tags = var.tags
 }
 
-resource "aws_ssm_parameter" "whatsapp_from" {
-  name        = "${local.prefix}/Notification__WhatsApp__FromNumber"
-  description = "Twilio from phone number"
+resource "aws_ssm_parameter" "jwt_expiry" {
+  name        = "${local.prefix}/JWTSettings__ExpirationMinutes"
+  description = "JWT token expiry in minutes"
+  type        = "String"
+  value       = "PLACEHOLDER"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+
+  tags = var.tags
+}
+
+resource "aws_ssm_parameter" "email_username" {
+  name        = "${local.prefix}/Notification__Email__Username"
+  description = "SendGrid username (apikey)"
+  type        = "String"
+  value       = "PLACEHOLDER"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+
+  tags = var.tags
+}
+
+resource "aws_ssm_parameter" "email_smtp_host" {
+  name        = "${local.prefix}/Notification__Email__SmtpHost"
+  description = "SMTP server hostname"
+  type        = "String"
+  value       = "PLACEHOLDER"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+
+  tags = var.tags
+}
+
+resource "aws_ssm_parameter" "email_smtp_port" {
+  name        = "${local.prefix}/Notification__Email__SmtpPort"
+  description = "SMTP server port"
+  type        = "String"
+  value       = "PLACEHOLDER"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+
+  tags = var.tags
+}
+
+resource "aws_ssm_parameter" "email_from_address" {
+  name        = "${local.prefix}/Notification__Email__FromAddress"
+  description = "Sender email address"
   type        = "String"
   value       = "PLACEHOLDER"
 

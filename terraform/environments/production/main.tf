@@ -127,7 +127,7 @@ module "ecs" {
   assign_public_ip            = false
   ecr_repository_url          = module.ecr.repository_url
   alb_target_group_arn        = module.alb.target_group_arn
-  ssm_prefix                  = "/${var.environment}/backend"
+  ssm_prefix                  = "${var.environment}/backend"
   aws_region                  = var.region
   aws_account_id              = data.aws_caller_identity.current.account_id
 }

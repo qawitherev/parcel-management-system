@@ -185,7 +185,7 @@ jobs:
 
       - name: Invalidate CloudFront
         run: |
-          DISTRIBUTION_ID=$(aws cloudfront list-distributions --query "Items[?contains(Aliases.Items, '${{ steps.domain.outputs.app_domain }}')].Id" --output text)
+          DISTRIBUTION_ID=$(aws cloudfront list-distributions --query "DistributionList.Items[?contains(Aliases.Items, '${{ steps.domain.outputs.app_domain }}')].Id" --output text)
           aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
 
   # ============================================================

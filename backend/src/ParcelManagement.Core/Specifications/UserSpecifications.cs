@@ -32,7 +32,7 @@ namespace ParcelManagement.Core.Specifications
         {
             _filter = filter;
         }
-        
+
         public List<IncludeExpressionString> IncludeExpressionsString => [];
 
         public Expression<Func<User, object>>? OrderBy => _filter.IsAscending ? GetSortExpression() : null;

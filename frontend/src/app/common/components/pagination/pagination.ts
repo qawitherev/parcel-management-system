@@ -72,7 +72,7 @@ export class Pagination implements OnChanges {
   }
 
   getPageNavDisplay(currentPage: number, totalPages: number): (number | string)[] {
-    var temp = [];
+    const temp = [];
     temp.push(1);
 
     const left = Math.max(2, currentPage - 1);

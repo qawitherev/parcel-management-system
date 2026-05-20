@@ -15,7 +15,7 @@ namespace ParcelManagement.Api.Controller.V1
     public class NotificationPrefController : ControllerBase
     {
         private readonly INotificationPrefService _notiPrefService;
-        private readonly IUserContextService _userContextService; 
+        private readonly IUserContextService _userContextService;
         public NotificationPrefController(INotificationPrefService notificationPrefService,
             IUserContextService userContextService)
         {
@@ -37,7 +37,7 @@ namespace ParcelManagement.Api.Controller.V1
                 IsOnCheckInActive = notiPref.IsOnCheckInActive,
                 IsOnClaimActive = notiPref.IsOnClaimActive,
                 IsOverdueActive = notiPref.IsOverdueActive,
-                QuietHoursFrom = notiPref.QuietHoursFrom, 
+                QuietHoursFrom = notiPref.QuietHoursFrom,
                 QuietHoursTo = notiPref.QuietHoursTo
             };
             return Ok(returnDto);
@@ -45,7 +45,7 @@ namespace ParcelManagement.Api.Controller.V1
 
         [HttpPost("")]
         [Authorize(Roles = "Resident")]
-        public async Task<IActionResult> CreateNotificationPref([FromBody] NotificationPrefCreateRequestDto payload) 
+        public async Task<IActionResult> CreateNotificationPref([FromBody] NotificationPrefCreateRequestDto payload)
         {
             var userId = _userContextService.GetUserId();
             if (!ModelState.IsValid)
@@ -54,18 +54,18 @@ namespace ParcelManagement.Api.Controller.V1
             }
             var np = new NotificationPrefCreateRequest
             {
-                UserId = userId, 
-                CreatingUserId = userId, 
+                UserId = userId,
+                CreatingUserId = userId,
                 IsEmailActive = payload.IsEmailActive,
                 IsWhatsAppActive = payload.IsWhatsAppActive,
                 IsOnCheckInActive = payload.IsOnCheckInActive,
                 IsOnClaimActive = payload.IsOnClaimActive,
                 IsOverdueActive = payload.IsOverdueActive,
-                QuietHoursFrom = payload.QuietHoursFrom, 
+                QuietHoursFrom = payload.QuietHoursFrom,
                 QuietHoursTo = payload.QuietHoursTo
             };
             var newNp = await _notiPrefService.CreateNotificationPrefAsync(np);
-            return CreatedAtAction(nameof(GetNotificationPrefById), new { id = newNp.Id}, newNp);
+            return CreatedAtAction(nameof(GetNotificationPrefById), new { id = newNp.Id }, newNp);
         }
 
         [HttpGet("me")]
@@ -83,7 +83,7 @@ namespace ParcelManagement.Api.Controller.V1
                 IsOnCheckInActive = np.IsOnCheckInActive,
                 IsOnClaimActive = np.IsOnClaimActive,
                 IsOverdueActive = np.IsOverdueActive,
-                QuietHoursFrom = np.QuietHoursFrom, 
+                QuietHoursFrom = np.QuietHoursFrom,
                 QuietHoursTo = np.QuietHoursTo
             };
             return Ok(returnDto);
@@ -91,7 +91,7 @@ namespace ParcelManagement.Api.Controller.V1
 
         [HttpPatch("{id}")]
         [Authorize(Roles = "Resident")]
-        public async Task<IActionResult> UpdateNotificationPref(Guid id, [FromBody] NotificationPrefUpdateRequestDto requestDto )
+        public async Task<IActionResult> UpdateNotificationPref(Guid id, [FromBody] NotificationPrefUpdateRequestDto requestDto)
         {
             if (!ModelState.IsValid)
             {
@@ -109,7 +109,7 @@ namespace ParcelManagement.Api.Controller.V1
                 IsOnCheckInActive = requestDto.IsOnCheckInActive,
                 IsOnClaimActive = requestDto.IsOnClaimActive,
                 IsOverdueActive = requestDto.IsOverdueActive,
-                QuietHoursFrom = requestDto.QuietHoursFrom, 
+                QuietHoursFrom = requestDto.QuietHoursFrom,
                 QuietHoursTo = requestDto.QuietHoursTo
             };
             await _notiPrefService.UpdateNotificationPrefs(payload, updatingUserId);

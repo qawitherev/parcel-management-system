@@ -38,7 +38,7 @@ namespace ParcelManagement.Api.Controller
             var systemSettings = await settingService.GetSystemSettings(filter);
             var dto = new SystemSettingsDto
             {
-                Count = systemSettings.Count, 
+                Count = systemSettings.Count,
                 SystemSettings = [.. systemSettings.Select(sst => new SystemSettingDtoResponse {
                     Id = sst.Id,
                     Value = sst.Value
@@ -54,10 +54,10 @@ namespace ParcelManagement.Api.Controller
             var newSetting = await settingService.CreateSystemSettingAsync(type, dto.Value);
             var returnDto = new SystemSetting
             {
-                Name = newSetting.Name, 
+                Name = newSetting.Name,
                 Value = newSetting.Value
             };
-            return CreatedAtAction(nameof(GetSystemSettingById), new { id = newSetting.Id}, returnDto);
+            return CreatedAtAction(nameof(GetSystemSettingById), new { id = newSetting.Id }, returnDto);
         }
 
         [HttpPatch("")]

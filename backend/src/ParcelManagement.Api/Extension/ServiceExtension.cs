@@ -24,7 +24,7 @@ namespace ParcelManagement.Api.Extension
         const int QUEUE_LIMIT = 100;
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
-            
+
             services.AddSingleton<IRedisConnectionFactory, RedisConnectionFactory>();
 
             services.AddScoped<IParcelRepository, ParcelRepository>();
@@ -66,8 +66,8 @@ namespace ParcelManagement.Api.Extension
             services.AddSingleton<IBackgroundTaskQueue>(new BackgroundTaskQueue(QUEUE_LIMIT));
 
             services.AddSingleton<ParcelOverstayBackgroundService>(); // concrete singleton
-            services.AddHostedService(provider  => provider.GetRequiredService<ParcelOverstayBackgroundService>());
-            services.AddSingleton<IParcelOverstayEnqueuer>(provider 
+            services.AddHostedService(provider => provider.GetRequiredService<ParcelOverstayBackgroundService>());
+            services.AddSingleton<IParcelOverstayEnqueuer>(provider
                 => provider.GetRequiredService<ParcelOverstayBackgroundService>());
 
             services.AddSingleton<SessionBackgroundService>();

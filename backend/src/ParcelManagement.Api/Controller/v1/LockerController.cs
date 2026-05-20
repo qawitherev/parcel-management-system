@@ -91,7 +91,7 @@ namespace ParcelManagement.Api.Controller.V1
                     CreatedBy = loc.CreatedByUser.Username,
                     CreatedAt = loc.CreatedAt,
                     UpdatedBy = loc.UpdatedByUser?.Username ?? "",
-                    UpdatedAt = loc.UpdatedAt 
+                    UpdatedAt = loc.UpdatedAt
                 })]
             };
             return Ok(responseDto);

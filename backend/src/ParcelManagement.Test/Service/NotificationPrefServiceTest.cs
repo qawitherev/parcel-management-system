@@ -19,7 +19,7 @@ namespace ParcelManagement.Test.Service
             var dbContext = _fixture.DbContext;
             var userId = Guid.NewGuid();
             var creatingUserId = Guid.NewGuid();
-            
+
             // Add user to database
             await dbContext.Users.AddAsync(new User
             {
@@ -67,7 +67,7 @@ namespace ParcelManagement.Test.Service
             var dbContext = _fixture.DbContext;
             var userId = Guid.NewGuid();
             var creatingUserId = Guid.NewGuid();
-            
+
             await dbContext.Users.AddAsync(new User
             {
                 Id = userId,
@@ -142,7 +142,7 @@ namespace ParcelManagement.Test.Service
             var dbContext = _fixture.DbContext;
             var userId = Guid.NewGuid();
             var creatingUserId = Guid.NewGuid();
-            
+
             await dbContext.Users.AddAsync(new User
             {
                 Id = userId,

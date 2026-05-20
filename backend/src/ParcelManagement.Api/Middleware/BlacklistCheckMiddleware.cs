@@ -22,7 +22,8 @@ namespace ParcelManagement.Api.Middleware
             if (isBlacklisted)
             {
                 throw new InvalidCredentialException($"Unauthorized access");
-            } else
+            }
+            else
             {
                 await _next(context);
             }

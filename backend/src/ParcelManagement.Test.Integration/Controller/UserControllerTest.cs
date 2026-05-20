@@ -82,7 +82,7 @@ namespace ParcelManagement.Test.Integration
 
             // Hash the password properly
             user.PasswordHash = PasswordService.HashPlainPasswordOrToken(user, plainPassword);
-            
+
             await DbContext.Users.AddAsync(user);
             await DbContext.SaveChangesAsync();
 
@@ -133,7 +133,7 @@ namespace ParcelManagement.Test.Integration
             var userId = Guid.NewGuid();
             var username = "LoginTestUser2";
             var plainPassword = "CorrectPassword123";
-            
+
             var user = new User
             {
                 Id = userId,
@@ -144,7 +144,7 @@ namespace ParcelManagement.Test.Integration
                 CreatedAt = DateTimeOffset.UtcNow
             };
             user.PasswordHash = PasswordService.HashPlainPasswordOrToken(user, plainPassword);
-            
+
             await DbContext.Users.AddAsync(user);
             await DbContext.SaveChangesAsync();
 
@@ -171,7 +171,7 @@ namespace ParcelManagement.Test.Integration
             var userId = Guid.NewGuid();
             var username = "AdminUser";
             var plainPassword = "AdminPassword123";
-            
+
             var user = new User
             {
                 Id = userId,
@@ -182,7 +182,7 @@ namespace ParcelManagement.Test.Integration
                 CreatedAt = DateTimeOffset.UtcNow
             };
             user.PasswordHash = PasswordService.HashPlainPasswordOrToken(user, plainPassword);
-            
+
             await DbContext.Users.AddAsync(user);
             await DbContext.SaveChangesAsync();
 
@@ -213,7 +213,7 @@ namespace ParcelManagement.Test.Integration
             var userId = Guid.NewGuid();
             var username = "ManagerUser";
             var plainPassword = "ManagerPassword123";
-            
+
             var user = new User
             {
                 Id = userId,
@@ -224,7 +224,7 @@ namespace ParcelManagement.Test.Integration
                 CreatedAt = DateTimeOffset.UtcNow
             };
             user.PasswordHash = PasswordService.HashPlainPasswordOrToken(user, plainPassword);
-            
+
             await DbContext.Users.AddAsync(user);
             await DbContext.SaveChangesAsync();
 
@@ -295,7 +295,7 @@ namespace ParcelManagement.Test.Integration
             var userId = Guid.NewGuid();
             var username = "MultiLoginUser";
             var plainPassword = "TestPassword123";
-            
+
             var user = new User
             {
                 Id = userId,
@@ -306,7 +306,7 @@ namespace ParcelManagement.Test.Integration
                 CreatedAt = DateTimeOffset.UtcNow
             };
             user.PasswordHash = PasswordService.HashPlainPasswordOrToken(user, plainPassword);
-            
+
             await DbContext.Users.AddAsync(user);
             await DbContext.SaveChangesAsync();
 
@@ -345,7 +345,7 @@ namespace ParcelManagement.Test.Integration
             var userId = Guid.NewGuid();
             var username = "SpecialCharUser";
             var plainPassword = "P@ssw0rd!#$%";
-            
+
             var user = new User
             {
                 Id = userId,
@@ -356,7 +356,7 @@ namespace ParcelManagement.Test.Integration
                 CreatedAt = DateTimeOffset.UtcNow
             };
             user.PasswordHash = PasswordService.HashPlainPasswordOrToken(user, plainPassword);
-            
+
             await DbContext.Users.AddAsync(user);
             await DbContext.SaveChangesAsync();
 
@@ -386,7 +386,7 @@ namespace ParcelManagement.Test.Integration
             var user1Id = Guid.NewGuid();
             var user1Username = "User1";
             var user1Password = "Password1";
-            
+
             var user1 = new User
             {
                 Id = user1Id,
@@ -401,7 +401,7 @@ namespace ParcelManagement.Test.Integration
             var user2Id = Guid.NewGuid();
             var user2Username = "User2";
             var user2Password = "Password2";
-            
+
             var user2 = new User
             {
                 Id = user2Id,
@@ -412,7 +412,7 @@ namespace ParcelManagement.Test.Integration
                 CreatedAt = DateTimeOffset.UtcNow
             };
             user2.PasswordHash = PasswordService.HashPlainPasswordOrToken(user2, user2Password);
-            
+
             await DbContext.Users.AddRangeAsync(user1, user2);
             await DbContext.SaveChangesAsync();
 
@@ -454,7 +454,7 @@ namespace ParcelManagement.Test.Integration
             var userId = Guid.NewGuid();
             var username = "LongPasswordUser";
             var plainPassword = "ThisIsAVeryLongPasswordWithMoreThan50CharactersToTestTheSystem123!@#";
-            
+
             var user = new User
             {
                 Id = userId,
@@ -465,7 +465,7 @@ namespace ParcelManagement.Test.Integration
                 CreatedAt = DateTimeOffset.UtcNow
             };
             user.PasswordHash = PasswordService.HashPlainPasswordOrToken(user, plainPassword);
-            
+
             await DbContext.Users.AddAsync(user);
             await DbContext.SaveChangesAsync();
 

@@ -132,7 +132,7 @@ namespace ParcelManagement.Test.Integration.Utility
             await _dbContext.SaveChangesAsync();
             return residentUnit;
         }
-        
+
         private static User GetUser()
         {
             var user = new User

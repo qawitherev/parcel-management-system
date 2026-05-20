@@ -17,7 +17,7 @@ namespace ParcelManagement.Core.Entities
         CreatedAt,
     }
 
-    public class User: IEntity
+    public class User : IEntity
     {
         public Guid Id { get; set; } // Primary Key
         [Required] // Example of a data annotation for validation

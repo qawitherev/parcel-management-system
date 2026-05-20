@@ -8,7 +8,7 @@ namespace ParcelManagement.Test.Fixture
     public class UserTestFixture : IAsyncLifetime
     {
         public ApplicationDbContext DbContext { get; private set; } = null!;
-        private SqliteConnection  _connection = null!;
+        private SqliteConnection _connection = null!;
 
         public async Task InitializeAsync()
         {

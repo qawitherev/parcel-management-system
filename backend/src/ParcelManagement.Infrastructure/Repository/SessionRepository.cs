@@ -10,7 +10,7 @@ namespace ParcelManagement.Infrastructure.Repository
         public async Task<Session> CreateSessionAsync(Session session)
         {
             await CreateAsync(session);
-            return session; 
+            return session;
         }
 
         public async Task<int> DeleteSessionAsync(Guid id)

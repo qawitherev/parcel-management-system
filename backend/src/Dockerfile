@@ -22,7 +22,7 @@ COPY ParcelManagement.Infrastructure/ ParcelManagement.Infrastructure/
 WORKDIR /src/ParcelManagement.Api
 
 # run dotnet build 
-RUN dotnet build "ParcelManagement.Api.csproj" -c Release -o /app/build --no-restore 
+RUN dotnet build "ParcelManagement.Api.csproj" -c Release -o /app/build 
 
 # run publish 
 RUN dotnet publish "ParcelManagement.Api.csproj" -c Release -o /app/publish --no-restore 

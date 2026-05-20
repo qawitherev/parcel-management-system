@@ -10,7 +10,7 @@ namespace ParcelManagement.Infrastructure.Repository
     {
         private readonly ApplicationDbContext _dbContext;
 
-        public ResidentUnitRepository(ApplicationDbContext dbContext): base(dbContext)
+        public ResidentUnitRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
             _dbContext = dbContext;
         }

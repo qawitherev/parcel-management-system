@@ -22,4 +22,4 @@ namespace ParcelManagement.Api.AuthenticationAndAuthorization
             };
         }
     }
-}  
+}

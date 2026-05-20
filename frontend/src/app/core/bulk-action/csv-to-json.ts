@@ -33,7 +33,7 @@ async function parcelCsvToJson<T>(file: File, option: CsvParserOption): Promise<
 
   const startIndex = option.hasHeader ? 1 : 0;
 
-  let parsedCsv: T[] = [];
+  const parsedCsv: T[] = [];
 
   for (let i = startIndex; i < csvLines.length; i++) {
     const parsedLine = parseLine(csvLines[i], option);
@@ -54,11 +54,11 @@ async function getCsvText(file: File): Promise<string> {
 function parseLine(lineText: string, option: CsvParserOption): string[] {
   // for the first iteration, we will just keep it simple
   // no quote escape, no fancy thing... yet.
-  let result: string[] = [];
+  const result: string[] = [];
   let current = '';
   for (let i = 0; i < lineText.length; i++) {
-    let currentChar = lineText[i];
-    let nextChar = lineText[i + 1];
+    const currentChar = lineText[i];
+    const nextChar = lineText[i + 1];
     if (nextChar == option.delimiter && result.length != 0) {
       result.push(current);
       current = '';

@@ -35,7 +35,7 @@ namespace ParcelManagement.Test.Integration
             DbContext.ChangeTracker.Clear();
         }
 
-        protected async Task  ResetDatabaseAsync()
+        protected async Task ResetDatabaseAsync()
         {
             await DbContext.Database.EnsureDeletedAsync();
             await DbContext.Database.EnsureCreatedAsync();

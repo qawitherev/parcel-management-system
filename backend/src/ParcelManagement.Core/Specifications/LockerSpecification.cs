@@ -38,7 +38,7 @@ namespace ParcelManagement.Core.Specifications
 
     public class AllLockersSpecification : ISpecification<Locker>
     {
-        private readonly FilterPaginationRequest<LockerSortableColumn> _filterRequest; 
+        private readonly FilterPaginationRequest<LockerSortableColumn> _filterRequest;
 
         public AllLockersSpecification(
             FilterPaginationRequest<LockerSortableColumn> filterRequest)

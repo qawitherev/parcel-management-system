@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parcel Management — Swiss Grid Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+--bg:#fff;--bg2:#fafafa;--text:#111;--t2:#555;--t3:#999;
+--red:#e63946;--red-d:#c1121f;--bdr:#e0e0e0;--bdr2:#000;
+--f:'Inter',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--f);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* TOP NAV */
+.topnav{background:var(--bg);border-bottom:2px solid #000;position:sticky;top:0;z-index:100;padding:0 20px}
+.topnav-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;height:52px;gap:0}
+.topnav .brand{font-weight:800;font-size:16px;letter-spacing:-.2px;display:flex;align-items:center;gap:10px;margin-right:32px;flex-shrink:0}
+.topnav .brand .mark{width:8px;height:28px;background:var(--red)}
+.topnav .brand a{color:var(--text);text-decoration:none}
+.nav-links{display:flex;align-items:center;gap:0;flex:1;overflow-x:auto}
+.nav-group{position:relative}
+.nav-group>button{background:none;border:none;padding:16px 14px;font-family:var(--f);font-size:13px;font-weight:600;color:var(--t2);cursor:pointer;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;transition:color .1s}
+.nav-group>button:hover,.nav-group>button.active{color:var(--text)}
+.nav-group>button.active{color:var(--red)}
+.nav-dropdown{display:none;position:absolute;top:100%;left:0;background:var(--bg);border:2px solid #000;min-width:200px;z-index:200}
+.nav-group:hover .nav-dropdown,.nav-dropdown.show{display:block}
+.nav-dropdown a{display:block;padding:10px 16px;font-size:13px;color:var(--t2);text-decoration:none;border-bottom:1px solid var(--bdr);cursor:pointer;transition:all .1s;white-space:nowrap}
+.nav-dropdown a:hover{background:#f0f0f0;color:var(--text)}
+.nav-dropdown a.active{color:var(--red);font-weight:600;background:#fef2f2;border-left:3px solid var(--red)}
+.nav-dropdown a:last-child{border-bottom:none}
+.nav-actions{margin-left:auto;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.nav-actions select{padding:6px 12px;border:2px solid #000;font-family:var(--f);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;background:var(--bg);max-width:160px}
+.nav-actions .user-label{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+.hamburger{display:none;background:none;border:none;cursor:pointer;padding:8px;flex-shrink:0}
+.hamburger span{display:block;width:24px;height:2px;background:#000;margin:5px 0;transition:all .2s}
+
+/* MOBILE MENU */
+.mobile-menu{display:none;position:fixed;top:52px;left:0;right:0;bottom:0;background:var(--bg);z-index:150;overflow-y:auto;padding:20px;border-top:2px solid #000}
+.mobile-menu.open{display:block}
+.mobile-menu .m-section{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:1px;padding:20px 0 8px}
+.mobile-menu .m-item{display:block;padding:12px 0;font-size:15px;font-weight:500;color:var(--t2);border-bottom:1px solid var(--bdr);cursor:pointer;text-decoration:none}
+.mobile-menu .m-item.active{color:var(--red);font-weight:600}
+.mobile-menu .m-actions{padding-top:24px;border-top:2px solid #000;margin-top:20px;display:flex;flex-direction:column;gap:12px}
+
+/* MAIN */
+.main{max-width:1280px;margin:0 auto;padding:36px 24px}
+
+/* PAGE LABEL */
+.pl{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px}
+h1{font-size:clamp(24px,4vw,34px);font-weight:800;letter-spacing:-.6px;margin-bottom:4px}
+h2{font-size:clamp(16px,2.5vw,22px);font-weight:700;letter-spacing:-.3px;margin-bottom:4px}
+.sub{font-size:14px;color:var(--t2);margin-bottom:24px;max-width:640px}
+
+/* STATS */
+.sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;background:var(--bdr);margin-bottom:24px}
+.scard{background:var(--bg);padding:clamp(20px,4vw,32px) clamp(16px,3vw,28px);text-align:center}
+.scard .sl{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.scard .sv{font-size:clamp(32px,6vw,52px);font-weight:800;letter-spacing:-1px}
+.scard:first-child .sv{color:var(--red)}
+
+/* TABLE WRAPPER for overflow */
+.twrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--bdr);margin-bottom:20px}
+table{width:100%;border-collapse:collapse;min-width:600px}
+th{text-align:left;padding:12px 16px;font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:1px;border-bottom:2px solid var(--bdr);white-space:nowrap;background:var(--bg)}
+td{padding:14px 16px;font-size:13px;border-bottom:1px solid #f0f0f0;white-space:nowrap}
+tr:hover td{background:var(--bg2)}
+.tsect{background:var(--bg);border:1px solid var(--bdr);margin-bottom:20px}
+.thd{padding:14px 20px;border-bottom:1px solid var(--bdr);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+
+.badge{display:inline-block;padding:3px 10px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;border:1px solid}
+.b-await{color:var(--red);border-color:var(--red);background:#fef2f2}
+.b-claim{color:#111;border-color:#111;background:#f5f5f5}
+.b-over{color:#b45309;border-color:#f59e0b;background:#fffbeb}
+
+/* FORMS */
+.form-card{background:var(--bg);border:1px solid var(--bdr);padding:clamp(20px,4vw,32px);max-width:640px}
+.fg{margin-bottom:16px}
+.fg label{display:block;font-size:10px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.fg input,.fg select{width:100%;padding:12px 0;border:none;border-bottom:2px solid var(--bdr);font-size:15px;font-family:var(--f);background:transparent;transition:border-color .15s}
+.fg input:focus,.fg select:focus{outline:none;border-bottom-color:var(--red)}
+.fg input::placeholder{color:#ccc}
+
+.btn{padding:12px 28px;border:2px solid #000;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--f);text-transform:uppercase;letter-spacing:.8px;background:#000;color:#fff;transition:all .15s;white-space:nowrap}
+.btn:hover{background:var(--red);border-color:var(--red)}
+.btn-o{background:transparent;color:#000}
+.btn-o:hover{background:#000;color:#fff}
+.btn-s{padding:8px 16px;font-size:10px}
+.btn-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+
+/* SEARCH */
+.search-bar{display:flex;gap:0;max-width:100%;margin-bottom:20px;flex-wrap:wrap}
+.search-bar input{flex:1;min-width:200px;padding:12px 16px;border:2px solid #000;border-right:none;font-size:15px;font-family:var(--f)}
+.search-bar input:focus{outline:none}
+.search-bar button{padding:12px 24px;background:#000;color:#fff;border:2px solid #000;font-family:var(--f);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;cursor:pointer}
+.search-bar button:hover{background:var(--red);border-color:var(--red)}
+
+/* FILTER ROW */
+.filter-row{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.filter-row select{padding:10px 16px;border:2px solid #000;font-family:var(--f);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;background:var(--bg)}
+
+/* TIMELINE */
+.timeline{position:relative;padding-left:28px}
+.timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:var(--bdr)}
+.tl-item{position:relative;padding-bottom:20px}
+.tl-item::before{content:'';position:absolute;left:-24px;top:4px;width:10px;height:10px;border:2px solid var(--red);background:var(--bg)}
+.tl-item .tl-time{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px}
+.tl-item .tl-event{font-size:14px;font-weight:500;margin-top:2px}
+.tl-item .tl-user{font-size:12px;color:var(--t2)}
+
+/* PREF SECTIONS */
+.pref-section{background:var(--bg);border:1px solid var(--bdr);padding:clamp(16px,3vw,24px);margin-bottom:14px}
+.pref-section h3{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px}
+.pref-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f0f0f0;gap:12px}
+.pref-row:last-child{border-bottom:none}
+.pref-row span{font-size:14px}
+.pref-row input[type=checkbox]{accent-color:var(--red);width:18px;height:18px;flex-shrink:0}
+
+/* ALERTS */
+.err-card{background:#fef2f2;border:1px solid var(--red);padding:14px 18px;margin-bottom:16px;font-size:13px;color:var(--red)}
+.err-card strong{font-weight:700}
+.success-card{background:#f0fdf4;border:1px solid #22c55e;padding:14px 18px;margin-top:12px;font-size:13px;color:#166534}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:300;padding:16px}
+.modal{background:var(--bg);border:2px solid #000;padding:clamp(20px,4vw,32px);max-width:480px;width:100%;max-height:90vh;overflow-y:auto}
+.modal h2{font-size:18px;font-weight:700;letter-spacing:-.2px;margin-bottom:16px}
+
+/* UPLOAD ZONE */
+.upload-zone{border:2px dashed var(--bdr);padding:clamp(20px,4vw,32px);text-align:center;cursor:pointer;margin-bottom:14px;transition:all .15s}
+.upload-zone:hover{border-color:var(--red);background:#fef2f2}
+
+/* LOGIN SPLIT */
+.login-page{display:flex;min-height:100vh;align-items:center;justify-content:center;padding:24px}
+.ls{display:flex;max-width:900px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.1);min-height:500px;flex-wrap:wrap}
+.ls-v{flex:1;min-width:280px;background:#111;display:flex;align-items:center;justify-content:center;padding:clamp(32px,6vw,48px);position:relative;overflow:hidden}
+.ls-v::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 20px,rgba(255,255,255,.02) 20px,rgba(255,255,255,.02) 21px)}
+.ls-v .bwrap{position:relative;z-index:1;text-align:center}
+.ls-v .bm{width:clamp(56px,10vw,72px);height:clamp(56px,10vw,72px);background:var(--red);margin:0 auto 18px;font-size:clamp(24px,5vw,32px);display:flex;align-items:center;justify-content:center;color:#fff}
+.ls-v .bn{font-size:clamp(20px,4vw,26px);font-weight:800;color:#fff;letter-spacing:-.5px;margin-bottom:4px}
+.ls-v .bt{font-size:11px;color:rgba(255,255,255,.4);font-weight:300;letter-spacing:2px;text-transform:uppercase}
+.ls-f{flex:1;min-width:280px;padding:clamp(32px,6vw,44px) clamp(24px,5vw,48px);display:flex;flex-direction:column;justify-content:center}
+.ls-f h1{font-size:clamp(18px,3vw,22px);font-weight:700;letter-spacing:-.3px;margin-bottom:2px}
+.ls-f .lsub{font-size:13px;color:var(--t2);margin-bottom:24px}
+.ls-f .quick-login{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.ls-f .quick-login button{flex:1;min-width:120px}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .nav-links{display:none}
+  .hamburger{display:block}
+  .nav-actions select{max-width:120px;font-size:10px}
+  .nav-actions .user-label{display:none}
+  .topnav{padding:0 12px}
+  .main{padding:24px 16px}
+  .sgrid{grid-template-columns:1fr 1fr}
+  .search-bar{flex-direction:column}
+  .search-bar input{border-right:2px solid #000;border-bottom:none}
+  .btn-row{flex-direction:column;align-items:stretch}
+  .btn-row .btn{text-align:center}
+  .table-section{overflow-x:auto}
+}
+@media(max-width:480px){
+  .sgrid{grid-template-columns:1fr}
+  .ls{flex-direction:column;min-height:auto}
+  .ls-v{min-height:200px}
+}
+</style>
+</head>
+<body>
+
+<!-- TOP NAVIGATION -->
+<nav class="topnav" id="topnav">
+  <div class="topnav-inner">
+    <div class="brand"><span class="mark"></span><a href="#" onclick="switchPage('dashboard');return false">PARCEL</a></div>
+    <div class="nav-links" id="navLinks"></div>
+    <div class="nav-actions">
+      <span class="user-label" id="userLabel">Resident</span>
+      <select id="roleSelect" onchange="switchRole(this.value)"></select>
+      <button class="btn btn-o btn-s" onclick="switchPage('login')">LOG OUT</button>
+    </div>
+    <button class="hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu"></div>
+
+<!-- MAIN CONTENT -->
+<main class="main" id="mainContent"></main>
+
+<!-- LOGIN (hidden by default) -->
+<div id="loginPage" style="display:none"></div>
+
+<!-- MODAL CONTAINER -->
+<div id="modalContainer"></div>
+
+<script>
+// === STATE ===
+let currentRole = 'resident';
+let currentPage = 'dashboard';
+
+// === NAV STRUCTURE (role-aware groups) ===
+const navStructure = {
+  resident: [
+    {label:'Dashboard', page:'dashboard'},
+    {section:'Parcels'},
+    {label:'Tracking', page:'tracking'},
+    {label:'Claim', page:'claim'},
+    {label:'All Parcels', page:'parcels'},
+    {section:'Settings'},
+    {label:'Notifications', page:'notifications'},
+  ],
+  manager: [
+    {label:'Dashboard', page:'dashboard'},
+    {section:'Operations'},
+    {label:'Check In', page:'checkin'},
+    {label:'Tracking', page:'tracking'},
+    {label:'All Parcels', page:'parcels'},
+    {section:'Management'},
+    {label:'Lockers', page:'lockers'},
+    {label:'Units', page:'units'},
+    {label:'Assignments', page:'userunit'},
+    {section:'Settings'},
+    {label:'Notifications', page:'notifications'},
+  ],
+  admin: [
+    {label:'Dashboard', page:'dashboard'},
+    {section:'Operations'},
+    {label:'Check In', page:'checkin'},
+    {label:'Claim', page:'claim'},
+    {label:'Tracking', page:'tracking'},
+    {label:'All Parcels', page:'parcels'},
+    {section:'Management'},
+    {label:'Lockers', page:'lockers'},
+    {label:'Units', page:'units'},
+    {label:'Assignments', page:'userunit'},
+    {section:'Settings'},
+    {label:'Notifications', page:'notifications'},
+  ],
+};
+
+const roleNames = {resident:'Resident', manager:'Manager', admin:'Admin'};
+const roleDetails = {
+  resident: {name:'Sarah Chen', unit:'Unit 5B', email:'sarah.c@building.com'},
+  manager: {name:'Alex Kim', unit:'Parcel Room', email:'alex.k@building.com'},
+  admin: {name:'Jordan Taylor', unit:'Administration', email:'jordan.t@building.com'},
+};
+
+const pageTitles = {
+  dashboard:{label:'Overview',title:'Dashboard',sub:r=>r==='resident'?`Welcome back, ${roleDetails[r].name.split(' ')[0]}.`:'Parcel room overview.'},
+  tracking:{label:'Parcels',title:'Tracking',sub:'Search for a parcel by tracking number.'},
+  claim:{label:'Parcels',title:'Claim Parcel',sub:r=>r==='admin'?'Enter a tracking number to mark a parcel as claimed. As Admin, you can claim any parcel.':'Enter a tracking number to claim your parcel.'},
+  parcels:{label:'Parcels',title:'All Parcels',sub:'Browse, search, and filter all parcels in the system.'},
+  checkin:{label:'Operations',title:'Check In Parcel',sub:'Register a new parcel into the system.'},
+  lockers:{label:'Management',title:'Lockers',sub:'Manage parcel room lockers.'},
+  units:{label:'Management',title:'Resident Units',sub:'Manage residential units in the building.'},
+  userunit:{label:'Management',title:'User — Unit Assignments',sub:'Assign residents to their units.'},
+  notifications:{label:'Settings',title:'Notification Preferences',sub:'Configure how and when you receive parcel notifications.'},
+};
+
+// === INIT ===
+function init(){
+  document.getElementById('roleSelect').innerHTML = Object.entries(roleNames).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
+  document.getElementById('roleSelect').value = currentRole;
+  buildNav();
+  renderPage();
+}
+init();
+
+// === BUILD TOP NAV ===
+function buildNav(){
+  const items = navStructure[currentRole];
+  let html = '';
+  let i = 0;
+  while(i < items.length){
+    const item = items[i];
+    if(item.section){
+      i++;
+      continue;
+    }
+    // Check if next items form a group (have a section before them)
+    let groupItems = [item];
+    let j = i + 1;
+    while(j < items.length && !items[j].section && items[j].label){
+      groupItems.push(items[j]);
+      j++;
+    }
+    if(groupItems.length === 1){
+      const active = currentPage === item.page ? ' active' : '';
+      html += `<button class="nav-btn${active}" onclick="switchPage('${item.page}')">${item.label}</button>`;
+    } else {
+      // Group them
+      const hasActive = groupItems.some(gi => currentPage === gi.page);
+      html += `<div class="nav-group"><button class="${hasActive?'active':''}">▼</button><div class="nav-dropdown">`;
+      groupItems.forEach(gi => {
+        const active = currentPage === gi.page ? ' active' : '';
+        html += `<a class="${active}" onclick="switchPage('${gi.page}');closeAllDropdowns()">${gi.label}</a>`;
+      });
+      html += `</div></div>`;
+    }
+    i = j;
+  }
+  document.getElementById('navLinks').innerHTML = html;
+  document.getElementById('userLabel').textContent = roleNames[currentRole];
+
+  // Mobile menu
+  let mhtml = '';
+  items.forEach(item => {
+    if(item.section){ mhtml += `<div class="m-section">${item.section}</div>`; }
+    else {
+      const active = currentPage === item.page ? ' active' : '';
+      mhtml += `<a class="m-item${active}" onclick="switchPage('${item.page}');closeMobileMenu()">${item.label}</a>`;
+    }
+  });
+  mhtml += `<div class="m-actions"><select onchange="switchRole(this.value);closeMobileMenu()">${Object.entries(roleNames).map(([k,v])=>`<option value="${k}" ${k===currentRole?'selected':''}>${v}</option>`).join('')}</select><button class="btn btn-o btn-s" onclick="switchPage('login');closeMobileMenu()">LOG OUT</button></div>`;
+  document.getElementById('mobileMenu').innerHTML = mhtml;
+}
+
+function closeAllDropdowns(){
+  document.querySelectorAll('.nav-dropdown').forEach(d=>d.classList.remove('show'));
+}
+
+function toggleMobileMenu(){
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+function closeMobileMenu(){
+  document.getElementById('mobileMenu').classList.remove('open');
+}
+
+// === SWITCH ROLE ===
+function switchRole(role){
+  currentRole = role;
+  document.getElementById('roleSelect').value = role;
+  const validPages = navStructure[role].filter(i=>i.page).map(i=>i.page);
+  if(!validPages.includes(currentPage)) currentPage = validPages[0];
+  buildNav();
+  renderPage();
+}
+
+// === SWITCH PAGE ===
+function switchPage(page){
+  if(page === 'login'){ showLogin(); return; }
+  currentPage = page;
+  document.getElementById('loginPage').style.display = 'none';
+  document.querySelector('.topnav').style.display = '';
+  document.getElementById('mainContent').style.display = '';
+  closeMobileMenu();
+  buildNav();
+  renderPage();
+  window.scrollTo(0,0);
+}
+
+// === LOGIN ===
+function showLogin(){
+  document.querySelector('.topnav').style.display = 'none';
+  document.getElementById('mainContent').style.display = 'none';
+  let lp = document.getElementById('loginPage');
+  lp.style.display = 'flex';
+  lp.className = 'login-page';
+  lp.innerHTML = `<div class="ls">
+    <div class="ls-v"><div class="bwrap"><div class="bm">⬚</div><div class="bn">PARCEL</div><div class="bt">Management System</div></div></div>
+    <div class="ls-f"><h1>Sign In</h1><p class="lsub">Enter your credentials to continue</p>
+    <div class="fg"><label>Email or Username</label><input type="text" id="loginUser" placeholder="sarah.c@building.com"></div>
+    <div class="fg"><label>Password</label><input type="password" placeholder="Password"></div>
+    <button class="btn" style="width:100%;margin-bottom:16px" onclick="doLogin()">Sign In</button>
+    <div class="quick-login">
+      <button class="btn btn-o btn-s" onclick="switchRole('resident');doLogin()">Resident</button>
+      <button class="btn btn-o btn-s" onclick="switchRole('manager');doLogin()">Manager</button>
+      <button class="btn btn-o btn-s" onclick="switchRole('admin');doLogin()">Admin</button>
+    </div>
+    <p style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;text-align:center">No account? <a href="#" style="color:var(--red);font-weight:600">Register</a></p></div></div>`;
+}
+
+function doLogin(){
+  document.getElementById('loginPage').style.display = 'none';
+  document.querySelector('.topnav').style.display = '';
+  document.getElementById('mainContent').style.display = '';
+  buildNav();
+  switchPage('dashboard');
+}
+
+// === RENDER PAGE ===
+function renderPage(){
+  const main = document.getElementById('mainContent');
+  const role = currentRole;
+  const ti = pageTitles[currentPage];
+  const sub = typeof ti.sub === 'function' ? ti.sub(role) : ti.sub;
+
+  switch(currentPage){
+    case 'dashboard': renderDashboard(main, role); break;
+    case 'tracking': renderTracking(main); break;
+    case 'claim': renderClaim(main, role); break;
+    case 'parcels': renderParcels(main); break;
+    case 'checkin': renderCheckIn(main); break;
+    case 'lockers': renderLockers(main); break;
+    case 'units': renderUnits(main); break;
+    case 'userunit': renderUserUnit(main); break;
+    case 'notifications': renderNotifications(main); break;
+  }
+}
+
+// === DASHBOARD ===
+function renderDashboard(main, role){
+  let stats, extra;
+  if(role === 'resident'){
+    stats = [{label:'Your Parcels Awaiting',value:'2',accent:true},{label:'Recently Claimed',value:'5'},{label:'Total This Month',value:'7'}];
+    extra = 'Your Parcels';
+  } else {
+    stats = [{label:'Awaiting Pickup',value:'14',accent:true},{label:'Picked Up Today',value:'8'},{label:'Overdue',value:'3'}];
+    extra = 'Recent Parcels';
+  }
+  let shtml = stats.map(s=>`<div class="scard"><div class="sl">${s.label}</div><div class="sv">${s.value}</div></div>`).join('');
+  main.innerHTML = `<div class="pl">Overview</div><h1>Dashboard</h1><p class="sub">${role==='resident'?`Welcome back, ${roleDetails[role].name.split(' ')[0]}.`:'Parcel room overview.'}</p>
+  <div class="sgrid">${shtml}</div>
+  <div class="tsect"><div class="thd">${extra} <span style="font-size:10px;color:var(--t3);font-weight:400;letter-spacing:0;text-transform:none">4 of 22</span></div>
+  <div class="twrap"><table><thead><tr><th>Tracking #</th><th>Unit</th><th>Locker</th><th>Status</th><th>Date</th></tr></thead>
+  <tbody>
+    <tr><td>TRK-2024-0892</td><td>${role==='resident'?'5B':'Unit 5B'}</td><td>A3</td><td><span class="badge b-await">Awaiting</span></td><td>Today</td></tr>
+    <tr><td>TRK-2024-0891</td><td>${role==='resident'?'5B':'Unit 12A'}</td><td>B1</td><td><span class="badge b-await">Awaiting</span></td><td>Today</td></tr>
+    <tr><td>TRK-2024-0889</td><td>${role==='resident'?'5B':'Unit 3C'}</td><td>A7</td><td><span class="badge b-claim">Claimed</span></td><td>May 13</td></tr>
+    <tr><td>TRK-2024-0887</td><td>${role==='resident'?'5B':'Unit 8F'}</td><td>C2</td><td><span class="badge b-claim">Claimed</span></td><td>May 13</td></tr>
+  </tbody></table></div></div>`;
+}
+
+// === TRACKING ===
+function renderTracking(main){
+  main.innerHTML = `<div class="pl">Parcels</div><h1>Tracking</h1><p class="sub">Search for a parcel by its tracking number.</p>
+  <div class="search-bar"><input type="text" id="trackInput" placeholder="Enter tracking number..." onkeydown="if(event.key==='Enter')showTrackingResult()"><button onclick="showTrackingResult()">Search</button></div>
+  <div id="trackResult"></div>`;
+}
+
+function showTrackingResult(){
+  const kw = document.getElementById('trackInput')?.value || 'TRK-2024-0892';
+  document.getElementById('trackResult').innerHTML = `<div style="background:var(--bg);border:1px solid var(--bdr);padding:clamp(16px,3vw,24px);margin-top:16px">
+  <h2 style="margin-bottom:4px">Parcel ${kw}</h2>
+  <p style="font-size:14px;color:var(--t2);margin-bottom:16px">Status: <span class="badge b-await">Awaiting Pickup</span></p>
+  <div class="pl" style="margin-bottom:12px">Tracking History</div>
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-time">May 14, 10:30 AM</div><div class="tl-event">Parcel checked in</div><div class="tl-user">by Alex Kim (Manager)</div></div>
+    <div class="tl-item"><div class="tl-time">May 14, 10:30 AM</div><div class="tl-event">Notification sent to resident</div><div class="tl-user">System — Email</div></div>
+    <div class="tl-item"><div class="tl-time">May 13, 8:15 PM</div><div class="tl-event">Package received at building</div><div class="tl-user">Courier: FedEx</div></div>
+  </div></div>`;
+}
+
+// === CLAIM ===
+function renderClaim(main, role){
+  main.innerHTML = `<div class="pl">Parcels</div><h1>Claim Parcel</h1><p class="sub">${role==='admin'?'As Admin, you can claim any parcel. ':''}Enter a tracking number to mark a parcel as claimed.</p>
+  <div class="form-card">
+  <div class="fg"><label>Tracking Number</label><input type="text" id="claimInput" placeholder="TRK-2024-0892"></div>
+  <div class="btn-row"><button class="btn" onclick="doClaim()">Claim Parcel</button><button class="btn btn-o btn-s" onclick="showBulkClaim()">Bulk Claim</button></div>
+  <div id="claimMsg"></div></div>`;
+}
+
+function doClaim(){
+  const el = document.getElementById('claimMsg');
+  const tn = document.getElementById('claimInput')?.value || 'TRK-2024-0892';
+  el.innerHTML = `<div class="success-card">✓ Parcel claimed successfully. Tracking: ${tn}</div>`;
+}
+
+function showBulkClaim(){
+  document.getElementById('modalContainer').innerHTML = `<div class="modal-overlay" onclick="this.remove()"><div class="modal" onclick="event.stopPropagation()"><h2>Bulk Claim</h2><div class="upload-zone" onclick="document.getElementById('claimMsg').innerHTML='<div class=success-card>✓ 12 parcels claimed. 0 errors.</div>';document.getElementById('modalContainer').innerHTML=''">Drop CSV here or click<br><small style="color:var(--t3)">One tracking number per row</small></div><button class="btn btn-o btn-s" onclick="this.closest('.modal-overlay').remove()">Cancel</button></div></div>`;
+}
+
+// === ALL PARCELS ===
+function renderParcels(main){
+  main.innerHTML = `<div class="pl">Parcels</div><h1>All Parcels</h1><p class="sub">Browse, search, and filter all parcels.</p>
+  <div class="search-bar"><input type="text" placeholder="Search parcels..."><button>Search</button></div>
+  <div class="filter-row"><select><option>All Status</option><option>Awaiting Pickup</option><option>Claimed</option><option>Overdue</option></select></div>
+  <div class="tsect"><div class="thd">Parcels <span style="font-size:10px;color:var(--t3);font-weight:400;letter-spacing:0;text-transform:none">Showing 4 of 22</span></div>
+  <div class="twrap"><table><thead><tr><th>Tracking #</th><th>Unit</th><th>Locker</th><th>Weight</th><th>Dimensions</th><th>Status</th><th>Date</th></tr></thead>
+  <tbody>
+    <tr><td>TRK-2024-0892</td><td>Unit 5B</td><td>Locker A3</td><td>2.4 kg</td><td>30×20×15</td><td><span class="badge b-await">Awaiting</span></td><td>May 14</td></tr>
+    <tr><td>TRK-2024-0891</td><td>Unit 12A</td><td>Locker B1</td><td>0.8 kg</td><td>15×10×5</td><td><span class="badge b-await">Awaiting</span></td><td>May 14</td></tr>
+    <tr><td>TRK-2024-0890</td><td>Unit 3C</td><td>Locker A7</td><td>5.1 kg</td><td>45×30×20</td><td><span class="badge b-over">Overdue</span></td><td>May 10</td></tr>
+    <tr><td>TRK-2024-0889</td><td>Unit 3C</td><td>Locker A7</td><td>1.2 kg</td><td>20×15×10</td><td><span class="badge b-claim">Claimed</span></td><td>May 13</td></tr>
+  </tbody></table></div></div>`;
+}
+
+// === CHECK IN ===
+function renderCheckIn(main){
+  main.innerHTML = `<div class="pl">Operations</div><h1>Check In Parcel</h1><p class="sub">Register a new parcel into the system.</p>
+  <div class="form-card">
+  <div class="fg"><label>Tracking Number</label><input type="text" placeholder="Enter tracking number"></div>
+  <div class="fg"><label>Resident Unit</label><select><option>Unit 5B</option><option>Unit 12A</option><option>Unit 3C</option><option>Unit 8F</option></select></div>
+  <div class="fg"><label>Locker</label><select><option>Locker A3</option><option>Locker B1</option><option>Locker A7</option><option>Locker C2</option></select></div>
+  <div class="fg"><label>Weight (kg)</label><input type="text" placeholder="e.g. 2.4"></div>
+  <div class="fg"><label>Dimensions (cm)</label><input type="text" placeholder="e.g. 30×20×15"></div>
+  <div class="btn-row"><button class="btn" onclick="document.getElementById('checkinMsg').innerHTML='<div class=success-card>✓ Parcel checked in. Tracking: TRK-2024-0900</div>'">Check In</button><button class="btn btn-o btn-s" onclick="showBulkCheckin()">Bulk Check In</button></div>
+  <div id="checkinMsg"></div></div>`;
+}
+
+function showBulkCheckin(){
+  document.getElementById('modalContainer').innerHTML = `<div class="modal-overlay" onclick="this.remove()"><div class="modal" onclick="event.stopPropagation()"><h2>Bulk Check In</h2><div class="upload-zone" onclick="document.getElementById('checkinMsg').innerHTML='<div class=success-card>✓ 8 parcels checked in. 0 errors.</div>';document.getElementById('modalContainer').innerHTML=''">Drop Excel/CSV here<br><small style="color:var(--t3)">Columns: TrackingNumber, ResidentUnit, Locker, Weight, Dimensions</small></div><button class="btn btn-o btn-s" onclick="this.closest('.modal-overlay').remove()">Cancel</button></div></div>`;
+}
+
+// === LOCKERS ===
+function renderLockers(main){
+  main.innerHTML = `<div class="pl">Management</div><h1>Lockers</h1><p class="sub">Manage parcel room lockers.</p>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+    <div class="search-bar" style="margin-bottom:0;max-width:360px"><input type="text" placeholder="Search lockers..."><button>Search</button></div>
+    <button class="btn btn-s" onclick="showAddLocker()">+ Add Locker</button>
+  </div>
+  <div class="tsect"><div class="thd">All Lockers <span style="font-size:10px;color:var(--t3);font-weight:400;letter-spacing:0;text-transform:none">6 lockers</span></div>
+  <div class="twrap"><table><thead><tr><th>Locker Name</th><th>Created By</th><th>Created</th><th>Updated</th><th>Actions</th></tr></thead>
+  <tbody>
+    <tr><td>Locker A3</td><td>Alex Kim</td><td>Jan 15</td><td>Mar 2</td><td><button class="btn btn-o btn-s" onclick="showAddLocker('A3')">Edit</button></td></tr>
+    <tr><td>Locker B1</td><td>Alex Kim</td><td>Jan 15</td><td>—</td><td><button class="btn btn-o btn-s" onclick="showAddLocker('B1')">Edit</button></td></tr>
+    <tr><td>Locker A7</td><td>Jordan Taylor</td><td>Feb 3</td><td>Apr 10</td><td><button class="btn btn-o btn-s" onclick="showAddLocker('A7')">Edit</button></td></tr>
+  </tbody></table></div></div>`;
+}
+
+function showAddLocker(name){
+  const title = name ? `Edit Locker: ${name}` : 'Add Locker';
+  document.getElementById('modalContainer').innerHTML = `<div class="modal-overlay" onclick="this.remove()"><div class="modal" onclick="event.stopPropagation()"><h2>${title}</h2><div class="fg"><label>Locker Name</label><input type="text" value="${name||''}" placeholder="Enter locker name"></div><div class="btn-row" style="margin-top:14px"><button class="btn btn-s">${name?'Update':'Create'}</button><button class="btn btn-o btn-s" onclick="this.closest('.modal-overlay').remove()">Cancel</button></div></div></div>`;
+}
+
+// === UNITS ===
+function renderUnits(main){
+  main.innerHTML = `<div class="pl">Management</div><h1>Resident Units</h1><p class="sub">Manage residential units.</p>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+    <div class="search-bar" style="margin-bottom:0;max-width:360px"><input type="text" placeholder="Search units..."><button>Search</button></div>
+    <button class="btn btn-s" onclick="showAddUnit()">+ Add Unit</button>
+  </div>
+  <div class="tsect"><div class="thd">All Units <span style="font-size:10px;color:var(--t3);font-weight:400;letter-spacing:0;text-transform:none">12 units</span></div>
+  <div class="twrap"><table><thead><tr><th>Unit Name</th><th>Created By</th><th>Created</th><th>Updated</th><th>Actions</th></tr></thead>
+  <tbody>
+    <tr><td>Unit 5B</td><td>Jordan Taylor</td><td>Jan 10</td><td>—</td><td><button class="btn btn-o btn-s" onclick="showAddUnit('5B')">Edit</button></td></tr>
+    <tr><td>Unit 12A</td><td>Alex Kim</td><td>Jan 10</td><td>Feb 20</td><td><button class="btn btn-o btn-s" onclick="showAddUnit('12A')">Edit</button></td></tr>
+    <tr><td>Unit 3C</td><td>Jordan Taylor</td><td>Jan 10</td><td>—</td><td><button class="btn btn-o btn-s" onclick="showAddUnit('3C')">Edit</button></td></tr>
+  </tbody></table></div></div>`;
+}
+
+function showAddUnit(name){
+  const title = name ? `Edit Unit: ${name}` : 'Add Unit';
+  document.getElementById('modalContainer').innerHTML = `<div class="modal-overlay" onclick="this.remove()"><div class="modal" onclick="event.stopPropagation()"><h2>${title}</h2><div class="fg"><label>Unit Name</label><input type="text" value="${name||''}" placeholder="Enter unit name"></div><div class="btn-row" style="margin-top:14px"><button class="btn btn-s">${name?'Update':'Create'}</button><button class="btn btn-o btn-s" onclick="this.closest('.modal-overlay').remove()">Cancel</button></div></div></div>`;
+}
+
+// === USER UNIT ===
+function renderUserUnit(main){
+  main.innerHTML = `<div class="pl">Management</div><h1>User — Unit Assignments</h1><p class="sub">Assign residents to their units.</p>
+  <div class="err-card"><strong>GAP:</strong> This feature is not yet implemented. Shown below is the intended design.</div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+    <div class="search-bar" style="margin-bottom:0;max-width:360px"><input type="text" placeholder="Search..."><button>Search</button></div>
+    <button class="btn btn-s" onclick="showAddAssignment()">+ New Assignment</button>
+  </div>
+  <div class="tsect"><div class="thd">Current Assignments <span style="font-size:10px;color:var(--t3);font-weight:400;letter-spacing:0;text-transform:none">8 assignments</span></div>
+  <div class="twrap"><table><thead><tr><th>Username</th><th>Email</th><th>Resident Unit</th><th>Assigned</th><th>Actions</th></tr></thead>
+  <tbody>
+    <tr><td>sarahchen</td><td>sarah.c@building.com</td><td>Unit 5B</td><td>Jan 12</td><td><button class="btn btn-o btn-s">Remove</button></td></tr>
+    <tr><td>mikejones</td><td>mike.j@building.com</td><td>Unit 12A</td><td>Jan 15</td><td><button class="btn btn-o btn-s">Remove</button></td></tr>
+    <tr><td>lisawang</td><td>lisa.w@building.com</td><td>Unit 3C</td><td>Feb 1</td><td><button class="btn btn-o btn-s">Remove</button></td></tr>
+  </tbody></table></div></div>`;
+}
+
+function showAddAssignment(){
+  document.getElementById('modalContainer').innerHTML = `<div class="modal-overlay" onclick="this.remove()"><div class="modal" onclick="event.stopPropagation()"><h2>New Assignment</h2><div class="fg"><label>User</label><select><option>sarahchen — sarah.c@building.com</option><option>mikejones — mike.j@building.com</option></select></div><div class="fg"><label>Resident Unit</label><select><option>Unit 5B</option><option>Unit 12A</option><option>Unit 3C</option><option>Unit 8F</option></select></div><div class="btn-row" style="margin-top:14px"><button class="btn btn-s">Assign</button><button class="btn btn-o btn-s" onclick="this.closest('.modal-overlay').remove()">Cancel</button></div></div></div>`;
+}
+
+// === NOTIFICATIONS ===
+function renderNotifications(main){
+  main.innerHTML = `<div class="pl">Settings</div><h1>Notification Preferences</h1><p class="sub">Configure how and when you receive notifications.</p>
+  <div class="pref-section"><h3>Primary Channel</h3>
+    <div class="pref-row"><span>Email Notifications</span><input type="checkbox" checked></div>
+    <div class="pref-row"><span>WhatsApp Notifications</span><input type="checkbox"></div>
+  </div>
+  <div class="pref-section"><h3>Event Preferences</h3>
+    <div class="pref-row"><span>Parcel Arrival (Check-In)</span><input type="checkbox" checked></div>
+    <div class="pref-row"><span>Parcel Claimed</span><input type="checkbox" checked></div>
+    <div class="pref-row"><span>Parcel Overdue</span><input type="checkbox" checked></div>
+  </div>
+  <div class="pref-section"><h3>Quiet Hours</h3>
+    <div class="pref-row"><span>Enable Quiet Hours</span><input type="checkbox" id="qhToggle" onchange="document.getElementById('qhFields').style.display=this.checked?'block':'none'"></div>
+    <div id="qhFields" style="display:none">
+      <div class="fg"><label>From</label><input type="time" value="22:00"></div>
+      <div class="fg"><label>To</label><input type="time" value="07:00"></div>
+    </div>
+  </div>
+  <div style="display:flex;justify-content:flex-end;margin-top:12px"><button class="btn">Apply Changes</button></div>`;
+}
+</script>
+</body>
+</html>

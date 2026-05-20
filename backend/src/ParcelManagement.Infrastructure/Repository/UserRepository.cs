@@ -43,7 +43,7 @@ namespace ParcelManagement.Infrastructure.Repository
         {
             var validUserIds = await _dbContext.Users.Where(user => userIds.Contains(user.Id))
                 .Select(user => user.Id).ToListAsync();
-            return [.. userIds.Except(validUserIds)];     
+            return [.. userIds.Except(validUserIds)];
         }
 
         public async Task UpdateUserAsync(User user)

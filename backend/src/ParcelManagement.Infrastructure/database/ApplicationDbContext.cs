@@ -22,7 +22,7 @@ namespace ParcelManagement.Infrastructure.Database
         public virtual DbSet<ResidentUnit> ResidentUnits { get; set; }
 
         public virtual DbSet<UserResidentUnit> UserResidentUnits { get; set; }
-        
+
         public virtual DbSet<TrackingEvent> TrackingEvents { get; set; }
 
         public virtual DbSet<Locker> Lockers { get; set; }

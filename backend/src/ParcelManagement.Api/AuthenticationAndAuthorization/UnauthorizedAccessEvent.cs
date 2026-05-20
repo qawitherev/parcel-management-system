@@ -31,7 +31,7 @@ namespace ParcelManagement.Api.AuthenticationAndAuthorization
                     {
                         error = "Unauthorized",
                         message = "Invalid access credentials provided",
-                        timestamp = DateTime.UtcNow, 
+                        timestamp = DateTime.UtcNow,
                         path = context.HttpContext.Request.Path
                     });
                 }

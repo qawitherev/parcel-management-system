@@ -15,24 +15,25 @@ namespace ParcelManagement.Core.BackgroundServices
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
-            {
-                var utcNow = DateTime.UtcNow;
-                var nextRun = _cronExpression.GetNextOccurrence(utcNow);
-
-                if (nextRun.HasValue)
                 {
-                    var delayAmount = nextRun.Value - utcNow;
-                    await Task.Delay(delayAmount, stoppingToken);
+                    var utcNow = DateTime.UtcNow;
+                    var nextRun = _cronExpression.GetNextOccurrence(utcNow);
 
-                    if (!stoppingToken.IsCancellationRequested)
+                    if (nextRun.HasValue)
+                    {
+                        var delayAmount = nextRun.Value - utcNow;
+                        await Task.Delay(delayAmount, stoppingToken);
+
+                        if (!stoppingToken.IsCancellationRequested)
                         {
                             await CleanupExpiredSessions(stoppingToken);
                         }
+                    }
                 }
-            } catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
-            {
-                break;
-            }
+                catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+                {
+                    break;
+                }
             }
         }
 
@@ -40,12 +41,13 @@ namespace ParcelManagement.Core.BackgroundServices
         {
             try
             {
-                using(var scope = _scopeFactory.CreateAsyncScope())
-            {
-                var sessionService = scope.ServiceProvider.GetRequiredService<ISessionService>();
-                await sessionService.RemoveExpiredSessions();
+                using (var scope = _scopeFactory.CreateAsyncScope())
+                {
+                    var sessionService = scope.ServiceProvider.GetRequiredService<ISessionService>();
+                    await sessionService.RemoveExpiredSessions();
+                }
             }
-            } catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+            catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
             {
                 return;
             }

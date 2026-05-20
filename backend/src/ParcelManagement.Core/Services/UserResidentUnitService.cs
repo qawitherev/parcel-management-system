@@ -17,7 +17,7 @@ namespace ParcelManagement.Core.Services
 
         Task<IReadOnlyCollection<ResidentUnit?>> GetResidentsUnitByUser(Guid userId);
 
-        Task<(IReadOnlyList<UserResidentUnit> , int count)> GetUserResidentUnitForView(FilterPaginationRequest<UserResidentUnitSortableColumn> filter);
+        Task<(IReadOnlyList<UserResidentUnit>, int count)> GetUserResidentUnitForView(FilterPaginationRequest<UserResidentUnitSortableColumn> filter);
 
         Task UpdateUnitResidents(List<Guid> newResidents, Guid residentUnitId, Guid createdBy);
     }
@@ -31,7 +31,7 @@ namespace ParcelManagement.Core.Services
         private readonly IUserResidentUnitRepository _uruRepo = uruRepo;
         private readonly IResidentUnitRepository _ruRepo = ruRepo;
         private readonly IUserRepository _userRepo = userRepo;
-        
+
         public async Task<UserResidentUnit> CreateUserResidentUnit(Guid creator,
             Guid userId, Guid residentUnitId
         )
@@ -49,10 +49,10 @@ namespace ParcelManagement.Core.Services
                     UserId = userId,
                     ResidentUnitId = residentUnitId,
                     IsActive = true,
-                    CreatedAt = DateTimeOffset.UtcNow, 
+                    CreatedAt = DateTimeOffset.UtcNow,
                     CreatedBy = creator
                 });
-                
+
             }
             else if (res != null && !res.IsActive)
             {

@@ -1,27 +1,13 @@
 [
   {
-    "cpu": 0,
-    "environment": [],
-    "environmentFiles": [
-      {
-        "type": "s3",
-        "value": "arn:aws:s3:::parcel-management-system/parcel-management-prod.env"
-      }
-    ],
-    "essential": true,
-    "image": "qawitherev/backend:${github_sha}",
-    "logConfiguration": {
-      "logDriver": "awslogs",
-      "options": {
-        "awslogs-group": "/ecs/parcel-management-system",
-        "awslogs-create-group": "true",
-        "awslogs-region": "ap-southeast-1",
-        "awslogs-stream-prefix": "ecs"
-      },
-      "secretOptions": []
-    },
-    "mountPoints": [],
     "name": "backend",
+    "image": "${ecr_repository_url}:${github_sha}",
+    "cpu": 0,
+    "essential": true,
+    "environment": [],
+    "secrets": [],
+    "environmentFiles": [],
+    "mountPoints": [],
     "portMappings": [
       {
         "appProtocol": "http",
@@ -31,35 +17,6 @@
         "protocol": "tcp"
       }
     ],
-    "systemControls": [],
-    "ulimits": [],
-    "volumesFrom": [],
-    "healthCheck": {
-      "command": [
-        "CMD-SHELL",
-        "curl -f http://localhost:5163/health || exit 1"
-      ],
-      "interval": 5,
-      "timeout": 5,
-      "retries": 3,
-      "startPeriod": 10
-    }
-  },
-  {
-    "cpu": 0,
-    "environment": [
-      {
-        "name": "BACKEND_PORT",
-        "value": "5163"
-      },
-      {
-        "name": "BACKEND_HOST",
-        "value": "localhost"
-      }
-    ],
-    "environmentFiles": [],
-    "essential": true,
-    "image": "qawitherev/frontend:${github_sha}",
     "logConfiguration": {
       "logDriver": "awslogs",
       "options": {
@@ -70,20 +27,14 @@
       },
       "secretOptions": []
     },
-    "mountPoints": [],
-    "name": "frontend",
-    "portMappings": [
-      {
-        "containerPort": 80,
-        "hostPort": 80,
-        "name": "frontend-port",
-        "protocol": "tcp"
-      }
-    ],
     "systemControls": [],
+    "ulimits": [],
     "volumesFrom": [],
     "healthCheck": {
-      "command": ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:80/ || exit 1"],
+      "command": [
+        "CMD-SHELL",
+        "curl -f http://localhost:5163/health || exit 1"
+      ],
       "interval": 5,
       "timeout": 5,
       "retries": 3,

@@ -30,7 +30,7 @@ namespace ParcelManagement.Test.Fixture
 
         public async Task ResetDb()
         {
-            await DbContext.Database.EnsureDeletedAsync();   
+            await DbContext.Database.EnsureDeletedAsync();
         }
     }
 }

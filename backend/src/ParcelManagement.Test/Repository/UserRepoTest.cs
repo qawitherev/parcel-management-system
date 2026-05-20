@@ -140,7 +140,7 @@ namespace ParcelManagement.Test.Repository
                 var userByUsernameSpecification = new UserByUsernameSpecification(newUser.Username);
                 var result = await userRepo.GetOneUserBySpecification(userByUsernameSpecification);
                 Assert.NotNull(result);
-                Assert.Equal(theUsername, result.Username);                
+                Assert.Equal(theUsername, result.Username);
             }
         }
     }

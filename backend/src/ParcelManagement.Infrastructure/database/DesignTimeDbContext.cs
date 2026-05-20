@@ -12,7 +12,7 @@ namespace ParcelManagement.Infrastructure.Database
                                              "..", "ParcelManagement.Api"));
             DotNetEnv.Env.Load(Path.Combine(projectRoot, ".env"));
             var cs = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
-            
+
             if (string.IsNullOrWhiteSpace(cs))
             {
                 throw new InvalidOperationException("Connection string is empty");

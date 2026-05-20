@@ -9,12 +9,12 @@ namespace ParcelManagement.Api.Controller
     [Route("api/v{version:apiVersion}/[controller]")]
     [Consumes("application/json")]
     public class JobController(
-        IParcelService parcelService, 
+        IParcelService parcelService,
         ISessionService sessionService
     ) : ControllerBase
     {
         [HttpPost("parcelOverstay")]
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> EnqueueProcessParcelOverstay()
         {
             await parcelService.WakeUpProcessParcelOverstay();
@@ -22,7 +22,7 @@ namespace ParcelManagement.Api.Controller
         }
 
         [HttpPost("cleanupSession")]
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CleanupSession()
         {
             await sessionService.WakeupCleanupSession();

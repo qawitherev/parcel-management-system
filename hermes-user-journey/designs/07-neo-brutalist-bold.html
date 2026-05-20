@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design 7 — Neo-Brutalist Bold</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f8f5f0;
+  --text: #1a1a1a;
+  --accent: #ff4d4d;
+  --accent2: #4d7cff;
+  --accent3: #ffe74d;
+  --green: #00c853;
+  --border: 3px solid #1a1a1a;
+  --border-thin: 2px solid #1a1a1a;
+  --shadow: 6px 6px 0px #1a1a1a;
+  --shadow-sm: 3px 3px 0px #1a1a1a;
+  --shadow-lg: 10px 10px 0px #1a1a1a;
+  --font: 'Space Grotesk', system-ui, sans-serif;
+  --radius: 0px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  background-image: radial-gradient(circle, rgba(0,0,0,0.03) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+.tab-bar {
+  display: flex; gap: 0; padding: 12px 20px;
+  background: var(--bg); border-bottom: var(--border);
+  position: sticky; top: 0; z-index: 100;
+}
+.tab {
+  padding: 10px 24px; font-size: 14px; font-weight: 600;
+  cursor: pointer; border: var(--border-thin); background: var(--bg);
+  color: var(--text); transition: all 0.1s; font-family: var(--font);
+  margin-right: -2px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.tab.active { background: var(--accent3); transform: translate(2px, 2px); box-shadow: none; }
+.tab:hover:not(.active) { background: #fff; }
+/* LOGIN */
+.login-wrapper {
+  display: flex; min-height: calc(100vh - 62px);
+  align-items: center; justify-content: center; padding: 24px;
+}
+.login-card {
+  width: 100%; max-width: 460px; background: #fff;
+  padding: 48px 44px; border: var(--border);
+  box-shadow: var(--shadow-lg);
+}
+.login-card .stamp {
+  display: inline-block; background: var(--accent); color: #fff;
+  padding: 6px 16px; font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px; margin-bottom: 24px;
+  border: var(--border-thin); transform: rotate(-2deg);
+}
+.login-card h1 {
+  font-size: 38px; font-weight: 700; letter-spacing: -1px;
+  margin-bottom: 8px; line-height: 1.1;
+}
+.login-card .subtitle {
+  font-size: 16px; color: #666; margin-bottom: 32px; font-weight: 500;
+}
+.field { margin-bottom: 20px; }
+.field label {
+  display: block; font-size: 13px; font-weight: 700;
+  margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.field input {
+  width: 100%; padding: 14px 16px;
+  background: var(--bg); border: var(--border-thin);
+  font-size: 16px; font-family: var(--font); color: var(--text);
+  transition: all 0.1s; font-weight: 500;
+}
+.field input:focus {
+  outline: none; border-color: var(--accent2);
+  box-shadow: var(--shadow-sm); background: #fff;
+}
+.btn {
+  width: 100%; padding: 16px; border: var(--border-thin);
+  font-size: 16px; font-weight: 700; cursor: pointer;
+  font-family: var(--font); text-transform: uppercase;
+  letter-spacing: 1px; transition: all 0.1s;
+  background: var(--accent); color: #fff; box-shadow: var(--shadow);
+}
+.btn:hover { transform: translate(2px, 2px); box-shadow: 3px 3px 0px #1a1a1a; }
+.btn:active { transform: translate(4px, 4px); box-shadow: none; }
+.login-footer {
+  text-align: center; margin-top: 28px; font-size: 14px;
+  color: #666; font-weight: 500;
+}
+.login-footer a { color: var(--accent2); font-weight: 700; }
+/* DASHBOARD */
+.dash-layout { display: flex; min-height: calc(100vh - 62px); }
+.sidebar {
+  width: 250px; background: #fff; border-right: var(--border);
+  padding: 0; display: flex; flex-direction: column;
+}
+.sidebar-brand {
+  padding: 22px 20px; font-size: 20px; font-weight: 700;
+  letter-spacing: -0.5px; border-bottom: var(--border);
+  background: var(--accent3);
+}
+.sidebar-nav { flex: 1; padding: 0; }
+.nav-item {
+  display: block; padding: 14px 20px; font-size: 14px; font-weight: 600;
+  color: var(--text); text-decoration: none; cursor: pointer;
+  transition: all 0.1s; border-bottom: var(--border-thin);
+  text-transform: uppercase; letter-spacing: 0.3px;
+}
+.nav-item:hover { background: var(--accent3); padding-left: 28px; }
+.nav-item.active { background: var(--accent2); color: #fff; border-right: 4px solid var(--text); }
+.nav-section {
+  font-size: 10px; font-weight: 700; color: #999;
+  text-transform: uppercase; letter-spacing: 1px;
+  padding: 16px 20px 8px; border-bottom: var(--border-thin);
+  background: #fafafa;
+}
+.dash-main { flex: 1; padding: 32px 36px; overflow-y: auto; }
+.dash-main h2 { font-size: 36px; font-weight: 700; letter-spacing: -1px; margin-bottom: 4px; }
+.dash-main .welcome { font-size: 16px; color: #666; margin-bottom: 32px; font-weight: 500; }
+.stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 28px; }
+.stat-card {
+  background: #fff; padding: 28px 24px;
+  border: var(--border); box-shadow: var(--shadow);
+  transition: all 0.15s;
+}
+.stat-card:nth-child(1) { border-top: 6px solid var(--accent); }
+.stat-card:nth-child(2) { border-top: 6px solid var(--green); }
+.stat-card:hover { transform: translate(-2px, -2px); box-shadow: var(--shadow-lg); }
+.stat-card .stat-label {
+  font-size: 12px; font-weight: 700; color: #888;
+  text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;
+}
+.stat-card .stat-value { font-size: 52px; font-weight: 700; color: var(--text); }
+.table-section {
+  background: #fff; border: var(--border);
+  box-shadow: var(--shadow); overflow: hidden;
+}
+.table-header {
+  padding: 16px 24px; border-bottom: var(--border-thin);
+  font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+  background: var(--accent3);
+}
+table { width: 100%; border-collapse: collapse; }
+th {
+  text-align: left; padding: 14px 24px; font-size: 11px;
+  font-weight: 700; color: #888; text-transform: uppercase;
+  letter-spacing: 1px; border-bottom: var(--border-thin);
+}
+td {
+  padding: 16px 24px; font-size: 14px; border-bottom: var(--border-thin);
+  color: var(--text); font-weight: 500;
+}
+.status-badge {
+  display: inline-block; padding: 6px 14px; border: var(--border-thin);
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+  box-shadow: var(--shadow-sm);
+}
+.status-awaiting { background: var(--accent3); }
+.status-claimed { background: #c8f7c5; }
+</style>
+</head>
+<body>
+<div class="tab-bar">
+  <button class="tab active" onclick="switchView('login')">Login Page</button>
+  <button class="tab" onclick="switchView('dashboard')">Dashboard</button>
+</div>
+
+<div id="view-login">
+<div class="login-wrapper">
+  <div class="login-card">
+    <div class="stamp">Parcel System</div>
+    <h1>Get your package.</h1>
+    <p class="subtitle">No fluff. Just sign in and go.</p>
+    <div class="field">
+      <label>Email or Username</label>
+      <input type="text" placeholder="you@building.com">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" placeholder="Enter password">
+    </div>
+    <button class="btn">Sign In →</button>
+    <p class="login-footer">No account? <a href="#">REGISTER HERE</a></p>
+  </div>
+</div>
+</div>
+
+<div id="view-dashboard" style="display:none">
+<div class="dash-layout">
+  <aside class="sidebar">
+    <div class="sidebar-brand">📦 PARCEL</div>
+    <nav class="sidebar-nav">
+      <a class="nav-item active">Dashboard</a>
+      <div class="nav-section">Actions</div>
+      <a class="nav-item">Check In</a>
+      <a class="nav-item">Claim</a>
+      <a class="nav-item">Tracking</a>
+      <a class="nav-item">All Parcels</a>
+      <div class="nav-section">Manage</div>
+      <a class="nav-item">Lockers</a>
+      <a class="nav-item">Units</a>
+      <div class="nav-section">Settings</div>
+      <a class="nav-item">Notifications</a>
+    </nav>
+  </aside>
+  <main class="dash-main">
+    <h2>Dashboard</h2>
+    <p class="welcome">Parcel room status — right now.</p>
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-label">📬 Awaiting Pickup</div>
+        <div class="stat-value">14</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">✅ Picked Up Today</div>
+        <div class="stat-value">8</div>
+      </div>
+    </div>
+    <div class="table-section">
+      <div class="table-header">Recent Activity</div>
+      <table>
+        <thead><tr><th>Tracking</th><th>Unit</th><th>Locker</th><th>Status</th><th>Time</th></tr></thead>
+        <tbody>
+          <tr><td>TRK-0892</td><td>5B</td><td>A3</td><td><span class="status-badge status-awaiting">Awaiting</span></td><td>10:30</td></tr>
+          <tr><td>TRK-0891</td><td>12A</td><td>B1</td><td><span class="status-badge status-awaiting">Awaiting</span></td><td>09:15</td></tr>
+          <tr><td>TRK-0889</td><td>3C</td><td>A7</td><td><span class="status-badge status-claimed">Claimed</span></td><td>Yesterday</td></tr>
+          <tr><td>TRK-0887</td><td>8F</td><td>C2</td><td><span class="status-badge status-claimed">Claimed</span></td><td>Yesterday</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+</div>
+<script>
+function switchView(v){
+  document.getElementById('view-login').style.display=v==='login'?'':'none';
+  document.getElementById('view-dashboard').style.display=v==='dashboard'?'':'none';
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',(i===0&&v==='login')||(i===1&&v==='dashboard')));
+}
+</script>
+</body>
+</html>

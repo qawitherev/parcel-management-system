@@ -18,7 +18,7 @@ namespace ParcelManagement.Test.Integration
     {
         private readonly CustomWebApplicationFactory _factory;
 
-        public ParcelControllerTest(CustomWebApplicationFactory factory): base(factory, factory.Services.GetRequiredService<ITokenService>())
+        public ParcelControllerTest(CustomWebApplicationFactory factory) : base(factory, factory.Services.GetRequiredService<ITokenService>())
         {
             _factory = factory;
         }

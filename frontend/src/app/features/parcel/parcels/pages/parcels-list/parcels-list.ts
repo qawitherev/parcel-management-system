@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import {
   BehaviorSubject,
   combineLatest,
@@ -23,7 +23,7 @@ import { MySearchbar } from "../../../../../common/components/searchbar/my-searc
   templateUrl: './parcels-list.html',
   styleUrl: './parcels-list.css',
 })
-export class ParcelsList implements OnInit {
+export class ParcelsList {
   paginationCurrentPage: number = 1;
   paginationPageSize: number = 10;
 
@@ -60,10 +60,6 @@ export class ParcelsList implements OnInit {
   selectedStatus: string = 'All';
 
   constructor(private parcelService: ParcelsService) { }
-
-  ngOnInit(): void {
-    // do nothing
-  }
 
   onPaginationChanged(data: PaginationEmitData) {
     this.paginationCurrentPage = data.currentPage;

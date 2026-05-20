@@ -36,7 +36,8 @@ namespace ParcelManagement.Core.BackgroundServices
                     var delayAmount = nextRun.Value - utcNow;
                     await Task.Delay(delayAmount, ct);
                     await backgroundTaskQueue.QueueBackgroundTaskAsync(ProcessParcelOverstay);
-                } catch (OperationCanceledException) when (ct.IsCancellationRequested)
+                }
+                catch (OperationCanceledException) when (ct.IsCancellationRequested)
                 {
                     break;
                 }
@@ -51,7 +52,8 @@ namespace ParcelManagement.Core.BackgroundServices
                 {
                     var workItem = await backgroundTaskQueue.DequeueAsync(ct);
                     await workItem(ct);
-                } catch (OperationCanceledException) when (ct.IsCancellationRequested)
+                }
+                catch (OperationCanceledException) when (ct.IsCancellationRequested)
                 {
                     break;
                 }
@@ -67,13 +69,14 @@ namespace ParcelManagement.Core.BackgroundServices
                     var parcelService = scope.ServiceProvider.GetRequiredService<IParcelService>();
                     await parcelService.UpdateOverstayedParcel();
                 }
-            } catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+            }
+            catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
             {
                 return;
             }
         }
 
-        public ValueTask EnqueueProcessParcelOverstay() 
+        public ValueTask EnqueueProcessParcelOverstay()
             => backgroundTaskQueue.QueueBackgroundTaskAsync(ProcessParcelOverstay);
     }
 }

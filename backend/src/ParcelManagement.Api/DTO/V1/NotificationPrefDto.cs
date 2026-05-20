@@ -32,5 +32,5 @@ namespace ParcelManagement.Api.DTO.V1
         public bool IsOverdueActive { get; set; } = true;
         public TimeOnly? QuietHoursFrom { get; set; }
         public TimeOnly? QuietHoursTo { get; set; }
-    } 
+    }
 }

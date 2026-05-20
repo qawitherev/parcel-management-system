@@ -55,7 +55,7 @@ builder.Services.AddApiVersioning(option =>
 
 // CORS 
 builder.Services.AddCors(options =>
-{   
+{
     options.AddPolicy("Allow-Angular-FrontEnd", policy =>
     {   // we'll change the origin later 
         policy.WithOrigins("http://localhost:4200")
@@ -88,12 +88,16 @@ builder.Services.Configure<RedisSettings>(
     builder.Configuration.GetSection("RedisSettings")
 );
 
-builder.Services.Configure<RateLimitSettings>(
-    builder.Configuration.GetSection("RateLimitSettings")
-);
+// Rate limiting — disabled in Testing (integration tests test business logic, not infra)
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.Configure<RateLimitSettings>(
+        builder.Configuration.GetSection("RateLimitSettings")
+    );
 
-builder.Services.ConfigureOptions<RateLimiterConfiguration>();
-builder.Services.AddRateLimiter();
+    builder.Services.ConfigureOptions<RateLimiterConfiguration>();
+    builder.Services.AddRateLimiter();
+}
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(option =>
 {
@@ -136,7 +140,8 @@ if (builder.Environment.EnvironmentName != "Testing")
                 $"Some environment secrets are missing. {string.Join(", ", issues)}",
                 data: healthData
             );
-        } else
+        }
+        else
         {
             Console.WriteLine("Environment secrets check passed");
             return HealthCheckResult.Healthy(
@@ -163,8 +168,11 @@ app.UseRouting();
 // apply CORS
 app.UseCors("Allow-Angular-FrontEnd");
 
-// use registered rate limit 
-app.UseRateLimiter();
+// Rate limiting — disabled in Testing
+if (!app.Environment.IsEnvironment("Testing"))
+{
+    app.UseRateLimiter();
+}
 
 // authentication to populate HttpContext.User
 app.UseAuthentication();

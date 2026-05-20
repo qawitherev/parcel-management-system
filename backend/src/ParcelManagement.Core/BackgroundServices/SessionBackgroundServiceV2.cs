@@ -7,7 +7,7 @@ namespace ParcelManagement.Core.BackgroundServices
 {
     public interface ISessionEnqueuer
     {
-        ValueTask EnqueueCleanupSession(); 
+        ValueTask EnqueueCleanupSession();
     }
 
     public class SessionBackgroundService(IBackgroundTaskQueue backgroundTaskQueue, IServiceScopeFactory serviceScopeFactory) : BackgroundService, ISessionEnqueuer
@@ -26,7 +26,8 @@ namespace ParcelManagement.Core.BackgroundServices
                     var s = PickupJobQueue(stoppingToken);
                     await Task.WhenAll(c, s);
 
-                } catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+                }
+                catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
                 {
                     break;
                 }
@@ -48,7 +49,8 @@ namespace ParcelManagement.Core.BackgroundServices
                         await backgroundTaskQueue.QueueBackgroundTaskAsync(CleanupExpiredSession);
                     }
 
-                } catch (OperationCanceledException) when (ct.IsCancellationRequested)
+                }
+                catch (OperationCanceledException) when (ct.IsCancellationRequested)
                 {
                     break;
                 }
@@ -63,8 +65,9 @@ namespace ParcelManagement.Core.BackgroundServices
                 {
                     var workItem = await backgroundTaskQueue.DequeueAsync(ct);
                     await workItem(ct);
-                    
-                } catch (OperationCanceledException) when (ct.IsCancellationRequested)
+
+                }
+                catch (OperationCanceledException) when (ct.IsCancellationRequested)
                 {
                     break;
                 }
@@ -80,7 +83,8 @@ namespace ParcelManagement.Core.BackgroundServices
                     var sessionService = scope.ServiceProvider.GetRequiredService<ISessionService>();
                     await sessionService.RemoveExpiredSessions();
                 }
-            } catch (OperationCanceledException) when (ct.IsCancellationRequested)
+            }
+            catch (OperationCanceledException) when (ct.IsCancellationRequested)
             {
                 return;
             }

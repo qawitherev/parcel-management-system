@@ -51,7 +51,7 @@ namespace ParcelManagement.Core.Specifications
     public class UserResidentUnitUnitViewSpecification : ISpecification<UserResidentUnit>
     {
         private readonly FilterPaginationRequest<UserResidentUnitSortableColumn> _filterPaginationRequest;
-        private readonly Guid? _residentUnitId; 
+        private readonly Guid? _residentUnitId;
         public UserResidentUnitUnitViewSpecification(
             FilterPaginationRequest<UserResidentUnitSortableColumn> filterPaginationRequest,
             Guid? residentUnitId = null

@@ -48,7 +48,7 @@ namespace ParcelManagement.Api.DTO.V1
         public required List<Resident> Residents { get; set; }
 
     }
-    
+
     public class Resident
     {
         public required Guid UserId { get; set; }

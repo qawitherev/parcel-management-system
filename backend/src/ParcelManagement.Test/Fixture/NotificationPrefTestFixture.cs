@@ -3,12 +3,12 @@ using ParcelManagement.Infrastructure.Database;
 using ParcelManagement.Infrastructure.Repository;
 using Xunit;
 
-namespace ParcelManagement.Test.Fixture 
+namespace ParcelManagement.Test.Fixture
 {
     public class NotificationPrefFixture : IAsyncLifetime
     {
         public ApplicationDbContext DbContext { get; private set; } = null!;
-        public NotificationPrefRepository NpRepo { get; private set; } = null!; 
+        public NotificationPrefRepository NpRepo { get; private set; } = null!;
         public NotificationPrefService NpService { get; private set; } = null!;
 
 

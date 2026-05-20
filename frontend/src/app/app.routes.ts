@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { EmptyLayout } from './common/layout/empty-layout/empty-layout';
 import { NormalLayout } from './common/layout/normal-layout/normal-layout';
-import { isAdminAndManagerAuthed, isLoggedInGuard, isManagerAuthed } from './core/guards/auth-guard-guard';
+import { isAdminAndManagerAuthed, isLoggedInGuard } from './core/guards/auth-guard-guard';
 
 export const routes: Routes = [
 

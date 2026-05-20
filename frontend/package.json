@@ -7,7 +7,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "test:ci": "npx ng test --browsers=ChromeHeadlessCI --watch=false"
+    "test:ci": "npx ng test --browsers=ChromeHeadlessCI --watch=false",
+    "lint": "ng lint"
   },
   "prettier": {
     "printWidth": 100,
@@ -40,10 +41,18 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@angular-eslint/builder": "^20.2.0",
+    "@angular-eslint/eslint-plugin": "^20.2.0",
+    "@angular-eslint/eslint-plugin-template": "^20.2.0",
+    "@angular-eslint/schematics": "^20.2.0",
+    "@angular-eslint/template-parser": "^20.2.0",
     "@angular/build": "^20.2.1",
     "@angular/cli": "^20.2.1",
     "@angular/compiler-cli": "^20.2.0",
     "@types/jasmine": "~5.1.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "^8.57.0",
     "jasmine-core": "~5.9.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",

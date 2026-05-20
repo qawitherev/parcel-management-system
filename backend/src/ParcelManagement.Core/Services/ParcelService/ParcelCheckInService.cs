@@ -5,7 +5,7 @@ using ParcelManagement.Core.Specifications;
 
 namespace ParcelManagement.Core.Services
 {
-    public partial class ParcelService: IParcelService
+    public partial class ParcelService : IParcelService
     {
         public async Task<Parcel> CheckInParcelAsync(string trackingNumber, string residentUnit,
             decimal? weight,
@@ -29,10 +29,10 @@ namespace ParcelManagement.Core.Services
             return newParcel;
         }
 
-          public async Task<BulkCheckInResponse> BulkCheckInAsync(
-            IEnumerable<(string trackingNumber, string residentUnit, string? lockerName, decimal? weight, string? dimensions)> inParcels,
-            Guid performedByUser
-        )
+        public async Task<BulkCheckInResponse> BulkCheckInAsync(
+          IEnumerable<(string trackingNumber, string residentUnit, string? lockerName, decimal? weight, string? dimensions)> inParcels,
+          Guid performedByUser
+      )
         {
             var response = new BulkCheckInResponse()
             {
@@ -53,7 +53,7 @@ namespace ParcelManagement.Core.Services
 
             // a check to determine if we're passing locker or not 
             // all or nothing check 
-            if (!((inParcels.Count() == inParcels.Count(ip => ip.lockerName == null)) || 
+            if (!((inParcels.Count() == inParcels.Count(ip => ip.lockerName == null)) ||
                 (inParcels.Count() == inParcels.Count(ip => ip.lockerName != null)))
                 )
             {
@@ -101,7 +101,7 @@ namespace ParcelManagement.Core.Services
                             Message = $"Locker {locker} not found"
                         });
                         isError = true;
-                        isRowError = true;    
+                        isRowError = true;
                     }
                     if (existingParcelsDict.TryGetValue(trackingNumber, out var parcel))
                     {
@@ -147,5 +147,5 @@ namespace ParcelManagement.Core.Services
         }
     }
 
-          
+
 }

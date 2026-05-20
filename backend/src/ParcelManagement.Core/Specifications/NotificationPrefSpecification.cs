@@ -12,7 +12,7 @@ namespace ParcelManagement.Core.Specifications
             _userId = userId;
         }
 
-        List<IncludeExpression<NotificationPref>> ISpecification<NotificationPref>.IncludeExpressions => [];        
+        List<IncludeExpression<NotificationPref>> ISpecification<NotificationPref>.IncludeExpressions => [];
 
         public List<IncludeExpressionString> IncludeExpressionsString => [];
 

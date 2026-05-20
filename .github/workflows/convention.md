@@ -1,6 +1,9 @@
-the workflow file naming convention is 
-<ci/cd>-<action>-<branch>-<backend/frontend>.yml
+# Workflow naming convention
 
-for example: 
-ci-pr-develop-backend.yml --> a ci workflow file for backend when pr into develop
-ci-pr-staging-frontend.yml --> a ci workflow file for frontend when pr into staging 
+`ci.yml` — Continuous Integration. Runs on PRs to develop. Build + test only, no deploy.
+
+`cd.yml` — Shared CD logic (reusable workflow). Not triggered directly. Called by `cd-staging.yml` and `cd-production.yml`.
+
+`cd-staging.yml` — Continuous Deployment to staging. Triggered by push to staging. Thin caller → delegates to `cd.yml`.
+
+`cd-production.yml` — Continuous Deployment to production. Manual trigger only (`workflow_dispatch`). Thin caller → delegates to `cd.yml`.

@@ -52,5 +52,5 @@ namespace ParcelManagement.Infrastructure.UnitOfWork
             }
         }
     }
-    
+
 }

@@ -32,6 +32,15 @@ data "aws_route53_zone" "root" {
   name = "qawitherev.com"
 }
 
+module "oidc" {
+  source               = "../../modules/oidc"
+  github_repo          = "qawitherev/parcel-management-system"
+  environment          = var.environment
+  allowed_branch       = "staging"
+  create_oidc_provider = false
+  tags                 = var.tags
+}
+
 module "networking" {
   source               = "../../modules/networking"
   environment          = var.environment

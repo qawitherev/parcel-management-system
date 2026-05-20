@@ -179,6 +179,7 @@ jobs:
           fi
 
       - name: Sync to S3
+        working-directory: frontend
         run: |
           aws s3 sync dist/frontend/browser/ s3://parcel-management-${{ inputs.environment }}-frontend/ --delete
 

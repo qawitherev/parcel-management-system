@@ -38,9 +38,12 @@ data "aws_iam_policy_document" "assume_role" {
     }
 
     condition {
-      test     = "StringEquals"
+      test     = "StringLike"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = ["repo:${var.github_repo}:ref:refs/heads/${var.allowed_branch}"]
+      values = [
+        "repo:${var.github_repo}:ref:refs/heads/${var.allowed_branch}",
+        "repo:${var.github_repo}:ref:refs/heads/${var.allowed_branch}:*",
+      ]
     }
 
     condition {

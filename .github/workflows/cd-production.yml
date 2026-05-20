@@ -1,0 +1,10 @@
+name: CD — Production
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    uses: ./.github/workflows/cd.yml
+    with:
+      environment: production

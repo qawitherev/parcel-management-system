@@ -64,5 +64,8 @@ crash.log
 terraform.tfvars
 *.auto.tfvars
 
-# certs and stuff 
+# certs and stuff
 *.pem
+
+# IDE cache
+*.lscache

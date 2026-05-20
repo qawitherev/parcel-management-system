@@ -25,12 +25,6 @@ variable "task_memory" {
   default = "512"
 }
 
-variable "task_enable_fault_injection" {
-  description = "flag to enable fault injection"
-  type = bool
-  default = false
-}
-
 variable "task_execution_role_arn" {
   description = "arn for execution role"
   type = string
@@ -48,6 +42,7 @@ variable "ecs_service_name" {
 
 variable "ecs_service_desired_count" {
   description = "desired running service instance count"
+  type        = number
 }
 
 variable "ecs_service_subnets" {
@@ -60,7 +55,24 @@ variable "ecs_service_security_groups" {
   type = set(string)
 }
 
+variable "ecr_repository_url" {
+  description = "ECR repository URL for the backend image"
+  type        = string
+}
+
 variable "github_sha" {
   description = "sha value from git commit. Enforce uniqueness"
   type = string
+}
+
+variable "assign_public_ip" {
+  description = "Assign public IP to ECS tasks"
+  type        = bool
+  default     = false
+}
+
+variable "alb_target_group_arn" {
+  description = "ALB target group ARN for service registration"
+  type        = string
+  default     = null
 }

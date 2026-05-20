@@ -1,0 +1,12 @@
+name: CD — Staging
+
+on:
+  push:
+    branches: [staging]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    uses: ./.github/workflows/cd.yml
+    with:
+      environment: staging

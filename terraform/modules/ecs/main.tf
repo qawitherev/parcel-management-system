@@ -39,6 +39,7 @@ resource "aws_ecs_task_definition" "this" {
         "Notification__Email__SmtpPort",
         "Notification__Email__FromAddress",
         "DbCACert",
+        "AllowedOrigins",
       ] : {
         name      = name
         valueFrom = "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:parameter/${var.ssm_prefix}/${name}"

@@ -53,12 +53,14 @@ builder.Services.AddApiVersioning(option =>
     option.ReportApiVersions = true;
 });
 
-// CORS 
+var allowedOrigins = (builder.Configuration["AllowedOrigins"] ?? "http://localhost:4200")
+    .Split(';', StringSplitOptions.RemoveEmptyEntries);
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Allow-Angular-FrontEnd", policy =>
-    {   // we'll change the origin later 
-        policy.WithOrigins("http://localhost:4200")
+    {
+        policy.WithOrigins(allowedOrigins)
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();

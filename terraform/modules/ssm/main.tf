@@ -195,3 +195,16 @@ resource "aws_ssm_parameter" "admin_email" {
 
   tags = var.tags
 }
+
+resource "aws_ssm_parameter" "allowed_origins" {
+  name        = "${local.prefix}/AllowedOrigins"
+  description = "Semicolon-separated list of allowed CORS origins"
+  type        = "String"
+  value       = "PLACEHOLDER"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+
+  tags = var.tags
+}

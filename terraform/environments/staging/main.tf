@@ -131,3 +131,15 @@ module "ecs" {
   aws_region                  = var.region
   aws_account_id              = data.aws_caller_identity.current.account_id
 }
+
+module "monitoring" {
+  source                    = "../../modules/monitoring"
+  environment               = var.environment
+  region                    = var.region
+  alb_arn_suffix            = element(split(":loadbalancer/", module.alb.arn), 1)
+  target_group_arn_suffix   = element(split(":targetgroup/", module.alb.target_group_arn), 1)
+  ecs_cluster_name          = module.ecs.cluster_name
+  ecs_service_name          = module.ecs.service_name
+  cloudfront_distribution_id = module.cdn.distribution_id
+  tags                      = var.tags
+}

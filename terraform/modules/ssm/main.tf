@@ -170,6 +170,19 @@ resource "aws_ssm_parameter" "email_from_address" {
   tags = var.tags
 }
 
+resource "aws_ssm_parameter" "db_ca_cert" {
+  name        = "${local.prefix}/DbCACert"
+  description = "Aiven MySQL CA certificate (ca.pem) for TLS verification"
+  type        = "SecureString"
+  value       = "PLACEHOLDER"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+
+  tags = var.tags
+}
+
 resource "aws_ssm_parameter" "admin_email" {
   name        = "${local.prefix}/Admin__Email"
   description = "Admin account email"

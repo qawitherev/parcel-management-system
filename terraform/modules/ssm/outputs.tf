@@ -14,5 +14,6 @@ output "parameter_arns" {
     email_smtp_port   = aws_ssm_parameter.email_smtp_port.arn
     email_from_address = aws_ssm_parameter.email_from_address.arn
     admin_email       = aws_ssm_parameter.admin_email.arn
+    db_ca_cert        = aws_ssm_parameter.db_ca_cert.arn
   }
 }

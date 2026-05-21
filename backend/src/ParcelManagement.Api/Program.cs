@@ -71,6 +71,13 @@ if (!builder.Environment.IsEnvironment("Testing")) // --> if we're not doing int
 {
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
         throw new InvalidOperationException("ConnectionString not found");
+
+    var dbCaCert = Environment.GetEnvironmentVariable("DbCACert");
+    if (!string.IsNullOrEmpty(dbCaCert))
+    {
+        File.WriteAllText(Path.Combine(Path.GetTempPath(), "ca.pem"), dbCaCert);
+    }
+
     var serverVersion = ServerVersion.AutoDetect(connectionString);
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseMySql(connectionString, serverVersion));

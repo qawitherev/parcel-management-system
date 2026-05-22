@@ -68,3 +68,9 @@ variable "availability_zones" {
   description = "Availability zones"
   type        = list(string)
 }
+
+variable "enable_compute" {
+  description = "When false, destroy ALB, NAT Gateway, ECS service, and DNS API record to save cost (~$52/mo)"
+  type        = bool
+  default     = true
+}

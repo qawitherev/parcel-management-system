@@ -36,6 +36,12 @@ variable "certificate_arn" {
   default     = null
 }
 
+variable "enable_compute" {
+  description = "When false, destroy ALB and related resources to save cost on idle environments"
+  type        = bool
+  default     = true
+}
+
 variable "tags" {
   description = "Tags applied to all resources"
   type        = map(string)

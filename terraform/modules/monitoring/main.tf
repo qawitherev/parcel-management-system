@@ -3,6 +3,7 @@ locals {
 }
 
 resource "aws_cloudwatch_dashboard" "this" {
+  count          = var.enable_compute ? 1 : 0
   dashboard_name = local.dashboard_name
   dashboard_body = jsonencode({
 

@@ -359,3 +359,60 @@ terraform fmt -recursive
 # Validate configuration
 terraform validate
 ```
+
+---
+
+## Cost Saving — `enable_compute` Toggle
+
+The `enable_compute` variable controls whether expensive compute/networking resources are provisioned.
+Set it to `false` when the environment is idle to save ~$52/month.
+
+### What it toggles
+
+```
+enable_compute = true              enable_compute = false
+─────────────────────              ─────────────────────
+ALB                    ✓           ALB                    ✗  (~$20/mo saved)
+NAT Gateway            ✓           NAT Gateway            ✗  (~$32/mo saved)
+EIP (for NAT)          ✓           EIP (for NAT)          ✗
+ECS Service            ✓           ECS Service            ✗  (Fargate cost saved)
+Route53 API record     ✓           Route53 API record     ✗
+CloudWatch dashboard   ✓           CloudWatch dashboard   ✗
+─────────────────────────────────────────────────────────
+VPC                    ✓           VPC                    ✓  (free)
+Subnets                ✓           Subnets                ✓  (free)
+Internet Gateway       ✓           Internet Gateway       ✓  (free)
+ECR repository         ✓           ECR repository         ✓  (free)
+S3 bucket              ✓           S3 bucket              ✓  (free)
+CloudFront             ✓           CloudFront             ✓  (free)
+Route53 zone           ✓           Route53 zone           ✓  ($0.50/mo)
+ACM certificates       ✓           ACM certificates       ✓  (free)
+IAM roles/users        ✓           IAM roles/users        ✓  (free)
+SSM parameters         ✓           SSM parameters         ✓  (free)
+ECS cluster            ✓           ECS cluster            ✓  (free)
+ECS task definition    ✓           ECS task definition    ✓  (free)
+Security groups        ✓           Security groups        ✓  (free)
+Route53 app record     ✓           Route53 app record     ✓  (free)
+```
+
+### Usage
+
+```bash
+cd terraform/environments/staging   # or production
+
+# Spin down (destroy ALB, NAT, ECS service, API DNS — saves ~$52/mo)
+terraform apply -var="enable_compute=false" -var="github_sha=dummy"
+
+# Spin up (rebuild everything — ~2 minutes)
+terraform apply -var="enable_compute=true" -var="github_sha=dummy"
+```
+
+No file edits needed. No commits. Run directly from your laptop with AWS credentials.
+
+### When to use
+
+| Situation | Action |
+|---|---|
+| Done working for the day/week | `enable_compute=false` → saves money |
+| Ready to develop/deploy again | `enable_compute=true` → full stack back |
+| CI/CD deploys | Pipeline uses `terraform.tfvars` default (`true`) |

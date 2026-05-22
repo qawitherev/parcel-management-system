@@ -1,4 +1,5 @@
 resource "aws_lb" "this" {
+  count              = var.enable_compute ? 1 : 0
   name               = "parcel-management-${var.environment}"
   internal           = false
   load_balancer_type = "application"
@@ -11,6 +12,7 @@ resource "aws_lb" "this" {
 }
 
 resource "aws_lb_target_group" "backend" {
+  count       = var.enable_compute ? 1 : 0
   name        = "pm-${var.environment}-backend"
   port        = var.backend_port
   protocol    = "HTTP"
@@ -33,18 +35,20 @@ resource "aws_lb_target_group" "backend" {
 }
 
 resource "aws_lb_listener" "http" {
-  load_balancer_arn = aws_lb.this.arn
+  count             = var.enable_compute ? 1 : 0
+  load_balancer_arn = aws_lb.this[0].arn
   port              = "80"
   protocol          = "HTTP"
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.backend.arn
+    target_group_arn = aws_lb_target_group.backend[0].arn
   }
 }
 
 resource "aws_lb_listener" "https" {
-  load_balancer_arn = aws_lb.this.arn
+  count             = var.enable_compute ? 1 : 0
+  load_balancer_arn = aws_lb.this[0].arn
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
@@ -52,6 +56,6 @@ resource "aws_lb_listener" "https" {
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.backend.arn
+    target_group_arn = aws_lb_target_group.backend[0].arn
   }
 }

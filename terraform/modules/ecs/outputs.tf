@@ -10,12 +10,12 @@ output "cluster_arn" {
 
 output "service_name" {
   description = "ECS service name"
-  value       = aws_ecs_service.this.name
+  value       = var.enable_compute ? aws_ecs_service.this[0].name : null
 }
 
 output "service_arn" {
   description = "ECS service ARN"
-  value       = aws_ecs_service.this.id
+  value       = var.enable_compute ? aws_ecs_service.this[0].id : null
 }
 
 output "task_definition_arn" {

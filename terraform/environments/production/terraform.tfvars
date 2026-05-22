@@ -6,7 +6,7 @@ ecs_service_name       = "parcel-management-production"
 
 task_cpu    = "512"
 task_memory = "1024"
-ecs_service_desired_count = 2
+ecs_service_desired_count = 1
 
 vpc_cidr             = "10.0.0.0/16"
 public_subnet_cidrs  = ["10.0.1.0/24", "10.0.2.0/24"]

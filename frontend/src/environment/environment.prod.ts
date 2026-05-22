@@ -1,4 +1,4 @@
 export const environment = {
-    apiBaseUrl: "/api", 
+    apiBaseUrl: "https://api.parcel-management.qawitherev.com/api", 
     enabledLogging: false
 }

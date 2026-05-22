@@ -1,4 +1,4 @@
-name: CD — Reusable
+name: CD Backend — Reusable
 
 on:
   workflow_call:
@@ -132,69 +132,12 @@ jobs:
         run: terraform apply -auto-approve tfplan
 
   # ============================================================
-  # Frontend — build, upload to S3, invalidate CloudFront
-  # ============================================================
-  deploy-frontend:
-    name: Deploy Frontend
-    runs-on: ubuntu-latest
-    needs: terraform
-    environment: ${{ inputs.environment }}
-    permissions:
-      id-token: write
-      contents: read
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20.x
-          cache: npm
-          cache-dependency-path: frontend/package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-        working-directory: frontend
-
-      - name: Build
-        run: npm run build -- --configuration=${{ inputs.environment }}
-        working-directory: frontend
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-region: ap-southeast-1
-          role-to-assume: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/github-actions-${{ inputs.environment }}
-
-      - name: Compute domain
-        id: domain
-        run: |
-          if [ "${{ inputs.environment }}" = "production" ]; then
-            echo "app_domain=parcel-management.qawitherev.com" >> $GITHUB_OUTPUT
-            echo "api_domain=api.parcel-management.qawitherev.com" >> $GITHUB_OUTPUT
-          else
-            echo "app_domain=${{ inputs.environment }}.parcel-management.qawitherev.com" >> $GITHUB_OUTPUT
-            echo "api_domain=api.${{ inputs.environment }}.parcel-management.qawitherev.com" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Sync to S3
-        working-directory: frontend
-        run: |
-          aws s3 sync dist/frontend/browser/ s3://parcel-management-${{ inputs.environment }}-frontend/ --delete
-
-      - name: Invalidate CloudFront
-        run: |
-          DISTRIBUTION_ID=$(aws cloudfront list-distributions --query "DistributionList.Items[?contains(Aliases.Items, '${{ steps.domain.outputs.app_domain }}')].Id" --output text)
-          aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
-
-  # ============================================================
   # Smoke test — verify the API is healthy after deploy
   # ============================================================
   smoke-test:
     name: Smoke Test
     runs-on: ubuntu-latest
-    needs: deploy-frontend
+    needs: terraform
     environment: ${{ inputs.environment }}
     steps:
       - name: Compute API domain

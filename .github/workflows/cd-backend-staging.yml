@@ -1,0 +1,19 @@
+name: CD Backend — Staging
+
+on:
+  push:
+    branches: [staging]
+    paths:
+      - 'backend/**'
+      - 'terraform/**'
+      - '.github/workflows/cd-backend*'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    uses: ./.github/workflows/cd-backend.yml
+    with:
+      environment: staging
+    permissions:
+      id-token: write
+      contents: read

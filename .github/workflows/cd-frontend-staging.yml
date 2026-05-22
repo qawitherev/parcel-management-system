@@ -1,13 +1,16 @@
-name: CD — Staging
+name: CD Frontend — Staging
 
 on:
   push:
     branches: [staging]
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/cd-frontend*'
   workflow_dispatch:
 
 jobs:
   deploy:
-    uses: ./.github/workflows/cd.yml
+    uses: ./.github/workflows/cd-frontend.yml
     with:
       environment: staging
     permissions:

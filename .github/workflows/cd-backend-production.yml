@@ -1,0 +1,13 @@
+name: CD Backend — Production
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    uses: ./.github/workflows/cd-backend.yml
+    with:
+      environment: production
+    permissions:
+      id-token: write
+      contents: read

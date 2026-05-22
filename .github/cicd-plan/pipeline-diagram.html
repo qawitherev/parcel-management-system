@@ -4,74 +4,75 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Parcel Management — CI/CD Pipeline</title>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: 'JetBrains Mono', monospace;
-      background: #020617;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f8f9fb;
       min-height: 100vh;
-      padding: 2rem;
-      color: white;
+      padding: 2.5rem;
+      color: #1a1a2e;
     }
     .container { max-width: 1300px; margin: 0 auto; }
-    .header { margin-bottom: 2rem; }
-    .header-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem; }
-    .pulse-dot { width: 12px; height: 12px; background: #22d3ee; border-radius: 50%; animation: pulse 2s infinite; }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-    h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.025em; }
-    .subtitle { color: #94a3b8; font-size: 0.875rem; margin-left: 1.75rem; }
+    .header { margin-bottom: 2.5rem; }
+    .header-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.4rem; }
+    .status-dot {
+      width: 10px; height: 10px;
+      background: #22c55e;
+      border-radius: 50%;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15);
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15); } 50% { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0.05); } }
+    h1 { font-size: 1.4rem; font-weight: 600; color: #1a1a2e; letter-spacing: -0.02em; }
+    .subtitle { color: #6b7280; font-size: 0.85rem; margin-left: 1.45rem; }
     .diagram-container {
-      background: rgba(15, 23, 42, 0.5);
-      border-radius: 1rem;
-      border: 1px solid #1e293b;
+      background: #ffffff;
+      border-radius: 16px;
+      border: 1px solid #e5e7eb;
       padding: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
       overflow-x: auto;
     }
     svg { width: 100%; min-width: 1100px; display: block; }
 
-    /* Animated flow lines */
     .flow-line {
-      stroke-dasharray: 8 4;
-      animation: flowDash 0.8s linear infinite;
+      stroke-dasharray: 6 3;
+      animation: flowDash 0.9s linear infinite;
     }
     .flow-line-slow {
-      stroke-dasharray: 8 4;
-      animation: flowDash 1.4s linear infinite;
+      stroke-dasharray: 6 3;
+      animation: flowDash 1.5s linear infinite;
     }
-    @keyframes flowDash {
-      to { stroke-dashoffset: -24; }
-    }
+    @keyframes flowDash { to { stroke-dashoffset: -18; } }
 
-    /* Pulsing glow on active edges */
-    .edge-glow {
-      animation: edgePulse 2s ease-in-out infinite;
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-top: 2rem; }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      padding: 1.25rem;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
     }
-    @keyframes edgePulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
-
-    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-top: 2rem; }
-    .card { background: rgba(15, 23, 42, 0.5); border-radius: 0.75rem; border: 1px solid #1e293b; padding: 1.25rem; }
     .card-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; }
     .card-dot { width: 8px; height: 8px; border-radius: 50%; }
-    .card-dot.cyan { background: #22d3ee; }
-    .card-dot.emerald { background: #34d399; }
-    .card-dot.violet { background: #a78bfa; }
-    .card-dot.amber { background: #fbbf24; }
-    .card-dot.rose { background: #fb7185; }
-    .card h3 { font-size: 0.875rem; font-weight: 600; }
-    .card ul { list-style: none; color: #94a3b8; font-size: 0.75rem; }
-    .card li { margin-bottom: 0.375rem; }
-    .footer { text-align: center; margin-top: 1.5rem; color: #475569; font-size: 0.75rem; }
+    .card-dot.emerald { background: #10b981; }
+    .card-dot.sky { background: #0ea5e9; }
+    .card-dot.violet { background: #7c3aed; }
+    .card-dot.rose { background: #e11d48; }
+    .card-dot.amber { background: #d97706; }
+    .card h3 { font-size: 0.85rem; font-weight: 600; color: #1a1a2e; }
+    .card ul { list-style: none; color: #6b7280; font-size: 0.78rem; }
+    .card li { margin-bottom: 0.3rem; }
+    .footer { text-align: center; margin-top: 1.5rem; color: #9ca3af; font-size: 0.75rem; }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
       <div class="header-row">
-        <div class="pulse-dot"></div>
+        <div class="status-dot"></div>
         <h1>Parcel Management — CI/CD Pipeline</h1>
       </div>
       <p class="subtitle">3 zones · 6 workflow files · split backend &amp; frontend CD · develop → staging → production</p>
@@ -80,299 +81,268 @@
     <div class="diagram-container">
       <svg viewBox="0 0 1200 780">
         <defs>
-          <!-- Arrowheads -->
           <marker id="arrow-cyan" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-            <polygon points="0 0, 10 3.5, 0 7" fill="#22d3ee" />
+            <polygon points="0 0, 10 3.5, 0 7" fill="#0ea5e9" />
           </marker>
           <marker id="arrow-emerald" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-            <polygon points="0 0, 10 3.5, 0 7" fill="#34d399" />
-          </marker>
-          <marker id="arrow-amber" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-            <polygon points="0 0, 10 3.5, 0 7" fill="#fbbf24" />
+            <polygon points="0 0, 10 3.5, 0 7" fill="#10b981" />
           </marker>
           <marker id="arrow-violet" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-            <polygon points="0 0, 10 3.5, 0 7" fill="#a78bfa" />
+            <polygon points="0 0, 10 3.5, 0 7" fill="#7c3aed" />
           </marker>
           <marker id="arrow-rose" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-            <polygon points="0 0, 10 3.5, 0 7" fill="#fb7185" />
+            <polygon points="0 0, 10 3.5, 0 7" fill="#e11d48" />
           </marker>
 
-          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
-          </pattern>
+          <filter id="softShadow" x="-10%" y="-10%" width="130%" height="130%">
+            <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#000" flood-opacity="0.06"/>
+          </filter>
         </defs>
 
-        <rect width="100%" height="100%" fill="url(#grid)" />
+        <!-- Subtle grid -->
+        <rect width="100%" height="100%" fill="#fafbfc" />
 
         <!-- ============================================================
-             ZONE 1 — CI: PR → develop
+             ZONE 1 — CI
              ============================================================ -->
-        <rect x="20" y="20" width="1160" height="170" rx="10" fill="rgba(6, 78, 59, 0.06)" stroke="#34d399" stroke-width="1" stroke-dasharray="6,3"/>
-        <text x="35" y="44" fill="#34d399" font-size="11" font-weight="600">ZONE 1 — CI: Pull Request · ci.yml</text>
-        <text x="35" y="58" fill="#64748b" font-size="8">Trigger: pull_request → develop · ubuntu-latest</text>
+        <rect x="20" y="20" width="1160" height="170" rx="12" fill="#f0fdf6" stroke="#a7f3d0" stroke-width="1"/>
+        <text x="38" y="44" fill="#065f46" font-size="11" font-weight="600">ZONE 1 — CI: Pull Request · ci.yml</text>
+        <text x="38" y="58" fill="#6b7280" font-size="8">Trigger: pull_request → develop · ubuntu-latest</text>
 
         <!-- Feature Branch -->
-        <rect x="40" y="75" width="80" height="46" rx="6" fill="rgba(30, 41, 59, 0.6)" stroke="#475569" stroke-width="1.5"/>
-        <text x="80" y="95" fill="white" font-size="11" font-weight="600" text-anchor="middle">Feature</text>
-        <text x="80" y="109" fill="#94a3b8" font-size="8" text-anchor="middle">Branch</text>
+        <rect x="40" y="75" width="80" height="46" rx="8" fill="#fff" stroke="#d1d5db" stroke-width="1" filter="url(#softShadow)"/>
+        <text x="80" y="95" fill="#374151" font-size="11" font-weight="600" text-anchor="middle">Feature</text>
+        <text x="80" y="109" fill="#9ca3af" font-size="8" text-anchor="middle">Branch</text>
 
-        <!-- PR arrow (animated) -->
-        <line x1="120" y1="98" x2="168" y2="98" stroke="#22d3ee" stroke-width="2" class="flow-line" marker-end="url(#arrow-cyan)"/>
-        <text x="144" y="91" fill="#22d3ee" font-size="7" text-anchor="middle">PR</text>
+        <line x1="120" y1="98" x2="168" y2="98" stroke="#0ea5e9" stroke-width="2" class="flow-line" marker-end="url(#arrow-cyan)"/>
+        <text x="144" y="91" fill="#0ea5e9" font-size="7" text-anchor="middle">PR</text>
 
-        <!-- .NET Build -->
-        <rect x="175" y="75" width="100" height="46" rx="6" fill="rgba(6, 78, 59, 0.35)" stroke="#34d399" stroke-width="1.5"/>
-        <text x="225" y="95" fill="white" font-size="11" font-weight="600" text-anchor="middle">Build</text>
-        <text x="225" y="109" fill="#94a3b8" font-size="8" text-anchor="middle">dotnet build</text>
+        <rect x="175" y="75" width="100" height="46" rx="8" fill="#ecfeff" stroke="#67e8f9" stroke-width="1" filter="url(#softShadow)"/>
+        <text x="225" y="95" fill="#155e75" font-size="11" font-weight="600" text-anchor="middle">Build</text>
+        <text x="225" y="109" fill="#6b7280" font-size="8" text-anchor="middle">dotnet build</text>
 
-        <!-- Arrow -->
-        <line x1="275" y1="98" x2="313" y2="98" stroke="#34d399" stroke-width="2" class="flow-line" marker-end="url(#arrow-emerald)"/>
+        <line x1="275" y1="98" x2="313" y2="98" stroke="#10b981" stroke-width="2" class="flow-line" marker-end="url(#arrow-emerald)"/>
 
-        <!-- Unit Tests -->
-        <rect x="320" y="75" width="100" height="46" rx="6" fill="rgba(6, 78, 59, 0.35)" stroke="#34d399" stroke-width="1.5"/>
-        <text x="370" y="95" fill="white" font-size="11" font-weight="600" text-anchor="middle">Unit Tests</text>
-        <text x="370" y="109" fill="#94a3b8" font-size="8" text-anchor="middle">85 tests</text>
+        <rect x="320" y="75" width="100" height="46" rx="8" fill="#f0fdf6" stroke="#a7f3d0" stroke-width="1" filter="url(#softShadow)"/>
+        <text x="370" y="95" fill="#065f46" font-size="11" font-weight="600" text-anchor="middle">Unit Tests</text>
+        <text x="370" y="109" fill="#6b7280" font-size="8" text-anchor="middle">85 tests</text>
 
-        <!-- Arrow -->
-        <line x1="420" y1="98" x2="458" y2="98" stroke="#34d399" stroke-width="2" class="flow-line" marker-end="url(#arrow-emerald)"/>
+        <line x1="420" y1="98" x2="458" y2="98" stroke="#10b981" stroke-width="2" class="flow-line" marker-end="url(#arrow-emerald)"/>
 
-        <!-- Integration Tests -->
-        <rect x="465" y="75" width="120" height="46" rx="6" fill="rgba(6, 78, 59, 0.35)" stroke="#34d399" stroke-width="1.5"/>
-        <text x="525" y="95" fill="white" font-size="11" font-weight="600" text-anchor="middle">Integration Test</text>
-        <text x="525" y="109" fill="#94a3b8" font-size="8" text-anchor="middle">Testcontainers</text>
+        <rect x="465" y="75" width="120" height="46" rx="8" fill="#f0fdf6" stroke="#a7f3d0" stroke-width="1" filter="url(#softShadow)"/>
+        <text x="525" y="95" fill="#065f46" font-size="11" font-weight="600" text-anchor="middle">Integration Test</text>
+        <text x="525" y="109" fill="#6b7280" font-size="8" text-anchor="middle">Testcontainers</text>
 
-        <!-- Arrow -->
-        <line x1="585" y1="98" x2="633" y2="98" stroke="#22d3ee" stroke-width="2" class="flow-line" marker-end="url(#arrow-cyan)"/>
+        <line x1="585" y1="98" x2="633" y2="98" stroke="#0ea5e9" stroke-width="2" class="flow-line" marker-end="url(#arrow-cyan)"/>
 
-        <!-- Merge to develop -->
-        <rect x="640" y="75" width="90" height="46" rx="6" fill="rgba(30, 41, 59, 0.6)" stroke="#475569" stroke-width="1.5"/>
-        <text x="685" y="95" fill="white" font-size="11" font-weight="600" text-anchor="middle">develop</text>
-        <text x="685" y="109" fill="#34d399" font-size="8" text-anchor="middle">merge</text>
+        <rect x="640" y="75" width="90" height="46" rx="8" fill="#fff" stroke="#d1d5db" stroke-width="1" filter="url(#softShadow)"/>
+        <text x="685" y="95" fill="#374151" font-size="11" font-weight="600" text-anchor="middle">develop</text>
+        <text x="685" y="109" fill="#10b981" font-size="8" text-anchor="middle">merge</text>
 
-        <!-- Info tags -->
-        <rect x="40" y="133" width="310" height="16" rx="3" fill="rgba(34, 211, 238, 0.08)"/>
-        <text x="48" y="145" fill="#22d3ee" font-size="8">Fast-fail: build fails in ~30s — saves ~3 min per push</text>
+        <rect x="40" y="133" width="310" height="16" rx="4" fill="#f0fdf6"/>
+        <text x="48" y="145" fill="#065f46" font-size="8">Fast-fail: build fails in ~30s — saves ~3 min per push</text>
 
-        <rect x="358" y="133" width="260" height="16" rx="3" fill="rgba(34, 211, 238, 0.08)"/>
-        <text x="366" y="145" fill="#22d3ee" font-size="8">Hermetic: fresh ubuntu-latest VM every run</text>
+        <rect x="358" y="133" width="260" height="16" rx="4" fill="#f0f9ff"/>
+        <text x="366" y="145" fill="#0369a1" font-size="8">Hermetic: fresh ubuntu-latest VM every run</text>
 
-        <rect x="626" y="133" width="360" height="16" rx="3" fill="rgba(34, 211, 238, 0.08)"/>
-        <text x="634" y="145" fill="#22d3ee" font-size="8">Branch protection enforces CI pass before merge</text>
+        <rect x="626" y="133" width="340" height="16" rx="4" fill="#f0fdf6"/>
+        <text x="634" y="145" fill="#065f46" font-size="8">Branch protection enforces CI pass before merge</text>
 
         <!-- ============================================================
-             ZONE 2 — CD Staging (SPLIT backend + frontend)
+             ZONE 2 — CD Staging
              ============================================================ -->
-        <rect x="20" y="200" width="1160" height="290" rx="10" fill="rgba(120, 53, 15, 0.05)" stroke="#fbbf24" stroke-width="1" stroke-dasharray="6,3"/>
-        <text x="35" y="224" fill="#fbbf24" font-size="11" font-weight="600">ZONE 2 — CD: Staging · cd-backend-staging.yml + cd-frontend-staging.yml</text>
-        <text x="35" y="238" fill="#64748b" font-size="8">Trigger: push → staging (path-filtered) · OIDC → AWS</text>
+        <rect x="20" y="200" width="1160" height="290" rx="12" fill="#fefcf5" stroke="#fde68a" stroke-width="1"/>
+        <text x="38" y="224" fill="#92400e" font-size="11" font-weight="600">ZONE 2 — CD: Staging · cd-backend-staging.yml + cd-frontend-staging.yml</text>
+        <text x="38" y="238" fill="#6b7280" font-size="8">Trigger: push → staging (path-filtered) · OIDC → AWS</text>
 
-        <!-- ── BACKEND PATH ── -->
-        <rect x="40" y="255" width="540" height="28" rx="4" fill="rgba(168, 122, 250, 0.08)"/>
-        <text x="310" y="274" fill="#a78bfa" font-size="9" font-weight="600" text-anchor="middle">cd-backend.yml  (triggers on backend/** and terraform/**)</text>
+        <!-- ── BACKEND ── -->
+        <rect x="40" y="255" width="540" height="28" rx="6" fill="#f5f3ff"/>
+        <text x="310" y="274" fill="#5b21b6" font-size="9" font-weight="600" text-anchor="middle">cd-backend.yml — triggers on backend/** and terraform/**</text>
 
-        <!-- Push to staging -->
-        <rect x="40" y="295" width="80" height="40" rx="6" fill="rgba(30, 41, 59, 0.6)" stroke="#475569" stroke-width="1.5"/>
-        <text x="80" y="312" fill="white" font-size="10" font-weight="600" text-anchor="middle">staging</text>
-        <text x="80" y="326" fill="#94a3b8" font-size="7" text-anchor="middle">push</text>
+        <rect x="40" y="295" width="80" height="40" rx="8" fill="#fff" stroke="#d1d5db" stroke-width="1" filter="url(#softShadow)"/>
+        <text x="80" y="312" fill="#374151" font-size="10" font-weight="600" text-anchor="middle">staging</text>
+        <text x="80" y="326" fill="#9ca3af" font-size="7" text-anchor="middle">push</text>
 
-        <!-- Arrow -->
-        <line x1="120" y1="315" x2="158" y2="315" stroke="#a78bfa" stroke-width="2" class="flow-line" marker-end="url(#arrow-violet)"/>
+        <line x1="120" y1="315" x2="158" y2="315" stroke="#7c3aed" stroke-width="2" class="flow-line" marker-end="url(#arrow-violet)"/>
 
-        <!-- Backend Tests -->
-        <rect x="165" y="295" width="100" height="40" rx="6" fill="rgba(168, 122, 250, 0.2)" stroke="#a78bfa" stroke-width="1.5"/>
-        <text x="215" y="312" fill="white" font-size="10" font-weight="600" text-anchor="middle">Backend Test</text>
-        <text x="215" y="326" fill="#94a3b8" font-size="7" text-anchor="middle">unit + integ</text>
+        <rect x="165" y="295" width="100" height="40" rx="8" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1" filter="url(#softShadow)"/>
+        <text x="215" y="312" fill="#5b21b6" font-size="10" font-weight="600" text-anchor="middle">Backend Test</text>
+        <text x="215" y="326" fill="#6b7280" font-size="7" text-anchor="middle">unit + integ</text>
 
-        <!-- Arrow -->
-        <line x1="265" y1="315" x2="303" y2="315" stroke="#a78bfa" stroke-width="2" class="flow-line" marker-end="url(#arrow-violet)"/>
+        <line x1="265" y1="315" x2="303" y2="315" stroke="#7c3aed" stroke-width="2" class="flow-line" marker-end="url(#arrow-violet)"/>
 
-        <!-- Docker Build & ECR -->
-        <rect x="310" y="295" width="120" height="40" rx="6" fill="rgba(168, 122, 250, 0.2)" stroke="#a78bfa" stroke-width="1.5"/>
-        <text x="370" y="312" fill="white" font-size="10" font-weight="600" text-anchor="middle">Docker Build</text>
-        <text x="370" y="326" fill="#94a3b8" font-size="7" text-anchor="middle">push to ECR</text>
+        <rect x="310" y="295" width="120" height="40" rx="8" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1" filter="url(#softShadow)"/>
+        <text x="370" y="312" fill="#5b21b6" font-size="10" font-weight="600" text-anchor="middle">Docker Build</text>
+        <text x="370" y="326" fill="#6b7280" font-size="7" text-anchor="middle">push to ECR</text>
 
-        <!-- Arrow -->
-        <line x1="430" y1="315" x2="468" y2="315" stroke="#a78bfa" stroke-width="2" class="flow-line" marker-end="url(#arrow-violet)"/>
+        <line x1="430" y1="315" x2="468" y2="315" stroke="#7c3aed" stroke-width="2" class="flow-line" marker-end="url(#arrow-violet)"/>
 
-        <!-- Terraform -->
-        <rect x="475" y="295" width="100" height="40" rx="6" fill="rgba(168, 122, 250, 0.2)" stroke="#a78bfa" stroke-width="1.5"/>
-        <text x="525" y="312" fill="white" font-size="10" font-weight="600" text-anchor="middle">Terraform</text>
-        <text x="525" y="326" fill="#94a3b8" font-size="7" text-anchor="middle">plan + apply</text>
+        <rect x="475" y="295" width="100" height="40" rx="8" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1" filter="url(#softShadow)"/>
+        <text x="525" y="312" fill="#5b21b6" font-size="10" font-weight="600" text-anchor="middle">Terraform</text>
+        <text x="525" y="326" fill="#6b7280" font-size="7" text-anchor="middle">plan + apply</text>
 
-        <!-- Arrow -->
-        <line x1="575" y1="315" x2="613" y2="315" stroke="#a78bfa" stroke-width="2" class="flow-line" marker-end="url(#arrow-violet)"/>
+        <line x1="575" y1="315" x2="613" y2="315" stroke="#7c3aed" stroke-width="2" class="flow-line" marker-end="url(#arrow-violet)"/>
 
-        <!-- Smoke Test -->
-        <rect x="620" y="295" width="105" height="40" rx="6" fill="rgba(34, 211, 238, 0.2)" stroke="#22d3ee" stroke-width="1.5"/>
-        <text x="672" y="312" fill="white" font-size="10" font-weight="600" text-anchor="middle">Smoke Test</text>
-        <text x="672" y="326" fill="#94a3b8" font-size="7" text-anchor="middle">/health</text>
+        <rect x="620" y="295" width="105" height="40" rx="8" fill="#ecfeff" stroke="#67e8f9" stroke-width="1" filter="url(#softShadow)"/>
+        <text x="672" y="312" fill="#155e75" font-size="10" font-weight="600" text-anchor="middle">Smoke Test</text>
+        <text x="672" y="326" fill="#6b7280" font-size="7" text-anchor="middle">/health</text>
 
-        <!-- Backend done -->
-        <rect x="760" y="295" width="80" height="40" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
-        <text x="800" y="312" fill="#34d399" font-size="10" font-weight="600" text-anchor="middle">API</text>
-        <text x="800" y="326" fill="#94a3b8" font-size="7" text-anchor="middle">live</text>
+        <rect x="760" y="295" width="80" height="40" rx="8" fill="#f0fdf6" stroke="#86efac" stroke-width="1" filter="url(#softShadow)"/>
+        <text x="800" y="312" fill="#166534" font-size="10" font-weight="600" text-anchor="middle">API</text>
+        <text x="800" y="326" fill="#6b7280" font-size="7" text-anchor="middle">live</text>
 
-        <!-- ── DIVIDER between paths ── -->
-        <line x1="40" y1="348" x2="1160" y2="348" stroke="#1e293b" stroke-width="1" stroke-dasharray="4,4"/>
+        <!-- divider -->
+        <line x1="40" y1="348" x2="1160" y2="348" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4,4"/>
 
-        <!-- ── FRONTEND PATH ── -->
-        <rect x="40" y="362" width="540" height="28" rx="4" fill="rgba(236, 72, 153, 0.06)"/>
-        <text x="310" y="381" fill="#ec4899" font-size="9" font-weight="600" text-anchor="middle">cd-frontend.yml  (triggers on frontend/**)</text>
+        <!-- ── FRONTEND ── -->
+        <rect x="40" y="362" width="540" height="28" rx="6" fill="#fff1f2"/>
+        <text x="310" y="381" fill="#9f1239" font-size="9" font-weight="600" text-anchor="middle">cd-frontend.yml — triggers on frontend/**</text>
 
-        <!-- Push to staging -->
-        <rect x="40" y="402" width="80" height="40" rx="6" fill="rgba(30, 41, 59, 0.6)" stroke="#475569" stroke-width="1.5"/>
-        <text x="80" y="419" fill="white" font-size="10" font-weight="600" text-anchor="middle">staging</text>
-        <text x="80" y="433" fill="#94a3b8" font-size="7" text-anchor="middle">push</text>
+        <rect x="40" y="402" width="80" height="40" rx="8" fill="#fff" stroke="#d1d5db" stroke-width="1" filter="url(#softShadow)"/>
+        <text x="80" y="419" fill="#374151" font-size="10" font-weight="600" text-anchor="middle">staging</text>
+        <text x="80" y="433" fill="#9ca3af" font-size="7" text-anchor="middle">push</text>
 
-        <!-- Arrow -->
-        <line x1="120" y1="422" x2="168" y2="422" stroke="#ec4899" stroke-width="2" class="flow-line" marker-end="url(#arrow-rose)"/>
+        <line x1="120" y1="422" x2="168" y2="422" stroke="#e11d48" stroke-width="2" class="flow-line" marker-end="url(#arrow-rose)"/>
 
-        <!-- npm ci -->
-        <rect x="175" y="402" width="90" height="40" rx="6" fill="rgba(236, 72, 153, 0.15)" stroke="#ec4899" stroke-width="1.5"/>
-        <text x="220" y="419" fill="white" font-size="10" font-weight="600" text-anchor="middle">npm ci</text>
-        <text x="220" y="433" fill="#94a3b8" font-size="7" text-anchor="middle">install deps</text>
+        <rect x="175" y="402" width="90" height="40" rx="8" fill="#fff1f2" stroke="#fda4af" stroke-width="1" filter="url(#softShadow)"/>
+        <text x="220" y="419" fill="#9f1239" font-size="10" font-weight="600" text-anchor="middle">npm ci</text>
+        <text x="220" y="433" fill="#6b7280" font-size="7" text-anchor="middle">install</text>
 
-        <!-- Arrow -->
-        <line x1="265" y1="422" x2="313" y2="422" stroke="#ec4899" stroke-width="2" class="flow-line" marker-end="url(#arrow-rose)"/>
+        <line x1="265" y1="422" x2="313" y2="422" stroke="#e11d48" stroke-width="2" class="flow-line" marker-end="url(#arrow-rose)"/>
 
-        <!-- Build -->
-        <rect x="320" y="402" width="100" height="40" rx="6" fill="rgba(236, 72, 153, 0.15)" stroke="#ec4899" stroke-width="1.5"/>
-        <text x="370" y="419" fill="white" font-size="10" font-weight="600" text-anchor="middle">npm build</text>
-        <text x="370" y="433" fill="#94a3b8" font-size="7" text-anchor="middle">staging</text>
+        <rect x="320" y="402" width="100" height="40" rx="8" fill="#fff1f2" stroke="#fda4af" stroke-width="1" filter="url(#softShadow)"/>
+        <text x="370" y="419" fill="#9f1239" font-size="10" font-weight="600" text-anchor="middle">npm build</text>
+        <text x="370" y="433" fill="#6b7280" font-size="7" text-anchor="middle">staging</text>
 
-        <!-- Arrow -->
-        <line x1="420" y1="422" x2="468" y2="422" stroke="#ec4899" stroke-width="2" class="flow-line" marker-end="url(#arrow-rose)"/>
+        <line x1="420" y1="422" x2="468" y2="422" stroke="#e11d48" stroke-width="2" class="flow-line" marker-end="url(#arrow-rose)"/>
 
-        <!-- S3 Sync -->
-        <rect x="475" y="402" width="100" height="40" rx="6" fill="rgba(236, 72, 153, 0.15)" stroke="#ec4899" stroke-width="1.5"/>
-        <text x="525" y="419" fill="white" font-size="10" font-weight="600" text-anchor="middle">S3 Sync</text>
-        <text x="525" y="433" fill="#94a3b8" font-size="7" text-anchor="middle">dist → bucket</text>
+        <rect x="475" y="402" width="100" height="40" rx="8" fill="#fff1f2" stroke="#fda4af" stroke-width="1" filter="url(#softShadow)"/>
+        <text x="525" y="419" fill="#9f1239" font-size="10" font-weight="600" text-anchor="middle">S3 Sync</text>
+        <text x="525" y="433" fill="#6b7280" font-size="7" text-anchor="middle">dist → bucket</text>
 
-        <!-- Arrow -->
-        <line x1="575" y1="422" x2="623" y2="422" stroke="#ec4899" stroke-width="2" class="flow-line" marker-end="url(#arrow-rose)"/>
+        <line x1="575" y1="422" x2="623" y2="422" stroke="#e11d48" stroke-width="2" class="flow-line" marker-end="url(#arrow-rose)"/>
 
-        <!-- CloudFront Invalidate -->
-        <rect x="630" y="402" width="140" height="40" rx="6" fill="rgba(236, 72, 153, 0.15)" stroke="#ec4899" stroke-width="1.5"/>
-        <text x="700" y="419" fill="white" font-size="10" font-weight="600" text-anchor="middle">CF Invalidate</text>
-        <text x="700" y="433" fill="#94a3b8" font-size="7" text-anchor="middle">/* paths</text>
+        <rect x="630" y="402" width="140" height="40" rx="8" fill="#fff1f2" stroke="#fda4af" stroke-width="1" filter="url(#softShadow)"/>
+        <text x="700" y="419" fill="#9f1239" font-size="10" font-weight="600" text-anchor="middle">CF Invalidate</text>
+        <text x="700" y="433" fill="#6b7280" font-size="7" text-anchor="middle">/* paths</text>
 
-        <!-- Frontend done -->
-        <rect x="805" y="402" width="80" height="40" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
-        <text x="845" y="419" fill="#34d399" font-size="10" font-weight="600" text-anchor="middle">Frontend</text>
-        <text x="845" y="433" fill="#94a3b8" font-size="7" text-anchor="middle">live</text>
+        <rect x="805" y="402" width="80" height="40" rx="8" fill="#f0fdf6" stroke="#86efac" stroke-width="1" filter="url(#softShadow)"/>
+        <text x="845" y="419" fill="#166534" font-size="10" font-weight="600" text-anchor="middle">Frontend</text>
+        <text x="845" y="433" fill="#6b7280" font-size="7" text-anchor="middle">live</text>
 
-        <!-- Info row -->
-        <rect x="40" y="458" width="540" height="16" rx="3" fill="rgba(34, 211, 238, 0.08)"/>
-        <text x="48" y="470" fill="#22d3ee" font-size="8">Backend pipeline: ~7 min  (test → docker → terraform → smoke)</text>
+        <rect x="40" y="458" width="460" height="16" rx="4" fill="#f5f3ff"/>
+        <text x="48" y="470" fill="#5b21b6" font-size="8">Backend pipeline: ~7 min — test → docker build → terraform → smoke test</text>
 
-        <rect x="588" y="458" width="370" height="16" rx="3" fill="rgba(34, 211, 238, 0.08)"/>
-        <text x="596" y="470" fill="#22d3ee" font-size="8">Frontend pipeline: ~1 min  (npm build → S3 → invalidate)</text>
+        <rect x="508" y="458" width="340" height="16" rx="4" fill="#fff1f2"/>
+        <text x="516" y="470" fill="#9f1239" font-size="8">Frontend pipeline: ~1 min — npm build → S3 sync → invalidate</text>
 
         <!-- ============================================================
              ZONE 3 — CD Production
              ============================================================ -->
-        <rect x="20" y="500" width="1160" height="200" rx="10" fill="rgba(136, 19, 55, 0.06)" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="4,4"/>
-        <text x="35" y="524" fill="#fb7185" font-size="11" font-weight="600">ZONE 3 — CD: Production · cd-backend-production.yml + cd-frontend-production.yml</text>
-        <text x="35" y="538" fill="#64748b" font-size="8">Trigger: workflow_dispatch  ·  OIDC → AWS  ·  Manual approval</text>
+        <rect x="20" y="500" width="1160" height="200" rx="12" fill="#fef2f2" stroke="#fecaca" stroke-width="1.5"/>
+        <text x="38" y="524" fill="#991b1b" font-size="11" font-weight="600">ZONE 3 — CD: Production · cd-backend-production.yml + cd-frontend-production.yml</text>
+        <text x="38" y="538" fill="#6b7280" font-size="8">Trigger: workflow_dispatch · OIDC → AWS · Manual approval required</text>
 
         <!-- ── BACKEND ── -->
-        <rect x="40" y="558" width="540" height="22" rx="4" fill="rgba(168, 122, 250, 0.08)"/>
-        <text x="310" y="573" fill="#a78bfa" font-size="8" font-weight="600" text-anchor="middle">cd-backend-production.yml</text>
+        <rect x="40" y="558" width="540" height="22" rx="6" fill="#f5f3ff"/>
+        <text x="310" y="573" fill="#5b21b6" font-size="8" font-weight="600" text-anchor="middle">cd-backend-production.yml</text>
 
-        <rect x="40" y="588" width="80" height="36" rx="6" fill="rgba(30, 41, 59, 0.6)" stroke="#475569" stroke-width="1.5"/>
-        <text x="80" y="603" fill="white" font-size="10" font-weight="600" text-anchor="middle">dispatch</text>
-        <text x="80" y="617" fill="#94a3b8" font-size="7" text-anchor="middle">manual</text>
+        <rect x="40" y="588" width="80" height="36" rx="8" fill="#fff" stroke="#d1d5db" stroke-width="1" filter="url(#softShadow)"/>
+        <text x="80" y="603" fill="#374151" font-size="10" font-weight="600" text-anchor="middle">dispatch</text>
+        <text x="80" y="617" fill="#9ca3af" font-size="7" text-anchor="middle">manual</text>
 
-        <line x1="120" y1="606" x2="158" y2="606" stroke="#a78bfa" stroke-width="2" class="flow-line-slow" marker-end="url(#arrow-violet)"/>
+        <line x1="120" y1="606" x2="158" y2="606" stroke="#7c3aed" stroke-width="2" class="flow-line-slow" marker-end="url(#arrow-violet)"/>
 
-        <rect x="165" y="588" width="90" height="36" rx="6" fill="rgba(168, 122, 250, 0.2)" stroke="#a78bfa" stroke-width="1.5"/>
-        <text x="210" y="603" fill="white" font-size="10" font-weight="600" text-anchor="middle">Backend Test</text>
-        <text x="210" y="617" fill="#94a3b8" font-size="7" text-anchor="middle">+ integ</text>
+        <rect x="165" y="588" width="90" height="36" rx="8" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1" filter="url(#softShadow)"/>
+        <text x="210" y="603" fill="#5b21b6" font-size="10" font-weight="600" text-anchor="middle">Backend Test</text>
+        <text x="210" y="617" fill="#6b7280" font-size="7" text-anchor="middle">+ integ</text>
 
-        <line x1="255" y1="606" x2="293" y2="606" stroke="#a78bfa" stroke-width="2" class="flow-line-slow" marker-end="url(#arrow-violet)"/>
+        <line x1="255" y1="606" x2="293" y2="606" stroke="#7c3aed" stroke-width="2" class="flow-line-slow" marker-end="url(#arrow-violet)"/>
 
-        <rect x="300" y="588" width="105" height="36" rx="6" fill="rgba(168, 122, 250, 0.2)" stroke="#a78bfa" stroke-width="1.5"/>
-        <text x="352" y="603" fill="white" font-size="10" font-weight="600" text-anchor="middle">Docker + ECR</text>
-        <text x="352" y="617" fill="#94a3b8" font-size="7" text-anchor="middle">build &amp; push</text>
+        <rect x="300" y="588" width="105" height="36" rx="8" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1" filter="url(#softShadow)"/>
+        <text x="352" y="603" fill="#5b21b6" font-size="10" font-weight="600" text-anchor="middle">Docker + ECR</text>
+        <text x="352" y="617" fill="#6b7280" font-size="7" text-anchor="middle">build &amp; push</text>
 
-        <line x1="405" y1="606" x2="443" y2="606" stroke="#a78bfa" stroke-width="2" class="flow-line-slow" marker-end="url(#arrow-violet)"/>
+        <line x1="405" y1="606" x2="443" y2="606" stroke="#7c3aed" stroke-width="2" class="flow-line-slow" marker-end="url(#arrow-violet)"/>
 
-        <rect x="450" y="588" width="85" height="36" rx="6" fill="rgba(168, 122, 250, 0.2)" stroke="#a78bfa" stroke-width="1.5"/>
-        <text x="492" y="603" fill="white" font-size="10" font-weight="600" text-anchor="middle">Terraform</text>
-        <text x="492" y="617" fill="#94a3b8" font-size="7" text-anchor="middle">apply</text>
+        <rect x="450" y="588" width="85" height="36" rx="8" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1" filter="url(#softShadow)"/>
+        <text x="492" y="603" fill="#5b21b6" font-size="10" font-weight="600" text-anchor="middle">Terraform</text>
+        <text x="492" y="617" fill="#6b7280" font-size="7" text-anchor="middle">apply</text>
 
-        <line x1="535" y1="606" x2="573" y2="606" stroke="#a78bfa" stroke-width="2" class="flow-line-slow" marker-end="url(#arrow-violet)"/>
+        <line x1="535" y1="606" x2="573" y2="606" stroke="#7c3aed" stroke-width="2" class="flow-line-slow" marker-end="url(#arrow-violet)"/>
 
-        <rect x="580" y="588" width="90" height="36" rx="6" fill="rgba(34, 211, 238, 0.2)" stroke="#22d3ee" stroke-width="1.5"/>
-        <text x="625" y="603" fill="white" font-size="10" font-weight="600" text-anchor="middle">Smoke Test</text>
-        <text x="625" y="617" fill="#94a3b8" font-size="7" text-anchor="middle">/health</text>
+        <rect x="580" y="588" width="90" height="36" rx="8" fill="#ecfeff" stroke="#67e8f9" stroke-width="1" filter="url(#softShadow)"/>
+        <text x="625" y="603" fill="#155e75" font-size="10" font-weight="600" text-anchor="middle">Smoke Test</text>
+        <text x="625" y="617" fill="#6b7280" font-size="7" text-anchor="middle">/health</text>
 
         <!-- ── FRONTEND ── -->
-        <rect x="40" y="640" width="540" height="22" rx="4" fill="rgba(236, 72, 153, 0.06)"/>
-        <text x="310" y="655" fill="#ec4899" font-size="8" font-weight="600" text-anchor="middle">cd-frontend-production.yml</text>
+        <rect x="40" y="640" width="540" height="22" rx="6" fill="#fff1f2"/>
+        <text x="310" y="655" fill="#9f1239" font-size="8" font-weight="600" text-anchor="middle">cd-frontend-production.yml</text>
 
-        <rect x="40" y="670" width="80" height="36" rx="6" fill="rgba(30, 41, 59, 0.6)" stroke="#475569" stroke-width="1.5"/>
-        <text x="80" y="685" fill="white" font-size="10" font-weight="600" text-anchor="middle">dispatch</text>
-        <text x="80" y="699" fill="#94a3b8" font-size="7" text-anchor="middle">manual</text>
+        <rect x="40" y="670" width="80" height="36" rx="8" fill="#fff" stroke="#d1d5db" stroke-width="1" filter="url(#softShadow)"/>
+        <text x="80" y="685" fill="#374151" font-size="10" font-weight="600" text-anchor="middle">dispatch</text>
+        <text x="80" y="699" fill="#9ca3af" font-size="7" text-anchor="middle">manual</text>
 
-        <line x1="120" y1="688" x2="158" y2="688" stroke="#ec4899" stroke-width="2" class="flow-line-slow" marker-end="url(#arrow-rose)"/>
+        <line x1="120" y1="688" x2="158" y2="688" stroke="#e11d48" stroke-width="2" class="flow-line-slow" marker-end="url(#arrow-rose)"/>
 
-        <rect x="165" y="670" width="85" height="36" rx="6" fill="rgba(236, 72, 153, 0.15)" stroke="#ec4899" stroke-width="1.5"/>
-        <text x="207" y="685" fill="white" font-size="10" font-weight="600" text-anchor="middle">npm ci</text>
-        <text x="207" y="699" fill="#94a3b8" font-size="7" text-anchor="middle">install</text>
+        <rect x="165" y="670" width="85" height="36" rx="8" fill="#fff1f2" stroke="#fda4af" stroke-width="1" filter="url(#softShadow)"/>
+        <text x="207" y="685" fill="#9f1239" font-size="10" font-weight="600" text-anchor="middle">npm ci</text>
+        <text x="207" y="699" fill="#6b7280" font-size="7" text-anchor="middle">install</text>
 
-        <line x1="250" y1="688" x2="288" y2="688" stroke="#ec4899" stroke-width="2" class="flow-line-slow" marker-end="url(#arrow-rose)"/>
+        <line x1="250" y1="688" x2="288" y2="688" stroke="#e11d48" stroke-width="2" class="flow-line-slow" marker-end="url(#arrow-rose)"/>
 
-        <rect x="295" y="670" width="85" height="36" rx="6" fill="rgba(236, 72, 153, 0.15)" stroke="#ec4899" stroke-width="1.5"/>
-        <text x="337" y="685" fill="white" font-size="10" font-weight="600" text-anchor="middle">npm build</text>
-        <text x="337" y="699" fill="#94a3b8" font-size="7" text-anchor="middle">production</text>
+        <rect x="295" y="670" width="85" height="36" rx="8" fill="#fff1f2" stroke="#fda4af" stroke-width="1" filter="url(#softShadow)"/>
+        <text x="337" y="685" fill="#9f1239" font-size="10" font-weight="600" text-anchor="middle">npm build</text>
+        <text x="337" y="699" fill="#6b7280" font-size="7" text-anchor="middle">production</text>
 
-        <line x1="380" y1="688" x2="418" y2="688" stroke="#ec4899" stroke-width="2" class="flow-line-slow" marker-end="url(#arrow-rose)"/>
+        <line x1="380" y1="688" x2="418" y2="688" stroke="#e11d48" stroke-width="2" class="flow-line-slow" marker-end="url(#arrow-rose)"/>
 
-        <rect x="425" y="670" width="85" height="36" rx="6" fill="rgba(236, 72, 153, 0.15)" stroke="#ec4899" stroke-width="1.5"/>
-        <text x="467" y="685" fill="white" font-size="10" font-weight="600" text-anchor="middle">S3 Sync</text>
-        <text x="467" y="699" fill="#94a3b8" font-size="7" text-anchor="middle">deploy</text>
+        <rect x="425" y="670" width="85" height="36" rx="8" fill="#fff1f2" stroke="#fda4af" stroke-width="1" filter="url(#softShadow)"/>
+        <text x="467" y="685" fill="#9f1239" font-size="10" font-weight="600" text-anchor="middle">S3 Sync</text>
+        <text x="467" y="699" fill="#6b7280" font-size="7" text-anchor="middle">deploy</text>
 
-        <line x1="510" y1="688" x2="548" y2="688" stroke="#ec4899" stroke-width="2" class="flow-line-slow" marker-end="url(#arrow-rose)"/>
+        <line x1="510" y1="688" x2="548" y2="688" stroke="#e11d48" stroke-width="2" class="flow-line-slow" marker-end="url(#arrow-rose)"/>
 
-        <rect x="555" y="670" width="110" height="36" rx="6" fill="rgba(236, 72, 153, 0.15)" stroke="#ec4899" stroke-width="1.5"/>
-        <text x="610" y="685" fill="white" font-size="10" font-weight="600" text-anchor="middle">CF Invalidate</text>
-        <text x="610" y="699" fill="#94a3b8" font-size="7" text-anchor="middle">/*</text>
+        <rect x="555" y="670" width="110" height="36" rx="8" fill="#fff1f2" stroke="#fda4af" stroke-width="1" filter="url(#softShadow)"/>
+        <text x="610" y="685" fill="#9f1239" font-size="10" font-weight="600" text-anchor="middle">CF Invalidate</text>
+        <text x="610" y="699" fill="#6b7280" font-size="7" text-anchor="middle">/*</text>
 
-        <!-- Live indicators -->
-        <rect x="900" y="588" width="120" height="58" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1"/>
-        <text x="960" y="612" fill="#34d399" font-size="11" font-weight="600" text-anchor="middle">API</text>
-        <text x="960" y="632" fill="#34d399" font-size="13" text-anchor="middle">live</text>
+        <!-- Live badges -->
+        <rect x="900" y="588" width="120" height="58" rx="8" fill="#f0fdf6" stroke="#86efac" stroke-width="1" filter="url(#softShadow)"/>
+        <text x="960" y="612" fill="#166534" font-size="11" font-weight="600" text-anchor="middle">API</text>
+        <circle cx="936" cy="627" r="4" fill="#22c55e"/>
+        <text x="947" y="631" fill="#166534" font-size="11" text-anchor="middle">live</text>
 
-        <rect x="900" y="654" width="120" height="58" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1"/>
-        <text x="960" y="678" fill="#34d399" font-size="11" font-weight="600" text-anchor="middle">Frontend</text>
-        <text x="960" y="698" fill="#34d399" font-size="13" text-anchor="middle">live</text>
+        <rect x="900" y="654" width="120" height="58" rx="8" fill="#f0fdf6" stroke="#86efac" stroke-width="1" filter="url(#softShadow)"/>
+        <text x="960" y="678" fill="#166534" font-size="11" font-weight="600" text-anchor="middle">Frontend</text>
+        <circle cx="936" cy="693" r="4" fill="#22c55e"/>
+        <text x="947" y="697" fill="#166534" font-size="11" text-anchor="middle">live</text>
 
         <!-- ============================================================
              LEGEND
              ============================================================ -->
-        <rect x="920" y="724" width="260" height="40" rx="4" fill="rgba(15, 23, 42, 0.8)" stroke="#1e293b" stroke-width="1"/>
+        <rect x="915" y="724" width="265" height="42" rx="8" fill="#fff" stroke="#e5e7eb" stroke-width="1" filter="url(#softShadow)"/>
 
-        <rect x="20" y="725" width="14" height="10" rx="2" fill="rgba(6, 78, 59, 0.35)" stroke="#34d399" stroke-width="1"/>
-        <text x="39" y="733" fill="#94a3b8" font-size="7">CI / Tests</text>
+        <rect x="20" y="725" width="14" height="10" rx="3" fill="#f0fdf6" stroke="#86efac" stroke-width="1"/>
+        <text x="39" y="733" fill="#6b7280" font-size="7">CI / Tests</text>
 
-        <rect x="120" y="725" width="14" height="10" rx="2" fill="rgba(168, 122, 250, 0.2)" stroke="#a78bfa" stroke-width="1"/>
-        <text x="139" y="733" fill="#94a3b8" font-size="7">Backend CD</text>
+        <rect x="118" y="725" width="14" height="10" rx="3" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1"/>
+        <text x="137" y="733" fill="#6b7280" font-size="7">Backend CD</text>
 
-        <rect x="225" y="725" width="14" height="10" rx="2" fill="rgba(236, 72, 153, 0.15)" stroke="#ec4899" stroke-width="1"/>
-        <text x="244" y="733" fill="#94a3b8" font-size="7">Frontend CD</text>
+        <rect x="222" y="725" width="14" height="10" rx="3" fill="#fff1f2" stroke="#fda4af" stroke-width="1"/>
+        <text x="241" y="733" fill="#6b7280" font-size="7">Frontend CD</text>
 
-        <rect x="340" y="725" width="14" height="10" rx="2" fill="rgba(30, 41, 59, 0.6)" stroke="#475569" stroke-width="1"/>
-        <text x="359" y="733" fill="#94a3b8" font-size="7">Branch / Gate</text>
+        <rect x="330" y="725" width="14" height="10" rx="3" fill="#fff" stroke="#d1d5db" stroke-width="1"/>
+        <text x="349" y="733" fill="#6b7280" font-size="7">Branch / Gate</text>
 
-        <line x1="455" y1="730" x2="469" y2="730" stroke="#22d3ee" stroke-width="2" stroke-dasharray="4,2"/>
-        <text x="474" y="733" fill="#94a3b8" font-size="7">Animated flow</text>
+        <line x1="440" y1="730" x2="456" y2="730" stroke="#7c3aed" stroke-width="2" stroke-dasharray="4,2"/>
+        <text x="461" y="733" fill="#6b7280" font-size="7">Animated flow</text>
 
-        <line x1="575" y1="730" x2="589" y2="730" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="4,3"/>
-        <text x="594" y="733" fill="#94a3b8" font-size="7">Production</text>
+        <line x1="565" y1="730" x2="581" y2="730" stroke="#e11d48" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <text x="586" y="733" fill="#6b7280" font-size="7">Production</text>
 
-        <text x="935" y="743" fill="white" font-size="9" font-weight="600">Legend</text>
-        <text x="935" y="756" fill="#64748b" font-size="7">3 zones · 6 workflow files</text>
+        <text x="928" y="745" fill="#374151" font-size="9" font-weight="600">Legend</text>
+        <text x="928" y="758" fill="#9ca3af" font-size="7">3 zones · 6 workflow files</text>
       </svg>
     </div>
 
@@ -406,7 +376,7 @@
 
       <div class="card">
         <div class="card-header">
-          <div class="card-dot amber"></div>
+          <div class="card-dot rose"></div>
           <h3>CD Frontend</h3>
         </div>
         <ul>
@@ -419,7 +389,7 @@
 
       <div class="card">
         <div class="card-header">
-          <div class="card-dot rose"></div>
+          <div class="card-dot sky"></div>
           <h3>Path Filtering</h3>
         </div>
         <ul>

@@ -5,6 +5,7 @@ locals {
 }
 
 resource "aws_route53_record" "api" {
+  count   = var.enable_compute ? 1 : 0
   zone_id = var.zone_id
   name    = local.api_domain
   type    = "A"

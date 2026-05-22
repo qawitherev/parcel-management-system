@@ -36,6 +36,12 @@ variable "cloudfront_zone_id" {
   default     = null
 }
 
+variable "enable_compute" {
+  description = "When false, skip creating the API A record (ALB is destroyed)"
+  type        = bool
+  default     = true
+}
+
 variable "tags" {
   description = "Tags applied to all resources"
   type        = map(string)

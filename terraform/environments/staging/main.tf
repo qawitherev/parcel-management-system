@@ -47,6 +47,7 @@ module "networking" {
   public_subnet_cidrs  = var.public_subnet_cidrs
   private_subnet_cidrs = var.private_subnet_cidrs
   availability_zones   = var.availability_zones
+  enable_compute       = var.enable_compute
   tags                 = var.tags
 }
 
@@ -96,6 +97,7 @@ module "alb" {
   public_subnet_ids       = module.networking.public_subnet_ids
   alb_security_group_id   = module.security.alb_security_group_id
   certificate_arn         = module.dns_certificate.certificate_arn
+  enable_compute          = var.enable_compute
   tags                    = var.tags
 }
 
@@ -107,6 +109,7 @@ module "dns_records" {
   alb_zone_id              = module.alb.zone_id
   cloudfront_domain_name   = module.cdn.cloudfront_domain_name
   cloudfront_zone_id       = module.cdn.cloudfront_zone_id
+  enable_compute           = var.enable_compute
   tags                     = var.tags
 }
 
@@ -130,16 +133,18 @@ module "ecs" {
   ssm_prefix                  = "${var.environment}/backend"
   aws_region                  = var.region
   aws_account_id              = data.aws_caller_identity.current.account_id
+  enable_compute              = var.enable_compute
 }
 
 module "monitoring" {
   source                    = "../../modules/monitoring"
   environment               = var.environment
   region                    = var.region
-  alb_arn_suffix            = element(split(":loadbalancer/", module.alb.arn), 1)
-  target_group_arn_suffix   = element(split(":targetgroup/", module.alb.target_group_arn), 1)
+  alb_arn_suffix            = var.enable_compute ? element(split(":loadbalancer/", module.alb.arn), 1) : null
+  target_group_arn_suffix   = var.enable_compute ? element(split(":targetgroup/", module.alb.target_group_arn), 1) : null
   ecs_cluster_name          = module.ecs.cluster_name
   ecs_service_name          = module.ecs.service_name
   cloudfront_distribution_id = module.cdn.distribution_id
+  enable_compute            = var.enable_compute
   tags                      = var.tags
 }

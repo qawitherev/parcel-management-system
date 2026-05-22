@@ -48,6 +48,7 @@ resource "aws_ecs_task_definition" "this" {
 }
 
 resource "aws_ecs_service" "this" {
+  count = var.enable_compute ? 1 : 0
   name = var.ecs_service_name
   task_definition = aws_ecs_task_definition.this.arn
   cluster = aws_ecs_cluster.this.arn

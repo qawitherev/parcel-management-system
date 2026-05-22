@@ -77,6 +77,12 @@ variable "alb_target_group_arn" {
   default     = null
 }
 
+variable "enable_compute" {
+  description = "When false, destroy ECS service to save cost on idle environments"
+  type        = bool
+  default     = true
+}
+
 variable "ssm_prefix" {
   description = "SSM parameter path prefix (e.g. /staging/backend)"
   type        = string

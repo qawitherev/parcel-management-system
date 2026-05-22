@@ -27,6 +27,12 @@ variable "availability_zones" {
   default     = ["ap-southeast-1a", "ap-southeast-1b"]
 }
 
+variable "enable_compute" {
+  description = "When false, destroy NAT Gateway and EIP to save cost on idle environments"
+  type        = bool
+  default     = true
+}
+
 variable "tags" {
   description = "Tags applied to all resources"
   type        = map(string)

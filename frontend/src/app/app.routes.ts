@@ -36,39 +36,38 @@ export const routes: Routes = [
     canActivate: [isLoggedInGuard]
   },
 
-  // Dashboard redirect — role-based
+  // Dashboard (with chrome) — routes handle admin/user themselves
   {
     path: 'dashboard',
-    redirectTo: () => {
-      const token = localStorage.getItem('parcel-management-system-token');
-      if (!token) return '/login';
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        const role = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
-        return (role === 'ParcelRoomManager' || role === 'Admin') ? '/dashboard/admin' : '/dashboard/user';
-      } catch {
-        return '/dashboard/user';
+    component: NormalLayout,
+    children: [
+      {
+        path: '',
+        redirectTo: () => {
+          const token = localStorage.getItem('parcel-management-system-token');
+          if (!token) return '/login';
+          try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const role = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+            return (role === 'ParcelRoomManager' || role === 'Admin') ? 'admin' : 'user';
+          } catch {
+            return 'user';
+          }
+        }
+      },
+      {
+        path: 'admin',
+        loadComponent: () => import('./features/dashboard/pages/dashboard-admin/dashboard-parent').then(m => m.DashboardParent),
+        data: { title: 'Dashboard' },
+        canActivate: [isLoggedInGuard, isAdminAndManagerAuthed]
+      },
+      {
+        path: 'user',
+        loadComponent: () => import('./features/dashboard/pages/dashboard-user/dashboard-user').then(m => m.DashboardUser),
+        data: { title: 'Dashboard' },
+        canActivate: [isLoggedInGuard]
       }
-    }
-  },
-
-  // Dashboard admin (with chrome)
-  {
-    path: 'dashboard/admin',
-    component: NormalLayout,
-    children: [
-      { path: '', loadChildren: () => import('./features/dashboard/dashboard.routes').then(m => m.DASHBOARD_ROUTES), data: { title: 'Dashboard' } }
     ]
-  },
-
-  // Dashboard user (with chrome)
-  {
-    path: 'dashboard/user',
-    component: NormalLayout,
-    children: [
-      { path: '', loadChildren: () => import('./features/dashboard/dashboard.routes').then(m => m.DASHBOARD_ROUTES), data: { title: 'Dashboard' } }
-    ],
-    canActivate: [isLoggedInGuard]
   },
 
   // Resident (with chrome)

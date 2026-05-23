@@ -77,12 +77,8 @@ export class Login implements OnInit, OnDestroy {
             this.roleService
               .getRole()
               .pipe(takeUntil(this.destroy$))
-              .subscribe((roleRes) => {
-                const role = roleRes?.role;
-                const dashboardRoute = (role === 'ParcelRoomManager' || role === 'Admin')
-                  ? '/dashboard/admin'
-                  : '/dashboard/user';
-                const url = this.returnUrl || dashboardRoute;
+              .subscribe((_) => {
+                const url = this.returnUrl || '/dashboard';
                 this.router.navigateByUrl(url);
               });
           } else {

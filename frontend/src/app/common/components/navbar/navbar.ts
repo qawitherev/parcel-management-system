@@ -25,7 +25,7 @@ export class Navbar implements OnInit {
 
   navStructure: Record<string, NavGroup[]> = {
     resident: [
-      { label: 'Dashboard', route: '/dashboard/user' },
+      { label: 'Dashboard', route: '/dashboard' },
       {
         label: 'Parcels', children: [
           { label: 'Tracking', route: '/parcel/tracking' },
@@ -40,7 +40,7 @@ export class Navbar implements OnInit {
       },
     ],
     ParcelRoomManager: [
-      { label: 'Dashboard', route: '/dashboard/admin' },
+      { label: 'Dashboard', route: '/dashboard' },
       {
         label: 'Operations', children: [
           { label: 'Check In', route: '/parcel/checkIn' },
@@ -57,7 +57,7 @@ export class Navbar implements OnInit {
       },
     ],
     Admin: [
-      { label: 'Dashboard', route: '/dashboard/admin' },
+      { label: 'Dashboard', route: '/dashboard' },
       {
         label: 'Operations', children: [
           { label: 'Check In', route: '/parcel/checkIn' },

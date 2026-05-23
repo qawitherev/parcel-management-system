@@ -43,7 +43,7 @@ export class DashboardUser implements OnInit {
     forkJoin([
       this.dashboardService.getUserDetails().pipe(catchError(() => of(null))),
       this.dashboardService.getUserAwaitingPickup().pipe(catchError(() => of(null))),
-      this.dashboardService.getRecentlyPickedUp().pipe(catchError(() => of(null))),
+      this.dashboardService.getUserClaimed().pipe(catchError(() => of(null))),
     ]).subscribe({
       next: ([userRes, awaitingRes, claimedRes]) => {
         if (userRes && !('error' in userRes)) {

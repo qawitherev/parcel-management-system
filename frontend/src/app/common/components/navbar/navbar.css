@@ -46,7 +46,6 @@
   align-items: center;
   gap: 0;
   flex: 1;
-  overflow-x: auto;
 }
 
 .nav-section {
@@ -86,6 +85,7 @@
 /* Nav dropdown groups */
 .nav-group {
   position: relative;
+  overflow: visible;
 }
 
 .nav-group > button {

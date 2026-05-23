@@ -55,11 +55,6 @@ export class Navbar implements OnInit {
           { label: 'Assignments', route: '/resident/userResidentUnit' },
         ]
       },
-      {
-        label: 'Settings', children: [
-          { label: 'Notifications', route: '/settings/notifications' },
-        ]
-      },
     ],
     Admin: [
       { label: 'Dashboard', route: '/dashboard/admin' },

@@ -28,7 +28,7 @@ export const routes: Routes = [
     path: 'parcel',
     component: NormalLayout,
     children: [
-      { path: 'tracking', loadChildren: () => import('./features/parcel/tracking/tracking.routes').then(m => m.TRACKING_ROUTES), data: { title: 'Parcel Tracking' } },
+      { path: 'tracking', loadComponent: () => import('./features/parcel/tracking/pages/tracking/tracking').then(m => m.Tracking), data: { title: 'Parcel Tracking' } },
       { path: 'checkIn', loadChildren: () => import('./features/parcel/check-in/check-in.routes').then(m => m.CHECK_IN_ROUTES), data: { title: 'Check In' } },
       { path: 'claim', loadChildren: () => import('./features/parcel/claim/claim.routes').then(m => m.CLAIM_ROUTES), data: { title: 'Parcel Claim' } },
       { path: 'parcels', loadChildren: () => import('./features/parcel/parcels/parcels.routes').then(m => m.PARCELS_ROUTES), data: { title: 'All Parcels' } }

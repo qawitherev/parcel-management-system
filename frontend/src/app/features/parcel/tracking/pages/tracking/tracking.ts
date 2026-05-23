@@ -6,7 +6,8 @@ import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-tracking',
-  imports: [ReactiveFormsModule, NgClass],
+  standalone: true,
+  imports: [ReactiveFormsModule],
   templateUrl: './tracking.html',
   styleUrl: './tracking.css'
 })

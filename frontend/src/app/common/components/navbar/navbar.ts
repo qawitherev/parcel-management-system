@@ -62,12 +62,6 @@ export class Navbar implements OnInit {
     ],
   };
 
-  roleNames: Record<string, string> = {
-    resident: 'Resident',
-    ParcelRoomManager: 'Manager',
-    Admin: 'Admin',
-  };
-
   constructor(
     private roleService: RoleService,
     private authService: AuthService,
@@ -87,21 +81,14 @@ export class Navbar implements OnInit {
   }
 
   get roleDisplayName(): string {
-    return this.roleNames[this.currentRole()] || 'Resident';
+    const role = this.currentRole();
+    if (role === 'ParcelRoomManager') return 'Manager';
+    if (role === 'Admin') return 'Admin';
+    return 'Resident';
   }
 
   get isDark(): boolean {
     return this.themeService.getIsDarkMode();
-  }
-
-  get roleOptions(): string[] {
-    return Object.keys(this.roleNames);
-  }
-
-  switchRole(role: string): void {
-    this.roleService.setRole(role);
-    this.currentRole.set(role);
-    this.mobileOpen.set(false);
   }
 
   toggleTheme(): void {

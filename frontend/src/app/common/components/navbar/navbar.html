@@ -25,14 +25,6 @@
     <!-- Actions -->
     <div class="nav-actions">
       <span class="user-label">{{ roleDisplayName }}</span>
-      <select
-        (change)="switchRole($any($event.target).value)"
-        [value]="currentRole()"
-      >
-        @for (r of roleOptions; track r) {
-          <option [value]="r">{{ roleNames[r] }}</option>
-        }
-      </select>
       <button class="btn btn-s btn-o" (click)="toggleTheme()">
         {{ isDark ? 'LIGHT' : 'DARK' }}
       </button>
@@ -60,14 +52,6 @@
     }
   }
   <div class="m-actions">
-    <select
-      (change)="switchRole($any($event.target).value)"
-      [value]="currentRole()"
-    >
-      @for (r of roleOptions; track r) {
-        <option [value]="r">{{ roleNames[r] }}</option>
-      }
-    </select>
     <button class="btn" (click)="toggleTheme()">
       {{ isDark ? 'LIGHT MODE' : 'DARK MODE' }}
     </button>

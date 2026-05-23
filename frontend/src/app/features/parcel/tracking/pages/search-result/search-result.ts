@@ -5,7 +5,6 @@ import { ActivatedRoute } from '@angular/router';
 import { AppConsole } from '../../../../../utils/app-console';
 import { FormControl, ɵInternalFormsSharedModule, ReactiveFormsModule } from '@angular/forms';
 import { Tracking } from '../tracking/tracking';
-import { TrackingModule } from '../../tracking-module';
 import { TrackingService } from '../../../tracking';
 import { catchError, Observable, of } from 'rxjs';
 import { NgIf, AsyncPipe } from '@angular/common';

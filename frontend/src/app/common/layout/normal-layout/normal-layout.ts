@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { AuthRoutingModule } from '../../../features/auth/auth-routing-module';
 import { LayoutService, SidebarService } from '../layout-service.ts';
 import { RoleService, RoleWithExp } from '../../../core/roles/role-service';
 import { BehaviorSubject, combineLatest, map, Observable, pipe, Subject, takeUntil } from 'rxjs';
+import { RouterOutlet, RouterLink } from '@angular/router';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { AuthService } from '../../../features/auth/auth-service';
 import { MyButton } from "../../components/buttons/my-button/my-button";
@@ -96,7 +96,8 @@ const MENU_ITEMS: MenuItem[] = [
 
 @Component({
   selector: 'app-normal-layout',
-  imports: [AuthRoutingModule, NgIf, AsyncPipe, MyButton, MySwitch],
+  standalone: true,
+  imports: [RouterOutlet, RouterLink, NgIf, AsyncPipe, MyButton, MySwitch],
   templateUrl: './normal-layout.html',
   styleUrl: './normal-layout.css',
 })

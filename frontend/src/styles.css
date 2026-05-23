@@ -228,3 +228,246 @@ a {
   padding: 8px 14px;
   font-size: 10px;
 }
+
+/* ── Shared: Page header ── */
+.pl {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--t3);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 4px;
+}
+
+h1 {
+  font-size: clamp(24px, 4vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.6px;
+  margin-bottom: 4px;
+}
+
+.sub {
+  font-size: 14px;
+  color: var(--t2);
+  margin-bottom: 24px;
+  max-width: 640px;
+}
+
+/* ── Shared: Search bar ── */
+.search-bar {
+  display: flex;
+  gap: 0;
+  max-width: 100%;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.search-bar input {
+  flex: 1;
+  min-width: 200px;
+  padding: 12px 16px;
+  border: 2px solid var(--bdr2);
+  border-right: none;
+  font-size: 15px;
+  font-family: var(--f);
+  background: var(--bg);
+  color: var(--text);
+}
+
+.search-bar input:focus {
+  outline: none;
+}
+
+.search-bar input::placeholder {
+  color: #ccc;
+}
+
+.search-bar button {
+  padding: 12px 24px;
+  background: var(--bdr2);
+  color: var(--bg);
+  border: 2px solid var(--bdr2);
+  font-family: var(--f);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  cursor: pointer;
+}
+
+.search-bar button:hover {
+  background: var(--red);
+  border-color: var(--red);
+}
+
+.search-bar button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Shared: Filter row ── */
+.filter-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.filter-row select {
+  padding: 10px 16px;
+  border: 2px solid var(--bdr2);
+  font-family: var(--f);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* ── Shared: Button row ── */
+.btn-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* ── Shared: Badges ── */
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 1px solid;
+  white-space: nowrap;
+}
+
+.b-await {
+  color: var(--red);
+  border-color: var(--red);
+  background: #fef2f2;
+}
+
+.b-claim {
+  color: var(--text);
+  border-color: var(--bdr2);
+  background: var(--bg2);
+}
+
+.b-over {
+  color: #b45309;
+  border-color: #f59e0b;
+  background: #fffbeb;
+}
+
+/* ── Shared: Table section ── */
+.tsect {
+  background: var(--bg);
+  border: 1px solid var(--bdr);
+  margin-bottom: 20px;
+}
+
+.thd {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--bdr);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.twrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--t3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 2px solid var(--bdr);
+  white-space: nowrap;
+  background: var(--bg);
+}
+
+td {
+  padding: 14px 16px;
+  font-size: 13px;
+  border-bottom: 1px solid #f0f0f0;
+  white-space: nowrap;
+}
+
+tr:hover td {
+  background: var(--bg2);
+}
+
+/* ── Shared: Preference sections ── */
+.pref-section {
+  background: var(--bg);
+  border: 1px solid var(--bdr);
+  padding: clamp(16px, 3vw, 24px);
+  margin-bottom: 14px;
+}
+
+.pref-section h3 {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 14px;
+}
+
+.pref-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+  gap: 12px;
+}
+
+.pref-row:last-child {
+  border-bottom: none;
+}
+
+.pref-row span {
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .search-bar {
+    flex-direction: column;
+  }
+
+  .search-bar input {
+    border-right: 2px solid var(--bdr2);
+  }
+
+  .btn-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-row .btn {
+    text-align: center;
+  }
+}

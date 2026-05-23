@@ -1,0 +1,112 @@
+/* ── Login split layout ── */
+.login-page {
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.ls {
+  display: flex;
+  max-width: 900px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  min-height: 500px;
+  flex-wrap: wrap;
+}
+
+/* Brand block */
+.ls-v {
+  flex: 1;
+  min-width: 280px;
+  background: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(32px, 6vw, 48px);
+  position: relative;
+  overflow: hidden;
+}
+
+.ls-v::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    45deg, transparent, transparent 20px,
+    rgba(255, 255, 255, 0.02) 20px, rgba(255, 255, 255, 0.02) 21px
+  );
+}
+
+.ls-v .bwrap { position: relative; z-index: 1; text-align: center; }
+
+.ls-v .bm {
+  width: clamp(56px, 10vw, 72px);
+  height: clamp(56px, 10vw, 72px);
+  background: var(--red);
+  margin: 0 auto 18px;
+  font-size: clamp(24px, 5vw, 32px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 800;
+}
+
+.ls-v .bn {
+  font-size: clamp(20px, 4vw, 26px);
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.5px;
+  margin-bottom: 4px;
+}
+
+.ls-v .bt {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 300;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* Form block */
+.ls-f {
+  flex: 1;
+  min-width: 280px;
+  padding: clamp(32px, 6vw, 44px) clamp(24px, 5vw, 48px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: var(--bg);
+}
+
+.ls-f h1 {
+  font-size: clamp(18px, 3vw, 22px);
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  margin-bottom: 2px;
+}
+
+.ls-f .lsub {
+  font-size: 13px;
+  color: var(--t2);
+  margin-bottom: 24px;
+}
+
+.ls-f .quick-login {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.ls-f .quick-login button {
+  flex: 1;
+  min-width: 80px;
+}
+
+@media (max-width: 480px) {
+  .ls { flex-direction: column; min-height: auto; }
+  .ls-v { min-height: 200px; }
+}

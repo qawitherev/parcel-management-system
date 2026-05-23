@@ -101,3 +101,130 @@ a {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--t3);
 }
+
+/* ── Shared: Auth centered layout ── */
+.auth-centered {
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+/* ── Shared: Form card ── */
+.form-card {
+  background: var(--bg);
+  border: 1px solid var(--bdr);
+  padding: clamp(20px, 4vw, 32px);
+  max-width: 480px;
+  width: 100%;
+}
+
+.form-card h1 {
+  font-size: clamp(18px, 3vw, 22px);
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+/* ── Shared: Form fields ── */
+.fg {
+  margin-bottom: 16px;
+}
+
+.fg label {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--t2);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 8px;
+}
+
+.fg input {
+  width: 100%;
+  padding: 12px 0;
+  border: none;
+  border-bottom: 2px solid var(--bdr);
+  font-size: 15px;
+  font-family: var(--f);
+  background: transparent;
+  color: var(--text);
+  transition: border-color 0.15s;
+}
+
+.fg input:focus {
+  outline: none;
+  border-bottom-color: var(--bdr2);
+}
+
+.fg input::placeholder {
+  color: #ccc;
+}
+
+.fg-err {
+  font-size: 10px;
+  color: var(--red);
+  margin-top: 4px;
+  display: block;
+}
+
+.sub {
+  font-size: 13px;
+  color: var(--t2);
+}
+
+/* ── Shared: Error card ── */
+.err-card {
+  background: #fef2f2;
+  border: 1px solid var(--red);
+  padding: 14px 18px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--red);
+}
+
+.err-card strong {
+  font-weight: 700;
+}
+
+/* ── Shared: Buttons ── */
+.btn {
+  padding: 12px 28px;
+  border: 2px solid var(--bdr2);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--f);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  background: var(--bdr2);
+  color: var(--bg);
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  background: var(--red);
+  border-color: var(--red);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-o {
+  background: transparent;
+  color: var(--bdr2);
+}
+
+.btn-o:hover {
+  background: var(--bdr2);
+  color: var(--bg);
+}
+
+.btn-s {
+  padding: 8px 14px;
+  font-size: 10px;
+}

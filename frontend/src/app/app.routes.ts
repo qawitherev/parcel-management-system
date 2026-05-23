@@ -43,6 +43,7 @@ export const routes: Routes = [
     children: [
       {
         path: '',
+        pathMatch: 'full',
         redirectTo: () => {
           const token = localStorage.getItem('parcel-management-system-token');
           if (!token) return '/login';

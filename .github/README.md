@@ -157,7 +157,7 @@ All caches live on GitHub's blob storage, survive ephemeral runners, and evict a
 | Trigger | Push to `staging` | Manual (`workflow_dispatch`) |
 | ECS tasks | 1 (256 CPU, 512 MB) | 2 (512 CPU, 1024 MB) |
 | VPC CIDR | 10.1.0.0/16 | 10.0.0.0/16 |
-| API domain | `api.staging.parcel-management.qawitherev.com` | `api.parcel-management.qawitherev.com` |
+| API domain | `api-staging-parcel-management.qawitherev.com` | `api-parcel-management.qawitherev.com` |
 | Frontend domain | `staging.parcel-management.qawitherev.com` | `parcel-management.qawitherev.com` |
 | GitHub env | `staging` | `production` |
 

@@ -144,9 +144,9 @@ jobs:
         id: domain
         run: |
           if [ "${{ inputs.environment }}" = "production" ]; then
-            echo "api_domain=api.parcel-management.qawitherev.com" >> $GITHUB_OUTPUT
+            echo "api_domain=api-parcel-management.qawitherev.com" >> $GITHUB_OUTPUT
           else
-            echo "api_domain=api.${{ inputs.environment }}.parcel-management.qawitherev.com" >> $GITHUB_OUTPUT
+            echo "api_domain=api-${{ inputs.environment }}-parcel-management.qawitherev.com" >> $GITHUB_OUTPUT
           fi
 
       - name: Health check

@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parcel Management System — AWS Architecture</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: #f0f2f5;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 24px;
+  }
+  header { text-align:center; margin-bottom:20px; }
+  header h1 { font-size:1.3rem; color:#232f3e; font-weight:700; }
+  header p  { font-size:0.78rem; color:#666; margin-top:4px; }
+
+  .tabs { display:flex; gap:8px; margin-bottom:16px; }
+  .tabs button {
+    padding:7px 22px; border-radius:6px; border:1.5px solid #d4d8dd;
+    background:#fff; color:#444; cursor:pointer; font-size:0.78rem; font-weight:600;
+    transition: all .15s;
+  }
+  .tabs button.active { background:#232f3e; color:#fff; border-color:#232f3e; }
+
+  .canvas-wrap {
+    background:#fff; border-radius:10px; box-shadow:0 2px 16px rgba(0,0,0,.08);
+    padding:10px; overflow:auto; max-width:100%;
+  }
+  svg { display:block; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Parcel Management System — AWS Architecture</h1>
+  <p>ap-southeast-1 (Singapore) &nbsp;·&nbsp; IaC with Terraform &nbsp;·&nbsp; 11 modules &nbsp;·&nbsp; 2 environments</p>
+</header>
+
+<div class="tabs">
+  <button class="active" onclick="switchEnv('production')">Production</button>
+  <button onclick="switchEnv('staging')">Staging</button>
+</div>
+
+<div class="canvas-wrap">
+  <svg id="arch" viewBox="0 0 1450 1000" width="1450" height="1000"
+       style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;">
+  </svg>
+</div>
+
+<script>
+const ENVS = {
+  production: {
+    vpcCidr:'10.0.0.0/16',
+    pubA:'10.0.1.0/24', pubB:'10.0.2.0/24',
+    privA:'10.0.101.0/24', privB:'10.0.102.0/24',
+    cpu:'512', mem:'1024 MB', desired:'1',
+    appDomain:'parcel-management.qawitherev.com',
+    apiDomain:'api-parcel-management.qawitherev.com',
+    ssmPath:'production',
+    branch:'main',
+    cluster:'parcel-management-production',
+    ecr:'parcel-management-production-backend',
+    bucket:'parcel-management-production-frontend',
+    compute:false,
+  },
+  staging: {
+    vpcCidr:'10.1.0.0/16',
+    pubA:'10.1.1.0/24', pubB:'10.1.2.0/24',
+    privA:'10.1.101.0/24', privB:'10.1.102.0/24',
+    cpu:'256', mem:'512 MB', desired:'1',
+    appDomain:'staging.parcel-management.qawitherev.com',
+    apiDomain:'api-staging-parcel-management.qawitherev.com',
+    ssmPath:'staging',
+    branch:'staging',
+    cluster:'parcel-management-staging',
+    ecr:'parcel-management-staging-backend',
+    bucket:'parcel-management-staging-frontend',
+    compute:false,
+  }
+};
+let E = ENVS.production;
+
+const C = {
+  r53:'#8C4FFF',  cf:'#8C4FFF',   s3:'#569A31',
+  alb:'#7B2CBF',  ecs:'#3B7DD8',  ecr:'#D13212',
+  iam:'#DD344C',  cw:'#FF4F8B',   ssm:'#D13212',
+  awsOrange:'#FF9900',
+  vpc:'#2E7D32',  pub:'#42A5F5',  priv:'#EF5350',
+  gh:'#24292E',
+  text:'#232F3E', gray:'#666',  lgray:'#999',
+  arrow:'#999',
+};
+
+const ns='http://www.w3.org/2000/svg';
+
+function el(tag,attrs){
+  const e=document.createElementNS(ns,tag);
+  for(const k in attrs) e.setAttribute(k,attrs[k]);
+  return e;
+}
+function R(x,y,w,h,rx,fill,stroke,sw,cls){
+  const a={x:x,y:y,width:w,height:h,rx:rx||4,fill:fill||'none',stroke:stroke||'none','stroke-width':sw||1};
+  if(cls) a['class']=cls;
+  return el('rect',a);
+}
+function T(x,y,str,fs,fill,weight,anchor){
+  const t=el('text',{x:x,y:y,'font-size':fs||'0.7rem',fill:fill||C.text,'font-weight':weight||'400'});
+  if(anchor) t.setAttribute('text-anchor',anchor);
+  t.textContent=str;
+  return t;
+}
+function L(x1,y1,x2,y2,stroke,sw,dash){
+  const a={x1:x1,y1:y1,x2:x2,y2:y2,stroke:stroke||C.arrow,'stroke-width':sw||1.3};
+  if(dash) a['stroke-dasharray']=dash;
+  return el('line',a);
+}
+function arrowHead(cx,cy,angle,color){
+  const s=5, a=angle*Math.PI/180;
+  const x1=cx+s*Math.cos(a+2.5), y1=cy+s*Math.sin(a+2.5);
+  const x2=cx+s*Math.cos(a-2.5), y2=cy+s*Math.sin(a-2.5);
+  return el('polygon',{points:`${cx},${cy} ${x1},${y1} ${x2},${y2}`,fill:color||C.arrow});
+}
+function arrowV(x,y1,y2,color){
+  const g=document.createElementNS(ns,'g');
+  g.appendChild(L(x,y1,x,y2,color||C.arrow,1.4));
+  g.appendChild(arrowHead(x,y2,270,color||C.arrow));
+  return g;
+}
+function arrowH(x1,x2,y,color){
+  const g=document.createElementNS(ns,'g');
+  g.appendChild(L(x1,y,x2,y,color||C.arrow,1.4));
+  g.appendChild(arrowHead(x2,y,x2>x1?0:180,color||C.arrow));
+  return g;
+}
+function arrowD(d,color){
+  const g=document.createElementNS(ns,'g');
+  g.appendChild(el('path',{d:d,fill:'none',stroke:color||C.arrow,'stroke-width':1.4}));
+  // get last segment for arrowhead
+  const pts=d.split(/[,\s]+/).filter(Number).map(Number);
+  const ex=pts[pts.length-2], ey=pts[pts.length-1];
+  const px=pts[pts.length-4], py=pts[pts.length-3];
+  const dx=ex-px, dy=ey-py;
+  const ang=Math.atan2(dy,dx)*180/Math.PI;
+  g.appendChild(arrowHead(ex,ey,ang,color||C.arrow));
+  return g;
+}
+
+// ── service card ──
+function card(x,y,w,h,color,title,lines,small){
+  const g=document.createElementNS(ns,'g');
+  const fs=small?0.58:0.62, ts=small?0.62:0.68;
+  g.appendChild(R(x+1,y+1,w,h,5,'rgba(0,0,0,0.04)'));
+  g.appendChild(R(x,y,w,h,5,'#fff',color,1.5));
+  // header bar
+  g.appendChild(R(x,y,w,small?20:22,0,color));
+  // title on colored bar
+  g.appendChild(T(x+10,y+(small?14:15),title,ts,'#fff','700'));
+  // detail lines
+  lines.forEach((l,i)=>{
+    g.appendChild(T(x+10,y+(small?28:30)+(small?11:12)*i,l,fs,C.gray,'400'));
+  });
+  return g;
+}
+
+function draw(){
+  const svg=document.getElementById('arch');
+  svg.innerHTML='';
+
+  // ═══════════ AWS CLOUD ═══════════
+  svg.appendChild(R(8,8,1434,984,14,'rgba(255,153,0,0.018)',C.awsOrange,2.5));
+  // label
+  svg.appendChild(R(28,-6,102,14,0,'#fff'));
+  svg.appendChild(T(44,4,'☁ AWS Cloud',0.82,C.awsOrange,'700'));
+  svg.appendChild(T(1300,22,'Region: ap-southeast-1',0.6,C.lgray,'400'));
+
+  // ═══════════ USERS ═══════════
+  const ux=725;
+  // stick figure
+  svg.appendChild(el('circle',{cx:ux,cy:45,r:11,fill:'none',stroke:C.gray,'stroke-width':1.6}));
+  svg.appendChild(L(ux,56,ux,77,C.gray,1.6));
+  svg.appendChild(L(ux-16,63,ux+16,63,C.gray,1.6));
+  svg.appendChild(L(ux,77,ux-14,92,C.gray,1.6));
+  svg.appendChild(L(ux,77,ux+14,92,C.gray,1.6));
+  svg.appendChild(T(ux,110,'End Users',0.74,C.text,'600','middle'));
+  svg.appendChild(T(ux,126,'Browser · Mobile · API clients',0.6,C.lgray,'400','middle'));
+
+  // ═══════════ ROUTE53 ═══════════
+  const r53={x:550,y:140,w:350,h:52};
+  svg.appendChild(card(r53.x,r53.y,r53.w,r53.h,C.r53,'Amazon Route53',[
+    E.appDomain,
+    'Hosted Zone: qawitherev.com (pre-existing)',
+  ]));
+
+  // user → R53
+  svg.appendChild(arrowV(ux,92,r53.y,C.r53));
+
+  // ═══════════ TRAFFIC SPLIT ═══════════
+  // R53 → CloudFront (left)
+  svg.appendChild(arrowD(`M${r53.x+60},192 C${r53.x+60},212 370,212 370,230`,C.cf));
+  // R53 → VPC/ALB (right)
+  svg.appendChild(arrowD(`M${r53.x+r53.w-60},192 C${r53.x+r53.w-60},240 1080,240 1080,310`,C.alb));
+  // labels
+  svg.appendChild(T(r53.x-10,210,'app.* →',0.58,C.lgray,'400','end'));
+  svg.appendChild(T(r53.x+r53.w+10,210,'← api.*',0.58,C.lgray,'400','start'));
+
+  // ═══════════ FRONTEND PATH ═══════════
+  const cf={x:190,y:234,w:320,h:58};
+  svg.appendChild(card(cf.x,cf.y,cf.w,cf.h,C.cf,'Amazon CloudFront',[
+    'Price Class 200 · TLS 1.2_2021 · OAC (SigV4)',
+    'SPA fallback: 404 → /index.html  ·  Compression: enabled',
+  ]));
+  svg.appendChild(arrowV(cf.x+160,292,326,C.s3));
+
+  const s3box={x:190,y:330,w:320,h:50};
+  svg.appendChild(card(s3box.x,s3box.y,s3box.w,s3box.h,C.s3,'Amazon S3',[
+    E.bucket,
+    'Public access: fully blocked · CloudFront OAC only',
+  ]));
+
+  svg.appendChild(T(s3box.x+160,396,'⬆ Angular SPA static assets',0.58,C.s3,'500','middle'));
+
+  // ═══════════ VPC ═══════════
+  const vpc={x:560,y:312,w:640,h:420};
+  // VPC boundary
+  svg.appendChild(R(vpc.x,vpc.y,vpc.w,vpc.h,12,'rgba(46,125,50,0.025)',C.vpc,2.2));
+  // VPC label
+  svg.appendChild(R(vpc.x+14,vpc.y-14,162,20,0,'#fff'));
+  svg.appendChild(T(vpc.x+24,vpc.y,'VPC  ·  '+E.vpcCidr,0.74,C.vpc,'700'));
+
+  // ─── PUBLIC SUBNETS ───
+  const pub={x:vpc.x+16,y:vpc.y+28,w:vpc.w-32,h:88};
+  svg.appendChild(R(pub.x,pub.y,pub.w,pub.h,7,'rgba(66,165,245,0.04)',C.pub,1.5));
+  svg.appendChild(T(pub.x+14,pub.y+17,'Public Subnets',0.64,C.pub,'600'));
+
+  // ALB inside public subnets
+  const albA=card(pub.x+16,pub.y+32,(pub.w-48)/2,46,C.alb,'AZ: ap-southeast-1a',[
+    E.pubA+'  ·  ALB endpoint',
+  ],true);
+  svg.appendChild(albA);
+  const albB=card(pub.x+pub.w/2+8,pub.y+32,(pub.w-48)/2,46,C.alb,'AZ: ap-southeast-1b',[
+    E.pubB+'  ·  ALB endpoint',
+  ],true);
+  svg.appendChild(albB);
+
+  // ALB detail card (spanning both AZs)
+  svg.appendChild(card(pub.x+60,pub.y+12,520,18,C.alb,'Application Load Balancer — Internet-facing · HTTP:80 + HTTPS:443 · Target: IP :5163',[],true));
+
+  // ─── PRIVATE SUBNETS ───
+  const priv={x:vpc.x+16,y:pub.y+pub.h+16,w:vpc.w-32,h:130};
+  svg.appendChild(R(priv.x,priv.y,priv.w,priv.h,7,'rgba(239,83,80,0.04)',C.priv,1.5));
+  svg.appendChild(T(priv.x+14,priv.y+17,'Private Subnets',0.64,C.priv,'600'));
+
+  // ECS tasks inside private subnets
+  const taskA=card(priv.x+16,priv.y+32,(priv.w-48)/2,88,C.ecs,'AZ: ap-southeast-1a',[
+    E.privA,
+    'ECS Fargate task',
+    'Container: backend :5163',
+    'Health: GET /health → 200',
+  ],true);
+  svg.appendChild(taskA);
+  const taskB=card(priv.x+priv.w/2+8,priv.y+32,(priv.w-48)/2,88,C.ecs,'AZ: ap-southeast-1b',[
+    E.privB,
+    'ECS Fargate task',
+    'Container: backend :5163',
+    'Health: GET /health → 200',
+  ],true);
+  svg.appendChild(taskB);
+
+  // Traffic arrows: ALB → ECS tasks
+  svg.appendChild(arrowD(`M${pub.x+pub.w/4},${pub.y+pub.h} C${pub.x+pub.w/4},${priv.y} ${priv.x+priv.w/4},${priv.y+32} ${priv.x+priv.w/4},${priv.y+32}`,C.alb));
+  svg.appendChild(arrowD(`M${pub.x+3*pub.w/4},${pub.y+pub.h} C${pub.x+3*pub.w/4},${priv.y} ${priv.x+3*priv.w/4},${priv.y+32} ${priv.x+3*priv.w/4},${priv.y+32}`,C.alb));
+
+  // ─── GATEWAYS ───
+  const gwY=priv.y+priv.h+16;
+  // IGW
+  svg.appendChild(card(pub.x+40,gwY,140,30,'#aaa','Internet Gateway',[],true));
+  svg.appendChild(L(pub.x+110,gwY,pub.x+110,pub.y+pub.h,C.arrow,0.7,'3,3'));
+  // NAT GW
+  const natEl=card(pub.x+pub.w-200,gwY,160,30,'#aaa','NAT Gateway + EIP',[],true);
+  natEl.setAttribute('id','nat-gw');
+  svg.appendChild(natEl);
+  svg.appendChild(L(pub.x+pub.w-120,gwY,pub.x+pub.w-120,priv.y+priv.h,C.arrow,0.7,'3,3'));
+
+  // ─── ECS CLUSTER INFO ───
+  const ecsY=gwY+46;
+  svg.appendChild(card(vpc.x+80,ecsY,480,50,C.ecs,'Amazon ECS Cluster (Fargate)',[
+    'Cluster: '+E.cluster+'  ·  CPU: '+E.cpu+'  ·  Memory: '+E.mem+'  ·  Tasks: '+E.desired,
+    'Network mode: awsvpc  ·  Platform: Linux/x86_64  ·  Container Insights: on',
+  ]));
+
+  // ═══════════ SUPPORTING SERVICES (left column) ═══════════
+  const sY=330;
+  // ECR
+  svg.appendChild(card(30,sY,280,68,C.ecr,'Amazon ECR',[
+    'Repository: '+E.ecr,
+    'Tags: IMMUTABLE · Scan on push: enabled',
+    'Lifecycle: expire untagged after 7d, keep 10',
+  ]));
+  // ECR → ECS
+  svg.appendChild(arrowD(`M310,${sY+34} C400,${sY+34} 480,${ecsY+20} ${vpc.x+80},${ecsY+20}`,C.ecr));
+
+  // SSM
+  svg.appendChild(card(30,sY+90,280,68,C.ssm,'SSM Parameter Store',[
+    'Path: /'+E.ssmPath+'/backend/',
+    '5 SecureString + 9 String parameters',
+    'DB · JWT · SendGrid · Redis · Admin passwords',
+  ]));
+  // SSM → ECS
+  svg.appendChild(arrowD(`M310,${sY+124} C400,${sY+124} 480,${ecsY+35} ${vpc.x+80},${ecsY+35}`,C.ssm));
+
+  // IAM
+  svg.appendChild(card(30,sY+180,280,82,C.iam,'AWS IAM',[
+    'Task Execution Role: ECR pull + SSM read',
+    'Task Role: app-level S3, SES, SQS perms',
+    'CI/CD User: ECR + ECS + S3 + CloudFront',
+    'OIDC Role: GitHub Actions → AdminAccess',
+  ]));
+
+  // CloudWatch
+  svg.appendChild(card(30,sY+280,280,58,C.cw,'Amazon CloudWatch',[
+    'Dashboard: '+E.ssmPath,
+    '12 widgets: ALB health · ECS CPU/Mem · CF metrics',
+    'Logs: /ecs/parcel-management-system',
+  ]));
+
+  // ═══════════ ACM CERTIFICATES ═══════════
+  svg.appendChild(card(250,vpc.y+vpc.h+16,340,50,'#7B2CBF','ACM Certificate — ALB (ap-southeast-1)',[
+    'SAN: '+E.appDomain+'  +  '+E.apiDomain+'  ·  DNS-validated via Route53',
+  ],true));
+  svg.appendChild(card(620,vpc.y+vpc.h+16,380,50,'#8C4FFF','ACM Certificate — CloudFront (us-east-1)',[
+    'Domain: '+E.appDomain+'  ·  DNS-validated via Route53',
+  ],true));
+
+  // ═══════════ CI/CD ═══════════
+  const ciY=vpc.y+vpc.h+80;
+  // GitHub Actions
+  svg.appendChild(card(100,ciY,290,66,C.gh,'GitHub Actions',[
+    'Repo: qawitherev/parcel-management-system',
+    'Trigger: push to '+E.branch+'  ·  Environment: '+E.ssmPath,
+    'Docker build + push to ECR (tag = git SHA)',
+  ]));
+  // → OIDC
+  svg.appendChild(arrowH(390,480,ciY+33,C.gray));
+
+  // OIDC Provider
+  svg.appendChild(card(480,ciY,320,66,C.iam,'AWS IAM OIDC Provider',[
+    'Federation: token.actions.githubusercontent.com',
+    'Assume Role: github-actions-'+E.ssmPath,
+    E.ssmPath==='production'
+      ?'OIDC provider resource created here (one per account)'
+      :'Reuses production OIDC provider (only one per account)',
+  ]));
+  // → deploy steps
+  svg.appendChild(arrowH(800,920,ciY+33,C.gray));
+
+  // Deploy steps
+  const ds={x:920,y:ciY,w:320,h:130};
+  svg.appendChild(R(ds.x,ds.y,ds.w,ds.h,6,'#f9f9f9','#ddd',1));
+  svg.appendChild(T(ds.x+ds.w/2,ds.y+18,'CI/CD Deploy Flow',0.64,C.text,'700','middle'));
+  [
+    '1. Docker build & push to ECR (tag = git SHA)',
+    '2. Register new ECS task definition revision',
+    '3. Update ECS service → force new deployment',
+    '4. CloudFront invalidation (if frontend changed)',
+    '5. Health check: curl /health on new task',
+  ].forEach((s,i)=>{
+    svg.appendChild(T(ds.x+14,ds.y+42+i*17,s,0.58,C.gray,'400'));
+  });
+
+  // GitHub → deploy box connector
+  svg.appendChild(arrowD(`M${ds.x-300},${ciY+58} C${ds.x-150},${ciY+120} ${ds.x},${ciY+80} ${ds.x},${ciY+65}`,C.gray));
+
+  // ═══════════ COST-SAVING BADGE ═══════════
+  if(!E.compute){
+    svg.appendChild(R(vpc.x+120,vpc.y+vpc.h-5,440,22,5,'#FFF3E0','#FFB74D',1.2));
+    svg.appendChild(T(vpc.x+340,vpc.y+vpc.h+10,'⚠  enable_compute = false — ALB, NAT Gateway, ECS service NOT deployed (cost-saving mode)',0.58,'#E65100','500','middle'));
+    const nat=svg.querySelector('#nat-gw');
+    if(nat) nat.setAttribute('opacity','0.3');
+  }
+}
+
+function switchEnv(name){
+  E = ENVS[name];
+  document.querySelectorAll('.tabs button').forEach(b=>{
+    b.classList.toggle('active', b.textContent.trim().toLowerCase()===name);
+  });
+  draw();
+}
+
+draw();
+</script>
+</body>
+</html>

@@ -215,9 +215,9 @@ User's Browser
 ├── https://parcel-management.qawitherev.com
 │   └── Route53 → CloudFront → S3 (static frontend files)
 │       │
-│       └── Angular reads config.json → apiUrl = "https://api.parcel-management.qawitherev.com"
+│       └── Angular reads config.json → apiUrl = "https://api-parcel-management.qawitherev.com"
 │
-└── https://api.parcel-management.qawitherev.com
+└── https://api-parcel-management.qawitherev.com
     └── Route53 → ALB (HTTPS, ACM cert) → ECS Fargate (backend :5163)
 
 ┌──────────────────────────────────────────────────────────────────┐

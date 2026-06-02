@@ -1,0 +1,30 @@
+# ============================================================
+# Parcel Management API — Production
+# ============================================================
+
+[Unit]
+Description=Parcel Management API (.NET 9.0)
+After=network.target
+
+[Service]
+Type=simple
+User=pm-svc
+Group=pm-svc
+WorkingDirectory=/opt/pm/backend
+EnvironmentFile=/etc/parcel-management/.env
+ExecStart=/usr/bin/dotnet /opt/pm/backend/ParcelManagement.Api.dll
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=pm-api
+
+# Hardening
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/opt/pm/backend /tmp
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target

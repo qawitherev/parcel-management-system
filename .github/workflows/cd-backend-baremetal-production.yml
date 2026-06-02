@@ -1,0 +1,19 @@
+# ============================================================
+# CD Backend — Baremetal Production
+# ============================================================
+# Manual trigger only via workflow_dispatch.
+# ============================================================
+
+name: CD Backend — Baremetal Production
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    uses: ./.github/workflows/cd-backend-baremetal.yml
+    with:
+      environment: production
+    permissions:
+      id-token: write
+      contents: read

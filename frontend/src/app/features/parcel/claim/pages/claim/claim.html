@@ -1,42 +1,35 @@
-
-
-@let claimResponse = claimResponse$ | async;
-
-<div class="flex justify-end mb-1">
-    <app-my-button
-        variant="primary"
-        label="Bulk Claim"
-        type="button"
-        (clicked)="onBulkClaimPopup()"
-    ></app-my-button>
-</div>
+<div class="pl">Parcels</div>
+<h1>Claim Parcel</h1>
+<p class="sub">Enter a tracking number to claim a parcel.</p>
 
 @if (isBulkClaimPopup) {
-    <app-file-upload
-        [mapper]="payloadMapper"
-        (cancelEmitter)="onBulkClaimPopup()"
-        (dataEmitter)="onBulkClaim($event)"
-    ></app-file-upload>
+  <app-file-upload
+    [mapper]="payloadMapper"
+    (cancelEmitter)="onBulkClaimPopup()"
+    (dataEmitter)="onBulkClaim($event)"
+  ></app-file-upload>
+} @else {
+  <div class="form-card">
+    <form [formGroup]="formGroup" (ngSubmit)="onClaim(formGroup.value)">
+      <div class="fg">
+        <label>Tracking Number</label>
+        <input formControlName="trackingNumber" type="text" placeholder="e.g. TRK001" />
+      </div>
+
+      @let res = claimResponse$ | async;
+      @if (res && res.error) {
+        <div class="err-card"><strong>Claim failed</strong><br>{{ res.message }}</div>
+      }
+      @if (res && !res.error) {
+        <div class="success-card">{{ res.message }}</div>
+      }
+
+      <div class="btn-row">
+        <button type="submit" class="btn" [disabled]="isClaiming">
+          {{ isClaiming ? 'Claiming...' : 'Claim Parcel' }}
+        </button>
+        <button type="button" class="btn btn-o" (click)="onBulkClaimPopup()">Bulk Claim</button>
+      </div>
+    </form>
+  </div>
 }
-
-<div>
-    <app-my-form
-        [myFormGroup]="formGroup"
-        [myFields]="formFieldConfigs"
-        submitLabel="Claim Parcel"
-        [isSubmitLoading]="isClaiming"
-        (submitted)="onClaim($event)"
-    ></app-my-form>
-
-    @if (claimResponse && 'error' in claimResponse) {
-        <div class="text-red-500 text-sm">
-            {{ claimResponse.message}}
-        </div>
-    }
-
-    @if (claimResponse && !('error' in claimResponse)) {
-        <div class="text-green-500 text-sm">
-            {{claimResponse.message}}
-        </div>
-    }
-</div>

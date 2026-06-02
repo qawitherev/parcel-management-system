@@ -1,0 +1,41 @@
+.sgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1px;
+  background: var(--bdr);
+  margin-bottom: 24px;
+}
+
+.scard {
+  background: var(--bg);
+  padding: clamp(20px, 4vw, 32px) clamp(16px, 3vw, 28px);
+  text-align: center;
+}
+
+.scard .sl {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--t3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+
+.scard .sv {
+  font-size: clamp(32px, 6vw, 52px);
+  font-weight: 800;
+  letter-spacing: -1px;
+  color: var(--text);
+}
+
+.scard:first-child .sv {
+  color: var(--red);
+}
+
+@media (max-width: 768px) {
+  .sgrid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 480px) {
+  .sgrid { grid-template-columns: 1fr; }
+}

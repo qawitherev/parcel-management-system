@@ -78,7 +78,7 @@ export class Login implements OnInit, OnDestroy {
               .getRole()
               .pipe(takeUntil(this.destroy$))
               .subscribe((_) => {
-                const url = this.returnUrl || '/dashboard/user';
+                const url = this.returnUrl || '/dashboard';
                 this.router.navigateByUrl(url);
               });
           } else {

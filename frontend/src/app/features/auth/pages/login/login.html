@@ -1,44 +1,73 @@
-<div class="flex min-h-screen items-center justify-center">
-  <div class="w-full max-w-md bg-[var(--clr-surface-a0)] p-8 rounded-2xl border-1 border-[var(--clr-surface-a30)]">
-    <h2 class="text-2xl font-bold mb-6 text-center text-[var(--clr-dark-a0)]">Login</h2>
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <div class="mb-4">
-        <label class="block text-[var(--clr-dark-a0)]">Email or Username</label>
-        <input
-          formControlName="emailUsername"
-          type="text"
-          class="w-full px-3 py-2 rounded-lg bg-[var(--clr-surface-a10)] text-[var(--clr-dark-a0)]"
-        />
-        @if (form.get('emailUsername')?.invalid && form.get('emailUsername')?.touched) {
-        <div class="text-red-500 text-sm">Please enter username or email</div>
+<div class="login-page">
+  <div class="ls">
+    <!-- Brand block (left) -->
+    <div class="ls-v">
+      <div class="bwrap">
+        <div class="bm">P</div>
+        <div class="bn">PARCEL</div>
+        <div class="bt">Management System</div>
+      </div>
+    </div>
+
+    <!-- Form (right) -->
+    <div class="ls-f">
+      <h1>Sign In</h1>
+      <p class="lsub">Enter your credentials to continue</p>
+
+      @if (loginResponse$ | async; as res) {
+        @if (res.error) {
+          <div class="err-card">
+            <strong>Login failed</strong><br>
+            {{ res.message }}
+          </div>
         }
-      </div>
-      <div class="mb-6">
-        <label class="block text-[var(--clr-dark-a0)]">Password</label>
-        <input
-          formControlName="password"
-          type="password"
-          class="w-full px-3 py-2 rounded-lg bg-[var(--clr-surface-a10)] text-[var(--clr-dark-a0)]"
-        />
-        @if (form.get('password')?.invalid && form.get('password')?.touched) {
-        <div class="text-red-500 text-sm">Please enter password</div>
-        }
-      </div>
-      <app-my-button
-        variant="primary"
-        label="Login"
-        type="submit"
-        [isLoading]="isLoading"
-        [disabled]="!(form.get('emailUsername')?.valid && form.get('password')?.valid)"
-      ></app-my-button>
-      <div *ngIf="loginResponse$ | async as res">
-        <div class="text-red-500 text-sm mt-2">{{ res.message }}</div>
-      </div>
-    </form>
-    <p class="mt-4 text-center text-[var(--clr-dark-a0)]">
-      Don't have an account?
-      <a routerLink="/register" class="text-[var(--clr-info-a10)] hover:underline cursor-pointer">Register</a>
-    </p>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="fg">
+          <label>Username or Email</label>
+          <input
+            formControlName="emailUsername"
+            type="text"
+            placeholder="Enter your username"
+          />
+          @if (form.get('emailUsername')?.invalid && form.get('emailUsername')?.touched) {
+            <span class="fg-err">Required</span>
+          }
+        </div>
+
+        <div class="fg">
+          <label>Password</label>
+          <input
+            formControlName="password"
+            type="password"
+            placeholder="Enter your password"
+          />
+          @if (form.get('password')?.invalid && form.get('password')?.touched) {
+            <span class="fg-err">Required</span>
+          }
+        </div>
+
+        <div class="quick-login">
+          <button type="button" class="btn btn-o btn-s" (click)="form.patchValue({emailUsername: 'manager-system', password: '123'})">Manager</button>
+          <button type="button" class="btn btn-o btn-s" (click)="form.patchValue({emailUsername: 'raze', password: '123'})">Resident</button>
+          <button type="button" class="btn btn-o btn-s" (click)="form.patchValue({emailUsername: 'admin-parcel', password: '123'})">Admin</button>
+        </div>
+
+        <button
+          type="submit"
+          class="btn"
+          [disabled]="isLoading"
+          style="width: 100%;"
+        >
+          {{ isLoading ? 'Signing in...' : 'Sign In' }}
+        </button>
+      </form>
+
+      <p style="margin-top: 20px; font-size: 13px; color: var(--t2); text-align: center;">
+        Don't have an account?
+        <a routerLink="/register" style="color: var(--red); font-weight: 600; cursor: pointer;">Register</a>
+      </p>
+    </div>
   </div>
 </div>
-

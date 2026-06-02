@@ -1,3 +1,41 @@
-input::placeholder {
-    color: grey;
+/* ── Form label ── */
+.my-form-label {
+  color: #111;
+}
+
+/* ── Form input ── */
+.my-form-input {
+  margin-top: 4px;
+  color: #111;
+  width: 100%;
+  padding: 8px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.my-form-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #fafafa;
+  border-color: #d0d0d0;
+}
+
+.my-form-input::placeholder {
+  color: grey;
+}
+
+/* ── Dark theme ── */
+[data-theme='dark'] .my-form-label {
+  color: #f5f5f5;
+}
+
+[data-theme='dark'] .my-form-input {
+  color: #f5f5f5;
+  border-color: #2a2a2a;
+  background: #0a0a0a;
+}
+
+[data-theme='dark'] .my-form-input:focus {
+  box-shadow: 0 0 0 2px #141414;
+  border-color: #3a3a3a;
 }

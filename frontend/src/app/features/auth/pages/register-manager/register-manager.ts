@@ -9,6 +9,7 @@ import { AppConsole } from '../../../../utils/app-console';
 import { Router } from '@angular/router';
 @Component({
   selector: 'app-register-manager',
+  standalone: true,
   imports: [ReactiveFormsModule, NgIf, NgClass],
   templateUrl: './register-manager.html',
   styleUrl: './register-manager.css'

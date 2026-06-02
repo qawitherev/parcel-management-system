@@ -45,7 +45,11 @@ export class DashboardService {
   }
 
   getUserAwaitingPickup(): Observable<any> {
-    return this.http.get(`${parcelEndpoints.getMyParcels}/awaitingPickup`)
+    return this.http.get(`${parcelEndpoints.getMyParcels}/AwaitingPickup`)
+  }
+
+  getUserClaimed(): Observable<any> {
+    return this.http.get(`${parcelEndpoints.getMyParcels}/Claimed`)
   }
 
   getUserDetails(): Observable<UserResponse | ApiError> {

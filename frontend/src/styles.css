@@ -1,3 +1,509 @@
-/* You can add global styles to this file, and also import other style files */
-@import "tailwindcss";
-@import './styles/_theme.css'
+/* ============================================================
+   Swiss Grid Design System — Parcel Management
+   ============================================================ */
+
+/* ── Inter font ── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* ── Light theme (default) ── */
+:root {
+  --bg: #fff;
+  --bg2: #fafafa;
+  --text: #111;
+  --t2: #555;
+  --t3: #999;
+  --red: #e63946;
+  --red-d: #c1121f;
+  --bdr: #e0e0e0;
+  --bdr2: #000;
+  --f: 'Inter', system-ui, -apple-system, sans-serif;
+  --radius: 0;
+
+  /* ── Swiss Grid color system (--clr-*) ── */
+  --clr-primary-a0: #000;
+  --clr-primary-a10: #333;
+  --clr-primary-a20: #555;
+  --clr-surface-a0: #fff;
+  --clr-surface-a10: #f5f5f5;
+  --clr-surface-a20: #eee;
+  --clr-surface-a50: #ccc;
+  --clr-surface-tonal-a0: #fafafa;
+  --clr-surface-tonal-a20: #e0e0e0;
+  --clr-surface-tonal-a50: #d0d0d0;
+  --clr-dark-a0: #111;
+  --clr-success-a0: #16a34a;
+  --clr-success-a10: #22c55e;
+  --clr-success-a20: #86efac;
+  --clr-danger-a0: #e63946;
+  --clr-danger-a10: #c1121f;
+}
+
+/* ── Dark theme ── */
+[data-theme='dark'] {
+  --bg: #0a0a0a;
+  --bg2: #141414;
+  --text: #f5f5f5;
+  --t2: #a0a0a0;
+  --t3: #666;
+  --red: #ff4d5a;
+  --red-d: #e63946;
+  --bdr: #2a2a2a;
+  --bdr2: #444;
+
+  /* ── Swiss Grid color system (--clr-*) ── */
+  --clr-primary-a0: #f5f5f5;
+  --clr-primary-a10: #ccc;
+  --clr-primary-a20: #555;
+  --clr-surface-a0: #0a0a0a;
+  --clr-surface-a10: #1a1a1a;
+  --clr-surface-a20: #2a2a2a;
+  --clr-surface-a50: #444;
+  --clr-surface-tonal-a0: #141414;
+  --clr-surface-tonal-a20: #2a2a2a;
+  --clr-surface-tonal-a50: #3a3a3a;
+  --clr-dark-a0: #f5f5f5;
+  --clr-success-a0: #22c55e;
+  --clr-success-a10: #4ade80;
+  --clr-success-a20: #86efac;
+  --clr-danger-a0: #ff4d5a;
+  --clr-danger-a10: #e63946;
+}
+
+/* ── Reset ── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--f);
+  font-size: 16px;
+  line-height: 1.5;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Typography ── */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+p { margin-bottom: 0; }
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ── Focus ── */
+:focus-visible {
+  outline: 2px solid var(--bdr2);
+  outline-offset: 2px;
+}
+
+/* ── Selection ── */
+::selection {
+  background: var(--bdr2);
+  color: var(--bg);
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bdr);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--t3);
+}
+
+/* ── Shared: Auth centered layout ── */
+.auth-centered {
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+/* ── Shared: Form card ── */
+.form-card {
+  background: var(--bg);
+  border: 1px solid var(--bdr);
+  padding: clamp(20px, 4vw, 32px);
+  max-width: 480px;
+  width: 100%;
+}
+
+.form-card h1 {
+  font-size: clamp(18px, 3vw, 22px);
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+/* ── Shared: Form fields ── */
+.fg {
+  margin-bottom: 16px;
+}
+
+.fg label {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--t2);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 8px;
+}
+
+.fg input {
+  width: 100%;
+  padding: 12px 0;
+  border: none;
+  border-bottom: 2px solid var(--bdr);
+  font-size: 15px;
+  font-family: var(--f);
+  background: transparent;
+  color: var(--text);
+  transition: border-color 0.15s;
+}
+
+.fg input:focus {
+  outline: none;
+  border-bottom-color: var(--bdr2);
+}
+
+.fg input::placeholder {
+  color: #ccc;
+}
+
+.fg-err {
+  font-size: 10px;
+  color: var(--red);
+  margin-top: 4px;
+  display: block;
+}
+
+.sub {
+  font-size: 13px;
+  color: var(--t2);
+}
+
+/* ── Shared: Error card ── */
+.err-card {
+  background: #fef2f2;
+  border: 1px solid var(--red);
+  padding: 14px 18px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--red);
+}
+
+.err-card strong {
+  font-weight: 700;
+}
+
+/* ── Shared: Buttons ── */
+.btn {
+  padding: 12px 28px;
+  border: 2px solid var(--bdr2);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--f);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  background: var(--bdr2);
+  color: var(--bg);
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  background: var(--red);
+  border-color: var(--red);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-o {
+  background: transparent;
+  color: var(--bdr2);
+}
+
+.btn-o:hover {
+  background: var(--bdr2);
+  color: var(--bg);
+}
+
+.btn-s {
+  padding: 8px 14px;
+  font-size: 10px;
+}
+
+/* ── Shared: Page header ── */
+.pl {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--t3);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 4px;
+}
+
+h1 {
+  font-size: clamp(24px, 4vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.6px;
+  margin-bottom: 4px;
+}
+
+.sub {
+  font-size: 14px;
+  color: var(--t2);
+  margin-bottom: 24px;
+  max-width: 640px;
+}
+
+/* ── Shared: Search bar ── */
+.search-bar {
+  display: flex;
+  gap: 0;
+  max-width: 100%;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.search-bar input {
+  flex: 1;
+  min-width: 200px;
+  padding: 12px 16px;
+  border: 2px solid var(--bdr2);
+  border-right: none;
+  font-size: 15px;
+  font-family: var(--f);
+  background: var(--bg);
+  color: var(--text);
+}
+
+.search-bar input:focus {
+  outline: none;
+}
+
+.search-bar input::placeholder {
+  color: #ccc;
+}
+
+.search-bar button {
+  padding: 12px 24px;
+  background: var(--bdr2);
+  color: var(--bg);
+  border: 2px solid var(--bdr2);
+  font-family: var(--f);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  cursor: pointer;
+}
+
+.search-bar button:hover {
+  background: var(--red);
+  border-color: var(--red);
+}
+
+.search-bar button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Shared: Filter row ── */
+.filter-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.filter-row select {
+  padding: 10px 16px;
+  border: 2px solid var(--bdr2);
+  font-family: var(--f);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* ── Shared: Button row ── */
+.btn-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* ── Shared: Badges ── */
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 1px solid;
+  white-space: nowrap;
+}
+
+.b-await {
+  color: var(--red);
+  border-color: var(--red);
+  background: #fef2f2;
+}
+
+.b-claim {
+  color: var(--text);
+  border-color: var(--bdr2);
+  background: var(--bg2);
+}
+
+.b-over {
+  color: #b45309;
+  border-color: #f59e0b;
+  background: #fffbeb;
+}
+
+/* ── Shared: Table section ── */
+.tsect {
+  background: var(--bg);
+  border: 1px solid var(--bdr);
+  margin-bottom: 20px;
+}
+
+.thd {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--bdr);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.twrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--t3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 2px solid var(--bdr);
+  white-space: nowrap;
+  background: var(--bg);
+}
+
+td {
+  padding: 14px 16px;
+  font-size: 13px;
+  border-bottom: 1px solid #f0f0f0;
+  white-space: nowrap;
+}
+
+tr:hover td {
+  background: var(--bg2);
+}
+
+/* ── Shared: Preference sections ── */
+.pref-section {
+  background: var(--bg);
+  border: 1px solid var(--bdr);
+  padding: clamp(16px, 3vw, 24px);
+  margin-bottom: 14px;
+}
+
+.pref-section h3 {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 14px;
+}
+
+.pref-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+  gap: 12px;
+}
+
+.pref-row:last-child {
+  border-bottom: none;
+}
+
+.pref-row span {
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .search-bar {
+    flex-direction: column;
+  }
+
+  .search-bar input {
+    border-right: 2px solid var(--bdr2);
+  }
+
+  .btn-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-row .btn {
+    text-align: center;
+  }
+}

@@ -1,9 +1,17 @@
-<button [type]="type" [ngClass]="buttonClasses" (click)="onClick($event)">
+<button
+  [type]="type"
+  class="my-btn"
+  [class.variant-primary]="variant === 'primary'"
+  [class.variant-secondary]="variant === 'secondary'"
+  [class.variant-success]="variant === 'success'"
+  [class.variant-danger]="variant === 'danger'"
+  [class.btn-disabled]="disabled"
+  [disabled]="disabled"
+  (click)="onClick($event)"
+>
   @if (!isLoading) {
-  {{ label }}
+    {{ label }}
   } @else {
-  <span
-    class="inline-block w-5 h-5 border-2 border-t-2 border-t-white border-[var(--clr-primary-a0)] rounded-full animate-spin"
-  ></span>
+    <span class="my-btn-spinner"></span>
   }
 </button>

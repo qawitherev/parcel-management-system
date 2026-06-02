@@ -1,18 +1,24 @@
-@let lockers = lockerList$ | async;
-<div class="relative flex justify-between items-center">
-  <app-my-searchbar placeHolder="Search lockers" (keywordChange)="onSearch($event)">
-  </app-my-searchbar>
-  <app-my-button variant="primary" label="Add Locker" (clicked)="onAddLockerClick()"></app-my-button>
-</div>
-<div class="mb-4"></div>
+<div class="pl">Management</div>
+<h1>Lockers</h1>
+<p class="sub">Manage parcel room lockers.</p>
 
-@if (lockers && 'error' in lockers) {
-<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-  <strong class="font-bold">Error occurred:</strong>
-  <span class="block sm:inline">{{ lockers.message }}</span>
+<div class="search-bar">
+  <input type="text" placeholder="Search lockers..." (input)="onSearch($any($event.target).value)" />
+  <button>Search</button>
 </div>
-} @else if (lockers && 'lockers' in lockers) {
-<app-my-table [columns]="tableColumns" [data]="lockers.lockers" [count]="lockers.count"
-  (actionClicked)="onActionClicked($event)" (paginationClicked)="onPaginationChanged($event)">
-</app-my-table>
+<div class="btn-row" style="margin-bottom: 16px;">
+  <button class="btn" (click)="onAddLockerClick()">Add Locker</button>
+</div>
+
+@let lockers = lockerList$ | async;
+@if (lockers && ('error' in lockers) && $any(lockers).error) {
+  <app-error-card [title]="$any(lockers).message || 'Failed to load lockers'"></app-error-card>
+} @else if (lockers && ('lockers' in lockers)) {
+  <app-my-table
+    [columns]="tableColumns"
+    [data]="$any(lockers).lockers"
+    [count]="$any(lockers).count"
+    (actionClicked)="onActionClicked($event)"
+    (paginationClicked)="onPaginationChanged($event)"
+  ></app-my-table>
 }

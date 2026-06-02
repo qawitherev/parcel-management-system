@@ -129,17 +129,10 @@ jobs:
           path: backend/**/*.trx
 
       # ── Integration tests ───────────────────────────────────
-      - name: Integration tests
-        run: dotnet test --configuration Release --no-build --logger "trx;LogFileName=integration-test-report.trx"
-        working-directory: backend/src/ParcelManagement.Test.Integration
-
-      - name: Upload integration test report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: baremetal-integration-test-report-${{ inputs.environment }}
-          path: backend/**/*.trx
-
+      # Skipped — require Docker (Testcontainers) which is not
+      # available on the baremetal runner. These tests already
+      # ran in CI on PR and in the ECS CD pipeline.
+      #
       # ── Publish ─────────────────────────────────────────────
       - name: Publish
         run: |

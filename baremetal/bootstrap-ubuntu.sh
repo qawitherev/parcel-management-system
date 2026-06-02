@@ -141,6 +141,13 @@ if [[ "$SKIP_DOTNET" != "true" ]]; then
     else
         die ".NET SDK installation failed"
     fi
+
+    # Ensure the GitHub Actions runner user can manage the dotnet
+    # installation (setup-dotnet action writes to /usr/share/dotnet)
+    if [[ ! -d /usr/share/dotnet ]]; then
+        mkdir -p /usr/share/dotnet
+    fi
+    chown -R "${SUDO_USER:-root}:${SUDO_USER:-root}" /usr/share/dotnet 2>/dev/null || true
 fi
 
 # ── nginx ──────────────────────────────────────────────────

@@ -137,7 +137,6 @@ a {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--t3);
 }
-
 /* ── Shared: Auth centered layout ── */
 .auth-centered {
   display: flex;

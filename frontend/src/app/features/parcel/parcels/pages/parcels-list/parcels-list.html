@@ -1,33 +1,51 @@
-<div class="overflow-x-auto rounded-lg">
-  <div class="flex items-center justify-between mb-4">
-    <!-- Search Bar -->
-    <div class="relative">
-      <app-my-searchbar
-        placeHolder="Search parcels..."
-        (keywordChange)="onSearch($event)"
-      >
-      </app-my-searchbar>
-    </div>
+<div class="pl">Parcels</div>
+<h1>All Parcels</h1>
+<p class="sub">Browse, search, and filter all parcels in the system.</p>
 
-    <!-- Status Dropdown -->
-    <div>
-      <select
-        [(ngModel)]="selectedStatus"
-        (change)="onStatusChanged($event)"
-        class="text-[var(--clr-dark-a0)] w-48 px-4 py-2 border border-[var(--clr-surface-tonal-a20)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--clr-surface-tonal-a0)]"
-      >
-        <option *ngFor="let option of availableStatus" [value]="option">{{ option }}</option>
-      </select>
-    </div>
-  </div>
+<!-- Search + Filter -->
+<div class="search-bar">
+  <input
+    type="text"
+    placeholder="Search parcels..."
+    (input)="onSearch($any($event.target).value)"
+  />
+  <button>Search</button>
+</div>
+<div class="filter-row">
+  <select [(ngModel)]="selectedStatus" (change)="onStatusChanged($event)">
+    @for (option of availableStatus; track option) {
+      <option [value]="option">{{ option }}</option>
+    }
+  </select>
 </div>
 
+<!-- Table -->
 @let parcelList = parcelList$ | async;
-
-<app-my-table
-  [columns]="tableColumns"
-  [data]="parcelList.parcels"
-  [count]="parcelList.count"
-  (paginationClicked)="onPaginationChanged($event)"
->
-</app-my-table>
+@if (parcelList && parcelList.parcels) {
+  <div class="twrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Tracking #</th>
+          <th>Locker</th>
+          <th>Weight</th>
+          <th>Dimensions</th>
+          <th>Unit</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (p of parcelList.parcels; track p.trackingNumber) {
+          <tr>
+            <td>{{ p.trackingNumber }}</td>
+            <td>{{ p.locker || '—' }}</td>
+            <td>{{ p.weight || '—' }}</td>
+            <td>{{ p.dimensions || '—' }}</td>
+            <td>{{ p.residentUnit }}</td>
+            <td><span class="badge" [class]="p.status === 'AwaitingPickup' ? 'b-await' : p.status === 'Claimed' ? 'b-claim' : ''">{{ p.status }}</span></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

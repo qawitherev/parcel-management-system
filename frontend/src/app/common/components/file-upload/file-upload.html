@@ -1,26 +1,19 @@
-<div class="fixed inset-0 bg-opacity-50 z-40"></div>
-<div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
-    <div class="bg-[var(--clr-surface-tonal-a30)] rounded-lg shadow-lg p-6 w-96">
-        <h2 class="text-lg font-semibold text-[var(--clr-dark-a0)] mb-4">Upload File</h2>
-        <form
-            [formGroup]="formGroup"
-            (ngSubmit)="onFileUpload($event)"
-        >
+<div class="file-upload-overlay"></div>
+<div class="file-upload-modal">
+    <div class="file-upload-card">
+        <h2 class="file-upload-title">Upload File</h2>
+        <form [formGroup]="formGroup" (ngSubmit)="onFileUpload($event)">
             <div class="mb-4">
-                <label for="fileInput" class="block text-sm font-medium text-[var(--clr-dark-a0)] mb-2"
-                    >Choose File</label
-                >
+                <label for="fileInput" class="file-upload-label">Choose File</label>
                 <input
                     type="file"
                     id="fileInput"
                     (change)="onFileChange($event)"
-                    class="block w-full text-sm text-[var(--clr-dark-a0)] border border-[var(--clr-surface-tonal-a20)] rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-200 file:text-gray-700 hover:file:bg-gray-300"
+                    class="file-upload-input"
                 />
                 <div class="mb-4"></div>
                 @if (errorMessage) {
-                    <div class="text-sm text-red-500 bg-red-100 border border-red-400 rounded-lg p-2">
-                        {{errorMessage}}
-                    </div>
+                    <div class="file-upload-error">{{errorMessage}}</div>
                 }
             </div>
             <div class="flex justify-end">

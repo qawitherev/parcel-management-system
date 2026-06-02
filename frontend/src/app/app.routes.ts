@@ -28,7 +28,7 @@ export const routes: Routes = [
     path: 'parcel',
     component: NormalLayout,
     children: [
-      { path: 'tracking', loadChildren: () => import('./features/parcel/tracking/tracking.routes').then(m => m.TRACKING_ROUTES), data: { title: 'Parcel Tracking' } },
+      { path: 'tracking', loadComponent: () => import('./features/parcel/tracking/pages/tracking/tracking').then(m => m.Tracking), data: { title: 'Parcel Tracking' } },
       { path: 'checkIn', loadChildren: () => import('./features/parcel/check-in/check-in.routes').then(m => m.CHECK_IN_ROUTES), data: { title: 'Check In' } },
       { path: 'claim', loadChildren: () => import('./features/parcel/claim/claim.routes').then(m => m.CLAIM_ROUTES), data: { title: 'Parcel Claim' } },
       { path: 'parcels', loadChildren: () => import('./features/parcel/parcels/parcels.routes').then(m => m.PARCELS_ROUTES), data: { title: 'All Parcels' } }
@@ -36,12 +36,38 @@ export const routes: Routes = [
     canActivate: [isLoggedInGuard]
   },
 
-  // Dashboard (with chrome)
+  // Dashboard (with chrome) — routes handle admin/user themselves
   {
     path: 'dashboard',
     component: NormalLayout,
     children: [
-      { path: '', loadChildren: () => import('./features/dashboard/dashboard.routes').then(m => m.DASHBOARD_ROUTES), data: { title: 'Dashboard' } }
+      {
+        path: '',
+        pathMatch: 'full',
+        redirectTo: () => {
+          const token = localStorage.getItem('parcel-management-system-token');
+          if (!token) return '/login';
+          try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const role = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+            return (role === 'ParcelRoomManager' || role === 'Admin') ? 'admin' : 'user';
+          } catch {
+            return 'user';
+          }
+        }
+      },
+      {
+        path: 'admin',
+        loadComponent: () => import('./features/dashboard/pages/dashboard-admin/dashboard-parent').then(m => m.DashboardParent),
+        data: { title: 'Dashboard' },
+        canActivate: [isLoggedInGuard, isAdminAndManagerAuthed]
+      },
+      {
+        path: 'user',
+        loadComponent: () => import('./features/dashboard/pages/dashboard-user/dashboard-user').then(m => m.DashboardUser),
+        data: { title: 'Dashboard' },
+        canActivate: [isLoggedInGuard]
+      }
     ]
   },
 

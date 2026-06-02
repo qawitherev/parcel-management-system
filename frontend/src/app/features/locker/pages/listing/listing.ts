@@ -11,10 +11,12 @@ import { PaginationEmitData } from "../../../../common/components/pagination/pag
 import { MySearchbar } from "../../../../common/components/searchbar/my-searchbar/my-searchbar";
 import { MyButton } from "../../../../common/components/buttons/my-button/my-button";
 import { MyTable, TableColumn } from "../../../../common/components/table/my-table/my-table";
+import { ErrorCardComponent } from "../../../../common/components/error-card/error-card";
 
 @Component({
   selector: 'app-listing',
-  imports: [AsyncPipe, FormsModule, MySearchbar, MyButton, MyTable],
+  standalone: true,
+  imports: [AsyncPipe, FormsModule, MySearchbar, MyButton, MyTable, ErrorCardComponent],
   templateUrl: './listing.html',
   styleUrl: './listing.css'
 })

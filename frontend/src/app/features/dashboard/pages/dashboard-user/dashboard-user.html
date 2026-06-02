@@ -1,10 +1,114 @@
-@let userDetails = userDetails$ | async;
+<div class="pl">Overview</div>
+<h1>Dashboard</h1>
+<p class="sub">Welcome back, {{ userName }}.</p>
 
-@if (userDetails && 'username' in userDetails) {
-    <h1 class="mb-2 text-[var(--clr-dark-a0)]">Welcome {{userDetails.username}}!</h1>
-}
-
-<div class="grid grid-cols-3 gap-4">
-    <app-user-awaiting-pickup></app-user-awaiting-pickup>
+<!-- Stat Grid -->
+<div class="sgrid">
+  <div class="scard">
+    <div class="sl">Awaiting Pickup</div>
+    @if (loading()) {
+      <app-skeleton height="48px" width="60%"></app-skeleton>
+    } @else {
+      <div class="sv">{{ awaitingCount() }}</div>
+    }
+  </div>
+  <div class="scard">
+    <div class="sl">Recently Claimed</div>
+    @if (loading()) {
+      <app-skeleton height="48px" width="60%"></app-skeleton>
+    } @else {
+      <div class="sv">{{ claimedCount() }}</div>
+    }
+  </div>
+  <div class="scard">
+    <div class="sl">Total Parcels</div>
+    @if (loading()) {
+      <app-skeleton height="48px" width="60%"></app-skeleton>
+    } @else {
+      <div class="sv">{{ awaitingCount() + claimedCount() }}</div>
+    }
+  </div>
 </div>
 
+<!-- Error -->
+@if (error()) {
+  <app-error-card
+    [title]="error()!"
+    retryLabel="Retry"
+    (retry)="loadDashboard()"
+  ></app-error-card>
+}
+
+<!-- Awaiting Pickup -->
+<div class="tsect">
+  <div class="thd"><span>Awaiting Pickup</span></div>
+  @if (loading()) {
+    <div style="padding: 16px 20px; display: flex; flex-direction: column; gap: 10px;">
+      <app-skeleton height="16px" width="90%"></app-skeleton>
+      <app-skeleton height="16px" width="75%"></app-skeleton>
+    </div>
+  } @else if (awaitingParcels().length === 0) {
+    <app-empty-state
+      title="No parcels awaiting pickup"
+      description="You have no parcels to collect."
+    ></app-empty-state>
+  } @else {
+    <div class="twrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Tracking #</th>
+            <th>Status</th>
+            <th>Locker</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of awaitingParcels(); track p.trackingNumber) {
+            <tr>
+              <td>{{ p.trackingNumber }}</td>
+              <td><span class="badge" [class]="getStatusClass(p.status)">{{ getStatusLabel(p.status) }}</span></td>
+              <td>{{ p.locker || '—' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+
+<!-- Recently Claimed -->
+<div class="tsect">
+  <div class="thd"><span>Recently Claimed</span></div>
+  @if (loading()) {
+    <div style="padding: 16px 20px; display: flex; flex-direction: column; gap: 10px;">
+      <app-skeleton height="16px" width="85%"></app-skeleton>
+      <app-skeleton height="16px" width="70%"></app-skeleton>
+    </div>
+  } @else if (claimedParcels().length === 0) {
+    <app-empty-state
+      title="No parcels claimed yet"
+      description="Claimed parcels will appear here."
+    ></app-empty-state>
+  } @else {
+    <div class="twrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Tracking #</th>
+            <th>Status</th>
+            <th>Locker</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of claimedParcels(); track p.trackingNumber) {
+            <tr>
+              <td>{{ p.trackingNumber }}</td>
+              <td><span class="badge b-claim">Claimed</span></td>
+              <td>{{ p.locker || '—' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

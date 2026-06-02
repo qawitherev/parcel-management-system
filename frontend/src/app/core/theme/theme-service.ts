@@ -1,9 +1,6 @@
 import { Injectable } from '@angular/core';
-import { AppConsole } from '../../utils/app-console';
 
-const PERSISTENT_THEME_MODE = "parcel-management-system-theme-state"
-const PERSISTENT_THEME_MODE_DARK = "parcel-management-system-theme-state-dark"
-const PERSISTENT_THEME_MODE_LIGHT = "parcel-management-system-theme-state-light"
+const STORAGE_KEY = 'parcel-management-system-theme';
 
 @Injectable({
   providedIn: 'root'
@@ -13,38 +10,27 @@ export class ThemeService {
   private darkMode = false;
 
   constructor() {
-    const themeState = localStorage.getItem(PERSISTENT_THEME_MODE);
-    if (themeState == PERSISTENT_THEME_MODE_DARK) {
-      this.turnToDark();
-      this.darkMode = true;
-    } else {
-      localStorage.setItem(PERSISTENT_THEME_MODE, PERSISTENT_THEME_MODE_LIGHT);
-      this.darkMode = false;
-      this.turnToLight();
-    }
-  }
-
-  turnToLight() {
-    document.documentElement.classList.remove('dark-theme');
-    localStorage.setItem(PERSISTENT_THEME_MODE, PERSISTENT_THEME_MODE_LIGHT);
-    this.darkMode = false;
-  }
-
-  turnToDark() {
-    document.documentElement.classList.add('dark-theme');
-    localStorage.setItem(PERSISTENT_THEME_MODE, PERSISTENT_THEME_MODE_DARK);
-    this.darkMode = true;
+    const stored = localStorage.getItem(STORAGE_KEY) || 'light';
+    this.applyTheme(stored);
   }
 
   toggleMode() {
-    if (this.darkMode) {
-      this.turnToLight();
-    } else {
-      this.turnToDark();
-    }
+    const next = this.darkMode ? 'light' : 'dark';
+    this.applyTheme(next);
   }
 
-  getIsDarkMode() : boolean {
+  getIsDarkMode(): boolean {
     return this.darkMode;
+  }
+
+  private applyTheme(theme: string) {
+    if (theme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      this.darkMode = true;
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+      this.darkMode = false;
+    }
+    localStorage.setItem(STORAGE_KEY, theme);
   }
 }

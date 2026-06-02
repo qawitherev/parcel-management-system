@@ -1,36 +1,24 @@
+<div class="pl">Management</div>
+<h1>Resident Units</h1>
+<p class="sub">Manage residential units in the building.</p>
+
+<div class="search-bar">
+  <input type="text" placeholder="Search units..." (input)="onSearch($any($event.target).value)" />
+  <button>Search</button>
+</div>
+<div class="btn-row" style="margin-bottom: 16px;">
+  <button class="btn" (click)="onAddClick()">Add Unit</button>
+</div>
+
 @let units = unitList$ | async;
-<div class="relative flex items-center justify-between">
-  <app-my-searchbar
-    placeHolder="Search units..."
-    (keywordChange)="onSearch($event)"
-  >
-  </app-my-searchbar>
-
-  <app-my-button
-    variant="primary"
-    label="Add Unit"
-    type="button"
-    (clicked)="onAddClick()"
-  >
-  </app-my-button>
-</div>
-<div class="mb-4"></div>
-
-@if (units && 'error' in units) {
-<div
-  class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
-  role="alert"
->
-  <strong class="font-bold">Error occurred:</strong>
-  <span class="block sm:inline">{{ units.message }}</span>
-</div>
-} @if (units && 'residentUnits' in units) {
-<app-my-table
-  [columns]="tableColumns"
-  [data]="units.residentUnits"
-  [count]="units.count"
-  (actionClicked)="onActionClicked($event)"
-  (paginationClicked)="onPaginationChanged($event)"
->
-</app-my-table>
+@if (units && ('error' in units) && $any(units).error) {
+  <app-error-card [title]="$any(units).message || 'Failed to load units'"></app-error-card>
+} @else if (units && ('residentUnits' in units)) {
+  <app-my-table
+    [columns]="tableColumns"
+    [data]="$any(units).residentUnits"
+    [count]="$any(units).count"
+    (actionClicked)="onActionClicked($event)"
+    (paginationClicked)="onPaginationChanged($event)"
+  ></app-my-table>
 }

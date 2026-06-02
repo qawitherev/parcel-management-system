@@ -1,14 +1,14 @@
-import { Component, OnInit, OnDestroy, signal, effect } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { NgClass } from '@angular/common';
 import { RoleService } from '../../../core/roles/role-service';
 import { AuthService } from '../../../features/auth/auth-service';
 import { ThemeService } from '../../../core/theme/theme-service';
 
-interface NavItem {
-  label?: string;
+interface NavGroup {
+  label: string;
   route?: string;
-  section?: string;
+  children?: NavGroup[];
 }
 
 @Component({
@@ -21,51 +21,64 @@ interface NavItem {
 export class Navbar implements OnInit {
   currentRole = signal<string>('resident');
   mobileOpen = signal<boolean>(false);
-  activeRoute = signal<string>('');
+  openDropdown = signal<string | null>(null);
 
-  navStructure: Record<string, NavItem[]> = {
+  navStructure: Record<string, NavGroup[]> = {
     resident: [
-      { label: 'Dashboard', route: '/dashboard/user' },
-      { section: 'Parcels' },
-      { label: 'Tracking', route: '/parcel/tracking' },
-      { label: 'Claim', route: '/parcel/claim' },
-      { label: 'All Parcels', route: '/parcel/parcels' },
-      { section: 'Settings' },
-      { label: 'Notifications', route: '/settings/notifications' },
+      { label: 'Dashboard', route: '/dashboard' },
+      {
+        label: 'Parcels', children: [
+          { label: 'Tracking', route: '/parcel/tracking' },
+          { label: 'Claim', route: '/parcel/claim' },
+          { label: 'All Parcels', route: '/parcel/parcels' },
+        ]
+      },
+      {
+        label: 'Settings', children: [
+          { label: 'Notifications', route: '/settings/notifications' },
+        ]
+      },
     ],
     ParcelRoomManager: [
-      { label: 'Dashboard', route: '/dashboard/admin' },
-      { section: 'Operations' },
-      { label: 'Check In', route: '/parcel/checkIn' },
-      { label: 'Tracking', route: '/parcel/tracking' },
-      { label: 'All Parcels', route: '/parcel/parcels' },
-      { section: 'Management' },
-      { label: 'Lockers', route: '/locker' },
-      { label: 'Units', route: '/residentUnit/units' },
-      { label: 'Assignments', route: '/resident/userResidentUnit' },
-      { section: 'Settings' },
-      { label: 'Notifications', route: '/settings/notifications' },
+      { label: 'Dashboard', route: '/dashboard' },
+      {
+        label: 'Operations', children: [
+          { label: 'Check In', route: '/parcel/checkIn' },
+          { label: 'Tracking', route: '/parcel/tracking' },
+          { label: 'All Parcels', route: '/parcel/parcels' },
+        ]
+      },
+      {
+        label: 'Management', children: [
+          { label: 'Lockers', route: '/locker' },
+          { label: 'Units', route: '/residentUnit/units' },
+          { label: 'Assignments', route: '/resident/userResidentUnit' },
+        ]
+      },
     ],
     Admin: [
-      { label: 'Dashboard', route: '/dashboard/admin' },
-      { section: 'Operations' },
-      { label: 'Check In', route: '/parcel/checkIn' },
-      { label: 'Claim', route: '/parcel/claim' },
-      { label: 'Tracking', route: '/parcel/tracking' },
-      { label: 'All Parcels', route: '/parcel/parcels' },
-      { section: 'Management' },
-      { label: 'Lockers', route: '/locker' },
-      { label: 'Units', route: '/residentUnit/units' },
-      { label: 'Assignments', route: '/resident/userResidentUnit' },
-      { section: 'Settings' },
-      { label: 'Notifications', route: '/settings/notifications' },
+      { label: 'Dashboard', route: '/dashboard' },
+      {
+        label: 'Operations', children: [
+          { label: 'Check In', route: '/parcel/checkIn' },
+          { label: 'Claim', route: '/parcel/claim' },
+          { label: 'Tracking', route: '/parcel/tracking' },
+          { label: 'All Parcels', route: '/parcel/parcels' },
+        ]
+      },
+      {
+        label: 'Management', children: [
+          { label: 'Lockers', route: '/locker' },
+          { label: 'Units', route: '/residentUnit/units' },
+          { label: 'Assignments', route: '/resident/userResidentUnit' },
+        ]
+      },
+      {
+        label: 'Settings', children: [
+          { label: 'Notifications', route: '/settings/notifications' },
+        ]
+      },
     ],
-  };
-
-  roleNames: Record<string, string> = {
-    resident: 'Resident',
-    ParcelRoomManager: 'Manager',
-    Admin: 'Admin',
   };
 
   constructor(
@@ -82,26 +95,31 @@ export class Navbar implements OnInit {
     });
   }
 
-  get navItems(): NavItem[] {
+  get navGroups(): NavGroup[] {
     return this.navStructure[this.currentRole()] || this.navStructure['resident'];
   }
 
   get roleDisplayName(): string {
-    return this.roleNames[this.currentRole()] || 'Resident';
+    const role = this.currentRole();
+    if (role === 'ParcelRoomManager') return 'Manager';
+    if (role === 'Admin') return 'Admin';
+    return 'Resident';
   }
 
   get isDark(): boolean {
     return this.themeService.getIsDarkMode();
   }
 
-  get roleOptions(): string[] {
-    return Object.keys(this.roleNames);
+  isDropdownOpen(label: string): boolean {
+    return this.openDropdown() === label;
   }
 
-  switchRole(role: string): void {
-    this.roleService.setRole(role);
-    this.currentRole.set(role);
-    this.mobileOpen.set(false);
+  toggleDropdown(label: string): void {
+    this.openDropdown.update(v => v === label ? null : label);
+  }
+
+  closeDropdown(): void {
+    this.openDropdown.set(null);
   }
 
   toggleTheme(): void {

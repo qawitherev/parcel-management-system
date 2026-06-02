@@ -46,7 +46,6 @@
   align-items: center;
   gap: 0;
   flex: 1;
-  overflow-x: auto;
 }
 
 .nav-section {
@@ -81,6 +80,69 @@
 
 .nav-link.active {
   color: var(--red);
+}
+
+/* Nav dropdown groups */
+.nav-group {
+  position: relative;
+  overflow: visible;
+}
+
+.nav-group > button {
+  background: none;
+  border: none;
+  padding: 16px 14px;
+  font-family: var(--f);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--t2);
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+  transition: color 0.1s;
+}
+
+.nav-group > button:hover,
+.nav-group > button.active {
+  color: var(--text);
+}
+
+.nav-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: var(--bg);
+  border: 2px solid var(--bdr2);
+  min-width: 200px;
+  z-index: 200;
+}
+
+.nav-group:hover .nav-dropdown,
+.nav-dropdown.show {
+  display: block;
+}
+
+.nav-dropdown a {
+  display: block;
+  padding: 10px 16px;
+  font-size: 13px;
+  color: var(--t2);
+  text-decoration: none;
+  border-bottom: 1px solid var(--bdr);
+  cursor: pointer;
+  transition: all 0.1s;
+  white-space: nowrap;
+}
+
+.nav-dropdown a:hover {
+  background: var(--bg2);
+  color: var(--text);
+}
+
+.nav-dropdown a:last-child {
+  border-bottom: none;
 }
 
 /* Actions */

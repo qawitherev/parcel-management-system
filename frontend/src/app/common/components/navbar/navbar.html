@@ -9,15 +9,30 @@
 
     <!-- Nav links (desktop) -->
     <div class="nav-links">
-      @for (item of navItems; track item.label || item.section) {
-        @if (item.section) {
-          <span class="nav-section">{{ item.section }}</span>
-        } @else if (item.route) {
+      @for (group of navGroups; track group.label) {
+        @if (group.route && !group.children) {
           <a
-            [routerLink]="item.route"
-            [class.active]="false"
+            [routerLink]="group.route"
             class="nav-link"
-          >{{ item.label }}</a>
+          >{{ group.label }}</a>
+        } @else if (group.children) {
+          <div class="nav-group">
+            <button
+              [class.active]="isDropdownOpen(group.label)"
+              (click)="toggleDropdown(group.label)"
+              (mouseenter)="toggleDropdown(group.label)"
+            >
+              {{ group.label }}
+            </button>
+            <div class="nav-dropdown" [class.show]="isDropdownOpen(group.label)" (mouseleave)="closeDropdown()">
+              @for (child of group.children; track child.label) {
+                <a
+                  [routerLink]="child.route"
+                  (click)="closeDropdown()"
+                >{{ child.label }}</a>
+              }
+            </div>
+          </div>
         }
       }
     </div>
@@ -25,14 +40,6 @@
     <!-- Actions -->
     <div class="nav-actions">
       <span class="user-label">{{ roleDisplayName }}</span>
-      <select
-        (change)="switchRole($any($event.target).value)"
-        [value]="currentRole()"
-      >
-        @for (r of roleOptions; track r) {
-          <option [value]="r">{{ roleNames[r] }}</option>
-        }
-      </select>
       <button class="btn btn-s btn-o" (click)="toggleTheme()">
         {{ isDark ? 'LIGHT' : 'DARK' }}
       </button>
@@ -48,26 +55,25 @@
 
 <!-- MOBILE MENU -->
 <div class="mobile-menu" [class.open]="mobileOpen()">
-  @for (item of navItems; track item.label || item.section) {
-    @if (item.section) {
-      <div class="m-section">{{ item.section }}</div>
-    } @else if (item.route) {
+  @for (group of navGroups; track group.label) {
+    @if (group.route && !group.children) {
       <a
-        [routerLink]="item.route"
+        [routerLink]="group.route"
         class="m-item"
         (click)="closeMobile()"
-      >{{ item.label }}</a>
+      >{{ group.label }}</a>
+    } @else if (group.children) {
+      <div class="m-section">{{ group.label }}</div>
+      @for (child of group.children; track child.label) {
+        <a
+          [routerLink]="child.route"
+          class="m-item"
+          (click)="closeMobile()"
+        >{{ child.label }}</a>
+      }
     }
   }
   <div class="m-actions">
-    <select
-      (change)="switchRole($any($event.target).value)"
-      [value]="currentRole()"
-    >
-      @for (r of roleOptions; track r) {
-        <option [value]="r">{{ roleNames[r] }}</option>
-      }
-    </select>
     <button class="btn" (click)="toggleTheme()">
       {{ isDark ? 'LIGHT MODE' : 'DARK MODE' }}
     </button>

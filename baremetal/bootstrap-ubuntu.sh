@@ -98,8 +98,8 @@ header "Phase 1: Prerequisites"
 log "Updating apt cache..."
 apt-get update -qq
 
-log "Installing base packages (curl, wget, gnupg, ca-certificates, jq, awscli)..."
-apt-get install -y -qq curl wget gnupg ca-certificates jq awscli
+log "Installing base packages (curl, wget, gnupg, ca-certificates, jq, unzip)..."
+apt-get install -y -qq curl wget gnupg ca-certificates jq unzip
 
 # ── Microsoft package repo (.NET) ──────────────────────────
 if [[ "$SKIP_DOTNET" != "true" ]]; then
@@ -173,6 +173,23 @@ if [[ "$SKIP_CLOUDFLARED" != "true" ]]; then
     else
         skip "cloudflared $(cloudflared --version 2>/dev/null | head -1 || echo '')"
     fi
+fi
+
+# ── AWS CLI v2 ──────────────────────────────────────────
+if ! command -v aws >/dev/null 2>&1; then
+    log "Installing AWS CLI v2..."
+    AWSCLI_ARCH="$(uname -m)"
+    case "$AWSCLI_ARCH" in
+        x86_64)  AWSCLI_URL_ARCH="x86_64" ;;
+        aarch64) AWSCLI_URL_ARCH="aarch64" ;;
+        *)       die "Unsupported architecture for AWS CLI: ${AWSCLI_ARCH}" ;;
+    esac
+    curl -sSL "https://awscli.amazonaws.com/awscli-exe-linux-${AWSCLI_URL_ARCH}.zip" -o /tmp/awscliv2.zip
+    unzip -qo /tmp/awscliv2.zip -d /tmp
+    /tmp/aws/install --update
+    rm -rf /tmp/awscliv2.zip /tmp/aws
+else
+    skip "AWS CLI ($(aws --version 2>&1 | head -1))"
 fi
 
 # ═════════════════════════════════════════════════════════════

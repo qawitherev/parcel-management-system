@@ -215,7 +215,12 @@ fi
 
 # ── Directory structure ────────────────────────────────────
 log "Creating directory structure..."
-install -d -m 0750 -o "$SVC_USER" -g "$SVC_GROUP" /opt/pm
+
+# /opt/pm is owned by the sudo user so the GitHub Actions runner
+# can publish new releases into it. Subdirectories are owned by
+# pm-svc for runtime isolation.
+INSTALL_USER="${SUDO_USER:-root}"
+install -d -m 0755 -o "$INSTALL_USER" -g "$INSTALL_USER" /opt/pm
 
 if setup_production; then
     if [[ -d "$PROD_DIR" ]]; then

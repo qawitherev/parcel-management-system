@@ -1,11 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ThemeService } from '../../../../core/theme/theme-service';
-import { NgClass } from '@angular/common';
 import { AppConsole } from '../../../../utils/app-console';
 
 @Component({
   selector: 'app-my-switch',
-  imports: [NgClass],
+  imports: [],
   templateUrl: './my-switch.html',
   styleUrl: './my-switch.css'
 })

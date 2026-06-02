@@ -1,0 +1,130 @@
+/* ── Pagination container ── */
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fff;
+}
+
+/* ── Page size selector ── */
+.pagination-page-size {
+  color: #111;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pagination-page-size select {
+  padding: 8px 12px;
+  border: 2px solid #e0e0e0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  background: #fff;
+  color: #111;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.pagination-page-size select:focus {
+  outline: none;
+  border-color: #111;
+}
+
+/* ── Navigation ── */
+.pagination-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── Page number buttons ── */
+.pagination-page-btn {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  min-width: 36px;
+  padding: 6px 12px;
+  text-align: center;
+  color: #111;
+  background: #fafafa;
+}
+
+.pagination-page-btn:hover {
+  background: #d0d0d0;
+}
+
+.pagination-page-btn.active {
+  color: #fff;
+  background: #000;
+  border-color: #000;
+}
+
+.pagination-page-btn.active:hover {
+  background: #333;
+  border-color: #333;
+}
+
+.pagination-page-btn:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.pagination-page-btn:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: 2px;
+}
+
+/* ── Dark theme ── */
+[data-theme='dark'] .pagination-container {
+  border-color: #2a2a2a;
+  background: #0a0a0a;
+}
+
+[data-theme='dark'] .pagination-page-size {
+  color: #f5f5f5;
+}
+
+[data-theme='dark'] .pagination-page-size select {
+  border-color: #2a2a2a;
+  background: #0a0a0a;
+  color: #f5f5f5;
+}
+
+[data-theme='dark'] .pagination-page-size select:focus {
+  border-color: #f5f5f5;
+}
+
+[data-theme='dark'] .pagination-page-btn {
+  border-color: #2a2a2a;
+  color: #f5f5f5;
+  background: #141414;
+}
+
+[data-theme='dark'] .pagination-page-btn:hover {
+  background: #3a3a3a;
+}
+
+[data-theme='dark'] .pagination-page-btn.active {
+  color: #0a0a0a;
+  background: #f5f5f5;
+  border-color: #f5f5f5;
+}
+
+[data-theme='dark'] .pagination-page-btn.active:hover {
+  background: #ccc;
+  border-color: #ccc;
+}
+
+[data-theme='dark'] .pagination-page-btn:focus-visible {
+  outline-color: #f5f5f5;
+}

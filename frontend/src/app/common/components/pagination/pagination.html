@@ -1,13 +1,8 @@
-<div
-  class="flex justify-between items-center w-full p-4 border border-[var(--clr-surface-tonal-a20)] rounded-lg bg-[var(--clr-surface-a0)]"
->
-  <!-- Left Side -->
-  <!-- <div class="text-gray-600 text-sm">
-        Showing {{pageSize > count ? count : pageSize}} {{pageSize > 1 ? 'results' : 'result'}} of {{count}}
-    </div> -->
-  <div class="text-[var(--clr-dark-a0)] text-sm">
+<div class="pagination-container">
+  <!-- Left Side: page size selector -->
+  <div class="pagination-page-size">
     Showing
-    <select [(ngModel)]="inPageSize" (change)="onPageSizeChanged($event)">
+    <select [(ngModel)]="inPageSize" (change)="onPageSizeChanged($event)" name="pageSize">
       <option *ngFor="let pageSize of pageSizeOptions" [value]="pageSize">
         {{ pageSize }}
       </option>
@@ -16,17 +11,15 @@
     of {{ count }}
   </div>
 
-  <!-- Right Side -->
-  <div class="flex items-center space-x-2">
+  <!-- Right Side: page navigation -->
+  <div class="pagination-nav">
     <app-my-button label="Previous" (clicked)="onPageNavigate(inCurrentPage - 1)"></app-my-button>
     <div *ngFor="let item of pageNavDisplay; let i = index">
       <button
         (click)="onPageNavigate(item)"
-        [ngClass]="{
-          'text-[var(--clr-dark-a0)] bg-[var(--clr-primary-a20)] hover:bg-[var(--clr-primary-a0)]': inCurrentPage === item,
-          'text-[var(--clr-dark-a0)] bg-[var(--clr-surface-tonal-a0)] hover:bg-[var(--clr-surface-tonal-a50)]': inCurrentPage !== item
-        }"
-        class="px-3 py-1 text-sm text-[var(--clr-surface-a0)] border-[var(--clr-surface-tonal-a20)] rounded-lg"
+        class="pagination-page-btn"
+        [class.active]="inCurrentPage === item"
+        [disabled]="typeof item !== 'number'"
       >
         {{ item }}
       </button>

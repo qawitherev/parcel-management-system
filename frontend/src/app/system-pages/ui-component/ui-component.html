@@ -1,6 +1,6 @@
 <div class="flex flex-col gap-3">
   <div>
-    <h2 class="w-full text-2xl font-semibold text-[var(--clr-dark-a0)] mb-1">Buttons</h2>
+    <h2 class="w-full text-2xl font-semibold mb-1" style="color: var(--text)">Buttons</h2>
     <div class="flex gap-2">
       <app-my-button label="Primary" (clicked)="onClick($event)"></app-my-button>
       <app-my-button label="Secondary" variant="secondary" [disabled]="true"></app-my-button>
@@ -10,7 +10,7 @@
   </div>
   
   <div>
-    <h2 class="text-[var(--clr-dark-a0)] mb-1">Table</h2>
+    <h2 class="mb-1" style="color: var(--text)">Table</h2>
     <div>
       <app-my-table
         [columns]="tableColumns"

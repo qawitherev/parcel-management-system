@@ -18,6 +18,24 @@
   --bdr2: #000;
   --f: 'Inter', system-ui, -apple-system, sans-serif;
   --radius: 0;
+
+  /* ── Swiss Grid color system (--clr-*) ── */
+  --clr-primary-a0: #000;
+  --clr-primary-a10: #333;
+  --clr-primary-a20: #555;
+  --clr-surface-a0: #fff;
+  --clr-surface-a10: #f5f5f5;
+  --clr-surface-a20: #eee;
+  --clr-surface-a50: #ccc;
+  --clr-surface-tonal-a0: #fafafa;
+  --clr-surface-tonal-a20: #e0e0e0;
+  --clr-surface-tonal-a50: #d0d0d0;
+  --clr-dark-a0: #111;
+  --clr-success-a0: #16a34a;
+  --clr-success-a10: #22c55e;
+  --clr-success-a20: #86efac;
+  --clr-danger-a0: #e63946;
+  --clr-danger-a10: #c1121f;
 }
 
 /* ── Dark theme ── */
@@ -31,6 +49,24 @@
   --red-d: #e63946;
   --bdr: #2a2a2a;
   --bdr2: #444;
+
+  /* ── Swiss Grid color system (--clr-*) ── */
+  --clr-primary-a0: #f5f5f5;
+  --clr-primary-a10: #ccc;
+  --clr-primary-a20: #555;
+  --clr-surface-a0: #0a0a0a;
+  --clr-surface-a10: #1a1a1a;
+  --clr-surface-a20: #2a2a2a;
+  --clr-surface-a50: #444;
+  --clr-surface-tonal-a0: #141414;
+  --clr-surface-tonal-a20: #2a2a2a;
+  --clr-surface-tonal-a50: #3a3a3a;
+  --clr-dark-a0: #f5f5f5;
+  --clr-success-a0: #22c55e;
+  --clr-success-a10: #4ade80;
+  --clr-success-a20: #86efac;
+  --clr-danger-a0: #ff4d5a;
+  --clr-danger-a10: #e63946;
 }
 
 /* ── Reset ── */

@@ -1,23 +1,86 @@
-<div class="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
-    <h1 class="text-4xl font-bold mb-8 text-gray-800">Search Parcel</h1>
-    <form 
-    [formGroup]="formGroup"
-    class="w-full max-w-xl" (ngSubmit)="onSubmit()">
-        <div class="flex items-center bg-white rounded-full shadow-md px-6 py-4">
-            <input
-                formControlName="searchKeyword"
-                type="text"
-                placeholder="Enter tracking number"
-                class="flex-grow outline-none bg-transparent text-lg text-gray-700"
-            />
-            <button
-                type="submit"
-                [ngClass]="formGroup.valid ? 'ml-4 bg-blue-600 text-white px-6 py-2 rounded-full font-semibold hover:bg-blue-700 transition'
-                : ' opacity-50 cursor-not-allowed' "
-                class="ml-4 bg-blue-600 text-white px-6 py-2 rounded-full font-semibold hover:bg-blue-700 transition"
-            >
-                Search
-            </button>
+<div class="pl">Parcels</div>
+<h1>Tracking</h1>
+<p class="sub">Search for a parcel by tracking number to see its full journey.</p>
+
+<form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+  <div class="search-bar">
+    <input
+      formControlName="searchKeyword"
+      type="text"
+      placeholder="Enter tracking number"
+    />
+    <button type="submit" [disabled]="formGroup.invalid || loading()">
+      {{ loading() ? 'Searching...' : 'Search' }}
+    </button>
+  </div>
+</form>
+
+<!-- Loading skeleton -->
+@if (loading()) {
+  <div style="margin-top: 24px;">
+    <app-skeleton height="80px"></app-skeleton>
+    <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px;">
+      <app-skeleton height="16px" width="60%"></app-skeleton>
+      <app-skeleton height="16px" width="80%"></app-skeleton>
+      <app-skeleton height="16px" width="40%"></app-skeleton>
+    </div>
+  </div>
+}
+
+<!-- Error -->
+@if (error()) {
+  <div style="margin-top: 24px;">
+    <app-error-card
+      [title]="'Parcel not found'"
+      [description]="error()!"
+      retryLabel="Try Again"
+      (retry)="onSubmit()"
+    ></app-error-card>
+  </div>
+}
+
+<!-- Empty (searched but nothing) -->
+@if (searched() && !loading() && !error() && !result()) {
+  <div style="margin-top: 24px;">
+    <app-empty-state
+      title="No parcel found"
+      description="Try a different tracking number."
+    ></app-empty-state>
+  </div>
+}
+
+<!-- Results -->
+@if (result(); as r) {
+  <div class="result-card">
+    <!-- Summary header -->
+    <div class="result-header">
+      <div>
+        <div class="result-tn">{{ r.trackingNumber }}</div>
+        <div class="result-meta">
+          Entered {{ formatDate(r.entryDate) }} · {{ formatTime(r.entryDate) }}
         </div>
-    </form>
-</div>
+      </div>
+      <span class="badge" [class]="getStatusClass(r.currentStatus)">
+        {{ getStatusLabel(r.currentStatus) }}
+      </span>
+    </div>
+
+    <!-- Timeline -->
+    @if (r.history.length > 0) {
+      <div class="result-section-label">Journey</div>
+      <div class="timeline">
+        @for (item of r.history; track item.eventTime) {
+          <div class="tl-item">
+            <span class="tl-time">{{ formatDate(item.eventTime) }}, {{ formatTime(item.eventTime) }}</span>
+            <div class="tl-event">{{ item.event }}</div>
+            <div class="tl-user">by {{ item.performedByUser }}</div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div style="padding: 20px; color: var(--t3); font-size: 13px; text-align: center;">
+        No tracking events recorded.
+      </div>
+    }
+  </div>
+}

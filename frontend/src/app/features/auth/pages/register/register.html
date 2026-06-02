@@ -1,52 +1,51 @@
-@let registerResponse = registerResponse$ | async;
+<div class="auth-centered">
+  <div class="form-card">
+    <h1 style="margin-bottom: 2px;">Create Account</h1>
+    <p class="sub" style="margin-bottom: 24px;">Register as a resident</p>
 
-<div class="flex min-h-screen items-center justify-center">
-  <div class="w-full max-w-md bg-[var(--clr-surface-a0)] bg-opacity-50 border-1 border-[var(--clr-surface-a30)] p-8 rounded-2xl">
-    <h2 class="text-2xl font-bold mb-6 text-center text-[var(--clr-dark-a0)]">Register</h2>
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <div class="mb-4">
-        <label class="block text-[var(--clr-dark-a0)]">Email</label>
-        <input formControlName="email" type="email" class="w-full px-3 py-2 rounded-lg bg-[var(--clr-surface-a10)] text-[var(--clr-dark-a0)]" />
-        @if (form.get('email')?.invalid && form.get('email')?.touched) {
-            <div class="text-red-500 text-sm" >Please enter a valid email</div>
-        }
-      </div>
-      <div class="mb-4">
-        <label class="block text-[var(--clr-dark-a0)] ">Username</label>
-        <input formControlName="username" placeholder="Not more than 10 characters" type="text" class="w-full px-3 py-2 rounded-lg bg-[var(--clr-surface-a10)] text-[var(--clr-dark-a0)]" />
-      </div>
-      <div class="mb-4">
-        <label class="block text-[var(--clr-dark-a0)]">Resident Unit</label>
-        <input formControlName="residentUnit" placeholder="Not more than 10 characters" type="text" class="w-full px-3 py-2 rounded-lg bg-[var(--clr-surface-a10)] text-[var(--clr-dark-a0)]" />
-      </div>
-      <div class="mb-6">
-        <label class="block text-[var(--clr-dark-a0)]">Password</label>
-        <input formControlName="password" type="password" placeholder="Make sure to have at least 6 characters" class="w-full px-3 py-2 rounded-lg bg-[var(--clr-surface-a10)] text-[var(--clr-dark-a0)]" />
-      </div>
-      <div class="mb-6">
-        <label class="block text-[var(--clr-dark-a0)]">Confirm Password</label>
-        <input formControlName="confirmPassword" type="password" class="w-full px-3 py-2 rounded-lg bg-[var(--clr-surface-a10)] text-[var(--clr-dark-a0)]" />
-        @if (form.errors?.['passwordMismatch'] && form.get('confirmPassword')?.touched) {
-        <div class="text-red-500 text-sm" >{{form.getError('errorString')}}</div>
-        }
-      </div>
-      <app-my-button
-            label="Register"
-            [isLoading]="isLoading"
-            [disabled]="!(form.get('agreeTerms')?.value)"
-            type="submit"
-      ></app-my-button>
-    <div class="mt-4 flex items-center">
-        <input type="checkbox" formControlName="agreeTerms" id="agreeTerms" class="mr-2" />
-        <label for="agreeTerms" class="text-[var(--clr-dark-a0)] text-sm">
-            I agree to the <a href="#" class="text-blue-500 underline">Terms of Service</a> and Privacy Policy.
-        </label>
-    </div>
-    </form>
-    @if (registerResponse && 'error' in registerResponse) {
-      <div class="text-red-500 text-sm">
-        {{errorMessage}}
-      </div>
+    @if (errorMessage) {
+      <div class="err-card"><strong>Registration failed</strong><br>{{ errorMessage }}</div>
     }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="fg">
+        <label>Email</label>
+        <input formControlName="email" type="email" placeholder="you@example.com" />
+        @if (form.get('email')?.invalid && form.get('email')?.touched) {
+          <span class="fg-err">Valid email required</span>
+        }
+      </div>
+      <div class="fg">
+        <label>Username</label>
+        <input formControlName="username" type="text" placeholder="Max 10 characters" />
+      </div>
+      <div class="fg">
+        <label>Resident Unit</label>
+        <input formControlName="residentUnit" type="text" placeholder="e.g. RU001" />
+      </div>
+      <div class="fg">
+        <label>Password</label>
+        <input formControlName="password" type="password" placeholder="At least 6 characters" />
+      </div>
+      <div class="fg">
+        <label>Confirm Password</label>
+        <input formControlName="confirmPassword" type="password" placeholder="Repeat your password" />
+        @if (form.errors?.['passwordMismatch'] && form.get('confirmPassword')?.touched) {
+          <span class="fg-err">{{ form.getError('errorString') }}</span>
+        }
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 20px;">
+        <input type="checkbox" formControlName="agreeTerms" id="agreeTerms" style="accent-color: var(--red); width: 18px; height: 18px;" />
+        <label for="agreeTerms" style="font-size: 13px; color: var(--t2);">I agree to the Terms of Service</label>
+      </div>
+      <button type="submit" class="btn" [disabled]="isLoading" style="width: 100%;">
+        {{ isLoading ? 'Creating account...' : 'Register' }}
+      </button>
+    </form>
+
+    <p style="margin-top: 16px; font-size: 13px; color: var(--t2); text-align: center;">
+      Already have an account?
+      <a routerLink="/login" style="color: var(--red); font-weight: 600; cursor: pointer;">Sign in</a>
+    </p>
   </div>
 </div>

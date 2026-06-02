@@ -12,11 +12,12 @@ import { AppConsole } from '../../../../../utils/app-console';
 import { MyTable, TableColumn } from '../../../../../common/components/table/my-table/my-table';
 import { MySearchbar } from "../../../../../common/components/searchbar/my-searchbar/my-searchbar";
 import { MyButton } from "../../../../../common/components/buttons/my-button/my-button";
+import { ErrorCardComponent } from "../../../../../common/components/error-card/error-card";
 
 @Component({
   selector: 'app-units',
   standalone: true,
-  imports: [AsyncPipe, FormsModule, MyTable, MySearchbar, MyButton],
+  imports: [AsyncPipe, FormsModule, MyTable, MySearchbar, MyButton, ErrorCardComponent],
   templateUrl: './units.html',
   styleUrl: './units.css',
 })

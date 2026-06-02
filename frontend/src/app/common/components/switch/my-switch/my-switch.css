@@ -1,0 +1,59 @@
+/* ── Switch label ── */
+.my-switch-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+/* ── Label text ── */
+.my-switch-label-text {
+  margin-right: 8px;
+  font-size: 14px;
+  color: #111;
+}
+
+/* ── Track ── */
+.my-switch-track {
+  width: 40px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  border-radius: 9999px;
+  padding: 4px;
+  transition: background-color 0.3s;
+}
+
+.my-switch-track.switch-on {
+  background: #22c55e;
+}
+
+.my-switch-track.switch-off {
+  background: #999;
+}
+
+/* ── Thumb ── */
+.my-switch-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  transition: transform 0.3s;
+}
+
+.my-switch-thumb.thumb-on {
+  transform: translateX(16px);
+  background: #fff;
+}
+
+.my-switch-thumb.thumb-off {
+  background: #ccc;
+}
+
+/* ── Dark theme ── */
+[data-theme='dark'] .my-switch-label-text {
+  color: #f5f5f5;
+}
+
+[data-theme='dark'] .my-switch-track.switch-off {
+  background: #555;
+}

@@ -21,7 +21,7 @@ export const isAdminAuthed: CanActivateFn = (route, state) => {
   return guardService.isRoleAuthorized$([`Admin`]).pipe(
     map(isAdmin => {
       if (isAdmin) return true
-      return router.createUrlTree([`/unauthorized`])
+      return router.createUrlTree([`/systemPages`])
     })
   )
 }
@@ -33,7 +33,7 @@ export const isManagerAuthed: CanActivateFn = (route, state) => {
   return guardService.isRoleAuthorized$([`ParcelRoomManager`]).pipe(
     map(isAdmin => {
       if (isAdmin) return true
-      return router.createUrlTree([`/unauthorized`])
+      return router.createUrlTree([`/systemPages`])
     })
   )
 }
@@ -45,7 +45,7 @@ export const isResidentAuthed: CanActivateFn = (route, state) => {
   return guardService.isRoleAuthorized$([`Resident`]).pipe(
     map(isAdmin => {
       if (isAdmin) return true
-      return router.createUrlTree([`/unauthorized`])
+      return router.createUrlTree([`/systemPages`])
     })
   )
 }
@@ -58,7 +58,7 @@ export const isAdminAndManagerAuthed: CanActivateFn = (route, state) => {
   return guardService.isRoleAuthorized$([`Admin`, `ParcelRoomManager`]).pipe(
     map(isAdminOrManager => {
       if (isAdminOrManager) return true
-      return router.createUrlTree(['/unauthorized'])
+      return router.createUrlTree(['/systemPages'])
     })
   )
 }

@@ -1,0 +1,95 @@
+/* ── Table wrapper ── */
+.my-table-wrapper {
+  overflow-x: auto;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+/* ── Table ── */
+.my-table {
+  min-width: 100%;
+  border-collapse: collapse;
+}
+
+/* ── Header ── */
+.my-table-thead {
+  background: #ccc;
+}
+
+.my-table-th {
+  padding: 12px 24px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 500;
+  color: #111;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Body ── */
+.my-table-tbody > tr {
+  border-top: 1px solid #e0e0e0;
+}
+
+.my-table-td {
+  padding: 16px 24px;
+  white-space: nowrap;
+  font-size: 14px;
+  color: #111;
+  background: #fff;
+}
+
+/* ── Action cell ── */
+.my-table-action-cell {
+  width: 50%;
+  height: 100%;
+}
+
+/* ── Empty state ── */
+.my-table-empty {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 128px;
+}
+
+.my-table-empty span {
+  color: #111;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ── Dark theme ── */
+[data-theme='dark'] .my-table-wrapper {
+  border-color: #2a2a2a;
+}
+
+[data-theme='dark'] .my-table-thead {
+  background: #444;
+}
+
+[data-theme='dark'] .my-table-th {
+  color: #f5f5f5;
+}
+
+[data-theme='dark'] .my-table-tbody > tr {
+  border-color: #2a2a2a;
+}
+
+[data-theme='dark'] .my-table-td {
+  color: #f5f5f5;
+  background: #0a0a0a;
+}
+
+[data-theme='dark'] .my-table-empty {
+  border-color: #2a2a2a;
+  background: #0a0a0a;
+}
+
+[data-theme='dark'] .my-table-empty span {
+  color: #f5f5f5;
+}

@@ -6,7 +6,7 @@ ecs_service_name       = "parcel-management-production"
 
 task_cpu    = "512"
 task_memory = "1024"
-ecs_service_desired_count = 2
+ecs_service_desired_count = 1
 
 enable_compute = false
 

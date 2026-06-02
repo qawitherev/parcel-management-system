@@ -1,14 +1,12 @@
 import { Component } from '@angular/core';
-import { AuthRoutingModule } from "../../../features/auth/auth-routing-module";
 import { RouterOutlet } from '@angular/router';
 import { ThemeService } from '../../../core/theme/theme-service';
-import { NgClass } from '@angular/common';
-import { MySwitch } from "../../components/switch/my-switch/my-switch";
+import { MySwitch } from '../../components/switch/my-switch/my-switch';
 
 @Component({
   selector: 'app-empty-layout',
-  standalone: true, 
-  imports: [AuthRoutingModule, MySwitch],
+  standalone: true,
+  imports: [RouterOutlet, MySwitch],
   templateUrl: './empty-layout.html',
   styleUrl: './empty-layout.css'
 })
@@ -24,5 +22,4 @@ export class EmptyLayout {
   get isDarkMode() : boolean {
     return this.themeService.getIsDarkMode();
   }
-
 }

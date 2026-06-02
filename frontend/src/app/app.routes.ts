@@ -4,112 +4,109 @@ import { NormalLayout } from './common/layout/normal-layout/normal-layout';
 import { isAdminAndManagerAuthed, isLoggedInGuard } from './core/guards/auth-guard-guard';
 
 export const routes: Routes = [
+  // Auth (no chrome)
+  {
+    path: '',
+    component: EmptyLayout,
+    children: [
+      { path: '', redirectTo: 'login', pathMatch: 'full' },
+      { path: '', loadChildren: () => import('./features/auth/auth.routes').then(m => m.AUTH_ROUTES) }
+    ]
+  },
 
-    // LAYOUT BASED NAVIGATION
-    {
-        path: '', 
-        component: EmptyLayout, 
-        children: [
-            {
-                path: '', redirectTo: 'login', pathMatch: 'full'
-            }, 
-            {
-                path: '', loadChildren: () => import('./features/auth/auth-module').then(m => m.AuthModule)
-            }
-        ]
-    },
+  // System pages (no chrome)
+  {
+    path: 'systemPages',
+    component: EmptyLayout,
+    children: [
+      { path: '', loadChildren: () => import('./system-pages/system-pages.routes').then(m => m.SYSTEM_PAGES_ROUTES) }
+    ]
+  },
 
-    {
-        path: 'systemPages', 
-        component: EmptyLayout, 
-        children: [
-            {
-                path: '', loadChildren: () => import('./system-pages/system-pages-module').then(m => m.SystemPagesModule)
-            }
-        ]
-    },
+  // Parcel (with chrome)
+  {
+    path: 'parcel',
+    component: NormalLayout,
+    children: [
+      { path: 'tracking', loadComponent: () => import('./features/parcel/tracking/pages/tracking/tracking').then(m => m.Tracking), data: { title: 'Parcel Tracking' } },
+      { path: 'checkIn', loadChildren: () => import('./features/parcel/check-in/check-in.routes').then(m => m.CHECK_IN_ROUTES), data: { title: 'Check In' } },
+      { path: 'claim', loadChildren: () => import('./features/parcel/claim/claim.routes').then(m => m.CLAIM_ROUTES), data: { title: 'Parcel Claim' } },
+      { path: 'parcels', loadChildren: () => import('./features/parcel/parcels/parcels.routes').then(m => m.PARCELS_ROUTES), data: { title: 'All Parcels' } }
+    ],
+    canActivate: [isLoggedInGuard]
+  },
 
-    {
-        path: 'parcel', 
-        component: NormalLayout, 
-        children: [
-            {
-                path: 'tracking', loadChildren: () => import('./features/parcel/tracking/tracking-module').then(m => m.TrackingModule), 
-                data: { title: 'Parcel Tracking'}
-            }, 
-            {
-                path: 'checkIn', loadChildren: () => import('./features/parcel/check-in/check-in-module').then(m => m.CheckInModule),
-                data: { title: 'Check In'}
-            }, 
-            {
-                path: 'claim', loadChildren: () => import('./features/parcel/claim/claim-module').then(m => m.ClaimModule),
-                data: { title: 'Parcel Claim'}
-            }, 
-            {
-                path: 'parcels', loadChildren: () => import('./features/parcel/parcels/parcels-module').then(m => m.ParcelsModule),
-                data: { title: 'All Parcels'}
-            }
-        ], 
-        canActivate: [isLoggedInGuard]
-    }, 
-
-    {
-        path: 'dashboard', 
-        component: NormalLayout,
-        children: [
-            {
-                path: '', loadChildren: () => import('./features/dashboard/dashboard-module').then(m => m.DashboardModule), 
-                data: {title: 'Dashboard'}
-            }
-        ], 
-        // canActivate: [isLoggedInGuard]
-    },
-
-    {
-        path: 'resident',
-        component: NormalLayout, 
-        children: [
-            {
-                path: 'userResidentUnit', loadChildren: () => import('./features/resident/user-resident-unit/user-resident-unit-module').then(m => m.UserResidentUnitModule), 
-                data: { title: 'User Resident Unit'}
-            }
-        ],
-        canActivate: [isLoggedInGuard]
-    }, 
-
-    {
-        path: 'residentUnit', 
-        component: NormalLayout, 
-        children: [
-            {
-                path: 'units', loadChildren: () => import('./features/resident-units/units/units-module').then(m => m.UnitsModule),
-                data: { title: 'Resident Units'}
-            }
-        ], 
-        canActivate: [isLoggedInGuard]
-    }, 
-
-    {
-        path: 'locker', 
-        component: NormalLayout, 
-        children: [
-            {
-                path: '', loadChildren: () => import('./features/locker/locker-module').then(m => m.LockerModule),
-                data: { title: 'Locker'}
-            }
-        ], 
+  // Dashboard (with chrome) — routes handle admin/user themselves
+  {
+    path: 'dashboard',
+    component: NormalLayout,
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        redirectTo: () => {
+          const token = localStorage.getItem('parcel-management-system-token');
+          if (!token) return '/login';
+          try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const role = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+            return (role === 'ParcelRoomManager' || role === 'Admin') ? 'admin' : 'user';
+          } catch {
+            return 'user';
+          }
+        }
+      },
+      {
+        path: 'admin',
+        loadComponent: () => import('./features/dashboard/pages/dashboard-admin/dashboard-parent').then(m => m.DashboardParent),
+        data: { title: 'Dashboard' },
         canActivate: [isLoggedInGuard, isAdminAndManagerAuthed]
-    }, 
+      },
+      {
+        path: 'user',
+        loadComponent: () => import('./features/dashboard/pages/dashboard-user/dashboard-user').then(m => m.DashboardUser),
+        data: { title: 'Dashboard' },
+        canActivate: [isLoggedInGuard]
+      }
+    ]
+  },
 
-    {
-        path: 'settings', 
-        component: NormalLayout, 
-        children: [
-            {
-                path: 'notifications', loadChildren: () => import('./features/system-settings/notification-prefs/notification-prefs-module').then(m => m.NotificationPrefsModule),
-                data: { title: 'Notifications'}, 
-                canActivate: [isLoggedInGuard]
-            }
-        ]
-    }
+  // Resident (with chrome)
+  {
+    path: 'resident',
+    component: NormalLayout,
+    children: [
+      { path: 'userResidentUnit', loadChildren: () => import('./features/resident/user-resident-unit/user-resident-unit.routes').then(m => m.USER_RESIDENT_UNIT_ROUTES), data: { title: 'User Resident Unit' } }
+    ],
+    canActivate: [isLoggedInGuard]
+  },
+
+  // Resident Units (with chrome)
+  {
+    path: 'residentUnit',
+    component: NormalLayout,
+    children: [
+      { path: 'units', loadChildren: () => import('./features/resident-units/units/units.routes').then(m => m.UNITS_ROUTES), data: { title: 'Resident Units' } }
+    ],
+    canActivate: [isLoggedInGuard]
+  },
+
+  // Locker (with chrome)
+  {
+    path: 'locker',
+    component: NormalLayout,
+    children: [
+      { path: '', loadChildren: () => import('./features/locker/locker.routes').then(m => m.LOCKER_ROUTES), data: { title: 'Locker' } }
+    ],
+    canActivate: [isLoggedInGuard, isAdminAndManagerAuthed]
+  },
+
+  // Settings (with chrome)
+  {
+    path: 'settings',
+    component: NormalLayout,
+    children: [
+      { path: 'notifications', loadChildren: () => import('./features/system-settings/notification-prefs/notification-prefs.routes').then(m => m.NOTIFICATION_PREFS_ROUTES), data: { title: 'Notifications' }, canActivate: [isLoggedInGuard] }
+    ]
+  }
 ];

@@ -1,5 +1,132 @@
-<h1 class="text-2xl font-bold mb-4">Parcel Dashboard</h1>
-<div class="grid grid-cols-2 gap-4">
-    <app-awaiting-pickup></app-awaiting-pickup>
-    <app-recently-picked-up></app-recently-picked-up>
+<div class="pl">Overview</div>
+<h1>Dashboard</h1>
+<p class="sub">Parcel room overview.</p>
+
+<!-- Stat Grid -->
+<div class="sgrid">
+  <div class="scard">
+    <div class="sl">Awaiting Pickup</div>
+    @if (loading()) {
+      <app-skeleton height="48px" width="60%"></app-skeleton>
+    } @else {
+      <div class="sv">{{ stats().awaitingPickup }}</div>
+    }
+  </div>
+  <div class="scard">
+    <div class="sl">Picked Up Today</div>
+    @if (loading()) {
+      <app-skeleton height="48px" width="60%"></app-skeleton>
+    } @else {
+      <div class="sv">{{ stats().recentlyPickedUp }}</div>
+    }
+  </div>
+  <div class="scard">
+    <div class="sl">Overstay</div>
+    @if (loading()) {
+      <app-skeleton height="48px" width="60%"></app-skeleton>
+    } @else {
+      <div class="sv">{{ stats().overstay }}</div>
+    }
+  </div>
+  <div class="scard">
+    <div class="sl">Today's Check-ins</div>
+    @if (loading()) {
+      <app-skeleton height="48px" width="60%"></app-skeleton>
+    } @else {
+      <div class="sv">{{ stats().totalToday }}</div>
+    }
+  </div>
+</div>
+
+<!-- Error -->
+@if (error()) {
+  <app-error-card
+    [title]="error()!"
+    description="Check your connection and try again."
+    retryLabel="Retry"
+    (retry)="loadDashboard()"
+  ></app-error-card>
+}
+
+<!-- Awaiting Pickup -->
+<div class="tsect">
+  <div class="thd">
+    <span>Awaiting Pickup</span>
+  </div>
+  @if (loading()) {
+    <div style="padding: 16px 20px; display: flex; flex-direction: column; gap: 10px;">
+      <app-skeleton height="16px" width="90%"></app-skeleton>
+      <app-skeleton height="16px" width="75%"></app-skeleton>
+      <app-skeleton height="16px" width="80%"></app-skeleton>
+    </div>
+  } @else if (awaitingParcels().length === 0) {
+    <app-empty-state
+      title="No parcels awaiting pickup"
+      description="All parcels have been claimed."
+    ></app-empty-state>
+  } @else {
+    <div class="twrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Tracking #</th>
+            <th>Unit</th>
+            <th>Locker</th>
+            <th>Status</th>
+            <th>Waiting</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of awaitingParcels(); track p.trackingNumber) {
+            <tr>
+              <td>{{ p.trackingNumber }}</td>
+              <td>{{ p.residentUnit }}</td>
+              <td>{{ p.locker || '—' }}</td>
+              <td><span class="badge" [class]="getStatusClass(p.status)">{{ getStatusLabel(p.status) }}</span></td>
+              <td>{{ p.waitingTime }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+
+<!-- Recently Picked Up -->
+<div class="tsect">
+  <div class="thd">
+    <span>Recently Picked Up</span>
+  </div>
+  @if (loading()) {
+    <div style="padding: 16px 20px; display: flex; flex-direction: column; gap: 10px;">
+      <app-skeleton height="16px" width="85%"></app-skeleton>
+      <app-skeleton height="16px" width="70%"></app-skeleton>
+    </div>
+  } @else if (recentParcels().length === 0) {
+    <app-empty-state
+      title="No parcels picked up recently"
+      description="Parcels claimed today will appear here."
+    ></app-empty-state>
+  } @else {
+    <div class="twrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Tracking #</th>
+            <th>Unit</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of recentParcels(); track p.trackingNumber) {
+            <tr>
+              <td>{{ p.trackingNumber }}</td>
+              <td>{{ p.residentUnit }}</td>
+              <td><span class="badge b-claim">{{ getStatusLabel(p.status) }}</span></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
 </div>

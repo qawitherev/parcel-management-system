@@ -1,1 +1,82 @@
-<p>navbar works!</p>
+<!-- TOP NAV -->
+<nav class="topnav">
+  <div class="topnav-inner">
+    <!-- Brand -->
+    <div class="brand">
+      <span class="mark"></span>
+      <a routerLink="/dashboard">PARCEL</a>
+    </div>
+
+    <!-- Nav links (desktop) -->
+    <div class="nav-links">
+      @for (group of navGroups; track group.label) {
+        @if (group.route && !group.children) {
+          <a
+            [routerLink]="group.route"
+            class="nav-link"
+          >{{ group.label }}</a>
+        } @else if (group.children) {
+          <div class="nav-group">
+            <button
+              [class.active]="isDropdownOpen(group.label)"
+              (click)="toggleDropdown(group.label)"
+              (mouseenter)="toggleDropdown(group.label)"
+            >
+              {{ group.label }}
+            </button>
+            <div class="nav-dropdown" [class.show]="isDropdownOpen(group.label)" (mouseleave)="closeDropdown()">
+              @for (child of group.children; track child.label) {
+                <a
+                  [routerLink]="child.route"
+                  (click)="closeDropdown()"
+                >{{ child.label }}</a>
+              }
+            </div>
+          </div>
+        }
+      }
+    </div>
+
+    <!-- Actions -->
+    <div class="nav-actions">
+      <span class="user-label">{{ roleDisplayName }}</span>
+      <button class="btn btn-s btn-o" (click)="toggleTheme()">
+        {{ isDark ? 'LIGHT' : 'DARK' }}
+      </button>
+      <button class="btn btn-s btn-o" (click)="logout()">LOG OUT</button>
+    </div>
+
+    <!-- Hamburger -->
+    <button class="hamburger" (click)="toggleMobile()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" [class.open]="mobileOpen()">
+  @for (group of navGroups; track group.label) {
+    @if (group.route && !group.children) {
+      <a
+        [routerLink]="group.route"
+        class="m-item"
+        (click)="closeMobile()"
+      >{{ group.label }}</a>
+    } @else if (group.children) {
+      <div class="m-section">{{ group.label }}</div>
+      @for (child of group.children; track child.label) {
+        <a
+          [routerLink]="child.route"
+          class="m-item"
+          (click)="closeMobile()"
+        >{{ child.label }}</a>
+      }
+    }
+  }
+  <div class="m-actions">
+    <button class="btn" (click)="toggleTheme()">
+      {{ isDark ? 'LIGHT MODE' : 'DARK MODE' }}
+    </button>
+    <button class="btn btn-o" (click)="logout()">LOG OUT</button>
+  </div>
+</div>

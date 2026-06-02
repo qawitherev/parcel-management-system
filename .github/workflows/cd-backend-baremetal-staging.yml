@@ -12,6 +12,7 @@ on:
     branches: [staging]
     paths:
       - 'backend/**'
+      - 'baremetal/**'
       - '.github/workflows/cd-backend-baremetal*'
   workflow_dispatch:
 

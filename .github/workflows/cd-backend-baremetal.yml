@@ -72,6 +72,7 @@ jobs:
 
           check ".NET SDK"            "command -v dotnet"
           check "AWS CLI"             "command -v aws"
+          check "jq"                 "command -v jq"
           check "pm-svc user"         "id pm-svc"
           check "deploy directory"    "[ -d ${{ steps.env.outputs.deploy_dir }} ] || [ -d /opt/pm ]"
           check "systemd unit file"   "[ -f /etc/systemd/system/${{ steps.env.outputs.service_name }}.service ]"
@@ -172,7 +173,7 @@ jobs:
           sudo chown pm-svc:pm-svc "$ENV_TMP"
           sudo mv "$ENV_TMP" "$ENV_FILE"
 
-          echo "Environment file written: ${ENV_FILE} ($(wc -l < "$ENV_FILE") lines)"
+          echo "Environment file written: ${ENV_FILE} ($(sudo wc -l < "$ENV_FILE") lines)"
 
       # ── Set ownership ───────────────────────────────────────
       - name: Set ownership

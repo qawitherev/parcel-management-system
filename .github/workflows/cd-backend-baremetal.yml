@@ -41,13 +41,13 @@ jobs:
             echo "deploy_dir=/opt/pm/backend" >> $GITHUB_OUTPUT
             echo "port=5163" >> $GITHUB_OUTPUT
             echo "ssm_path=/production/backend" >> $GITHUB_OUTPUT
-            echo "env_file=/etc/parcel-management/.env" >> $GITHUB_OUTPUT
+            echo "env_file=/opt/pm/backend/.env" >> $GITHUB_OUTPUT
           else
             echo "service_name=pm-api-staging" >> $GITHUB_OUTPUT
             echo "deploy_dir=/opt/pm/staging-backend" >> $GITHUB_OUTPUT
             echo "port=5164" >> $GITHUB_OUTPUT
             echo "ssm_path=/staging/backend" >> $GITHUB_OUTPUT
-            echo "env_file=/etc/parcel-management/.env.staging" >> $GITHUB_OUTPUT
+            echo "env_file=/opt/pm/staging-backend/.env" >> $GITHUB_OUTPUT
           fi
 
       # ── Pre-flight checks ───────────────────────────────────
@@ -154,8 +154,9 @@ jobs:
         run: |
           echo "Pulling secrets from ${{ steps.env.outputs.ssm_path }}..."
 
-          # Write a temporary file first, then atomically move into place
-          ENV_FILE="${{ steps.env.outputs.env_file }}"
+          # Write to the deploy directory so DotNetEnv.Env.Load() picks it up.
+          # Values are double-quoted so multi-line PEM certificates work.
+          ENV_FILE="${{ steps.env.outputs.deploy_dir }}-new/.env"
           ENV_TMP="${ENV_FILE}.tmp.$$"
 
           aws ssm get-parameters-by-path \
@@ -163,14 +164,12 @@ jobs:
             --with-decryption \
             --recursive \
             --region ap-southeast-1 \
-            --query "Parameters[].[Name,Value]" \
-            --output text | while read name value; do
-              key=$(basename "$name")
-              echo "${key}=${value}"
-            done | sudo tee "$ENV_TMP" > /dev/null
+            --output json \
+            | jq -r '.Parameters[] | (.Name | split("/") | last) + "=\"" + .Value + "\""' \
+            | sudo tee "$ENV_TMP" > /dev/null
 
           sudo chmod 600 "$ENV_TMP"
-          sudo chown root:root "$ENV_TMP"
+          sudo chown pm-svc:pm-svc "$ENV_TMP"
           sudo mv "$ENV_TMP" "$ENV_FILE"
 
           echo "Environment file written: ${ENV_FILE} ($(wc -l < "$ENV_FILE") lines)"

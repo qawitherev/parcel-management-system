@@ -478,54 +478,18 @@ systemctl daemon-reload
 # ═════════════════════════════════════════════════════════════
 header "Phase 6: Environment Files (.env)"
 
-write_env_placeholder() {
-    local env_name="$1"
-    local env_path="$2"
-    local param_path="$3"
-
-    if [[ -f "$env_path" ]] && [[ -s "$env_path" ]]; then
-        skip ".env file: ${env_path} (already populated)"
-        return
-    fi
-
-    log "Creating placeholder .env: ${env_path}..."
-    cat > "$env_path" <<ENV_EOF
-# ============================================================
-# Parcel Management API — ${env_name} Environment
-# ============================================================
+# The .env files are created at deploy time by the CI/CD pipeline.
+# It uses jq to read AWS SSM Parameter Store, which correctly
+# handles multi-line values (e.g. PEM certificates) — unlike
+# a shell while-read loop which would split on newlines.
 #
-# This file is populated by the CI/CD pipeline from AWS SSM
-# Parameter Store. Do not edit manually.
-#
-# Source: aws ssm get-parameters-by-path \\
-#           --path "/${param_path}/backend/" \\
-#           --with-decryption \\
-#           --region ap-southeast-1
-#
-# To populate manually, run:
-#   aws ssm get-parameters-by-path \\
-#     --path "/${param_path}/backend/" \\
-#     --with-decryption \\
-#     --region ap-southeast-1 \\
-#     --query "Parameters[].[Name,Value]" \\
-#     --output text | while read name value; do
-#       echo "\$(basename "\$name")=\$value"
-#   done | sudo tee ${env_path} > /dev/null
-#
-# ============================================================
-ENV_EOF
+# The bootstrap only ensures the deploy directories exist
+# (created in Phase 3). The .env lands there on first deploy.
 
-    chmod 600 "$env_path"
-    chown root:root "$env_path"
-}
-
-if setup_production; then
-    write_env_placeholder "Production" "${ENV_DIR}/.env" "production"
-fi
-
-if setup_staging; then
-    write_env_placeholder "Staging" "${ENV_DIR}/.env.staging" "staging"
-fi
+log ".env files are created at deploy time by the CD pipeline (jq + AWS SSM)"
+info "Deploy directories ready:"
+setup_production && info "  ${PROD_DIR}/  (.env will land here)"
+setup_staging    && info "  ${STAGING_DIR}/  (.env will land here)"
 
 # ═════════════════════════════════════════════════════════════
 # Phase 7 — GitHub Actions Self-Hosted Runner
@@ -595,7 +559,7 @@ if setup_production; then
     echo -e "  ${GREEN}Production${NC}"
     echo "    Directory:   ${PROD_DIR}"
     echo "    Service:     ${PROD_SERVICE}.service"
-    echo "    Env file:    ${ENV_DIR}/.env"
+    echo "    Env file:    ${PROD_DIR}/.env (created by CD pipeline)"
     echo "    Health:      http://localhost:${PROD_PORT}/health"
     echo ""
 fi
@@ -604,7 +568,7 @@ if setup_staging; then
     echo -e "  ${YELLOW}Staging${NC}"
     echo "    Directory:   ${STAGING_DIR}"
     echo "    Service:     ${STAGING_SERVICE}.service"
-    echo "    Env file:    ${ENV_DIR}/.env.staging"
+    echo "    Env file:    ${STAGING_DIR}/.env (created by CD pipeline)"
     echo "    Health:      http://localhost:${STAGING_PORT}/health"
     echo ""
 fi

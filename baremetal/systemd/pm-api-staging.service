@@ -11,7 +11,7 @@ Type=simple
 User=pm-svc
 Group=pm-svc
 WorkingDirectory=/opt/pm/staging-backend
-EnvironmentFile=/etc/parcel-management/.env.staging
+# Env loaded by DotNetEnv from .env in WorkingDirectory
 ExecStart=/usr/bin/dotnet /opt/pm/staging-backend/ParcelManagement.Api.dll
 Restart=always
 RestartSec=10

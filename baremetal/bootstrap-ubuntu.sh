@@ -473,6 +473,17 @@ fi
 
 systemctl daemon-reload
 
+# Enable services so they start automatically on boot
+if setup_production; then
+    systemctl enable "$PROD_SERVICE"
+    log "Enabled ${PROD_SERVICE}.service (auto-start on boot)"
+fi
+
+if setup_staging; then
+    systemctl enable "$STAGING_SERVICE"
+    log "Enabled ${STAGING_SERVICE}.service (auto-start on boot)"
+fi
+
 # ═════════════════════════════════════════════════════════════
 # Phase 6 — Environment Files
 # ═════════════════════════════════════════════════════════════

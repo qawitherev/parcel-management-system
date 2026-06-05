@@ -159,6 +159,11 @@ jobs:
           # Values are double-quoted so multi-line PEM certificates work.
           ENV_FILE="${{ steps.env.outputs.deploy_dir }}-new/.env"
           ENV_TMP="${ENV_FILE}.tmp.$$"
+          ENV_DIR="${{ steps.env.outputs.deploy_dir }}-new"
+
+          # Ensure the target directory exists (defensive — dotnet publish
+          # creates it, but this guards against partial failures)
+          sudo mkdir -p "$ENV_DIR"
 
           aws ssm get-parameters-by-path \
             --path "${{ steps.env.outputs.ssm_path }}" \

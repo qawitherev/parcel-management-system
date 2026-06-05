@@ -1,0 +1,26 @@
+# ============================================================
+# CD Backend — Baremetal Staging
+# ============================================================
+# Auto-deploys on push to staging (backend/ changes) +
+# manual trigger via workflow_dispatch.
+# ============================================================
+
+name: CD Backend — Baremetal Staging
+
+on:
+  push:
+    branches: [staging]
+    paths:
+      - 'backend/**'
+      - 'baremetal/**'
+      - '.github/workflows/cd-backend-baremetal*'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    uses: ./.github/workflows/cd-backend-baremetal.yml
+    with:
+      environment: staging
+    permissions:
+      id-token: write
+      contents: read

@@ -1,0 +1,280 @@
+# ============================================================
+# CD Backend — Baremetal (Reusable)
+# ============================================================
+# Deploys the .NET backend directly to an Ubuntu server via
+# a self-hosted GitHub Actions runner.
+#
+# Called by:
+#   cd-backend-baremetal-staging.yml    (auto on push + manual)
+#   cd-backend-baremetal-production.yml (manual only)
+# ============================================================
+
+name: CD Backend — Baremetal (Reusable)
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+        description: "staging or production"
+
+jobs:
+  # ============================================================
+  # Deploy — single job, runs on self-hosted baremetal runner
+  # ============================================================
+  deploy:
+    name: Deploy to Baremetal — ${{ inputs.environment }}
+    runs-on: [self-hosted, baremetal]
+    environment: ${{ inputs.environment }}
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      # ── Resolve environment-specific values ──────────────────
+      - name: Resolve environment
+        id: env
+        run: |
+          if [ "${{ inputs.environment }}" = "production" ]; then
+            echo "service_name=pm-api" >> $GITHUB_OUTPUT
+            echo "deploy_dir=/opt/pm/backend" >> $GITHUB_OUTPUT
+            echo "port=5163" >> $GITHUB_OUTPUT
+            echo "ssm_path=/production/backend" >> $GITHUB_OUTPUT
+            echo "env_file=/opt/pm/backend/.env" >> $GITHUB_OUTPUT
+          else
+            echo "service_name=pm-api-staging" >> $GITHUB_OUTPUT
+            echo "deploy_dir=/opt/pm/staging-backend" >> $GITHUB_OUTPUT
+            echo "port=5164" >> $GITHUB_OUTPUT
+            echo "ssm_path=/staging/backend" >> $GITHUB_OUTPUT
+            echo "env_file=/opt/pm/staging-backend/.env" >> $GITHUB_OUTPUT
+          fi
+
+      # ── Pre-flight checks ───────────────────────────────────
+      - name: Pre-flight checks
+        run: |
+          set -e
+          echo "=== Pre-flight checks ==="
+
+          checks_failed=0
+
+          check() {
+            local desc="$1"
+            local cmd="$2"
+            printf "  %-50s" "$desc ... "
+            if eval "$cmd" >/dev/null 2>&1; then
+              echo "OK"
+            else
+              echo "MISSING"
+              checks_failed=$((checks_failed + 1))
+            fi
+          }
+
+          check ".NET SDK"            "command -v dotnet"
+          check "AWS CLI"             "command -v aws"
+          check "jq"                 "command -v jq"
+          check "pm-svc user"         "id pm-svc"
+          check "deploy directory"    "[ -d ${{ steps.env.outputs.deploy_dir }} ] || [ -d /opt/pm ]"
+          check "systemd unit file"   "[ -f /etc/systemd/system/${{ steps.env.outputs.service_name }}.service ]"
+          check "sudo without passwd" "sudo -n true"
+
+          if [ "$checks_failed" -gt 0 ]; then
+            echo ""
+            echo "ERROR: $checks_failed pre-flight check(s) failed."
+            echo "Run the bootstrap script to provision this server:"
+            echo "  curl -sSL https://raw.githubusercontent.com/qawitherev/parcel-management-system/main/baremetal/bootstrap-ubuntu.sh | sudo bash"
+            exit 1
+          fi
+
+          echo "  All checks passed."
+          echo ""
+
+      # ── Checkout ────────────────────────────────────────────
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      # ── Setup .NET ──────────────────────────────────────────
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      # ── Restore ─────────────────────────────────────────────
+      - name: Restore
+        run: dotnet restore
+        working-directory: backend
+
+      # ── Build ───────────────────────────────────────────────
+      - name: Build
+        run: dotnet build --configuration Release --no-restore --warnaserror
+        working-directory: backend
+
+      # ── Unit tests ──────────────────────────────────────────
+      - name: Unit tests
+        run: dotnet test --configuration Release --no-build --logger "trx;LogFileName=unit-test-report.trx"
+        working-directory: backend/src/ParcelManagement.Test
+
+      - name: Upload unit test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: baremetal-unit-test-report-${{ inputs.environment }}
+          path: backend/**/*.trx
+
+      # ── Integration tests ───────────────────────────────────
+      # Skipped — require Docker (Testcontainers) which is not
+      # available on the baremetal runner. These tests already
+      # ran in CI on PR and in the ECS CD pipeline.
+      #
+      # ── Publish ─────────────────────────────────────────────
+      - name: Publish
+        run: |
+          echo "Publishing to ${{ steps.env.outputs.deploy_dir }}-new..."
+          rm -rf "${{ steps.env.outputs.deploy_dir }}-new"
+          dotnet publish ParcelManagement.Api.csproj \
+            --configuration Release \
+            --output "${{ steps.env.outputs.deploy_dir }}-new"
+        working-directory: backend/src/ParcelManagement.Api
+
+      # ── Sync secrets from AWS SSM ───────────────────────────
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ap-southeast-1
+          role-to-assume: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/github-actions-${{ inputs.environment }}
+
+      - name: Sync .env from SSM
+        run: |
+          echo "Pulling secrets from ${{ steps.env.outputs.ssm_path }}..."
+
+          # Write to the deploy directory so DotNetEnv.Env.Load() picks it up.
+          # Values are double-quoted so multi-line PEM certificates work.
+          ENV_FILE="${{ steps.env.outputs.deploy_dir }}-new/.env"
+          ENV_TMP="${ENV_FILE}.tmp.$$"
+          ENV_DIR="${{ steps.env.outputs.deploy_dir }}-new"
+
+          # Ensure the target directory exists (defensive — dotnet publish
+          # creates it, but this guards against partial failures)
+          sudo mkdir -p "$ENV_DIR"
+
+          aws ssm get-parameters-by-path \
+            --path "${{ steps.env.outputs.ssm_path }}" \
+            --with-decryption \
+            --recursive \
+            --region ap-southeast-1 \
+            --output json \
+            | jq -r '.Parameters[] | (.Name | split("/") | last) + "=\"" + .Value + "\""' \
+            | sudo tee "$ENV_TMP" > /dev/null
+
+          sudo chmod 600 "$ENV_TMP"
+          sudo chown pm-svc:pm-svc "$ENV_TMP"
+          sudo mv "$ENV_TMP" "$ENV_FILE"
+
+          echo "Environment file written: ${ENV_FILE} ($(sudo cat "$ENV_FILE" | wc -l) lines)"
+
+      # ── Set ownership ───────────────────────────────────────
+      - name: Set ownership
+        run: |
+          sudo chown -R pm-svc:pm-svc "${{ steps.env.outputs.deploy_dir }}-new"
+
+      # ── Deploy (atomic swap) ────────────────────────────────
+      - name: Deploy
+        id: deploy
+        run: |
+          SERVICE="${{ steps.env.outputs.service_name }}"
+          DEPLOY_DIR="${{ steps.env.outputs.deploy_dir }}"
+          NEW_DIR="${DEPLOY_DIR}-new"
+          PREV_DIR="${DEPLOY_DIR}-previous"
+
+          echo "=== Deploying to ${DEPLOY_DIR} ==="
+
+          # Stop the service
+          echo "Stopping ${SERVICE}..."
+          sudo systemctl stop "${SERVICE}"
+
+          # Rotate: previous backup → out, current → previous, new → current
+          echo "Swapping directories..."
+          sudo rm -rf "${PREV_DIR}"
+
+          if [ -d "${DEPLOY_DIR}" ]; then
+            sudo mv "${DEPLOY_DIR}" "${PREV_DIR}"
+            echo "  Backed up: ${DEPLOY_DIR} → ${PREV_DIR}"
+          fi
+
+          sudo mv "${NEW_DIR}" "${DEPLOY_DIR}"
+          echo "  Promoted:   ${NEW_DIR} → ${DEPLOY_DIR}"
+
+          # Start the service
+          echo "Starting ${SERVICE}..."
+          sudo systemctl start "${SERVICE}"
+
+          echo "Deploy complete."
+
+      # ── Health check ────────────────────────────────────────
+      - name: Health check
+        id: health
+        run: |
+          PORT="${{ steps.env.outputs.port }}"
+          URL="http://localhost:${PORT}/health"
+          echo "Polling ${URL}..."
+
+          for i in $(seq 1 30); do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$URL" 2>/dev/null || echo "000")
+            if [ "$STATUS" = "200" ]; then
+              echo "Attempt $i: HTTP ${STATUS} — healthy"
+              exit 0
+            fi
+            echo "Attempt $i: HTTP ${STATUS}, retrying in 10s..."
+            sleep 10
+          done
+
+          echo "Health check failed after 30 attempts (5 minutes)"
+          exit 1
+
+      # ── Rollback (on failure) ───────────────────────────────
+      - name: Rollback
+        if: failure() && steps.deploy.outcome == 'success'
+        run: |
+          SERVICE="${{ steps.env.outputs.service_name }}"
+          DEPLOY_DIR="${{ steps.env.outputs.deploy_dir }}"
+          PREV_DIR="${DEPLOY_DIR}-previous"
+
+          echo "=== Rolling back to previous version ==="
+
+          if [ ! -d "${PREV_DIR}" ]; then
+            echo "No previous version to roll back to — manual intervention required."
+            exit 1
+          fi
+
+          echo "Stopping ${SERVICE}..."
+          sudo systemctl stop "${SERVICE}" || true
+
+          echo "Restoring previous version..."
+          sudo rm -rf "${DEPLOY_DIR}"
+          sudo mv "${PREV_DIR}" "${DEPLOY_DIR}"
+
+          echo "Starting ${SERVICE}..."
+          sudo systemctl start "${SERVICE}"
+
+          # Quick health check on the restored version
+          PORT="${{ steps.env.outputs.port }}"
+          echo "Verifying rollback..."
+          for i in $(seq 1 5); do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:${PORT}/health" 2>/dev/null || echo "000")
+            if [ "$STATUS" = "200" ]; then
+              echo "Rollback successful — service is healthy."
+              exit 1  # Still fail the workflow (the original deploy failed)
+            fi
+            sleep 5
+          done
+
+          echo "Rollback health check also failed — manual intervention required."
+          exit 1

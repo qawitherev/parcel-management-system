@@ -1,0 +1,30 @@
+# ============================================================
+# Parcel Management API — Staging
+# ============================================================
+
+[Unit]
+Description=Parcel Management API — Staging
+After=network.target
+
+[Service]
+Type=simple
+User=pm-svc
+Group=pm-svc
+WorkingDirectory=/opt/pm/staging-backend
+# Env loaded by DotNetEnv from .env in WorkingDirectory
+ExecStart=/usr/bin/dotnet /opt/pm/staging-backend/ParcelManagement.Api.dll
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=pm-api-staging
+
+# Hardening
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/opt/pm/staging-backend /tmp
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target

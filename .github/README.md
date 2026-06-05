@@ -202,3 +202,89 @@ Or manually:
 ```
 
 No separate rollback pipeline — the same pipeline deploys the revert commit.
+
+## CloudFront SPA Routing
+
+The frontend is a single-page application (SPA) served by S3 via CloudFront.
+Direct navigation to client-side routes (e.g. `/login`, `/dashboard`) hits
+CloudFront before the JavaScript router loads, so S3 returns an error
+because no file exists at that path.
+
+### Why 403 (not 404)?
+
+```
+Browser → GET /login
+                   │
+                   ▼
+         CloudFront → GET /login → S3
+                                      │
+                                      │  No such key, bucket is not
+                                      │  publicly listable
+                                      ▼
+                                 403 AccessDenied
+```
+
+S3 returns **403** (not 404) for missing paths like `/login` because it cannot
+distinguish "file doesn't exist" from "directory listing attempt" — it denies
+access rather than confirming nonexistence.
+
+### Custom error responses
+
+CloudFront must be configured to serve `index.html` on both `403` and `404`,
+so the SPA router takes over and renders the correct page:
+
+| Error code | Response page path | HTTP status | Reason |
+|---|---|---|---|
+| 403 | `/index.html` | 200 | Direct nav to client-side routes (most common) |
+| 404 | `/index.html` | 200 | Truly missing files (also caught by SPA router) |
+
+```
+Browser → GET /login
+                   │
+                   ▼
+         CloudFront → GET /login → S3 → 403 AccessDenied
+                   │
+                   │  CustomErrorResponse:
+                   │  403 → /index.html (200)
+                   ▼
+         CloudFront → GET /index.html → S3 → 200 ✓
+                   │
+                   ▼
+         Browser loads index.html
+         React Router sees /login → renders <LoginPage />
+```
+
+### How to set up
+
+Managed by Terraform in `environments/*/cloudfront.tf`:
+
+```hcl
+custom_error_response {
+  error_code         = 403
+  response_code      = 200
+  response_page_path = "/index.html"
+}
+
+custom_error_response {
+  error_code         = 404
+  response_code      = 200
+  response_page_path = "/index.html"
+}
+```
+
+If creating a distribution manually, add via AWS CLI:
+
+```bash
+# Get current config
+aws cloudfront get-distribution-config --id <DIST_ID> > /tmp/cf.json
+
+# Add 403 error response to the CustomErrorResponses.Items array
+
+# Update
+aws cloudfront update-distribution --id <DIST_ID> \
+  --distribution-config file:///tmp/cf.json \
+  --if-match <ETAG>
+```
+
+**⚠️ Without this configuration, direct navigation to any SPA route will show
+an S3 `AccessDenied` XML error instead of the app.**

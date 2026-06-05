@@ -173,7 +173,7 @@ jobs:
           sudo chown pm-svc:pm-svc "$ENV_TMP"
           sudo mv "$ENV_TMP" "$ENV_FILE"
 
-          echo "Environment file written: ${ENV_FILE} ($(sudo wc -l < "$ENV_FILE") lines)"
+          echo "Environment file written: ${ENV_FILE} ($(sudo cat "$ENV_FILE" | wc -l) lines)"
 
       # ── Set ownership ───────────────────────────────────────
       - name: Set ownership
